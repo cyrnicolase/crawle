@@ -1,0 +1,466 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>ANALYZE</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="SQL 命令"
+HREF="sql-commands.html"><LINK
+REL="PREVIOUS"
+TITLE="ALTER VIEW"
+HREF="sql-alterview.html"><LINK
+REL="NEXT"
+TITLE="BEGIN"
+HREF="sql-begin.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="REFENTRY"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/ref/analyze.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="ALTER VIEW"
+HREF="sql-alterview.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="BEGIN"
+HREF="sql-begin.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="SQL-ANALYZE"
+></A
+>ANALYZE</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN76558"
+></A
+><H2
+>&#21517;&#31216;</H2
+>ANALYZE&nbsp;--&nbsp;收集有关一个数据库的统计信息</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN76561"
+></A
+><H2
+>&#22823;&#32434;</H2
+><PRE
+CLASS="SYNOPSIS"
+>ANALYZE [ VERBOSE ] [ <TT
+CLASS="REPLACEABLE"
+><I
+>table_name</I
+></TT
+> [ ( <TT
+CLASS="REPLACEABLE"
+><I
+>column_name</I
+></TT
+> [, ...] ) ] ]</PRE
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN76565"
+></A
+><H2
+>描述</H2
+><P
+>   <TT
+CLASS="COMMAND"
+>ANALYZE</TT
+>收集一个数据库中的表的内容的统计信息，并且将结果存储在<A
+HREF="catalog-pg-statistic.html"
+><TT
+CLASS="STRUCTNAME"
+>pg_statistic</TT
+></A
+>系统目录中。接下来，查询规划器会使用这些统计信息来帮助确定查询最有效的执行计划。
+  </P
+><P
+>   如果不带参数，<TT
+CLASS="COMMAND"
+>ANALYZE</TT
+>会检查当前数据库中的所有表。如果带有一个参数，<TT
+CLASS="COMMAND"
+>ANALYZE</TT
+>只会检查那个表。可以进一步给出一个列名的列表，该情况下只会收集这些列的统计信息。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN76574"
+></A
+><H2
+>参数</H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="LITERAL"
+>VERBOSE</TT
+></DT
+><DD
+><P
+>      允许显示进度消息。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>table_name</I
+></TT
+></DT
+><DD
+><P
+>      要分析的一个指定表的名称（可以是模式限定的）。如果省略，当前数据库中所有常规表（非外部表）都会被分析。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>column_name</I
+></TT
+></DT
+><DD
+><P
+>      要分析的一个指定列的名称。默认是所有列。
+     </P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN76592"
+></A
+><H2
+>输出</H2
+><P
+>    当指定了<TT
+CLASS="LITERAL"
+>VERBOSE</TT
+>时，<TT
+CLASS="COMMAND"
+>ANALYZE</TT
+>会发出进度消息来指示当前正在处理哪个表。还会打印有关那些表的多种统计信息。
+   </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN76597"
+></A
+><H2
+>注解</H2
+><P
+>   只有被显式选中时才会分析外部表。并非所有外部数据包装器都支持<TT
+CLASS="COMMAND"
+>ANALYZE</TT
+>。如果表的包装器不支持<TT
+CLASS="COMMAND"
+>ANALYZE</TT
+>，该命令会打印一个警告并且什么也不做。
+  </P
+><P
+>   在默认的<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>配置中，自动清理守护进程（见<A
+HREF="routine-vacuuming.html#AUTOVACUUM"
+>第 24.1.6 &#33410;</A
+>）会在表第一次载入数据或者用常规操作改变时负责表的自动分析。当启用自动清理时，定期运行<TT
+CLASS="COMMAND"
+>ANALYZE</TT
+>是个好主意，或者可以在表内容做了大的修改后运行<TT
+CLASS="COMMAND"
+>ANALYZE</TT
+>。准确的统计信息将帮助规划器选择最合适的查询计划，从而提升查询处理的速度。主读数据库的一般策略是在一天中使用量最低时运行一次<A
+HREF="sql-vacuum.html"
+>VACUUM</A
+>和<TT
+CLASS="COMMAND"
+>ANALYZE</TT
+>（如果有大量的更新动作则是不够的）。
+  </P
+><P
+>   <TT
+CLASS="COMMAND"
+>ANALYZE</TT
+>只要求目标表上的一个读锁，因此它可以和表上的其他动作并行。
+  </P
+><P
+>   <TT
+CLASS="COMMAND"
+>ANALYZE</TT
+>收集的统计信息通畅包括每列中最常见值的列表以及展示每列中近似数据分布的一个直方图。如果<TT
+CLASS="COMMAND"
+>ANALYZE</TT
+>认为这些东西无趣（例如在一个唯一键列中，没有共同值）或者该列的数据类型不支持合适的操作符，以上工作都会被省略。在<A
+HREF="maintenance.html"
+>第 24 &#31456;</A
+>中有与统计信息相关的更多信息。
+  </P
+><P
+>   对于大型的表，<TT
+CLASS="COMMAND"
+>ANALYZE</TT
+>会对表内容做随机采样而不是检查每一行。这允许在很少的时间内完成对大型表的分析。不过要注意，这些统计信息只是近似值，并且即使实际表内容没有改变，每次运行<TT
+CLASS="COMMAND"
+>ANALYZE</TT
+>时统计信息都会有微小地改变。这可能会导致<A
+HREF="sql-explain.html"
+>EXPLAIN</A
+>显示的规划器估算代价有小的改变。在很少的情况下，这会非决定性地导致规划器的查询计划选择在<TT
+CLASS="COMMAND"
+>ANALYZE</TT
+>运行后改变。为了避免这种情况，可以按照下文所述提高<TT
+CLASS="COMMAND"
+>ANALYZE</TT
+>所收集的统计信息量。
+  </P
+><P
+>   通过调整<A
+HREF="runtime-config-query.html#GUC-DEFAULT-STATISTICS-TARGET"
+>default_statistics_target</A
+>配置变量可以控制分析量，对每个列可以用<TT
+CLASS="COMMAND"
+>ALTER TABLE ... ALTER COLUMN ... SET STATISTICS</TT
+>设置每列的统计信息目标（见<A
+HREF="sql-altertable.html"
+>ALTER TABLE</A
+>）。目标值会设置最常用值列表中的最大项数以及直方图中的最大容器数。默认目标值是 100，可以把它调大或者调小在规划器估计值精度和<TT
+CLASS="COMMAND"
+>ANALYZE</TT
+>花费的时间以及<TT
+CLASS="LITERAL"
+>pg_statistic</TT
+>所占空间之间做出平衡。特别地，将统计信息目标设置为零会禁用该列的统计信息收集。在查询的<TT
+CLASS="LITERAL"
+>WHERE</TT
+>、<TT
+CLASS="LITERAL"
+>GROUP BY</TT
+>或者<TT
+CLASS="LITERAL"
+>ORDER BY</TT
+>子句中从不出现的列上这样做会有所帮助，因为规划器用不上这些列上的统计信息。
+  </P
+><P
+>   被分析的列中最大的统计信息目标决定了为准备统计信息要采样的表行数。增加该目标会导致做<TT
+CLASS="COMMAND"
+>ANALYZE</TT
+>所需的时间和空间成比例增加。
+  </P
+><P
+>   <TT
+CLASS="COMMAND"
+>ANALYZE</TT
+>所估算的值之一是出现在每个列中的可区分值。因为只会检查行的一个子集，即便使用最大的统计信息目标，这种估计有时也可能很不精确。如果这种不精确导致不好的查询计划，可以手工确定一个更精确的值并且用<TT
+CLASS="COMMAND"
+>ALTER TABLE ... ALTER COLUMN ... SET (n_distinct = ...)</TT
+>设置该值（见<A
+HREF="sql-altertable.html"
+>ALTER TABLE</A
+>）。
+  </P
+><P
+>    如果被分析的表有一个或者更多子女，<TT
+CLASS="COMMAND"
+>ANALYZE</TT
+>将会收集两次统计信息：一次只对父表的行收集，第二次则在父表及其所有子女表的行上收集。在规划需要遍历整个继承树的查询时需要第二个统计信息集。不过，在决定是否触发表上的自动分析时，自动清理后台进程将只考虑父表本身上的插入和更新。如果该表很少被插入或者更新，只有手工运行<TT
+CLASS="COMMAND"
+>ANALYZE</TT
+>时才会把继承统计信息更新到最新。
+  </P
+><P
+>    如果任何子表是外部表并且其外部数据包装器不支持<TT
+CLASS="COMMAND"
+>ANALYZE</TT
+>，在收集继承统计信息时会忽略那些子表。
+  </P
+><P
+>    如果被分析的表不完全为空，<TT
+CLASS="COMMAND"
+>ANALYZE</TT
+>将不会为该表记录新统计信息。任何现有统计信息将会被保留。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN76643"
+></A
+><H2
+>兼容性</H2
+><P
+>   SQL 标准中没有<TT
+CLASS="COMMAND"
+>ANALYZE</TT
+>语句。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN76647"
+></A
+><H2
+>另见</H2
+><A
+HREF="sql-vacuum.html"
+>VACUUM</A
+>, <A
+HREF="app-vacuumdb.html"
+><SPAN
+CLASS="APPLICATION"
+>vacuumdb</SPAN
+></A
+>, <A
+HREF="runtime-config-resource.html#RUNTIME-CONFIG-RESOURCE-VACUUM-COST"
+>第 19.4.4 &#33410;</A
+>, <A
+HREF="routine-vacuuming.html#AUTOVACUUM"
+>第 24.1.6 &#33410;</A
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-alterview.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="sql-begin.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>ALTER VIEW</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>BEGIN</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

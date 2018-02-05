@@ -1,0 +1,311 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>自举BKI文件的结构</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="BKI后端接口"
+HREF="bki.html"><LINK
+REL="PREVIOUS"
+TITLE="BKI命令"
+HREF="bki-commands.html"><LINK
+REL="NEXT"
+TITLE="例子"
+HREF="bki-example.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/bki.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="BKI命令"
+HREF="bki-commands.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="bki.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#31456; 66. <ACRONYM
+CLASS="ACRONYM"
+>BKI</ACRONYM
+>后端接口</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="例子"
+HREF="bki-example.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="BKI-STRUCTURE"
+>66.3. 自举<ACRONYM
+CLASS="ACRONYM"
+>BKI</ACRONYM
+>文件的结构</A
+></H1
+><P
+>   在<TT
+CLASS="LITERAL"
+>open</TT
+>命令打开某个表时，它需要系统中已经存在一些表并且其中要具有与被打开表相关的项，在这些先决条件满足之前，<TT
+CLASS="LITERAL"
+>open</TT
+>命令不能被使用（这些至少应该存在的表是<TT
+CLASS="STRUCTNAME"
+>pg_class</TT
+>、<TT
+CLASS="STRUCTNAME"
+>pg_attribute</TT
+>、<TT
+CLASS="STRUCTNAME"
+>pg_proc</TT
+>和<TT
+CLASS="STRUCTNAME"
+>pg_type</TT
+>）。 为了允许这些表本身被填充，带着<TT
+CLASS="LITERAL"
+>bootstrap</TT
+>选项的<TT
+CLASS="LITERAL"
+>create</TT
+>将会隐式打开所创建的表用于插入数据。
+  </P
+><P
+>   同样，<TT
+CLASS="LITERAL"
+>declare index</TT
+>和<TT
+CLASS="LITERAL"
+>declare toast</TT
+>命令也必须在相关系统目录被创建和填充之后才能被使用。
+  </P
+><P
+>   因此，<TT
+CLASS="FILENAME"
+>postgres.bki</TT
+>文件的结构必须是：
+   <P
+></P
+></P><OL
+TYPE="1"
+><LI
+><P
+>      <TT
+CLASS="LITERAL"
+>create bootstrap</TT
+>其中一个关键表
+     </P
+></LI
+><LI
+><P
+>      <TT
+CLASS="LITERAL"
+>insert</TT
+>数据，这些数据至少要能描述这些关键表
+     </P
+></LI
+><LI
+><P
+>      <TT
+CLASS="LITERAL"
+>close</TT
+>
+     </P
+></LI
+><LI
+><P
+>      重复创建其他关键表。
+     </P
+></LI
+><LI
+><P
+>      <TT
+CLASS="LITERAL"
+>create</TT
+>（不带<TT
+CLASS="LITERAL"
+>bootstrap</TT
+>）一个非关键表
+     </P
+></LI
+><LI
+><P
+>      <TT
+CLASS="LITERAL"
+>open</TT
+>
+     </P
+></LI
+><LI
+><P
+>      <TT
+CLASS="LITERAL"
+>insert</TT
+>需要的数据
+     </P
+></LI
+><LI
+><P
+>      <TT
+CLASS="LITERAL"
+>close</TT
+>
+     </P
+></LI
+><LI
+><P
+>      重复创建其他非关键表。
+     </P
+></LI
+><LI
+><P
+>      定义索引和TOAST表。
+     </P
+></LI
+><LI
+><P
+>      <TT
+CLASS="LITERAL"
+>构建索引</TT
+>
+     </P
+></LI
+></OL
+><P>
+  </P
+><P
+>   无疑还有其它未被文档记录的顺序依赖关系。
+  </P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="bki-commands.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="bki-example.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><ACRONYM
+CLASS="ACRONYM"
+>BKI</ACRONYM
+>命令</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="bki.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>例子</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

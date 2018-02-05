@@ -1,0 +1,446 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>函数易变性分类</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="扩展 SQL"
+HREF="extend.html"><LINK
+REL="PREVIOUS"
+TITLE="函数重载"
+HREF="xfunc-overload.html"><LINK
+REL="NEXT"
+TITLE="过程语言函数"
+HREF="xfunc-pl.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/xfunc.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="函数重载"
+HREF="xfunc-overload.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="extend.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#31456; 36. 扩展 <ACRONYM
+CLASS="ACRONYM"
+>SQL</ACRONYM
+></TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="过程语言函数"
+HREF="xfunc-pl.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="XFUNC-VOLATILITY"
+>36.6. 函数易变性分类</A
+></H1
+><P
+>    每一个函数都有一个<I
+CLASS="FIRSTTERM"
+>易变性</I
+>分类，可能是
+    <TT
+CLASS="LITERAL"
+>VOLATILE</TT
+>、<TT
+CLASS="LITERAL"
+>STABLE</TT
+>或者<TT
+CLASS="LITERAL"
+>IMMUTABLE</TT
+>。
+    如果<A
+HREF="sql-createfunction.html"
+>CREATE FUNCTION</A
+>命令没有指定一个分类，则默认是
+    <TT
+CLASS="LITERAL"
+>VOLATILE</TT
+>。易变性分类是给优化器的关于该函数行为的一种承诺：
+
+   <P
+></P
+></P><UL
+><LI
+><P
+>      一个<TT
+CLASS="LITERAL"
+>VOLATILE</TT
+>函数可以做任何事情，包括修改数据库。在
+      使用相同的参数连续调用时，它能返回不同的结果。优化器不会对这类函
+      数的行为做任何假定。在每一行需要 volatile 函数值时，一个使用 volatile
+      函数的查询都会重新计算该函数。
+     </P
+></LI
+><LI
+><P
+>      一个<TT
+CLASS="LITERAL"
+>STABLE</TT
+>函数不能修改数据库并且被确保对一个语句中
+      的所有行用给定的相同参数返回相同的结果。这种分类允许优化器把该函
+      数的多个调用优化成一个调用。特别是，在一个索引扫描条件中使用包含
+      这样一个函数的表达式是安全的（因为一次索引扫描只会计算一次比较值，
+      而不是为每一行都计算一次，在一个索引扫描条件中不能使用
+      <TT
+CLASS="LITERAL"
+>VOLATILE</TT
+>函数）。
+     </P
+></LI
+><LI
+><P
+>      一个<TT
+CLASS="LITERAL"
+>IMMUTABLE</TT
+>函数不能修改数据库并且被确保用相同的参数
+      永远返回相同的结果。这种分类允许优化器在一个查询用常量参数调用该函数
+      时提前计算该函数。例如，一个
+      <TT
+CLASS="LITERAL"
+>SELECT ... WHERE x = 2 + 2</TT
+>这样的查询可以被简化为
+      <TT
+CLASS="LITERAL"
+>SELECT ... WHERE x = 4</TT
+>，因为整数加法操作符底层的函数被
+      标记为<TT
+CLASS="LITERAL"
+>IMMUTABLE</TT
+>。
+     </P
+></LI
+></UL
+><P>
+   </P
+><P
+>    为了最好的优化结果，你应该把函数标记为对它们合法的易变性分类中最严格
+    的那种。
+   </P
+><P
+>    任何带有副作用的函数<SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>必须</I
+></SPAN
+>被标记为<TT
+CLASS="LITERAL"
+>VOLATILE</TT
+>，
+    这样对它的调用就不能被优化掉。甚至如果一个函数的值在一个查询中会
+    变化，即使它没有副作用也需要被标记为<TT
+CLASS="LITERAL"
+>VOLATILE</TT
+>。这样的
+    例子有<TT
+CLASS="LITERAL"
+>random()</TT
+>、<TT
+CLASS="LITERAL"
+>currval()</TT
+>、
+    <TT
+CLASS="LITERAL"
+>timeofday()</TT
+>等。
+   </P
+><P
+>    另一种重要的例子是<CODE
+CLASS="FUNCTION"
+>current_timestamp</CODE
+>家族的函数有资格
+    被标记为<TT
+CLASS="LITERAL"
+>STABLE</TT
+>，因为它们的值在一个事务中不会改变。
+   </P
+><P
+>    在考虑先规划然后立即执行的简单交互式查询时，在<TT
+CLASS="LITERAL"
+>STABLE</TT
+>和
+    <TT
+CLASS="LITERAL"
+>IMMUTABLE</TT
+>分类间的区别相对较小：一个函数是在规划时只
+    执行一次还是在查询执行开始期间只执行一次没有太大关系。但是如果计划
+    被保存下来然后在后面被重用，区别就大了。如果在不允许过早把一个函数
+    变成规划期间的一个常数时把它标记为<TT
+CLASS="LITERAL"
+>IMMUTABLE</TT
+>，会导致
+    在后续重用该计划时用到一个陈旧的值。当使用预备语句或者使用会缓存计
+    划的函数语言（<SPAN
+CLASS="APPLICATION"
+>PL/pgSQL</SPAN
+>）时，这就会是一种灾难。
+   </P
+><P
+>    对于用 SQL 或者其他任何标准过程语言编写的函数，还有第二种由易变性分类
+    决定的特性，即由调用该函数的 SQL 命令所作的数据修改的可见性。
+    <TT
+CLASS="LITERAL"
+>VOLATILE</TT
+>函数将看到这些更改，<TT
+CLASS="LITERAL"
+>STABLE</TT
+>
+    或者<TT
+CLASS="LITERAL"
+>IMMUTABLE</TT
+>函数则看不到。这种行为使用 MVCC 的快照
+    行为（见<A
+HREF="mvcc.html"
+>第 13 &#31456;</A
+>）实现：<TT
+CLASS="LITERAL"
+>STABLE</TT
+>和
+    <TT
+CLASS="LITERAL"
+>IMMUTABLE</TT
+>函数使用一个在调用查询开始时建立的快照，而
+    <TT
+CLASS="LITERAL"
+>VOLATILE</TT
+>函数在它们执行的每一个查询的开始都获得一个新鲜
+    的快照。
+   </P
+><DIV
+CLASS="NOTE"
+><BLOCKQUOTE
+CLASS="NOTE"
+><P
+><B
+>&#27880;&#24847;: </B
+>     用 C 编写的函数按照它们自己需要的方式管理快照，但是通常最好
+     让 C 函数也按照上面的方式来。
+    </P
+></BLOCKQUOTE
+></DIV
+><P
+>    由于这种快照行为，一个只包含<TT
+CLASS="COMMAND"
+>SELECT</TT
+>命令的函数可以被
+    安全地标记为<TT
+CLASS="LITERAL"
+>STABLE</TT
+>，即便它选择的表可能正在被并发查询所
+    修改。<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>将使用为调用查询所
+    建立的快照来执行<TT
+CLASS="LITERAL"
+>STABLE</TT
+>函数中的所有命令，因此它将在整个
+    查询期间看到一种数据库的固定视图。
+   </P
+><P
+>    对<TT
+CLASS="LITERAL"
+>IMMUTABLE</TT
+>函数中的<TT
+CLASS="COMMAND"
+>SELECT</TT
+>使用了相同
+    的快照行为。通常在一个<TT
+CLASS="LITERAL"
+>IMMUTABLE</TT
+>函数中从数据库表选择是
+    不明智的，因为如果表内容变化就会破坏不变性。不过，
+    <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>不会强制不让你这样做。
+   </P
+><P
+>    一种常见的错误是当一个函数的结果依赖于一个配置参数时把它标记为
+    <TT
+CLASS="LITERAL"
+>IMMUTABLE</TT
+>。例如，一个操纵时间戳的函数有可能结果
+    依赖于<A
+HREF="runtime-config-client.html#GUC-TIMEZONE"
+>TimeZone</A
+>设置。为了安全起见，这类
+    函数应该被标记为<TT
+CLASS="LITERAL"
+>STABLE</TT
+>。
+   </P
+><DIV
+CLASS="NOTE"
+><BLOCKQUOTE
+CLASS="NOTE"
+><P
+><B
+>&#27880;&#24847;: </B
+>     <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>要求<TT
+CLASS="LITERAL"
+>STABLE</TT
+>
+     和<TT
+CLASS="LITERAL"
+>IMMUTABLE</TT
+>函数中不包含非<TT
+CLASS="COMMAND"
+>SELECT</TT
+>
+     的 SQL 命令以阻止数据修改（这也不是完全万无一失，因为这类函数还可以
+     调用修改数据库的<TT
+CLASS="LITERAL"
+>VOLATILE</TT
+>函数。如果那样做，你将发现
+     该<TT
+CLASS="LITERAL"
+>STABLE</TT
+>或<TT
+CLASS="LITERAL"
+>IMMUTABLE</TT
+>函数不会发现由被调
+     用函数所作的数据库改变，因为它们对它的快照不可见）。
+    </P
+></BLOCKQUOTE
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="xfunc-overload.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="xfunc-pl.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>函数重载</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="extend.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>过程语言函数</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

@@ -1,0 +1,293 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>表基础</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="数据定义"
+HREF="ddl.html"><LINK
+REL="PREVIOUS"
+TITLE="数据定义"
+HREF="ddl.html"><LINK
+REL="NEXT"
+TITLE="默认值"
+HREF="ddl-default.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/ddl.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="数据定义"
+HREF="ddl.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="ddl.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#31456; 5. 数据定义</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="默认值"
+HREF="ddl-default.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="DDL-BASICS"
+>5.1. 表基础</A
+></H1
+><P
+>   关系型数据库中的一个表非常像纸上的一张表：它由行和列组成。列的数量和顺序是固定的，并且每一列拥有一个名字。行的数目是变化的，它反映了在一个给定时刻表中存储的数据量。SQL并不保证表中行的顺序。当一个表被读取时，表中的行将以非特定顺序出现，除非明确地指定需要排序。这些将在<A
+HREF="queries.html"
+>第 7 &#31456;</A
+>介绍。此外，SQL不会为行分配唯一的标识符，因此在一个表中可能会存在一些完全相同的行。这是SQL之下的数学模型导致的结果，但并不是所期望的。稍后在本章中我们将看到如何处理这种问题。
+  </P
+><P
+>   每一列都有一个数据类型。数据类型约束着一组可以分配给列的可能值，并且它为列中存储的数据赋予了语义，这样它可以用于计算。例如，一个被声明为数字类型的列将不会接受任何文本串，而存储在这样一列中的数据可以用来进行数学计算。反过来，一个被声明为字符串类型的列将接受几乎任何一种的数据，它可以进行如字符串连接的操作但不允许进行数学计算。
+  </P
+><P
+>   <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>包括了相当多的内建数据类型，可以适用于很多应用。用户也可以定义他们自己的数据类型。大部分内建数据类型有着显而易见的名称和语义，所以我们将它们的详细解释放在<A
+HREF="datatype.html"
+>第 8 &#31456;</A
+>中。一些常用的数据类型是：用于整数的<TT
+CLASS="TYPE"
+>integer</TT
+>；可以用于分数的<TT
+CLASS="TYPE"
+>numeric</TT
+>；用于字符串的<TT
+CLASS="TYPE"
+>text</TT
+>，用于日期的<TT
+CLASS="TYPE"
+>date</TT
+>，用于一天内时间的<TT
+CLASS="TYPE"
+>time</TT
+>以及可以同时包含日期和时间的<TT
+CLASS="TYPE"
+>timestamp</TT
+>。
+  </P
+><P
+>   要创建一个表，我们要用到<A
+HREF="sql-createtable.html"
+>CREATE TABLE</A
+>命令。在这个命令中 我们需要为新表至少指定一个名字、列的名字及数据类型。例如：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>CREATE TABLE my_first_table (
+    first_column text,
+    second_column integer
+);</PRE
+><P>
+   这将创建一个名为<TT
+CLASS="LITERAL"
+>my_first_table</TT
+>的表，它拥有两个列。第一个列名为<TT
+CLASS="LITERAL"
+>first_column</TT
+>且数据类型为<TT
+CLASS="TYPE"
+>text</TT
+>；第二个列名为<TT
+CLASS="LITERAL"
+>second_column</TT
+>且数据类型为<TT
+CLASS="TYPE"
+>integer</TT
+>。表和列的名字遵循<A
+HREF="sql-syntax-lexical.html#SQL-SYNTAX-IDENTIFIERS"
+>第 4.1.1 &#33410;</A
+>中解释的标识符语法。类型名称通常也是标识符，但是也有些例外。注意列的列表由逗号分隔并被圆括号包围。
+  </P
+><P
+>   当然，前面的例子是非常不自然的。通常，我们为表和列赋予的名称都会表明它们存储着什么类别的数据。因此让我们再看一个更现实的例子：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>CREATE TABLE products (
+    product_no integer,
+    name text,
+    price numeric
+);</PRE
+><P>
+   （<TT
+CLASS="TYPE"
+>numeric</TT
+>类型能够存储小数部分，典型的例子是金额。）
+  </P
+><DIV
+CLASS="TIP"
+><BLOCKQUOTE
+CLASS="TIP"
+><P
+><B
+>&#25552;&#31034;: </B
+>    当我们创建很多相关的表时，最好为表和列选择一致的命名模式。例如，一种选择是用单数或复数名词作为表名，每一种都受到一些理论家支持。
+   </P
+></BLOCKQUOTE
+></DIV
+><P
+>   一个表能够拥有的列的数据是有限的，根据列的类型，这个限制介于250和1600之间。但是，极少会定义一个接近这个限制的表，即便有也是一个值的商榷的设计。
+  </P
+><P
+>   如果我们不再需要一个表，我们可以通过使用<A
+HREF="sql-droptable.html"
+>DROP TABLE</A
+>命令来移除它。例如：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>DROP TABLE my_first_table;
+DROP TABLE products;</PRE
+><P>
+   尝试移除一个不存在的表会引起错误。然而，在SQL脚本中在创建每个表之前无条件地尝试移除它的做法是很常见的，即使发生错误也会忽略之，因此这样的脚本可以在表存在和不存在时都工作得很好（如果你喜欢，可以使用<TT
+CLASS="LITERAL"
+>DROP TABLE IF EXISTS</TT
+>变体来防止出现错误消息，但这并非标准SQL）。
+  </P
+><P
+>   如果我们需要修改一个已经存在的表，请参考本章稍后的<A
+HREF="ddl-alter.html"
+>第 5.5 &#33410;</A
+>。
+  </P
+><P
+>   利用到目前为止所讨论的工具，我们可以创建一个全功能的表。本章的后续部分将集中于为表定义增加特性来保证数据完整性、安全性或方便。如果你希望现在就去填充你的表，你可以跳过这些直接去<A
+HREF="dml.html"
+>第 6 &#31456;</A
+>。
+  </P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="ddl.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="ddl-default.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>数据定义</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="ddl.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>默认值</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

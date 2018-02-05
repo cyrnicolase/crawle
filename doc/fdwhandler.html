@@ -1,0 +1,286 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>编写一个外部数据包装器</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="内部"
+HREF="internals.html"><LINK
+REL="PREVIOUS"
+TITLE="编写一个过程语言处理器"
+HREF="plhandler.html"><LINK
+REL="NEXT"
+TITLE="外部数据包装器函数"
+HREF="fdw-functions.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="CHAPTER"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/fdwhandler.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="编写一个过程语言处理器"
+HREF="plhandler.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="internals.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="外部数据包装器函数"
+HREF="fdw-functions.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="CHAPTER"
+><H1
+><A
+NAME="FDWHANDLER"
+></A
+>&#31456; 55. 编写一个外部数据包装器</H1
+><DIV
+CLASS="TOC"
+><DL
+><DT
+><B
+>&#30446;&#24405;</B
+></DT
+><DT
+>55.1. <A
+HREF="fdw-functions.html"
+>外部数据包装器函数</A
+></DT
+><DT
+>55.2. <A
+HREF="fdw-callbacks.html"
+>外部数据包装器回调例程</A
+></DT
+><DD
+><DL
+><DT
+>55.2.1. <A
+HREF="fdw-callbacks.html#FDW-CALLBACKS-SCAN"
+>用于扫描外部表的FDW例程</A
+></DT
+><DT
+>55.2.2. <A
+HREF="fdw-callbacks.html#FDW-CALLBACKS-JOIN-SCAN"
+>用于扫描外部连接的 FDW 例程</A
+></DT
+><DT
+>55.2.3. <A
+HREF="fdw-callbacks.html#FDW-CALLBACKS-UPPER-PLANNING"
+>用于规划扫描/连接后处理的 FDW 例程</A
+></DT
+><DT
+>55.2.4. <A
+HREF="fdw-callbacks.html#FDW-CALLBACKS-UPDATE"
+>更新外部表的FDW例程</A
+></DT
+><DT
+>55.2.5. <A
+HREF="fdw-callbacks.html#FDW-CALLBACKS-ROW-LOCKING"
+>用于行锁定的 FDW 例程</A
+></DT
+><DT
+>55.2.6. <A
+HREF="fdw-callbacks.html#FDW-CALLBACKS-EXPLAIN"
+><TT
+CLASS="COMMAND"
+>EXPLAIN</TT
+>的FDW例程</A
+></DT
+><DT
+>55.2.7. <A
+HREF="fdw-callbacks.html#FDW-CALLBACKS-ANALYZE"
+><TT
+CLASS="COMMAND"
+>ANALYZE</TT
+>的FDW例程</A
+></DT
+><DT
+>55.2.8. <A
+HREF="fdw-callbacks.html#FDW-CALLBACKS-IMPORT"
+><TT
+CLASS="COMMAND"
+>IMPORT FOREIGN SCHEMA</TT
+>的 FDW 例程</A
+></DT
+><DT
+>55.2.9. <A
+HREF="fdw-callbacks.html#FDW-CALLBACKS-PARALLEL"
+>并行执行的 FDW 例程</A
+></DT
+></DL
+></DD
+><DT
+>55.3. <A
+HREF="fdw-helpers.html"
+>外部数据包装器助手函数</A
+></DT
+><DT
+>55.4. <A
+HREF="fdw-planning.html"
+>外部数据包装器查询规划</A
+></DT
+><DT
+>55.5. <A
+HREF="fdw-row-locking.html"
+>外部数据包装器中的行锁定</A
+></DT
+></DL
+></DIV
+><P
+>    所有在一个外部表上的操作都通过它的外部数据包装器来处理，外部数据包装器由一组被核心服务器调用的函数组成。外部数据包装器负责从远程数据源取得数据并把它返回给<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>执行器。如果要支持更新外部表，包装器也需要处理更新。本章将介绍如何编写一个新的外部数据包装器。
+   </P
+><P
+>    在你试图编写你自己的外部数据包装器时，包含在标准发布中的外部数据包装器会是很好的参考。请看看源代码树的<TT
+CLASS="FILENAME"
+>contrib</TT
+>子目录。<A
+HREF="sql-createforeigndatawrapper.html"
+>CREATE FOREIGN DATA WRAPPER</A
+>参考页也会有很多有用的细节。
+   </P
+><DIV
+CLASS="NOTE"
+><BLOCKQUOTE
+CLASS="NOTE"
+><P
+><B
+>&#27880;&#24847;: </B
+>     SQL 标准声明了一个接口用来编写外部数据包装器。但是，PostgreSQL 没有实现该 API，因为将其纳入到 PostgreSQL 中的工作量将会很大，并且标准的 API 并没有得到广泛地采用。
+    </P
+></BLOCKQUOTE
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="plhandler.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="fdw-functions.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>编写一个过程语言处理器</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="internals.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>外部数据包装器函数</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

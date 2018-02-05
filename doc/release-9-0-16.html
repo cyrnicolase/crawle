@@ -1,0 +1,674 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>版本 9.0.16</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="版本说明"
+HREF="release.html"><LINK
+REL="PREVIOUS"
+TITLE="版本 9.0.17"
+HREF="release-9-0-17.html"><LINK
+REL="NEXT"
+TITLE="版本 9.0.15"
+HREF="release-9-0-15.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/release-9.0.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="版本 9.0.17"
+HREF="release-9-0-17.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="release.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#38468;&#24405; E. 版本说明</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="版本 9.0.15"
+HREF="release-9-0-15.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="RELEASE-9-0-16"
+>E.82. 版本 9.0.16</A
+></H1
+><DIV
+CLASS="NOTE"
+><BLOCKQUOTE
+CLASS="NOTE"
+><P
+><B
+>发布日期: </B
+>2014-02-20</P
+></BLOCKQUOTE
+></DIV
+><P
+>这个版本包含各种自9.0.15以来的修复。想要获得关于9.0主版本的新特性信息，
+请参阅<A
+HREF="release-9-0.html"
+>第 E.98 &#33410;</A
+>。</P
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN149323"
+>E.82.1. 迁移到版本 9.0.16</A
+></H2
+><P
+>运行9.0.X的系统不需要转储/恢复。</P
+><P
+>不过，如果你是从一个早于9.0.15的版本升级而来，
+请参阅<A
+HREF="release-9-0-15.html"
+>第 E.83 &#33410;</A
+>。</P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN149328"
+>E.82.2. 修改列表</A
+></H2
+><P
+></P
+><UL
+><LI
+><P
+>支持<TT
+CLASS="LITERAL"
+>GRANT ... WITH ADMIN OPTION</TT
+>限制 (Noah Misch)</P
+><P
+>期望允许没有<TT
+CLASS="LITERAL"
+>ADMIN OPTION</TT
+>的规则阻止接受者添加或删除授予者的成员，
+但是这个限制很容易通过首先执行<TT
+CLASS="LITERAL"
+>SET ROLE</TT
+>绕过。
+主要的安全影响是一个角色成员可以撤销其他成员的访问权限，
+违反他的授予者的意愿。较少关心的是添加未经批准的角色成员，
+因为不合作的角色成员可以通过创建视图或<TT
+CLASS="LITERAL"
+>SECURITY DEFINER</TT
+>
+函数提供他的大多数权限给其他成员。 (CVE-2014-0060)</P
+></LI
+><LI
+><P
+>阻止通过手动调用PL验证器函数提升权限 (Andres Freund)</P
+><P
+>PL验证器函数的主要作用是在<TT
+CLASS="COMMAND"
+>CREATE FUNCTION</TT
+>期间隐式的调用，
+但是它们也是用户可以明确调用的普通SQL函数。在以其他语言写的函数上调用验证器，
+是不会检查的，并且可以利用来提升权限。
+该修复包括在每个验证器函数中添加权限检查函数的调用。
+非核心程序语言（如果有）也需要在它们自己的验证器函数中做此改变。
+      (CVE-2014-0061)</P
+></LI
+><LI
+><P
+>在表和索引DDL期间，避免查找多个名称 (Robert Haas, Andres Freund)</P
+><P
+>如果名称查找由于并发活动获得不同的结果，我们可能在不同的表上执行DDL的一部分。
+至少在<TT
+CLASS="COMMAND"
+>CREATE INDEX</TT
+>的情况下，这会导致检查不同表的权限，
+而不是创建索引的那个表，允许权限提升攻击。 (CVE-2014-0062)</P
+></LI
+><LI
+><P
+>阻止长的日期时间字符串缓冲器溢出 (Noah Misch)</P
+><P
+><TT
+CLASS="LITERAL"
+>MAXDATELEN</TT
+>常量对于类型<TT
+CLASS="TYPE"
+>interval</TT
+>的最长可能值来说太小，
+允许在<CODE
+CLASS="FUNCTION"
+>interval_out()</CODE
+>中缓冲区溢出。
+尽管日期时间输入函数非常小心的避免缓冲区溢出，但是限制太小，
+导致它们阻止了一些有效的输入，比如包含非常长时区名的输入。
+<SPAN
+CLASS="APPLICATION"
+>ecpg</SPAN
+>库包含这些还有一些它自己的缺陷。 (CVE-2014-0063)</P
+></LI
+><LI
+><P
+>阻止由于整数大小计算溢出引起的缓冲器溢出 (Noah Misch, Heikki Linnakangas)</P
+><P
+>几个函数，大多数是类型输入函数，计算分配尺寸但不检查溢出。
+如果确实发生了溢出，那么将分配一个很小的缓冲区然后写成是过去。
+      (CVE-2014-0064)</P
+></LI
+><LI
+><P
+>阻止固定大小的缓冲区超支 (Peter Eisentraut, Jozef Mlich)</P
+><P
+>使用<CODE
+CLASS="FUNCTION"
+>strlcpy()</CODE
+>和相关的函数提供一个清楚的保证，
+保证固定大小的缓冲区不会超支。不像之前的条款，
+这些情况是否真正代表实际问题还不清楚，因为在大多数情况下，
+这看起来像是以前在输入字符串大小上的约束。
+尽管如此，还是要谨慎的压制所有这些类型的Coverity警告。
+      (CVE-2014-0065)</P
+></LI
+><LI
+><P
+>避免<CODE
+CLASS="FUNCTION"
+>crypt()</CODE
+>返回NULL时的崩溃 (Honza Horak,
+      Bruce Momjian)</P
+><P
+>有相对来说比较少的情况<CODE
+CLASS="FUNCTION"
+>crypt()</CODE
+>会返回NULL，
+但是如果发生这种情况，<TT
+CLASS="FILENAME"
+>contrib/chkpass</TT
+>会崩溃。
+这是一个问题的一个实际情况是，<SPAN
+CLASS="APPLICATION"
+>libc</SPAN
+>
+配置为拒绝执行未经批准的哈希算法（比如<SPAN
+CLASS="QUOTE"
+>"FIPS mode"</SPAN
+>）。
+      (CVE-2014-0066)</P
+></LI
+><LI
+><P
+>在回归测试说明中记录<TT
+CLASS="LITERAL"
+>make check</TT
+>的风险 (Noah Misch, Tom Lane)</P
+><P
+>因为<TT
+CLASS="LITERAL"
+>make check</TT
+>启动的临时服务器使用<SPAN
+CLASS="QUOTE"
+>"trust"</SPAN
+>认证，
+同一个机器上的另一个用户可以作为数据库超级用户连接到它，
+然后潜在的利用启动该测试的操作系统用户的权限。
+未来的版本可能会在测试程序中合并此修改，以阻止这个风险，
+但是首先需要公开讨论。所以现在为止，只是在同一个机器上有不受信任的用户时，
+警告用户不要使用<TT
+CLASS="LITERAL"
+>make check</TT
+>。 (CVE-2014-0067)</P
+></LI
+><LI
+><P
+>修复一些关系的某些段不是全尺寸时可能的WAL记录的错误重放 (Greg Stark, Tom Lane)</P
+><P
+>WAL更新可能会应用到错误的页面，超出它应该做的好多页面。
+除了会损坏数据，这个错误还会导致备用服务器很大的<SPAN
+CLASS="QUOTE"
+>"膨胀"</SPAN
+>，
+因为应用的更新远远超出了文件的末尾。
+这个失败在崩溃恢复时看起来不是重要的风险，
+仅在初始化同步一个由快速改变的主服务器所做的基础备份创建的备用服务器时很重要。</P
+></LI
+><LI
+><P
+>修复bug，测定恢复何时达到一致 (Tomonari Katsumata, Heikki Linnakangas)</P
+><P
+>在某些情况下，WAL重放会错误的推断数据库在重放开始的时候就已经达到了一致，
+因此可能在数据库真正达到一致之前就允许热备份查询。
+其他情况比如<SPAN
+CLASS="QUOTE"
+>"PANIC: WAL contains references to invalid
+      pages"</SPAN
+>也是有可能的。</P
+></LI
+><LI
+><P
+>修复在热备份模式重放<TT
+CLASS="LITERAL"
+>VACUUM</TT
+>操作时不正确的锁定btree索引页
+ (Andres Freund, Heikki Linnakangas, Tom Lane)</P
+><P
+>这个错误会导致<SPAN
+CLASS="QUOTE"
+>"PANIC: WAL contains references to
+      invalid pages"</SPAN
+>失败。</P
+></LI
+><LI
+><P
+>确保插入到非叶子GIN索引页在适当时写一个全页面WAL记录 (Heikki Linnakangas)</P
+><P
+>以前的代码在系统崩溃期间如果部分页写入会有索引损坏风险。</P
+></LI
+><LI
+><P
+>修复服务器进程退出期间的竞态条件 (Robert Haas)</P
+><P
+>确保信号句柄在进程的<TT
+CLASS="VARNAME"
+>MyProc</TT
+>指针无效后不再尝试使用它。</P
+></LI
+><LI
+><P
+>修复错误报告逻辑中<TT
+CLASS="VARNAME"
+>errno</TT
+>的不安全的引用 (Christian Kruse)</P
+><P
+>这通常会导致奇怪的行为，比如丢失或不适当的<TT
+CLASS="LITERAL"
+>HINT</TT
+>字段。</P
+></LI
+><LI
+><P
+>修复在服务器启动期间过早的使用<CODE
+CLASS="FUNCTION"
+>ereport()</CODE
+>时可能的崩溃 (Tom Lane)</P
+><P
+>如果服务器是在它没有权限读取的目录中启动，我们实际中看到的主要情况就是崩溃。</P
+></LI
+><LI
+><P
+>正确的清除OpenSSL套接字写函数中的重写标志 (Alexander Kukushkin)</P
+><P
+>这个疏忽会导致在意外丢失SSL加密的连接之后锁定服务器。</P
+></LI
+><LI
+><P
+>修复包含逃逸的Unicode标识符（<TT
+CLASS="LITERAL"
+>U&amp;"..."</TT
+>语法）长度检查 (Tom Lane)</P
+><P
+>如果标识符的逃逸形式过长，那么会为这样的标识符打印一个虚假的截断警告，
+但是该标识符实际上在解逃逸之后并不需要截断。</P
+></LI
+><LI
+><P
+>允许类型名关键字在角色列表中使用 (Stephen Frost)</P
+><P
+>以前的一个补丁允许不加引号就使用这样关键字，比如角色标识符；
+但是它漏掉了允许角色标识符列表的情况，比如<TT
+CLASS="LITERAL"
+>DROP ROLE</TT
+>。</P
+></LI
+><LI
+><P
+>修复由于嵌套子查询的无效规划而引起的可能崩溃，比如
+<TT
+CLASS="LITERAL"
+>WHERE (... x IN (SELECT ...) ...) IN (SELECT ...)</TT
+> (Tom Lane)</P
+></LI
+><LI
+><P
+>确保<TT
+CLASS="COMMAND"
+>ANALYZE</TT
+>为表字段创建统计，即使它里面的所有值都
+<SPAN
+CLASS="QUOTE"
+>"太宽"</SPAN
+> (Tom Lane)</P
+><P
+><TT
+CLASS="COMMAND"
+>ANALYZE</TT
+>在直方图和大部分普通数值计算中故意忽略非常宽的值，
+但它忽略了所有采样都太宽时要怎样做。</P
+></LI
+><LI
+><P
+>在<TT
+CLASS="LITERAL"
+>ALTER TABLE ... SET TABLESPACE</TT
+>中，
+允许不经权限检查就使用数据库的缺省表空间 (Stephen Frost)</P
+><P
+><TT
+CLASS="LITERAL"
+>CREATE TABLE</TT
+>总是允许这样使用，但是
+<TT
+CLASS="LITERAL"
+>ALTER TABLE</TT
+>不行。</P
+></LI
+><LI
+><P
+>修复<TT
+CLASS="LITERAL"
+>CASE</TT
+>的一些分支返回集合而其他分支不返回集合时
+<SPAN
+CLASS="QUOTE"
+>"cannot accept a set"</SPAN
+>错误 (Tom Lane)</P
+></LI
+><LI
+><P
+>修复pgstat函数中对所有零客户端地址的检查 (Kevin Grittner)</P
+></LI
+><LI
+><P
+>修复文本搜索解析器可能的对多字节字符的误分类 (Tom Lane)</P
+><P
+>在使用C环境多字节编码时，非ASCII字符可能会被误分类。
+在Cygwin上，非C环境也会失败。</P
+></LI
+><LI
+><P
+>修复<CODE
+CLASS="FUNCTION"
+>plainto_tsquery()</CODE
+>中可能的错误行为 (Heikki Linnakangas)</P
+><P
+>使用<CODE
+CLASS="FUNCTION"
+>memmove()</CODE
+>而不是<CODE
+CLASS="FUNCTION"
+>memcpy()</CODE
+>拷贝重叠的内存区。
+没有实际报告过它实际引起问题，但是它确实有风险。</P
+></LI
+><LI
+><P
+>为了环境检查，接受<TT
+CLASS="LITERAL"
+>SHIFT_JIS</TT
+>作为编码名 (Tatsuo Ishii)</P
+></LI
+><LI
+><P
+>修复Windows上<CODE
+CLASS="FUNCTION"
+>PQhost()</CODE
+>的错误行为 (Fujii Masao)</P
+><P
+>如果没有指定主机，那么它应该返回<TT
+CLASS="LITERAL"
+>localhost</TT
+>。</P
+></LI
+><LI
+><P
+>改善<SPAN
+CLASS="APPLICATION"
+>libpq</SPAN
+>和<SPAN
+CLASS="APPLICATION"
+>psql</SPAN
+>中的错误处理，
+因为在<TT
+CLASS="LITERAL"
+>COPY TO STDOUT/FROM STDIN</TT
+>期间的失败 (Tom Lane)</P
+><P
+>特别是，它修复了服务器连接在<TT
+CLASS="LITERAL"
+>COPY FROM STDIN</TT
+>期间丢失时，
+在9.2及更高版本中可能发生的一个无限循环。
+在较老的版本或其他客户端应用中可能会有这种情况的变体。</P
+></LI
+><LI
+><P
+>修复<SPAN
+CLASS="APPLICATION"
+>ecpg</SPAN
+>中不一致的描述符 (MauMau)</P
+></LI
+><LI
+><P
+>在<SPAN
+CLASS="APPLICATION"
+>ecpg</SPAN
+>中，正确的处理连接参数中缺少主机名 (Michael Meskes)</P
+></LI
+><LI
+><P
+>修复<TT
+CLASS="FILENAME"
+>contrib/dblink</TT
+>连接启动中的性能退化 (Joe Conway)</P
+><P
+>避免客户端和服务器编码匹配时不必要的往返交互。</P
+></LI
+><LI
+><P
+>在<TT
+CLASS="FILENAME"
+>contrib/isn</TT
+>中，修复ISMN值检查数位的不正确计算 (Fabien Coelho)</P
+></LI
+><LI
+><P
+>确保仅客户端的代码安装程序像记录的那样运行 (Peter Eisentraut)</P
+></LI
+><LI
+><P
+>在Mingw和Cygwin建立中，在<TT
+CLASS="FILENAME"
+>bin</TT
+>目录中安装
+<SPAN
+CLASS="APPLICATION"
+>libpq</SPAN
+> DLL (Andrew Dunstan)</P
+><P
+>这复制了MSVC建立已经做过的做法。它修复了像<SPAN
+CLASS="APPLICATION"
+>psql</SPAN
+>
+因为未找到DDL而未能启动的程序问题。</P
+></LI
+><LI
+><P
+>避免在Cygwin建立中使用已经废弃的<TT
+CLASS="LITERAL"
+>dllwrap</TT
+>工具 (Marco Atzeri)</P
+></LI
+><LI
+><P
+>不要生成纯文本<TT
+CLASS="FILENAME"
+>HISTORY</TT
+>和<TT
+CLASS="FILENAME"
+>src/test/regress/README</TT
+>文件 (Tom Lane)</P
+><P
+>这些文本文件复制了主要的HTML和PDF文档格式。
+问题在于维护它们的成本远远超过了维护纯文本格式。
+分布的原始码仍然包含这些名字的文件，但是它们将只是指导读者咨询主文档。
+将仍然维护纯文本<TT
+CLASS="FILENAME"
+>INSTALL</TT
+>文件，因为还有一个可能的用例。</P
+></LI
+><LI
+><P
+>更新时区数据文件到<SPAN
+CLASS="APPLICATION"
+>tzdata</SPAN
+>版本2013i，
+因为DST规律在Jordan发生了改变，还有Cuba的历史修改。</P
+><P
+>另外，时区<TT
+CLASS="LITERAL"
+>Asia/Riyadh87</TT
+>、<TT
+CLASS="LITERAL"
+>Asia/Riyadh88</TT
+>
+和<TT
+CLASS="LITERAL"
+>Asia/Riyadh89</TT
+>已经删除了，因为IANA已经不维护它们了，
+并且也不再代表实际民用计时了。</P
+></LI
+></UL
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="release-9-0-17.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="release-9-0-15.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>版本 9.0.17</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="release.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>版本 9.0.15</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

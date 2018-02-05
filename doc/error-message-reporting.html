@@ -1,0 +1,699 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>在服务器中报告错误</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="PostgreSQL编码习惯"
+HREF="source.html"><LINK
+REL="PREVIOUS"
+TITLE="格式化"
+HREF="source-format.html"><LINK
+REL="NEXT"
+TITLE="错误消息风格指导"
+HREF="error-style-guide.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/sources.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="格式化"
+HREF="source-format.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="source.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#31456; 52. PostgreSQL编码习惯</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="错误消息风格指导"
+HREF="error-style-guide.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="ERROR-MESSAGE-REPORTING"
+>52.2. 在服务器中报告错误</A
+></H1
+><P
+>    服务器代码内产生的错误、警告和日志消息应该使用<CODE
+CLASS="FUNCTION"
+>ereport</CODE
+>或者更老的<CODE
+CLASS="FUNCTION"
+>elog</CODE
+>生成。这个函数的使用有些复杂，因此有必要做一些解释。
+   </P
+><P
+>    对于每一个消息都有两个必要的元素：一个严重性级别（从<TT
+CLASS="LITERAL"
+>DEBUG</TT
+>到<TT
+CLASS="LITERAL"
+>PANIC</TT
+>）和一个主消息文本。此外还有一些可选元素，其中最常见的是一个遵守 SQL 规范中 SQLSTATE 习惯的错误标识符代码。<CODE
+CLASS="FUNCTION"
+>ereport</CODE
+>本身只是一个 shell 函数，它的存在主要是为了在语法习惯上让消息的产生更像 C 源代码中的函数调用而已。<CODE
+CLASS="FUNCTION"
+>ereport</CODE
+>直接接受的唯一参数是严重性级别。主消息文本和任何其他可选消息元素通过在<CODE
+CLASS="FUNCTION"
+>ereport</CODE
+>调用中使用辅助函数产生，例如<CODE
+CLASS="FUNCTION"
+>errmsg</CODE
+>。
+   </P
+><P
+>    对于<CODE
+CLASS="FUNCTION"
+>ereport</CODE
+>的一次典型调用可能看起来像：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>ereport(ERROR,
+        (errcode(ERRCODE_DIVISION_BY_ZERO),
+         errmsg("division by zero")));</PRE
+><P>
+    这会指定错误严重性级别为<TT
+CLASS="LITERAL"
+>ERROR</TT
+>（一个普通错误）。<CODE
+CLASS="FUNCTION"
+>errcode</CODE
+>调用使用<TT
+CLASS="FILENAME"
+>src/include/utils/errcodes.h</TT
+>中定义的一个宏指定 SQLSTATE 错误代码。<CODE
+CLASS="FUNCTION"
+>errmsg</CODE
+>调用提供主消息文本。注意辅助函数调用周围的额外圆括号 &mdash; 它们虽然很烦人但是在语法上是必需的。
+   </P
+><P
+>    这里有一个更复杂的例子：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>ereport(ERROR,
+        (errcode(ERRCODE_AMBIGUOUS_FUNCTION),
+         errmsg("function %s is not unique",
+                func_signature_string(funcname, nargs,
+                                      NIL, actual_arg_types)),
+         errhint("Unable to choose a best candidate function. "
+                 "You might need to add explicit typecasts.")));</PRE
+><P>
+    这展示了使用格式代码把运行时值嵌入到一个消息文本中的方法，其中还提供了一个可选的<SPAN
+CLASS="QUOTE"
+>"hint"</SPAN
+>消息。
+   </P
+><P
+>    如果严重级别是<TT
+CLASS="LITERAL"
+>ERROR</TT
+>或更高，<CODE
+CLASS="FUNCTION"
+>ereport</CODE
+>
+    会中止用户定义函数的执行并且不会返回到调用者。如果严重级别低于
+    <TT
+CLASS="LITERAL"
+>ERROR</TT
+>，<CODE
+CLASS="FUNCTION"
+>ereport</CODE
+>会正常返回。
+   </P
+><P
+>    <CODE
+CLASS="FUNCTION"
+>ereport</CODE
+>可用的辅助例程是：
+  <P
+></P
+></P><UL
+><LI
+><P
+>     <CODE
+CLASS="FUNCTION"
+>errcode(sqlerrcode)</CODE
+>指定对于该情况的 SQLSTATE 错误标识符代码。如果没有调用这个例程，错误严重性级别是<TT
+CLASS="LITERAL"
+>ERROR</TT
+>或更高时错误标识符会默认成<TT
+CLASS="LITERAL"
+>ERRCODE_INTERNAL_ERROR</TT
+>，错误级别是<TT
+CLASS="LITERAL"
+>WARNING</TT
+>时标识符为<TT
+CLASS="LITERAL"
+>ERRCODE_WARNING</TT
+>，否则（对于<TT
+CLASS="LITERAL"
+>NOTICE</TT
+>及以下的级别）标识符会被设置为<TT
+CLASS="LITERAL"
+>ERRCODE_SUCCESSFUL_COMPLETION</TT
+>。虽然这些默认值常常很方便，在忽略<CODE
+CLASS="FUNCTION"
+>errcode()</CODE
+>调用之前请总是思考一下它们是否合适。
+    </P
+></LI
+><LI
+><P
+>     <CODE
+CLASS="FUNCTION"
+>errmsg(const char *msg, ...)</CODE
+>指定主错误消息文本，以及需要插入其中的运行时值。这种插入以<CODE
+CLASS="FUNCTION"
+>sprintf</CODE
+>-风格的格式代码指定。除了<CODE
+CLASS="FUNCTION"
+>sprintf</CODE
+>接受的标准格式代码，格式代码<TT
+CLASS="LITERAL"
+>%m</TT
+>可以用来插入由<CODE
+CLASS="FUNCTION"
+>strerror</CODE
+>为<TT
+CLASS="LITERAL"
+>errno</TT
+>的当前值返回的错误消息。
+     <A
+NAME="AEN114570"
+HREF="#FTN.AEN114570"
+><SPAN
+CLASS="footnote"
+>[1]</SPAN
+></A
+>
+     <TT
+CLASS="LITERAL"
+>%m</TT
+>不要求<CODE
+CLASS="FUNCTION"
+>errmsg</CODE
+>参数列表中的任何对应项。注意在格式代码被处理之前，消息字符串将通过<CODE
+CLASS="FUNCTION"
+>gettext</CODE
+>来进行可能的本地化。
+    </P
+></LI
+><LI
+><P
+>     <CODE
+CLASS="FUNCTION"
+>errmsg_internal(const char *msg, ...)</CODE
+>与<CODE
+CLASS="FUNCTION"
+>errmsg</CODE
+>相同，不过消息串将不会被翻译，也不会被包括在国际化的消息字典中。这不应该被用于<SPAN
+CLASS="QUOTE"
+>"不能发生"</SPAN
+>的情况中，因为那些情况下不值得花费精力去做翻译。
+    </P
+></LI
+><LI
+><P
+>     <CODE
+CLASS="FUNCTION"
+>errmsg_plural(const char *fmt_singular, const char *fmt_plural,
+     unsigned long n, ...)</CODE
+>很像<CODE
+CLASS="FUNCTION"
+>errmsg</CODE
+>，但是支持消息的多种复数形式。<TT
+CLASS="REPLACEABLE"
+><I
+>fmt_singular</I
+></TT
+>是英语单数格式，<TT
+CLASS="REPLACEABLE"
+><I
+>fmt_plural</I
+></TT
+>是英语复数格式，<TT
+CLASS="REPLACEABLE"
+><I
+>n</I
+></TT
+>是决定需要何种复数形式的整数值，剩下的参数会被根据选中的格式字符串进行格式化。详见<A
+HREF="nls-programmer.html#NLS-GUIDELINES"
+>第 53.2.2 &#33410;</A
+>。
+    </P
+></LI
+><LI
+><P
+>     <CODE
+CLASS="FUNCTION"
+>errdetail(const char *msg, ...)</CODE
+>提供了一个可选的<SPAN
+CLASS="QUOTE"
+>"详情"</SPAN
+>消息，如果有额外的信息但不适合放在主消息中时就可以使用这种方式。消息字符串的处理与<CODE
+CLASS="FUNCTION"
+>errmsg</CODE
+>相同。
+    </P
+></LI
+><LI
+><P
+>     <CODE
+CLASS="FUNCTION"
+>errdetail_internal(const char *msg, ...)</CODE
+>与<CODE
+CLASS="FUNCTION"
+>errdetail</CODE
+>相同，不过消息串将不会被翻译，也不会被包括在国际化的消息字典中。这应该被用于不值得花费精力翻译的详情消息上，例如它们对大部分用户太过技术化而没什么用处。
+    </P
+></LI
+><LI
+><P
+>     <CODE
+CLASS="FUNCTION"
+>errdetail_plural(const char *fmt_singular, const char *fmt_plural,
+     unsigned long n, ...)</CODE
+>与<CODE
+CLASS="FUNCTION"
+>errdetail</CODE
+>相似，但是支持消息的多种复数形式。详见<A
+HREF="nls-programmer.html#NLS-GUIDELINES"
+>第 53.2.2 &#33410;</A
+>。
+    </P
+></LI
+><LI
+><P
+>     <CODE
+CLASS="FUNCTION"
+>errdetail_log(const char *msg, ...)</CODE
+>与<CODE
+CLASS="FUNCTION"
+>errdetail</CODE
+>相同，除了这个字符串只会进入服务器的日志而不会发往客户端。如果同时使用了<CODE
+CLASS="FUNCTION"
+>errdetail</CODE
+>（或者上述的一种等效函数）以及<CODE
+CLASS="FUNCTION"
+>errdetail_log</CODE
+>，那么一个字符串会被发往客户端而另一个会被发往日志。如果错误细节的安全性过于敏感或者体积过于庞大而不适合于发往客户端，这个函数就非常有用。
+    </P
+></LI
+><LI
+><P
+>     <CODE
+CLASS="FUNCTION"
+>errdetail_log_plural(const char *fmt_singular, const char
+     *fmt_plural, unsigned long n, ...)</CODE
+>与<CODE
+CLASS="FUNCTION"
+>errdetail_log</CODE
+>
+     相似，但是支持多种复数形式的消息。详见<A
+HREF="nls-programmer.html#NLS-GUIDELINES"
+>第 53.2.2 &#33410;</A
+>。
+    </P
+></LI
+><LI
+><P
+>     <CODE
+CLASS="FUNCTION"
+>errhint(const char *msg, ...)</CODE
+>提供一个可选的<SPAN
+CLASS="QUOTE"
+>"hint"</SPAN
+>消息，它被用来提供关于如何修复该问题的建议。该消息字符串以和<CODE
+CLASS="FUNCTION"
+>errmsg</CODE
+>相同的方式处理。
+    </P
+></LI
+><LI
+><P
+>     <CODE
+CLASS="FUNCTION"
+>errcontext(const char *msg, ...)</CODE
+>通常不会被直接从一个<CODE
+CLASS="FUNCTION"
+>ereport</CODE
+>消息站点调用，它被用在<TT
+CLASS="LITERAL"
+>error_context_stack</TT
+>回调函数中来提供错误发生的上下文，例如一个 PL 函数中的当前位置。该消息字符串以和<CODE
+CLASS="FUNCTION"
+>errmsg</CODE
+>相同的方式处理。不同于其他辅助函数，在每次<CODE
+CLASS="FUNCTION"
+>ereport</CODE
+>调用中可以多次调用这个函数，这样提供的连续的字符串将被用单独的新行串接在一起。
+    </P
+></LI
+><LI
+><P
+>     <CODE
+CLASS="FUNCTION"
+>errposition(int cursorpos)</CODE
+>指定一个查询字符串中错误的文本位置。当前，它只对查询处理的词法和语法分析阶段中检测到的错误有用。
+    </P
+></LI
+><LI
+><P
+>     <CODE
+CLASS="FUNCTION"
+>errtable(Relation rel)</CODE
+>指定一个关系，它的名称和模式名称应该被包括在错误报告中作为辅助域。
+    </P
+></LI
+><LI
+><P
+>     <CODE
+CLASS="FUNCTION"
+>errtablecol(Relation rel, int attnum)</CODE
+>指定一个列，它的名称、表名和模式名称应该被包括在错误报告中作为辅助域。
+    </P
+></LI
+><LI
+><P
+>     <CODE
+CLASS="FUNCTION"
+>errtableconstraint(Relation rel, const char *conname)</CODE
+>指定一个约束，它的名称、表名和模式名称应该被包括在错误报告中作为辅助域。索引应当为考虑成用于这种目的的约束，不管它们有没有一个相关联的<TT
+CLASS="STRUCTNAME"
+>pg_constraint</TT
+>项。要小心地以<TT
+CLASS="LITERAL"
+>rel</TT
+>传递底层堆关系而不是索引本身。
+    </P
+></LI
+><LI
+><P
+>     <CODE
+CLASS="FUNCTION"
+>errdatatype(Oid datatypeOid)</CODE
+>指定一个数据类型，它的名称和模式名称应该被包括在错误报告中作为辅助域。
+    </P
+></LI
+><LI
+><P
+>     <CODE
+CLASS="FUNCTION"
+>errdomainconstraint(Oid datatypeOid, const char *conname)</CODE
+>指定一个域约束，它的名称、域名和模式名称应该被包括在错误报告中作为辅助域。
+    </P
+></LI
+><LI
+><P
+>     <CODE
+CLASS="FUNCTION"
+>errcode_for_file_access()</CODE
+>是一个便捷函数，它可以在一个文件访问相关的系统调用中为一个失败选择一个合适的 SQLSTATE 错误标识符。它使用保存下来的<TT
+CLASS="LITERAL"
+>errno</TT
+>来决定要差生哪种错误代码。通常，应该把它和主错误消息文本中的<TT
+CLASS="LITERAL"
+>%m</TT
+>联合使用。
+    </P
+></LI
+><LI
+><P
+>     <CODE
+CLASS="FUNCTION"
+>errcode_for_socket_access()</CODE
+>是一个便捷函数，它可以在一个套接字相关的系统调用中为一个失败选择一个合适的 SQLSTATE 错误标识符。
+    </P
+></LI
+><LI
+><P
+>     <CODE
+CLASS="FUNCTION"
+>errhidestmt(bool hide_stmt)</CODE
+>可以被调用来指定 postmaster 日志中一个消息的<TT
+CLASS="LITERAL"
+>STATEMENT:</TT
+>部分的禁止。通常如果该消息文本已经包括当前语句这就是合适的。
+    </P
+></LI
+><LI
+><P
+>     可以调用<CODE
+CLASS="FUNCTION"
+>errhidecontext(bool hide_ctx)</CODE
+>来指示抑制 postmaster 日志中消息里的<TT
+CLASS="LITERAL"
+>CONTEXT:</TT
+>部分。这只应该被用于 verbose 模式的调试消息，这类消息中被重复包含的上下文信息会让日志容量膨胀得非常厉害。
+    </P
+></LI
+></UL
+><P>
+   </P
+><DIV
+CLASS="NOTE"
+><BLOCKQUOTE
+CLASS="NOTE"
+><P
+><B
+>&#27880;&#24847;: </B
+>     在一个<CODE
+CLASS="FUNCTION"
+>ereport</CODE
+>调用中，最多可以使用一个<CODE
+CLASS="FUNCTION"
+>errtable</CODE
+>、<CODE
+CLASS="FUNCTION"
+>errtablecol</CODE
+>、<CODE
+CLASS="FUNCTION"
+>errtableconstraint</CODE
+>、<CODE
+CLASS="FUNCTION"
+>errdatatype</CODE
+>或者<CODE
+CLASS="FUNCTION"
+>errdomainconstraint</CODE
+>函数。这些函数存在是为了允许应用抽取与错误情况相关的数据库对象名，而不需要检查可能已被本地化的错误消息文本。这些函数应该被用在应用需要对其进行自动错误处理的错误报告中。从<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+> 9.3 开始，完整的覆盖只为 SQLSTATE 类别 23 中的错误存在（完整性约束违背），但是在未来这些很可能会被扩展。
+    </P
+></BLOCKQUOTE
+></DIV
+><P
+>    有一个还在大量使用的旧的函数<CODE
+CLASS="FUNCTION"
+>elog</CODE
+>。一个<CODE
+CLASS="FUNCTION"
+>elog</CODE
+>调用：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>elog(level, "format string", ...);</PRE
+><P>
+    完全等效于：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>ereport(level, (errmsg_internal("format string", ...)));</PRE
+><P>
+    注意 SQLSTATE 错误代码总是被给予默认值，并且消息字符串不受翻译限制。因此，<CODE
+CLASS="FUNCTION"
+>elog</CODE
+>应该只被用于内部错误和低层次的调试日志。任何普通用户感兴趣的消息应该通过<CODE
+CLASS="FUNCTION"
+>ereport</CODE
+>。不管怎样，在仍广泛使用<CODE
+CLASS="FUNCTION"
+>elog</CODE
+>的系统中，有足够多的内部<SPAN
+CLASS="QUOTE"
+>"不可能发生"</SPAN
+>的错误检查，出于记号简洁的目的这更适合于那些消息。
+   </P
+><P
+>    有关编写好的错误消息的建议可见<A
+HREF="error-style-guide.html"
+>第 52.3 &#33410;</A
+>。
+   </P
+></DIV
+><H3
+CLASS="FOOTNOTES"
+>&#22791;&#27880;</H3
+><TABLE
+BORDER="0"
+CLASS="FOOTNOTES"
+WIDTH="100%"
+><TR
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+WIDTH="5%"
+><A
+NAME="FTN.AEN114570"
+HREF="error-message-reporting.html#AEN114570"
+><SPAN
+CLASS="footnote"
+>[1]</SPAN
+></A
+></TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+WIDTH="95%"
+><P
+>       也就是说，该值时到达<CODE
+CLASS="FUNCTION"
+>ereport</CODE
+>调用时的当前值，在辅助报告例程内<TT
+CLASS="LITERAL"
+>errno</TT
+>的改变不会影响它。但如果你在<CODE
+CLASS="FUNCTION"
+>errmsg</CODE
+>的参数列表中显式地写了<TT
+CLASS="LITERAL"
+>strerror(errno)</TT
+>则不是这样，因此不要那样做。
+      </P
+></TD
+></TR
+></TABLE
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="source-format.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="error-style-guide.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>格式化</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="source.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>错误消息风格指导</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

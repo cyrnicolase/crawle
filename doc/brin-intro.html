@@ -1,0 +1,251 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>简介</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="BRIN 索引"
+HREF="brin.html"><LINK
+REL="PREVIOUS"
+TITLE="BRIN 索引"
+HREF="brin.html"><LINK
+REL="NEXT"
+TITLE="内建操作符类"
+HREF="brin-builtin-opclasses.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/brin.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="BRIN 索引"
+HREF="brin.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="brin.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#31456; 64. BRIN 索引</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="内建操作符类"
+HREF="brin-builtin-opclasses.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="BRIN-INTRO"
+>64.1. 简介</A
+></H1
+><P
+>  <ACRONYM
+CLASS="ACRONYM"
+>BRIN</ACRONYM
+>表示块范围索引。 
+  <ACRONYM
+CLASS="ACRONYM"
+>BRIN</ACRONYM
+>是为处理这样的表而设计的：表的规模非常大，
+  并且其中某些列与它们在表中的物理位置存在某种自然关联。一个
+  <I
+CLASS="FIRSTTERM"
+>块范围</I
+>是一组在表中物理上相邻的页面，对于每一个块范围在
+  索引中存储了一些摘要信息。例如，一个存储商店销售订单的表可能有一个日期
+  列记录每个订单产生的时间，并且很多时候较早的订单项也将出现在表中较早的
+  地方。一个存储 ZIP 代码列的表中一个城市的所有代码可能自然地聚在一起。
+ </P
+><P
+>  如果索引中存储的摘要信息与查询条件<I
+CLASS="FIRSTTERM"
+>一致</I
+>，<ACRONYM
+CLASS="ACRONYM"
+>BRIN</ACRONYM
+>
+  索引可以通过常规的位图索引扫描满足查询，并且将会返回每个范围中所有页面
+  中的所有元组。查询执行器负责再次检查这些元组并且抛弃掉那些不匹配查询条
+  件的元组 &mdash; 换句话说，这些索引是有损的。由于一个<ACRONYM
+CLASS="ACRONYM"
+>BRIN</ACRONYM
+>
+  索引很小，扫描这种索引虽然比使用顺序扫描多出了一点点开销，但是可能会避
+  免扫描表中很多已知不包含匹配元组的部分。
+ </P
+><P
+>  一个<ACRONYM
+CLASS="ACRONYM"
+>BRIN</ACRONYM
+>索引将存储的特定数据以及该索引将能
+  满足的特定查询，都依赖于为该索引的每一列所选择的操作符类。具有一种
+  线性排序顺序的数据类型的操作符类可以存储在每个块范围内的最小和最大
+  值，例如几何类型可能会存储在块范围内的所有对象的外包盒。
+ </P
+><P
+>  块范围的尺寸在索引创建时由<TT
+CLASS="LITERAL"
+>pages_per_range</TT
+>存储参数决定。
+  索引项的数量将等于该关系的尺寸（以页面计）除以为
+  <TT
+CLASS="LITERAL"
+>pages_per_range</TT
+>选择的值。因此，该值越小，索引会变得越大
+  （因为需要存储更多索引项），但是与此同时存储的摘要数据可以更加精确并
+  且在索引扫描期间可以跳过更多数据块。
+ </P
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="BRIN-OPERATION"
+>64.1.1. 索引维护</A
+></H2
+><P
+>   在创建时，所有已有的索引页面将被扫描并且会为每一个范围创建一个摘要
+   索引元组，对于末尾的可能不完整的范围也是这样做。随着新页面被数据填
+   充，已经被创建摘要的页面范围的摘要信息会被来自新元组的数据所更新。
+   当一个被创建的新页面没有落在最后一个被摘要的范围内时，该范围不会自
+   动获得一个摘要元组，那些元组将保持未被摘要的状态，直到后面调用一次
+   摘要操作来创建初始的摘要。这种处理可以用
+   <CODE
+CLASS="FUNCTION"
+>brin_summarize_new_values(regclass)</CODE
+>函数手工
+   调用，或者在<TT
+CLASS="COMMAND"
+>VACUUM</TT
+>处理该表时自动调用。
+  </P
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="brin.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="brin-builtin-opclasses.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>BRIN 索引</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="brin.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>内建操作符类</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

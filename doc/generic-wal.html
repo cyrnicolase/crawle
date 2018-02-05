@@ -1,0 +1,328 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>通用WAL 记录</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="内部"
+HREF="internals.html"><LINK
+REL="PREVIOUS"
+TITLE="索引开销估计函数"
+HREF="index-cost-estimation.html"><LINK
+REL="NEXT"
+TITLE="GiST 索引"
+HREF="gist.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="CHAPTER"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/generic-wal.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="索引开销估计函数"
+HREF="index-cost-estimation.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="internals.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="GiST 索引"
+HREF="gist.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="CHAPTER"
+><H1
+><A
+NAME="GENERIC-WAL"
+></A
+>&#31456; 60. 通用WAL 记录</H1
+><P
+>   虽然所有内建的被 WAL 记录的模块都有它们自己的 WAL 记录类型，系统中也还是有一种通用 WAL 记录类型，它以一种通用的方式描述了对页面的改变。这对于提供自定义访问方法的扩展有用，因为这类扩展无法注册自己的 WAL 重做例程。
+  </P
+><P
+>   构建通用 WAL 记录的 API 定义在<TT
+CLASS="FILENAME"
+>access/generic_xlog.h</TT
+>中，实现在<TT
+CLASS="FILENAME"
+>access/transam/generic_xlog.c</TT
+>中。
+  </P
+><P
+>   要使用通用 WAL 记录工具执行一次被 WAL 记录的数据更新，要遵循这些步骤：
+
+   <P
+></P
+></P><OL
+TYPE="1"
+><LI
+><P
+>      <CODE
+CLASS="FUNCTION"
+>state = GenericXLogStart(relation)</CODE
+> &mdash; 为给定的关系构建一个通用 WAL 记录。
+     </P
+></LI
+><LI
+><P
+>      <CODE
+CLASS="FUNCTION"
+>page = GenericXLogRegisterBuffer(state, buffer, flags)</CODE
+>
+      &mdash; 注册一个要在当前的通用 WAL 记录中修改的缓冲区。这个函数会返回一个指针指向该缓冲区页面的一份临时拷贝，修改将会在该拷贝上进行（不要直接修改该缓冲区的内容）。第三个参数是适用于该操作的标志的位掩码。当前这类标志只有<TT
+CLASS="LITERAL"
+>GENERIC_XLOG_FULL_IMAGE</TT
+>，它表示在 WAL 记录中应该包括一个完整页面镜像而不是增量更新。如果是新页面或者页面已经被完全重写，通常会设置这个标志。如果被 WAL 记录的动作需要修改多个页面，可以反复调用<CODE
+CLASS="FUNCTION"
+>GenericXLogRegisterBuffer</CODE
+>。
+     </P
+></LI
+><LI
+><P
+>      对包含在上一步中的页面镜像应用修改。
+     </P
+></LI
+><LI
+><P
+>      <CODE
+CLASS="FUNCTION"
+>GenericXLogFinish(state)</CODE
+> &mdash; 将更改应用到缓冲区并且发出通用 WAL 记录。
+     </P
+></LI
+></OL
+><P>
+  </P
+><P
+>   在上述步骤之间都可以调用<CODE
+CLASS="FUNCTION"
+>GenericXLogAbort(state)</CODE
+>取消 WAL 记录构造。这会丢弃所有对于页面镜像拷贝的更改。
+  </P
+><P
+>   在使用通用 WAL 记录功能时请注意以下几点：
+
+   <P
+></P
+></P><UL
+><LI
+><P
+>      不允许直接修改缓冲区！所有的修改必须在<CODE
+CLASS="FUNCTION"
+>GenericXLogRegisterBuffer()</CODE
+>取得的拷贝上完成。换句话说，制造通用 WAL 记录的代码不能为自己调用<CODE
+CLASS="FUNCTION"
+>BufferGetPage()</CODE
+>。不过，在合适的时间对缓冲区进行 pin/unpin 以及加锁/解锁仍然是调用者的责任。从<CODE
+CLASS="FUNCTION"
+>GenericXLogRegisterBuffer()</CODE
+>之前直到<CODE
+CLASS="FUNCTION"
+>GenericXLogFinish()</CODE
+>之后，每个目标上必须保持排他锁。
+     </P
+></LI
+><LI
+><P
+>      可以自由地混合注册缓冲区（步骤 2）和页面镜像修改（步骤 3），即两个步骤可以以任何顺序重复。记住注册缓冲区的顺序应该和重放时对它们加锁的顺序相同。
+     </P
+></LI
+><LI
+><P
+>      一个通用 WAL 记录能注册的缓冲区最大数量是<TT
+CLASS="LITERAL"
+>MAX_GENERIC_XLOG_PAGES</TT
+>。如果超出这个限制将会抛出一个错误。
+     </P
+></LI
+><LI
+><P
+>      通用 WAL 假定要被修改的页面具有标准布局，特别是在<TT
+CLASS="STRUCTFIELD"
+>pd_lower</TT
+>和<TT
+CLASS="STRUCTFIELD"
+>pd_upper</TT
+>之间没有有用的数据。
+     </P
+></LI
+><LI
+><P
+>      由于正在修改缓冲区页面的拷贝，<CODE
+CLASS="FUNCTION"
+>GenericXLogStart()</CODE
+>不会开始临界区。因此可以在<CODE
+CLASS="FUNCTION"
+>GenericXLogStart()</CODE
+>之间<CODE
+CLASS="FUNCTION"
+>GenericXLogFinish()</CODE
+>安全地进行内存分配、抛出错误等。唯一真正的临界区存在于<CODE
+CLASS="FUNCTION"
+>GenericXLogFinish()</CODE
+>内。还有，不需要担心在错误退出期间对<CODE
+CLASS="FUNCTION"
+>GenericXLogAbort()</CODE
+>的调用。
+     </P
+></LI
+><LI
+><P
+>      <CODE
+CLASS="FUNCTION"
+>GenericXLogFinish()</CODE
+>会负责标记缓冲区为脏并且设置它们的 LSN。你不需要显式地做这些工作。
+     </P
+></LI
+><LI
+><P
+>      对于不做日志的关系，所有的事情都一样，不过不会发出实际的 WAL 记录。因此，对于不做日志的关系你通常不需要做任何显式的检查。
+     </P
+></LI
+><LI
+><P
+>      通用 WAL 重做函数将按照注册缓冲区的顺序对它们获得排他锁。在重做所有更改后，这些锁将按照同样的顺序被释放。
+     </P
+></LI
+><LI
+><P
+>      如果对一个已注册的缓冲区没有指定<TT
+CLASS="LITERAL"
+>GENERIC_XLOG_FULL_IMAGE</TT
+>，通用 WAL 记录包含了新旧页面镜像之间的不同。这个不同是以逐字节比较的方式形成的。对于在页面内移动数据的情况来说这种方式不是很紧凑，未来可能会有改进。
+     </P
+></LI
+></UL
+><P>
+  </P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="index-cost-estimation.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="gist.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>索引开销估计函数</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="internals.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>GiST 索引</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

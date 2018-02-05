@@ -1,0 +1,559 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>运行测试</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="回归测试"
+HREF="regress.html"><LINK
+REL="PREVIOUS"
+TITLE="回归测试"
+HREF="regress.html"><LINK
+REL="NEXT"
+TITLE="测试评估"
+HREF="regress-evaluation.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/regress.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="回归测试"
+HREF="regress.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="regress.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#31456; 31. 回归测试</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="测试评估"
+HREF="regress-evaluation.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="REGRESS-RUN"
+>31.1. 运行测试</A
+></H1
+><P
+>   回归测试可以在一个已经安装并运行的服务器上运行，或者在编译树中的一个临时安装上运行。此外，还有运行该测试的<SPAN
+CLASS="QUOTE"
+>"并行"</SPAN
+>和<SPAN
+CLASS="QUOTE"
+>"顺序"</SPAN
+>模式。顺序方法单独运行每一个测试脚本，而并行方法则开启多个服务器进程来并行地运行多组测试。并行测试能够发现进程间通信和锁定是否工作正确。
+  </P
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN44592"
+>31.1.1. 在一个临时安装上运行测试</A
+></H2
+><P
+>   要在编译之后且在安装之前运行并行回归测试，可在顶层目录中键入：
+</P><PRE
+CLASS="SCREEN"
+>make check</PRE
+><P>
+   （或者你可以切换到<TT
+CLASS="FILENAME"
+>src/test/regress</TT
+>并且在那里运行该命令）。最后你应该看到这样的信息：
+</P><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="COMPUTEROUTPUT"
+>=======================
+ All 115 tests passed.
+=======================</SAMP
+></PRE
+><P>
+   或者关于哪些测试失败的提示。见下面的<A
+HREF="regress-evaluation.html"
+>第 31.2 &#33410;</A
+>来确定一个<SPAN
+CLASS="QUOTE"
+>"失败"</SPAN
+>是否表示一个严重的问题。
+  </P
+><P
+>    因为这种测试方法运行一个临时服务器，如果你作为根用户进行了编译，它将无法工作，因为服务器无法用 root 启动。我们推荐的过程是不要作为 root 编译，或者在完成安装后执行测试。
+   </P
+><P
+>    如果你已经配置<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>安装到一个已经存在有旧的<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>安装的位置，并且你在安装新版本前执行了<TT
+CLASS="LITERAL"
+>make check</TT
+>，你可能会发现测试会因为新程序尝试使用已经安装的共享库而失败（典型特征是抱怨未定义的符号）。如果你希望在覆盖旧安装之前运行测试，你将需要使用<TT
+CLASS="LITERAL"
+>configure --disable-rpath</TT
+>编译。但是我们不推荐为最终安装使用这个选项。
+   </P
+><P
+>    并行回归测试会在你的用户 ID 下启动相当多的进程。当前，最大并发量是二十个并行测试脚本，这意味着四十个进程：对每一个测试脚本有一个服务器进程和一个<SPAN
+CLASS="APPLICATION"
+>psql</SPAN
+>进程。因此如果你的系统对每个用户的进程数有强制限制，确保这个限制至少是五十，否则你将在并行测试中失败。如果你没有权利提升该限制，你可以通过设置<TT
+CLASS="LITERAL"
+>MAX_CONNECTIONS</TT
+>参数来降低并发度。例如：
+</P><PRE
+CLASS="SCREEN"
+>make MAX_CONNECTIONS=10 check</PRE
+><P>
+    会并发运行不超过十个测试。
+   </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN44611"
+>31.1.2. 在一个现有安装上运行测试</A
+></H2
+><P
+>   要在安装后运行测试（见<A
+HREF="installation.html"
+>第 16 &#31456;</A
+>），初始化一个数据区域并且按照<A
+HREF="runtime.html"
+>第 18 &#31456;</A
+>所解释的启动服务器，然后输入：
+</P><PRE
+CLASS="SCREEN"
+>make installcheck</PRE
+><P>
+或者进行一次并行测试：
+</P><PRE
+CLASS="SCREEN"
+>make installcheck-parallel</PRE
+><P>
+   该测试将期望联系在本地主机和默认端口号上的服务器（除非通过<TT
+CLASS="ENVAR"
+>PGHOST</TT
+>和<TT
+CLASS="ENVAR"
+>PGPORT</TT
+>环境变量覆盖）。该测试将在一个名为<TT
+CLASS="LITERAL"
+>regression</TT
+>的数据库中运行，任何以该名称存在的数据库将被删除。
+   </P
+><P
+>   该测试还将短暂地创建一些集簇范围内的对象，例如角色和表空间。这些对象的名称都会以<TT
+CLASS="LITERAL"
+>regress_</TT
+>开始。在实际具有以这种方式命名对象的安装中使用<TT
+CLASS="LITERAL"
+>installcheck</TT
+>模式时要格外小心。
+  </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN44624"
+>31.1.3. 附加测试套件</A
+></H2
+><P
+>   <TT
+CLASS="LITERAL"
+>make check</TT
+>和<TT
+CLASS="LITERAL"
+>make installcheck</TT
+>命令只运行<SPAN
+CLASS="QUOTE"
+>"核心的"</SPAN
+>回归测试，这只测试<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>服务器的内建功能。源代码发布也包含额外的测试套件，它们中的大部分用于测试附加功能，例如可选的过程语言。
+  </P
+><P
+>   要运行将被编译模块的所有测试套件（包括核心测试），在编译树的顶端输入这些命令之一：
+</P><PRE
+CLASS="SCREEN"
+>make check-world
+make installcheck-world</PRE
+><P>
+   这些命令分别在临时服务器或已经安装好的服务器上运行测试（与之前介绍的<TT
+CLASS="LITERAL"
+>make check</TT
+>和<TT
+CLASS="LITERAL"
+>make installcheck</TT
+>类似）。其他的考虑与之前为每种方法解释的相同。注意<TT
+CLASS="LITERAL"
+>make check-world</TT
+>为每一个受测模块建立一个独立的临时安装树，因此它比起<TT
+CLASS="LITERAL"
+>make installcheck-world</TT
+>需要更多的时间和磁盘空间。
+  </P
+><P
+>   你也可以通过在编译树适当的子目录中输入<TT
+CLASS="LITERAL"
+>make check</TT
+>或<TT
+CLASS="LITERAL"
+>make installcheck</TT
+>来运行个体的测试套件。记住<TT
+CLASS="LITERAL"
+>make installcheck</TT
+>假设你已经安装了相关模块，而不仅仅是核心服务器。
+  </P
+><P
+>   可以以这种方法调用的额外测试包括：
+  </P
+><P
+></P
+><UL
+><LI
+><P
+>     可选过程语言的回归测试（除<SPAN
+CLASS="APPLICATION"
+>PL/pgSQL</SPAN
+>之外，它将被核心测试测试）。这些位于<TT
+CLASS="FILENAME"
+>src/pl</TT
+>之下。
+    </P
+></LI
+><LI
+><P
+>     <TT
+CLASS="FILENAME"
+>contrib</TT
+>模块的回归测试，位于<TT
+CLASS="FILENAME"
+>contrib</TT
+>。不是所有的<TT
+CLASS="FILENAME"
+>contrib</TT
+>模块都有测试。
+    </P
+></LI
+><LI
+><P
+>     ECPG 接口库的回归测试，位于<TT
+CLASS="FILENAME"
+>src/interfaces/ecpg/test</TT
+>。
+    </P
+></LI
+><LI
+><P
+>     并发会话行为的压力测试，位于<TT
+CLASS="FILENAME"
+>src/test/isolation</TT
+>。
+    </P
+></LI
+><LI
+><P
+>     客户端的测试程序在<TT
+CLASS="FILENAME"
+>src/bin</TT
+>下。另见
+     <A
+HREF="regress-tap.html"
+>第 31.4 &#33410;</A
+>。
+    </P
+></LI
+></UL
+><P
+>   在使用<TT
+CLASS="LITERAL"
+>installcheck</TT
+>模式时，这些测试将毁掉任何现有的名为<TT
+CLASS="LITERAL"
+>pl_regression</TT
+>、<TT
+CLASS="LITERAL"
+>contrib_regression</TT
+>、<TT
+CLASS="LITERAL"
+>isolation_regression</TT
+>、<TT
+CLASS="LITERAL"
+>ecpg1_regression</TT
+>或者<TT
+CLASS="LITERAL"
+>ecpg2_regression</TT
+>的数据库，以及<TT
+CLASS="LITERAL"
+>regression</TT
+>。
+  </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN44670"
+>31.1.4. 区域和编码</A
+></H2
+><P
+>    默认情况下，测试使用的临时安装将使用在当前环境中定义的区域和由<TT
+CLASS="COMMAND"
+>initdb</TT
+>决定的相应数据库编码。通过设置适当的环境变量来测试不同的区域是有用的，例如：
+</P><PRE
+CLASS="SCREEN"
+>make check LANG=C
+make check LC_COLLATE=en_US.utf8 LC_CTYPE=fr_CA.utf8</PRE
+><P>
+    由于实现的原因，为此目的设置<TT
+CLASS="ENVAR"
+>LC_ALL</TT
+>不能工作，所有其他区域相关的环境变量都可以工作。
+   </P
+><P
+>    在对一个现有安装测试时，区域由现有数据库集簇决定并且不能为测试而独立设置。
+   </P
+><P
+>    你也可以通过设置变量<TT
+CLASS="ENVAR"
+>ENCODING</TT
+>来显式地选择数据库编码，例如：
+</P><PRE
+CLASS="SCREEN"
+>make check LANG=C ENCODING=EUC_JP</PRE
+><P>
+    这样设置数据库编码通常只对区域为 C 有意义；否则编码将自动从区域选择，并且指定一个不匹配区域的编码将会导致错误。
+   </P
+><P
+>    不管测试是针对临时安装还是已有安装，数据库编码都可以被设置，然而在后一种情况中它必须与安装的区域相兼容。
+   </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN44681"
+>31.1.5. 额外测试</A
+></H2
+><P
+>    核心回归测试套件包含一些默认情况下不被运行的测试文件，因为它们可能平台相关的或者需要很长时间来运行。你可以通过设置变量<TT
+CLASS="ENVAR"
+>EXTRA_TESTS</TT
+>来运行这些或者其他额外测试文件。例如，要运行<TT
+CLASS="LITERAL"
+>numeric_big</TT
+>测试：
+</P><PRE
+CLASS="SCREEN"
+>make check EXTRA_TESTS=numeric_big</PRE
+><P>
+    要运行排序规则测试：
+</P><PRE
+CLASS="SCREEN"
+>make check EXTRA_TESTS=collate.linux.utf8 LANG=en_US.utf8</PRE
+><P>
+    <TT
+CLASS="LITERAL"
+>collate.linux.utf8</TT
+>测试只在 Linux/glibc 平台上能够工作，并且只有在使用 UTF-8 编码的数据库中才能运行。
+   </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN44689"
+>31.1.6. 测试热备</A
+></H2
+><P
+>   源代码发布中还包含有用于热备的静态行为的回归测试。这些测试需要一个运行着的主服务器和一个运行着的后备服务器，并且后备服务器正从主服务器接受新的 WAL 改变（使用基于文件的日志传送或流复制）。那些服务器不是自动创建的，这里也没有关于建立复制的文档。请查阅本文档中的相关章节。
+  </P
+><P
+>   要运行热备测试，首先在主服务器上创建一个名为<TT
+CLASS="LITERAL"
+>regression</TT
+>的数据库：
+</P><PRE
+CLASS="SCREEN"
+>psql -h primary -c "CREATE DATABASE regression"</PRE
+><P>
+   接下来，在主服务器上的 regression 数据库中运行准备脚本<TT
+CLASS="FILENAME"
+>src/test/regress/sql/hs_primary_setup.sql</TT
+>，例如：
+</P><PRE
+CLASS="SCREEN"
+>psql -h primary -f src/test/regress/sql/hs_primary_setup.sql regression</PRE
+><P>
+   允许这些改变传播到后备服务器。
+  </P
+><P
+>   为受测后备服务器安排默认数据库连接（例如通过设置<TT
+CLASS="ENVAR"
+>PGHOST</TT
+>和<TT
+CLASS="ENVAR"
+>PGPORT</TT
+>环境变量）。最后，在 regression 目录中运行<TT
+CLASS="LITERAL"
+>make standbycheck</TT
+>：
+</P><PRE
+CLASS="SCREEN"
+>cd src/test/regress
+make standbycheck</PRE
+><P>
+  </P
+><P
+>   在主服务器上也可以使用<TT
+CLASS="FILENAME"
+>src/test/regress/sql/hs_primary_extremes.sql</TT
+>脚本生成某些极限行为来允许测试后备服务器的行为。
+  </P
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="regress.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="regress-evaluation.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>回归测试</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="regress.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>测试评估</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

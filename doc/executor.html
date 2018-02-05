@@ -1,0 +1,265 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>执行器</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="PostgreSQL内部概述"
+HREF="overview.html"><LINK
+REL="PREVIOUS"
+TITLE="规划器/优化器"
+HREF="planner-optimizer.html"><LINK
+REL="NEXT"
+TITLE="系统目录"
+HREF="catalogs.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/arch-dev.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="规划器/优化器"
+HREF="planner-optimizer.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="overview.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#31456; 49. PostgreSQL内部概述</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="系统目录"
+HREF="catalogs.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="EXECUTOR"
+>49.6. 执行器</A
+></H1
+><P
+>    <I
+CLASS="FIRSTTERM"
+>执行器</I
+>接手规划器/优化器创建的计划，并递归地处理之以抽取所需的行集。这本质上是一种需求拉动的管道机制。每次一个计划节点被调用时，它必须交付一个或多个行，或者报告已经完成了行的交付。
+   </P
+><P
+>    为了提供一个具体例子，假设顶层节点是一个<TT
+CLASS="LITERAL"
+>MergeJoin</TT
+>节点。在归并完成之前，两个行必须先被获取（每一个来自于一个子计划）。因此执行器递归地调用它自己去处理子计划（从附加在<TT
+CLASS="LITERAL"
+>lefttree</TT
+>的子计划开始）。新的顶层节点（左子计划的顶层节点），我们说是一个<TT
+CLASS="LITERAL"
+>Sort</TT
+>节点，并且又要递归来获取一个输入行。<TT
+CLASS="LITERAL"
+>Sort</TT
+>的子节点可以是一个<TT
+CLASS="LITERAL"
+>SeqScan</TT
+>节点，表示真正地读取一个表。该节点的执行将会使执行器从表中获取一行并将它返回给调用节点。<TT
+CLASS="LITERAL"
+>Sort</TT
+>节点将反复调用它的子节点来获得所有需要排序的行。当输入耗尽后（子节点将返回一个NULL来标识），<TT
+CLASS="LITERAL"
+>Sort</TT
+>节点执行排序，并且最后能够返回它的第一个输出行，及排序后的第一个。它会把剩下的行保存下来，这样它可以根据后续的要求按照排好的顺序返回这些行。
+   </P
+><P
+>    <TT
+CLASS="LITERAL"
+>MergeJoin</TT
+>节点也会相似地从其右子计划要求第一个行。然后它会比较两个子节点提供的行看它们是否能被连接，如果可以它会返回一个连接行给调用者。在下一次调用时，或者它无法连接当前的输入对时，它会前进到一个表或另一个表的下一行（取决于比较的结果），并再次检查匹配。最后，某个子计划耗尽，<TT
+CLASS="LITERAL"
+>MergeJoin</TT
+>节点返回NULL表示它没有更多连接行可以提供。
+   </P
+><P
+>    复杂的查询可能涉及多层计划节点，但是一般的方法是相同的：每个节点在被调用时计算并返回它的下一个输出行。每个节点同时也负责应用由规划器分配给它的选择或投影表达式。
+   </P
+><P
+>    执行器机制被用于四种基本SQL查询类型：<TT
+CLASS="COMMAND"
+>SELECT</TT
+>、<TT
+CLASS="COMMAND"
+>INSERT</TT
+>、 <TT
+CLASS="COMMAND"
+>UPDATE</TT
+>以及<TT
+CLASS="COMMAND"
+>DELETE</TT
+>。对于<TT
+CLASS="COMMAND"
+>SELECT</TT
+>，顶层执行器代码只需要发送查询计划树返回的每个行给客户端。对于<TT
+CLASS="COMMAND"
+>INSERT</TT
+>，每一个被返回的行被插入到<TT
+CLASS="COMMAND"
+>INSERT</TT
+>中指定的目标表中。这通过一个被称为<TT
+CLASS="LITERAL"
+>ModifyTable</TT
+>的特殊顶层计划节点完成（一个简单的<TT
+CLASS="COMMAND"
+>INSERT ... VALUES</TT
+>命令会创建一个由一个<TT
+CLASS="LITERAL"
+>Result</TT
+>节点组成的简单计划树，该节点只计算一个结果行，在它之上的<TT
+CLASS="LITERAL"
+>ModifyTable</TT
+>节点会执行插入。但是<TT
+CLASS="COMMAND"
+>INSERT ... SELECT</TT
+>可以用到执行器机制的全部功能）。对于<TT
+CLASS="COMMAND"
+>UPDATE</TT
+>，规划器会安排每一个计算行包含所有被更新的列值加上原始目标行的<I
+CLASS="FIRSTTERM"
+>TID</I
+>（元组ID或行ID），这些数据也会被输入到一个<TT
+CLASS="LITERAL"
+>ModifyTable</TT
+>节点，该节点将利用这些信息创建一个新的被更新行并标记旧行为被删除。对于<TT
+CLASS="COMMAND"
+>DELETE</TT
+>，唯一被计划返回的列是TID，<TT
+CLASS="LITERAL"
+>ModifyTable</TT
+>节点简单地使用TID访问每一个目标行并将其标记为被删除。
+   </P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="planner-optimizer.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="catalogs.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>规划器/优化器</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="overview.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>系统目录</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

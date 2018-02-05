@@ -1,0 +1,288 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>货币类型</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="数据类型"
+HREF="datatype.html"><LINK
+REL="PREVIOUS"
+TITLE="数字类型"
+HREF="datatype-numeric.html"><LINK
+REL="NEXT"
+TITLE="字符类型"
+HREF="datatype-character.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/datatype.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="数字类型"
+HREF="datatype-numeric.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="datatype.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#31456; 8. 数据类型</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="字符类型"
+HREF="datatype-character.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="DATATYPE-MONEY"
+>8.2. 货币类型</A
+></H1
+><P
+>    <TT
+CLASS="TYPE"
+>money</TT
+>类型存储固定小数精度的货币数字，参阅<A
+HREF="datatype-money.html#DATATYPE-MONEY-TABLE"
+>&#34920; 8-3</A
+>。小数的精度由数据库的<A
+HREF="runtime-config-client.html#GUC-LC-MONETARY"
+>lc_monetary</A
+>设置决定。表中展示的范围假设有两个小数位。可接受的输入格式很多，包括整数和浮点数文字，以及常用的货币格式，如<TT
+CLASS="LITERAL"
+>'$1,000.00'</TT
+>。 输出通常是最后一种形式，但和区域相关。
+   </P
+><DIV
+CLASS="TABLE"
+><A
+NAME="DATATYPE-MONEY-TABLE"
+></A
+><P
+><B
+>&#34920; 8-3. 货币类型</B
+></P
+><TABLE
+BORDER="1"
+CLASS="CALSTABLE"
+><COL><COL><COL><COL><THEAD
+><TR
+><TH
+>名字</TH
+><TH
+>存储尺寸</TH
+><TH
+>描述</TH
+><TH
+>范围</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+>money</TD
+><TD
+>8 bytes</TD
+><TD
+>货币额</TD
+><TD
+>-92233720368547758.08到+92233720368547758.07</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+><P
+>    由于这种数据类型的输出是区域敏感的，因此将<TT
+CLASS="TYPE"
+>money</TT
+>数据装入到一个具有不同<TT
+CLASS="VARNAME"
+>lc_monetary</TT
+>设置的数据库是不起作用的。为了避免这种问题，在恢复一个转储到一个新数据库中之前，应确保新数据库的<TT
+CLASS="VARNAME"
+>lc_monetary</TT
+>设置和被转储数据库的相同或者具有等效值。
+   </P
+><P
+>    数据类型<TT
+CLASS="TYPE"
+>numeric</TT
+>、<TT
+CLASS="TYPE"
+>int</TT
+>和<TT
+CLASS="TYPE"
+>bigint</TT
+>的值可以被造型成<TT
+CLASS="TYPE"
+>money</TT
+>。从数据类型<TT
+CLASS="TYPE"
+>real</TT
+>和<TT
+CLASS="TYPE"
+>double precision</TT
+>的转换可以通过先造型成<TT
+CLASS="TYPE"
+>numeric</TT
+>来实现，例如：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>SELECT '12.34'::float8::numeric::money;</PRE
+><P>
+    但是，我们不推荐这样做。浮点数不应该被用来处理货币，因为浮点数可能会有圆整错误。
+   </P
+><P
+>    一个<TT
+CLASS="TYPE"
+>money</TT
+>值可以在不损失精度的情况下被造型成<TT
+CLASS="TYPE"
+>numeric</TT
+>。转换到其他类型可能会丢失精度，并且必须采用两个阶段完成：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>SELECT '52093.89'::money::numeric::float8;</PRE
+><P>
+   </P
+><P
+>    当一个<TT
+CLASS="TYPE"
+>money</TT
+>值被另一个<TT
+CLASS="TYPE"
+>money</TT
+>值除时，结果是<TT
+CLASS="TYPE"
+>double precision</TT
+>（即一个纯数字，而不是金额），在除法中货币单位被约掉了。
+   </P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="datatype-numeric.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="datatype-character.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>数字类型</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="datatype.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>字符类型</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

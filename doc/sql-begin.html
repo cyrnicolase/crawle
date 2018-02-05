@@ -1,0 +1,424 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>BEGIN</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="SQL 命令"
+HREF="sql-commands.html"><LINK
+REL="PREVIOUS"
+TITLE="ANALYZE"
+HREF="sql-analyze.html"><LINK
+REL="NEXT"
+TITLE="CHECKPOINT"
+HREF="sql-checkpoint.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="REFENTRY"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/ref/begin.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="ANALYZE"
+HREF="sql-analyze.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="CHECKPOINT"
+HREF="sql-checkpoint.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="SQL-BEGIN"
+></A
+>BEGIN</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN76665"
+></A
+><H2
+>&#21517;&#31216;</H2
+>BEGIN&nbsp;--&nbsp;开始一个事务块</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN76668"
+></A
+><H2
+>&#22823;&#32434;</H2
+><PRE
+CLASS="SYNOPSIS"
+>BEGIN [ WORK | TRANSACTION ] [ <TT
+CLASS="REPLACEABLE"
+><I
+>transaction_mode</I
+></TT
+> [, ...] ]
+
+<SPAN
+CLASS="phrase"
+><SPAN
+CLASS="PHRASE"
+>其中 <TT
+CLASS="REPLACEABLE"
+><I
+>transaction_mode</I
+></TT
+> 是以下之一：</SPAN
+></SPAN
+>
+
+    ISOLATION LEVEL { SERIALIZABLE | REPEATABLE READ | READ COMMITTED | READ UNCOMMITTED }
+    READ WRITE | READ ONLY
+    [ NOT ] DEFERRABLE</PRE
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN76673"
+></A
+><H2
+>描述</H2
+><P
+>   <TT
+CLASS="COMMAND"
+>BEGIN</TT
+>开始一个事务块，也就是说所有
+   <TT
+CLASS="COMMAND"
+>BEGIN</TT
+>命令之后的所有语句将被在一个
+   事务中执行，直到给出一个显式的<A
+HREF="sql-commit.html"
+>COMMIT</A
+>或
+   者<A
+HREF="sql-rollback.html"
+>ROLLBACK</A
+>。默认情况下（没有
+   <TT
+CLASS="COMMAND"
+>BEGIN</TT
+>），
+   <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>在
+   <SPAN
+CLASS="QUOTE"
+>"自动提交"</SPAN
+>模式中执行事务，也就是说每个语句都
+   在自己的事务中执行并且在语句结束时隐式地执行一次提交（如果执
+   行成功，否则会完成一次回滚）。
+  </P
+><P
+>   在一个事务块内的语句会执行得更快，因为事务的开始/提交也要求可观
+   的 CPU 和磁盘活动。在进行多个相关更改时，在一个事务内执行多个语
+   句也有助于保证一致性：在所有相关更新还没有完成之前，其他会话将不
+   能看到中间状态。
+  </P
+><P
+>   如果指定了隔离级别、读/写模式或者延迟模式，新事务也会有那些特性，
+   就像执行了<A
+HREF="sql-set-transaction.html"
+>SET TRANSACTION</A
+>一样。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN76686"
+></A
+><H2
+>参数</H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="LITERAL"
+>WORK</TT
+><BR><TT
+CLASS="LITERAL"
+>TRANSACTION</TT
+></DT
+><DD
+><P
+>      可选的关键词。它们没有效果。
+     </P
+></DD
+></DL
+></DIV
+><P
+>   这个语句其他参数的含义请参考
+   <A
+HREF="sql-set-transaction.html"
+>SET TRANSACTION</A
+>。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN76698"
+></A
+><H2
+>注解</H2
+><P
+>   <A
+HREF="sql-start-transaction.html"
+>START TRANSACTION</A
+>具有和<TT
+CLASS="COMMAND"
+>BEGIN</TT
+>
+   相同的功能。
+  </P
+><P
+>   使用<A
+HREF="sql-commit.html"
+>COMMIT</A
+>或者
+   <A
+HREF="sql-rollback.html"
+>ROLLBACK</A
+>来终止一个事务块。
+  </P
+><P
+>   在已经在一个事务块中时发出<TT
+CLASS="COMMAND"
+>BEGIN</TT
+>将惹出一个警告
+   消息。事务状态不会被影响。要在一个事务块中嵌套事务，可以使用保
+   存点（见<A
+HREF="sql-savepoint.html"
+>SAVEPOINT</A
+>）。
+  </P
+><P
+>   由于向后兼容的原因，连续的
+   <TT
+CLASS="REPLACEABLE"
+><I
+>transaction_modes</I
+></TT
+>
+   之间的逗号可以被省略。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN76711"
+></A
+><H2
+>示例</H2
+><P
+>   开始一个事务块：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>BEGIN;</PRE
+><P></P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN76715"
+></A
+><H2
+>兼容性</H2
+><P
+>   <TT
+CLASS="COMMAND"
+>BEGIN</TT
+>是一种
+   <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>语言扩展。它等效于
+   SQL 标准的命令<A
+HREF="sql-start-transaction.html"
+>START TRANSACTION</A
+>，它的参考页
+   包含额外的兼容性信息。
+  </P
+><P
+>   <TT
+CLASS="LITERAL"
+>DEFERRABLE</TT
+>
+   <TT
+CLASS="REPLACEABLE"
+><I
+>transaction_mode</I
+></TT
+>
+   是一种<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>语言扩展。
+  </P
+><P
+>   附带地，<TT
+CLASS="LITERAL"
+>BEGIN</TT
+>关键词被用于嵌入式 SQL 中的一种
+   不同目的。在移植数据库应用时，我们建议小心对待事务语义。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN76727"
+></A
+><H2
+>另见</H2
+><A
+HREF="sql-commit.html"
+>COMMIT</A
+>, <A
+HREF="sql-rollback.html"
+>ROLLBACK</A
+>, <A
+HREF="sql-start-transaction.html"
+>START TRANSACTION</A
+>, <A
+HREF="sql-savepoint.html"
+>SAVEPOINT</A
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-analyze.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="sql-checkpoint.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>ANALYZE</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>CHECKPOINT</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

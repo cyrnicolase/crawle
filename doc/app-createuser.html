@@ -1,0 +1,974 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>createuser</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="PostgreSQL 客户端应用"
+HREF="reference-client.html"><LINK
+REL="PREVIOUS"
+TITLE="createlang"
+HREF="app-createlang.html"><LINK
+REL="NEXT"
+TITLE="dropdb"
+HREF="app-dropdb.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="REFENTRY"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/ref/createuser.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="createlang"
+HREF="app-createlang.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="reference-client.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="dropdb"
+HREF="app-dropdb.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="APP-CREATEUSER"
+></A
+><SPAN
+CLASS="APPLICATION"
+>createuser</SPAN
+></H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN93297"
+></A
+><H2
+>&#21517;&#31216;</H2
+>createuser&nbsp;--&nbsp;定义一个新的<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>用户账户</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN93301"
+></A
+><H2
+>&#22823;&#32434;</H2
+><P
+><TT
+CLASS="COMMAND"
+>createuser</TT
+> [<TT
+CLASS="REPLACEABLE"
+><I
+>connection-option</I
+></TT
+>...] [<TT
+CLASS="REPLACEABLE"
+><I
+>option</I
+></TT
+>...] [<TT
+CLASS="REPLACEABLE"
+><I
+>username</I
+></TT
+>]</P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN93310"
+></A
+><H2
+>描述</H2
+><P
+>   <SPAN
+CLASS="APPLICATION"
+>createuser</SPAN
+>创建一个新的<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>用户（或者更准确些，是一个角色）。只有超级用户和具有<TT
+CLASS="LITERAL"
+>CREATEROLE</TT
+>特权的用户才能创建新用户，因此<SPAN
+CLASS="APPLICATION"
+>createuser</SPAN
+>必须被以上两种用户调用。
+  </P
+><P
+>   如果你希望创建一个新的超级用户，你必须作为一个超级用户连接，而不仅仅是具有<TT
+CLASS="LITERAL"
+>CREATEROLE</TT
+>特权。作为一个超级用户意味着绕过数据库中所有访问权限检查的能力，因此超级用户地位不能轻易被授予。
+  </P
+><P
+>   <SPAN
+CLASS="APPLICATION"
+>createuser</SPAN
+>是<ACRONYM
+CLASS="ACRONYM"
+>SQL</ACRONYM
+>命令<A
+HREF="sql-createrole.html"
+>CREATE ROLE</A
+>的一个包装器。在通过这个工具和其他方法访问服务器来创建用户之间没有实质性的区别。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN93323"
+></A
+><H2
+>选项</H2
+><P
+>   <SPAN
+CLASS="APPLICATION"
+>createuser</SPAN
+>接受下列命令行参数：
+
+    <P
+></P
+></P><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>username</I
+></TT
+></DT
+><DD
+><P
+>        指定要被创建的<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>用户的名称。这个名称必须与这个<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>安装中所有现存角色不同。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-c <TT
+CLASS="REPLACEABLE"
+><I
+>number</I
+></TT
+></TT
+><BR><TT
+CLASS="OPTION"
+>--connection-limit=<TT
+CLASS="REPLACEABLE"
+><I
+>number</I
+></TT
+></TT
+></DT
+><DD
+><P
+>        为该新用户设置一个最大连接数。默认值为不设任何限制。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-d</TT
+><BR><TT
+CLASS="OPTION"
+>--createdb</TT
+></DT
+><DD
+><P
+>        新用户将被允许创建数据库。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-D</TT
+><BR><TT
+CLASS="OPTION"
+>--no-createdb</TT
+></DT
+><DD
+><P
+>        新用户将不被允许创建数据库。这是默认值。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-e</TT
+><BR><TT
+CLASS="OPTION"
+>--echo</TT
+></DT
+><DD
+><P
+>        回显<SPAN
+CLASS="APPLICATION"
+>createuser</SPAN
+>生成并发送给服务器的命令。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-E</TT
+><BR><TT
+CLASS="OPTION"
+>--encrypted</TT
+></DT
+><DD
+><P
+>        加密存储在数据库中的用户口令。如果没有指定，默认的口令行为将被使用。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-g <TT
+CLASS="REPLACEABLE"
+><I
+>role</I
+></TT
+></TT
+><BR><TT
+CLASS="OPTION"
+>--role=<TT
+CLASS="REPLACEABLE"
+><I
+>role</I
+></TT
+></TT
+></DT
+><DD
+><P
+>         指定一个角色，这个角色将立即加入其中成为其成员。
+         如果要把这个角色加入到多个角色中作为成员，
+         可以写多个<TT
+CLASS="OPTION"
+>-g</TT
+>开关。
+         </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-i</TT
+><BR><TT
+CLASS="OPTION"
+>--inherit</TT
+></DT
+><DD
+><P
+>        新角色将自动继承把它作为成员的角色的特权。这是默认值。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-I</TT
+><BR><TT
+CLASS="OPTION"
+>--no-inherit</TT
+></DT
+><DD
+><P
+>        新角色将不会自动继承把它作为成员的角色的特权。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>--interactive</TT
+></DT
+><DD
+><P
+>        如果在命令行没有指定用户名，提示要求用户名，并且在命令行没有指定选项
+        <TT
+CLASS="OPTION"
+>-d</TT
+>/<TT
+CLASS="OPTION"
+>-D</TT
+>、
+        <TT
+CLASS="OPTION"
+>-r</TT
+>/<TT
+CLASS="OPTION"
+>-R</TT
+>、
+        <TT
+CLASS="OPTION"
+>-s</TT
+>/<TT
+CLASS="OPTION"
+>-S</TT
+>时也提示（一直到 PostgreSQL 9.1 这都是默认行为）。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-l</TT
+><BR><TT
+CLASS="OPTION"
+>--login</TT
+></DT
+><DD
+><P
+>        新用户将被允许登入（即，该用户名能被用作初始会话用户标识符）。这是默认值。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-L</TT
+><BR><TT
+CLASS="OPTION"
+>--no-login</TT
+></DT
+><DD
+><P
+>        新用户将不被允许登入（一个没有登录特权的角色仍然可以作为管理数据库权限的方式而存在）。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-N</TT
+><BR><TT
+CLASS="OPTION"
+>--unencrypted</TT
+></DT
+><DD
+><P
+>        不对存储在数据库中的用户口令加密。如果没有指定，默认的口令行为将被使用。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-P</TT
+><BR><TT
+CLASS="OPTION"
+>--pwprompt</TT
+></DT
+><DD
+><P
+>       如果给定，<SPAN
+CLASS="APPLICATION"
+>createuser</SPAN
+>将发出一个提示要求新用户的口令。如果你没有计划使用口令认证，这就不是必须的。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-r</TT
+><BR><TT
+CLASS="OPTION"
+>--createrole</TT
+></DT
+><DD
+><P
+>        新用户将被允许创建新的角色（即，这个用户将具有<TT
+CLASS="LITERAL"
+>CREATEROLE</TT
+>特权）。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-R</TT
+><BR><TT
+CLASS="OPTION"
+>--no-createrole</TT
+></DT
+><DD
+><P
+>        新用户将不被允许创建新角色。这是默认值。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-s</TT
+><BR><TT
+CLASS="OPTION"
+>--superuser</TT
+></DT
+><DD
+><P
+>        新用户将成为一个超级用户。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-S</TT
+><BR><TT
+CLASS="OPTION"
+>--no-superuser</TT
+></DT
+><DD
+><P
+>        新用户将不会成为一个超级用户。这是默认值。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-V</TT
+><BR><TT
+CLASS="OPTION"
+>--version</TT
+></DT
+><DD
+><P
+>       打印<SPAN
+CLASS="APPLICATION"
+>createuser</SPAN
+>版本并退出。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>--replication</TT
+></DT
+><DD
+><P
+>        新用户将具有<TT
+CLASS="LITERAL"
+>REPLICATION</TT
+>特权，这在<A
+HREF="sql-createrole.html"
+>CREATE ROLE</A
+>的文档中有更完整的描述。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>--no-replication</TT
+></DT
+><DD
+><P
+>        新用户将不具有<TT
+CLASS="LITERAL"
+>REPLICATION</TT
+>特权，这在<A
+HREF="sql-createrole.html"
+>CREATE ROLE</A
+>的文档中有更完整的描述。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-?</TT
+><BR><TT
+CLASS="OPTION"
+>--help</TT
+></DT
+><DD
+><P
+>       显示有关<SPAN
+CLASS="APPLICATION"
+>createuser</SPAN
+>命令行参数的帮助并退出。
+       </P
+></DD
+></DL
+></DIV
+><P>
+  </P
+><P
+>   <SPAN
+CLASS="APPLICATION"
+>createuser</SPAN
+>也接受下列命令行参数作为连接参数：
+
+   <P
+></P
+></P><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="OPTION"
+>-h <TT
+CLASS="REPLACEABLE"
+><I
+>host</I
+></TT
+></TT
+><BR><TT
+CLASS="OPTION"
+>--host=<TT
+CLASS="REPLACEABLE"
+><I
+>host</I
+></TT
+></TT
+></DT
+><DD
+><P
+>        指定运行服务器的机器的主机名。如果该值以一个斜线开始，它被用作 Unix 域套接字的目录。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-p <TT
+CLASS="REPLACEABLE"
+><I
+>port</I
+></TT
+></TT
+><BR><TT
+CLASS="OPTION"
+>--port=<TT
+CLASS="REPLACEABLE"
+><I
+>port</I
+></TT
+></TT
+></DT
+><DD
+><P
+>        指定服务器正在监听连接的 TCP 端口或本地 Unix 域套接字文件扩展。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-U <TT
+CLASS="REPLACEABLE"
+><I
+>username</I
+></TT
+></TT
+><BR><TT
+CLASS="OPTION"
+>--username=<TT
+CLASS="REPLACEABLE"
+><I
+>username</I
+></TT
+></TT
+></DT
+><DD
+><P
+>        要作为哪个用户连接（不是要创建的用户名）。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-w</TT
+><BR><TT
+CLASS="OPTION"
+>--no-password</TT
+></DT
+><DD
+><P
+>        从不发出一个口令提示。如果服务器要求口令认证并且没有其他方式提供口令（例如一个<TT
+CLASS="FILENAME"
+>.pgpass</TT
+>文件），那儿连接尝试将失败。这个选项对于批处理任务和脚本有用，因为在其中没有一个用户来输入口令。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-W</TT
+><BR><TT
+CLASS="OPTION"
+>--password</TT
+></DT
+><DD
+><P
+>        强制<SPAN
+CLASS="APPLICATION"
+>createuser</SPAN
+>在连接到一个数据库之前提示要求一个口令（用来连接到服务器，而不是新用户的口令）。
+       </P
+><P
+>        这个选项不是必不可少的，因为如果服务器要求口令认证，<SPAN
+CLASS="APPLICATION"
+>createuser</SPAN
+>将自动提示要求一个口令。但是，<SPAN
+CLASS="APPLICATION"
+>createuser</SPAN
+>将浪费一次连接尝试来发现服务器想要一个口令。在某些情况下值得用<TT
+CLASS="OPTION"
+>-W</TT
+>来避免额外的连接尝试。
+       </P
+></DD
+></DL
+></DIV
+><P>
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN93546"
+></A
+><H2
+>环境</H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="ENVAR"
+>PGHOST</TT
+><BR><TT
+CLASS="ENVAR"
+>PGPORT</TT
+><BR><TT
+CLASS="ENVAR"
+>PGUSER</TT
+></DT
+><DD
+><P
+>      默认连接参数
+     </P
+></DD
+></DL
+></DIV
+><P
+>   和大部分其他<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>工具相似，这个工具也使用<SPAN
+CLASS="APPLICATION"
+>libpq</SPAN
+>（见<A
+HREF="libpq-envars.html"
+>第 32.14 &#33410;</A
+>）支持的环境变量。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN93562"
+></A
+><H2
+>诊断</H2
+><P
+>   在有困难时，可以在<A
+HREF="sql-createrole.html"
+>CREATE ROLE</A
+>和<A
+HREF="app-psql.html"
+><SPAN
+CLASS="APPLICATION"
+>psql</SPAN
+></A
+>中找潜在问题和错误消息的讨论。数据库服务器必须运行在目标主机上。同样，任何<SPAN
+CLASS="APPLICATION"
+>libpq</SPAN
+>前端库使用的默认连接设置和环境变量都将适用于此。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN93568"
+></A
+><H2
+>例子</H2
+><P
+>    要在默认数据库服务器上创建一个用户<TT
+CLASS="LITERAL"
+>joe</TT
+>：
+</P><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>$ </SAMP
+><KBD
+CLASS="USERINPUT"
+>createuser joe</KBD
+></PRE
+><P>
+   </P
+><P
+>    要在默认数据库服务器上创建一个用户<TT
+CLASS="LITERAL"
+>joe</TT
+>并提示要求一些额外属性：
+</P><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>$ </SAMP
+><KBD
+CLASS="USERINPUT"
+>createuser --interactive joe</KBD
+>
+<SAMP
+CLASS="COMPUTEROUTPUT"
+>Shall the new role be a superuser? (y/n) </SAMP
+><KBD
+CLASS="USERINPUT"
+>n</KBD
+>
+<SAMP
+CLASS="COMPUTEROUTPUT"
+>Shall the new role be allowed to create databases? (y/n) </SAMP
+><KBD
+CLASS="USERINPUT"
+>n</KBD
+>
+<SAMP
+CLASS="COMPUTEROUTPUT"
+>Shall the new role be allowed to create more new roles? (y/n) </SAMP
+><KBD
+CLASS="USERINPUT"
+>n</KBD
+></PRE
+><P>
+   </P
+><P
+>    要使用在主机<TT
+CLASS="LITERAL"
+>eden</TT
+>、端口 5000 上的服务器创建同一个用户<TT
+CLASS="LITERAL"
+>joe</TT
+>，并带有显式指定的属性，看看下面的命令：
+</P><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>$ </SAMP
+><KBD
+CLASS="USERINPUT"
+>createuser -h eden -p 5000 -S -D -R -e joe</KBD
+>
+<SAMP
+CLASS="COMPUTEROUTPUT"
+>CREATE ROLE joe NOSUPERUSER NOCREATEDB NOCREATEROLE INHERIT LOGIN;</SAMP
+></PRE
+><P>
+   </P
+><P
+>    要创建用户<TT
+CLASS="LITERAL"
+>joe</TT
+>为一个超级用户并且立刻分配一个口令：
+</P><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>$ </SAMP
+><KBD
+CLASS="USERINPUT"
+>createuser -P -s -e joe</KBD
+>
+<SAMP
+CLASS="COMPUTEROUTPUT"
+>Enter password for new role: </SAMP
+><KBD
+CLASS="USERINPUT"
+>xyzzy</KBD
+>
+<SAMP
+CLASS="COMPUTEROUTPUT"
+>Enter it again: </SAMP
+><KBD
+CLASS="USERINPUT"
+>xyzzy</KBD
+>
+<SAMP
+CLASS="COMPUTEROUTPUT"
+>CREATE ROLE joe PASSWORD 'md5b5f5ba1a423792b526f799ae4eb3d59e' SUPERUSER CREATEDB CREATEROLE INHERIT LOGIN;</SAMP
+></PRE
+><P>
+    在上面的例子中，在录入新口令时新口令并没有真正地被回显，但是为了清晰，我们特意把它列了出来。如你所见，该口令在被发送给客户端之前会被加密。如果使用了选项<TT
+CLASS="OPTION"
+>--unencrypted</TT
+>，口令<SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>将会</I
+></SPAN
+>出现在回显的命令中（并且还可能出现在服务器日志和其他地方）。因此如果任何他人能够看到你的屏幕，你不会希望使用<TT
+CLASS="OPTION"
+>-e</TT
+>。
+   </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN93606"
+></A
+><H2
+>参见</H2
+><A
+HREF="app-dropuser.html"
+><SPAN
+CLASS="APPLICATION"
+>dropuser</SPAN
+></A
+>, <A
+HREF="sql-createrole.html"
+>CREATE ROLE</A
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="app-createlang.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="app-dropdb.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><SPAN
+CLASS="APPLICATION"
+>createlang</SPAN
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="reference-client.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><SPAN
+CLASS="APPLICATION"
+>dropdb</SPAN
+></TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

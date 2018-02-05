@@ -1,0 +1,536 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>CREATE DOMAIN</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="SQL 命令"
+HREF="sql-commands.html"><LINK
+REL="PREVIOUS"
+TITLE="CREATE DATABASE"
+HREF="sql-createdatabase.html"><LINK
+REL="NEXT"
+TITLE="CREATE EVENT TRIGGER"
+HREF="sql-createeventtrigger.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="REFENTRY"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/ref/create_domain.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="CREATE DATABASE"
+HREF="sql-createdatabase.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="CREATE EVENT TRIGGER"
+HREF="sql-createeventtrigger.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="SQL-CREATEDOMAIN"
+></A
+>CREATE DOMAIN</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN78754"
+></A
+><H2
+>&#21517;&#31216;</H2
+>CREATE DOMAIN&nbsp;--&nbsp;定义一个新的域</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN78757"
+></A
+><H2
+>&#22823;&#32434;</H2
+><PRE
+CLASS="SYNOPSIS"
+>CREATE DOMAIN <TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+> [ AS ] <TT
+CLASS="REPLACEABLE"
+><I
+>data_type</I
+></TT
+>
+    [ COLLATE <TT
+CLASS="REPLACEABLE"
+><I
+>collation</I
+></TT
+> ]
+    [ DEFAULT <TT
+CLASS="REPLACEABLE"
+><I
+>expression</I
+></TT
+> ]
+    [ <TT
+CLASS="REPLACEABLE"
+><I
+>constraint</I
+></TT
+> [ ... ] ]
+
+<SPAN
+CLASS="phrase"
+><SPAN
+CLASS="PHRASE"
+>其中 <TT
+CLASS="REPLACEABLE"
+><I
+>constraint</I
+></TT
+> 是：</SPAN
+></SPAN
+>
+
+[ CONSTRAINT <TT
+CLASS="REPLACEABLE"
+><I
+>constraint_name</I
+></TT
+> ]
+{ NOT NULL | NULL | CHECK (<TT
+CLASS="REPLACEABLE"
+><I
+>expression</I
+></TT
+>) }</PRE
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN78768"
+></A
+><H2
+>描述</H2
+><P
+>   <TT
+CLASS="COMMAND"
+>CREATE DOMAIN</TT
+>创建一个新的域。域
+   本质上是一种带有可选约束（在允许的值集合上的限制）的数据类型。
+   定义一个域的用户将成为它的拥有者。
+  </P
+><P
+>   如果给定一个模式名（例如<TT
+CLASS="LITERAL"
+>CREATE DOMAIN
+   myschema.mydomain ...</TT
+>），那么域将被创建在该指定的模式中。
+   否则它会被创建在当前模式中。域的名称在其模式中的类型和域之间
+   必须保持唯一。
+  </P
+><P
+>   域主要被用于把字段上的常用约束抽象到一个单一的位置以便维护。例如，
+   几个表可能都包含电子邮件地址列，而且都要求相同的 CHECK 约束来验证
+   地址的语法。可以为此定义一个域，而不是在每个表上都单独设置一个约束。
+  </P
+><P
+>   要创建一个域，你必须在其底层类型上拥有<TT
+CLASS="LITERAL"
+>USAGE</TT
+>特权。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN78777"
+></A
+><H2
+>参数</H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+></DT
+><DD
+><P
+>        要被创建的域的名称（可以被模式限定）。
+       </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>data_type</I
+></TT
+></DT
+><DD
+><P
+>        域的底层数据类型。可以包括数组指示符。
+       </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>collation</I
+></TT
+></DT
+><DD
+><P
+>        用于该域的可选的排序规则。如果没有指定排序规则，将使用底层
+        数据类型的默认排序规则。如果指定了<TT
+CLASS="LITERAL"
+>COLLATE</TT
+>，
+        底层类型必须是可排序的。
+       </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>DEFAULT <TT
+CLASS="REPLACEABLE"
+><I
+>expression</I
+></TT
+></TT
+></DT
+><DD
+><P
+>        <TT
+CLASS="LITERAL"
+>DEFAULT</TT
+>子句为该域数据类型的列指定一个默认值。
+        该值是任何没有变量的表达式（但不允许子查询）。默认值表达式
+        的数据类型必须匹配域的数据类型。如果没有指定默认值，那么
+        默认值就是空值。
+       </P
+><P
+>        默认值表达式将被用在任何没有指定列值的插入操作中。如果为一个
+        特定列定义了默认值，它会覆盖与域相关的默认值。继而，域默认值
+        会覆盖任何与底层数据类型相关的默认值。
+       </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>CONSTRAINT <TT
+CLASS="REPLACEABLE"
+><I
+>constraint_name</I
+></TT
+></TT
+></DT
+><DD
+><P
+>        一个约束的名称（可选）。如果没有指定，系统会生成一个名称。
+       </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>NOT NULL</TT
+></DT
+><DD
+><P
+>        这个域的值通常不能为空值（但是看看下面的注释）。
+       </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>NULL</TT
+></DT
+><DD
+><P
+>        这个域的值允许为空值。这是默认值。
+       </P
+><P
+>        这个子句只是为了与非标准 SQL 数据库相兼容而设计。在新的
+        应用中不鼓励使用它。
+       </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>CHECK (<TT
+CLASS="REPLACEABLE"
+><I
+>expression</I
+></TT
+>)</TT
+></DT
+><DD
+><P
+><TT
+CLASS="LITERAL"
+>CHECK</TT
+>子句指定该域的值必须满足的完整性
+     约束或者测试。每一个约束必须是一个产生布尔结果的表达式。
+     它应该使用关键词<TT
+CLASS="LITERAL"
+>VALUE</TT
+>来引用要被测试的值。计算为
+      TRUE 或者 UNKNOWN 的表达式成功。如果该表达式产生一个 FALSE 
+      结果，会报告一个错误并且该值不允许被转换成该域类型。
+     </P
+><P
+>      当前，<TT
+CLASS="LITERAL"
+>CHECK</TT
+>表达式不能包含子查询，也不能
+      引用除<TT
+CLASS="LITERAL"
+>VALUE</TT
+>之外的其他变量。
+     </P
+><P
+>      当一个域有多个<TT
+CLASS="LITERAL"
+>CHECK</TT
+>约束，将按照其名字的
+      字母顺序测试它们（版本 9.5 之前的<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>
+      不遵循任何用于<TT
+CLASS="LITERAL"
+>CHECK</TT
+>约束的特定触发顺序）。
+     </P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN78836"
+></A
+><H2
+>注解</H2
+><P
+>   在把一个值转换成域类型时会检查域约束（特别是<TT
+CLASS="LITERAL"
+>NOT NULL</TT
+>）。
+   即使有一个这样的约束，有可能一个名义上属于该域类型的列也会被读成空值。
+   例如，如果在一次外连接查询中，属于该域的列出现在外连接的空值端。下面
+   是一个更精细的例子：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>INSERT INTO tab (domcol) VALUES ((SELECT domcol FROM tab WHERE false));</PRE
+><P>
+   空的标量子-SELECT 将产生一个空值，它被认为是该域类型的值，因此不会
+   在其上应用任何进一步的约束检查，并且插入将会成功。
+  </P
+><P
+>   要避免这类问题很难，因为 SQL 的一般假设是空值也是每一种数据类型的合法值。
+   因此，最好的方法是设计一个允许空值的域约束，然后根据需要在该域类型的列上
+   应用列的<TT
+CLASS="LITERAL"
+>NOT NULL</TT
+>约束。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN78843"
+></A
+><H2
+>示例</H2
+><P
+>   这个例子创建<TT
+CLASS="TYPE"
+>us_postal_code</TT
+>数据类型并且把它用在
+   一个表定义中。一个正则表达式测试被用来验证值是否看起来像一个
+   合法的 US 邮政编码：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>CREATE DOMAIN us_postal_code AS TEXT
+CHECK(
+   VALUE ~ '^\d{5}$'
+OR VALUE ~ '^\d{5}-\d{4}$'
+);
+
+CREATE TABLE us_snail_addy (
+  address_id SERIAL PRIMARY KEY,
+  street1 TEXT NOT NULL,
+  street2 TEXT,
+  street3 TEXT,
+  city TEXT NOT NULL,
+  postal us_postal_code NOT NULL
+);</PRE
+><P></P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="SQL-CREATEDOMAIN-COMPATIBILITY"
+></A
+><H2
+>兼容性</H2
+><P
+>   命令<TT
+CLASS="COMMAND"
+>CREATE DOMAIN</TT
+>符合 SQL 标准。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="SQL-CREATEDOMAIN-SEE-ALSO"
+></A
+><H2
+>另见</H2
+><A
+HREF="sql-alterdomain.html"
+>ALTER DOMAIN</A
+>, <A
+HREF="sql-dropdomain.html"
+>DROP DOMAIN</A
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-createdatabase.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="sql-createeventtrigger.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>CREATE DATABASE</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>CREATE EVENT TRIGGER</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

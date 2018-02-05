@@ -1,0 +1,643 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>开发者选项</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="服务器配置"
+HREF="runtime-config.html"><LINK
+REL="PREVIOUS"
+TITLE="自定义选项"
+HREF="runtime-config-custom.html"><LINK
+REL="NEXT"
+TITLE="短选项"
+HREF="runtime-config-short.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/config.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="自定义选项"
+HREF="runtime-config-custom.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="runtime-config.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#31456; 19. 服务器配置</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="短选项"
+HREF="runtime-config-short.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="RUNTIME-CONFIG-DEVELOPER"
+>19.17. 开发者选项</A
+></H1
+><P
+>     下面的参数目的是用在<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>源代码上， 并且在某些情况下可以帮助恢复严重损坏了的数据库。在一个生产数据库中没有理由使用它们。同样，它们被从例子<TT
+CLASS="FILENAME"
+>postgresql.conf</TT
+>文件中排除。请注意许多这些参数要求特殊的源代码编译标志才能工作。
+    </P
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><A
+NAME="GUC-ALLOW-SYSTEM-TABLE-MODS"
+></A
+><TT
+CLASS="VARNAME"
+>allow_system_table_mods</TT
+> (<TT
+CLASS="TYPE"
+>boolean</TT
+>)
+      </DT
+><DD
+><P
+>        允许对系统表结构的修改。它可以被<TT
+CLASS="COMMAND"
+>initdb</TT
+>使用。这个参数只能在服务器启动时设置。
+       </P
+></DD
+><DT
+><A
+NAME="GUC-IGNORE-SYSTEM-INDEXES"
+></A
+><TT
+CLASS="VARNAME"
+>ignore_system_indexes</TT
+> (<TT
+CLASS="TYPE"
+>boolean</TT
+>)
+      </DT
+><DD
+><P
+>        读取系统表时忽略系统索引（但是修改系统表时依然同时更新索引）。这在从被破坏的系统索引中恢复数据的时有用。这个参数在会话开始之后不能被更改。
+       </P
+></DD
+><DT
+><A
+NAME="GUC-POST-AUTH-DELAY"
+></A
+><TT
+CLASS="VARNAME"
+>post_auth_delay</TT
+> (<TT
+CLASS="TYPE"
+>integer</TT
+>)
+      </DT
+><DD
+><P
+>        如果为非零，那么在一个新的服务器进程派生出来之后并且在它开始认证过程之前，就会发生这么多秒的延迟。这是为了给开发者们一个机会在一个服务器进程上附加一个调试器。这个参数在会话开始之后不能被更改。
+       </P
+></DD
+><DT
+><A
+NAME="GUC-PRE-AUTH-DELAY"
+></A
+><TT
+CLASS="VARNAME"
+>pre_auth_delay</TT
+> (<TT
+CLASS="TYPE"
+>integer</TT
+>)
+      </DT
+><DD
+><P
+>        如果为非零，那么在一个新的服务器进程派生出来之后并且在它开始认证过程之前，就会发生这么多秒的延迟。这是为了给开发者们一个机会在一个服务器进程上附加一个调试器来跟踪认证过程中的不当行为。这个参数只能在<TT
+CLASS="FILENAME"
+>postgresql.conf</TT
+>文件中或在服务器命令行上设置。
+       </P
+></DD
+><DT
+><A
+NAME="GUC-TRACE-NOTIFY"
+></A
+><TT
+CLASS="VARNAME"
+>trace_notify</TT
+> (<TT
+CLASS="TYPE"
+>boolean</TT
+>)
+      </DT
+><DD
+><P
+>        为<TT
+CLASS="COMMAND"
+>LISTEN</TT
+>和<TT
+CLASS="COMMAND"
+>NOTIFY</TT
+>命令生成大量调试输出。<A
+HREF="runtime-config-logging.html#GUC-CLIENT-MIN-MESSAGES"
+>client_min_messages</A
+>和<A
+HREF="runtime-config-logging.html#GUC-LOG-MIN-MESSAGES"
+>log_min_messages</A
+>必须是<TT
+CLASS="LITERAL"
+>DEBUG1</TT
+>或者更低才能把这种输出分别发送到客户端或者服务器日志。
+       </P
+></DD
+><DT
+><A
+NAME="GUC-TRACE-RECOVERY-MESSAGES"
+></A
+><TT
+CLASS="VARNAME"
+>trace_recovery_messages</TT
+> (<TT
+CLASS="TYPE"
+>enum</TT
+>)
+      </DT
+><DD
+><P
+>        启用记录与恢复有关的调试输出，否则无法记录。这个参数允许用户覆盖<A
+HREF="runtime-config-logging.html#GUC-LOG-MIN-MESSAGES"
+>log_min_messages</A
+>的正常设置，但只用于指定的消息。这个参数的目的是用来调试热后备。有效值包括<TT
+CLASS="LITERAL"
+>DEBUG5</TT
+>、<TT
+CLASS="LITERAL"
+>DEBUG4</TT
+>、<TT
+CLASS="LITERAL"
+>DEBUG3</TT
+>、<TT
+CLASS="LITERAL"
+>DEBUG2</TT
+>、<TT
+CLASS="LITERAL"
+>DEBUG1</TT
+>和<TT
+CLASS="LITERAL"
+>LOG</TT
+>。默认值<TT
+CLASS="LITERAL"
+>LOG</TT
+>完全不会影响日志决定。其他值会记录相关级别或更高级别的与恢复相关的调试消息，就好像它们具有<TT
+CLASS="LITERAL"
+>LOG</TT
+>优先级一样；对于<TT
+CLASS="VARNAME"
+>log_min_messages</TT
+>的通用设置，这会无条件的将消息发送给服务器日志。这个参数只能在<TT
+CLASS="FILENAME"
+>postgresql.conf</TT
+>文件中或在服务器命令行上设置。
+       </P
+></DD
+><DT
+><A
+NAME="GUC-TRACE-SORT"
+></A
+><TT
+CLASS="VARNAME"
+>trace_sort</TT
+> (<TT
+CLASS="TYPE"
+>boolean</TT
+>)
+      </DT
+><DD
+><P
+>        如果打开，发出在排序操作中的资源使用的相关信息。只有在编译<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>时定义了<TT
+CLASS="SYMBOL"
+>TRACE_SORT</TT
+>宏， 这个参数才可用（不过，当前在默认情况下就定义了<TT
+CLASS="SYMBOL"
+>TRACE_SORT</TT
+>）。
+       </P
+></DD
+><DT
+><TT
+CLASS="VARNAME"
+>trace_locks</TT
+> (<TT
+CLASS="TYPE"
+>boolean</TT
+>)
+      </DT
+><DD
+><P
+>        如果开启，发出锁使用情况的信息。被转储信息中包括锁操作的类型、锁的类型和 被锁或被解锁对象的唯一标识符。同样包括的还有已经授予这个对象的锁类型的位掩码和 等待这个对象的锁类型的位掩码。对每一种锁类型，已授权锁和等待锁的计数也会被一起转储。一个日志文件输出的例子如下：
+</P><PRE
+CLASS="SCREEN"
+>LOG:  LockAcquire: new: lock(0xb7acd844) id(24688,24696,0,0,0,1)
+      grantMask(0) req(0,0,0,0,0,0,0)=0 grant(0,0,0,0,0,0,0)=0
+      wait(0) type(AccessShareLock)
+LOG:  GrantLock: lock(0xb7acd844) id(24688,24696,0,0,0,1)
+      grantMask(2) req(1,0,0,0,0,0,0)=1 grant(1,0,0,0,0,0,0)=1
+      wait(0) type(AccessShareLock)
+LOG:  UnGrantLock: updated: lock(0xb7acd844) id(24688,24696,0,0,0,1)
+      grantMask(0) req(0,0,0,0,0,0,0)=0 grant(0,0,0,0,0,0,0)=0
+      wait(0) type(AccessShareLock)
+LOG:  CleanUpLock: deleting: lock(0xb7acd844) id(24688,24696,0,0,0,1)
+      grantMask(0) req(0,0,0,0,0,0,0)=0 grant(0,0,0,0,0,0,0)=0
+      wait(0) type(INVALID)</PRE
+><P>
+        被转储结构的详细信息可以在<TT
+CLASS="FILENAME"
+>src/include/storage/lock.h</TT
+>中找到。
+       </P
+><P
+>        只有在编译<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>时定义了<TT
+CLASS="SYMBOL"
+>LOCK_DEBUG</TT
+>宏， 这个参数才可用。
+       </P
+></DD
+><DT
+><TT
+CLASS="VARNAME"
+>trace_lwlocks</TT
+> (<TT
+CLASS="TYPE"
+>boolean</TT
+>)
+      </DT
+><DD
+><P
+>        如果开启，发出轻量级锁的使用信息。轻量级锁主要是为了提供对共享内存数据结构的互斥访问。
+       </P
+><P
+>        只有在编译<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>时定义了<TT
+CLASS="SYMBOL"
+>LOCK_DEBUG</TT
+>宏， 这个参数才可用。
+       </P
+></DD
+><DT
+><TT
+CLASS="VARNAME"
+>trace_userlocks</TT
+> (<TT
+CLASS="TYPE"
+>boolean</TT
+>)
+      </DT
+><DD
+><P
+>        如果开启，发出关于用户锁使用的信息。与<TT
+CLASS="SYMBOL"
+>trace_locks</TT
+>的输出一样，但只用于咨询锁。
+       </P
+><P
+>        只有在编译<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>时定义了<TT
+CLASS="SYMBOL"
+>LOCK_DEBUG</TT
+>宏， 这个参数才可用。
+       </P
+></DD
+><DT
+><TT
+CLASS="VARNAME"
+>trace_lock_oidmin</TT
+> (<TT
+CLASS="TYPE"
+>integer</TT
+>)
+      </DT
+><DD
+><P
+>        如果设置，不会跟踪小于这个 OID 的锁（用于避免在系统表上的输出）。
+       </P
+><P
+>        只有在编译<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>时定义了<TT
+CLASS="SYMBOL"
+>LOCK_DEBUG</TT
+>宏， 这个参数才可用。
+       </P
+></DD
+><DT
+><TT
+CLASS="VARNAME"
+>trace_lock_table</TT
+> (<TT
+CLASS="TYPE"
+>integer</TT
+>)
+      </DT
+><DD
+><P
+>        无条件地跟踪此表（OID）上的锁。
+       </P
+><P
+>        只有在编译<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>时定义了<TT
+CLASS="SYMBOL"
+>LOCK_DEBUG</TT
+>宏， 这个参数才可用。
+       </P
+></DD
+><DT
+><TT
+CLASS="VARNAME"
+>debug_deadlocks</TT
+> (<TT
+CLASS="TYPE"
+>boolean</TT
+>)
+      </DT
+><DD
+><P
+>        如果设置，当死锁超时发生时，转储所有当前锁的信息。
+       </P
+><P
+>        只有在编译<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>时定义了<TT
+CLASS="SYMBOL"
+>LOCK_DEBUG</TT
+>宏， 这个参数才可用。
+       </P
+></DD
+><DT
+><TT
+CLASS="VARNAME"
+>log_btree_build_stats</TT
+> (<TT
+CLASS="TYPE"
+>boolean</TT
+>)
+      </DT
+><DD
+><P
+>        如果设置，会记录 B 树操作上的系统资源使用情况统计（内存和 CPU）。
+       </P
+><P
+>        只有在编译<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>时定义了<TT
+CLASS="SYMBOL"
+>BTREE_BUILD_STATS</TT
+>宏， 这个参数才可用。
+       </P
+></DD
+><DT
+><A
+NAME="GUC-WAL-DEBUG"
+></A
+><TT
+CLASS="VARNAME"
+>wal_debug</TT
+> (<TT
+CLASS="TYPE"
+>boolean</TT
+>)
+      </DT
+><DD
+><P
+>        如果被打开，WAL 相关的调试输出将被发出。只有在编译<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>时定义了<TT
+CLASS="SYMBOL"
+>WAL_DEBUG</TT
+>宏的情况下，这个参数才可用。
+       </P
+></DD
+><DT
+><A
+NAME="GUC-IGNORE-CHECKSUM-FAILURE"
+></A
+><TT
+CLASS="VARNAME"
+>ignore_checksum_failure</TT
+> (<TT
+CLASS="TYPE"
+>boolean</TT
+>)
+      </DT
+><DD
+><P
+>        只有当<A
+HREF="app-initdb.html#APP-INITDB-DATA-CHECKSUMS"
+>data checksums</A
+>被启用时才有效。
+       </P
+><P
+>        在读取过程中检测到一次校验码失败通常会导致<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>报告一个错误。设置<TT
+CLASS="VARNAME"
+>ignore_checksum_failure</TT
+>为打开会导致系统忽略失败（但是仍然报告一个警告），并且继续执行。这种行为可能<SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>导致崩溃、传播或隐藏损坏或者其他严重的问题</I
+></SPAN
+>。但是，它允许你绕过错误并且在块头部仍然健全的情况下从表中检索未损坏的元组。如果头部被损坏，即便这个选项被启用系统也将报告一个错误。默认设置是<TT
+CLASS="LITERAL"
+>off</TT
+>，并且只能被超级用户改变。
+       </P
+></DD
+><DT
+><A
+NAME="GUC-ZERO-DAMAGED-PAGES"
+></A
+><TT
+CLASS="VARNAME"
+>zero_damaged_pages</TT
+> (<TT
+CLASS="TYPE"
+>boolean</TT
+>)
+      </DT
+><DD
+><P
+>        检测到一个损坏的页面头部通常会导致<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>报告一个错误，并且中止当前事务。把<TT
+CLASS="VARNAME"
+>zero_damaged_pages</TT
+>设置为打开会让系统报告一个警告、把损坏的页面填充零，然后继续处理。这种行为会<SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>毁掉数据</I
+></SPAN
+>，即被损坏页面上的所有行。但是它允许你绕开错误并且从可能存在表中的任何未损坏页面中检索行。如果由于一次硬件或软件错误而发生毁坏，这种方法可用于恢复数据。通常你不应该把它设置为打开，除非你已经彻底放弃从表的损坏页面中恢复数据。被填充零的页面不会被强制到磁盘上，因此我们推荐在再次关闭这个参数之前先重建表或索引。默认的设置是<TT
+CLASS="LITERAL"
+>off</TT
+>，并且只有超级用户可以改变它。
+       </P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="runtime-config-custom.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="runtime-config-short.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>自定义选项</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="runtime-config.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>短选项</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

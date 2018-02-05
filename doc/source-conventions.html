@@ -1,0 +1,289 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>其他编码习惯</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="PostgreSQL编码习惯"
+HREF="source.html"><LINK
+REL="PREVIOUS"
+TITLE="错误消息风格指导"
+HREF="error-style-guide.html"><LINK
+REL="NEXT"
+TITLE="本国语言支持"
+HREF="nls.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/sources.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="错误消息风格指导"
+HREF="error-style-guide.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="source.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#31456; 52. PostgreSQL编码习惯</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="本国语言支持"
+HREF="nls.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="SOURCE-CONVENTIONS"
+>52.4. 其他编码习惯</A
+></H1
+><DIV
+CLASS="SIMPLESECT"
+><H2
+CLASS="SIMPLESECT"
+><A
+NAME="AEN114828"
+>52.4.1. C 标准</A
+></H2
+><P
+>     <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>中的代码应该只依赖于 C89 标准中的语言特性。这意味着遵循 C89 的编译器肯定能编译 postgres，至少除开少数平台依赖问题之外。 如果提供了回退机制，也可以使用来自后续 C 标准版本的特性或者编译器相关的特性。
+    </P
+><P
+>     例如虽然<TT
+CLASS="LITERAL"
+>static inline</TT
+>和<TT
+CLASS="LITERAL"
+>_StaticAssert()</TT
+>来自于新版的 C 标准，但是<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>中仍然用到了它们。如果它们不可用，我们分别会回退到定义没有内联的函数以及使用兼容 C89 的替代品来执行相同的检查（但是会发出晦涩的消息）。
+    </P
+></DIV
+><DIV
+CLASS="SIMPLESECT"
+><H2
+CLASS="SIMPLESECT"
+><A
+NAME="AEN114836"
+>52.4.2. 类函数的宏以及内联函数</A
+></H2
+><P
+>     带有参数的宏以及<TT
+CLASS="LITERAL"
+>static inline</TT
+>函数都可能被使用。当类似如下情况写作宏时会有多次计算风险或者宏可能非常长时，使用后者会更好。
+</P><PRE
+CLASS="PROGRAMLISTING"
+>#define Max(x, y)       ((x) &#62; (y) ? (x) : (y))</PRE
+><P>
+     在其他情况下只能使用宏，或者说使用宏至少更容易。例如，由于多种类型的表达式需要被传递给宏。
+    </P
+><P
+>     当一个内联函数的定义引用只在后端中可用的符号（即变量、函数）时，从前端代码引用该函数时该函数可能不可见。
+</P><PRE
+CLASS="PROGRAMLISTING"
+>#ifndef FRONTEND
+static inline MemoryContext
+MemoryContextSwitchTo(MemoryContext context)
+{
+    MemoryContext old = CurrentMemoryContext;
+
+    CurrentMemoryContext = context;
+    return old;
+}
+#endif   /* FRONTEND */</PRE
+><P>
+     在这个例子中，<TT
+CLASS="LITERAL"
+>CurrentMemoryContext</TT
+>只在后端中可用，但该函数引用了它并且该函数因此被<TT
+CLASS="LITERAL"
+>#ifndef FRONTEND</TT
+>隐藏。之所以存在这条规则，是因为即使内联函数中包含的符号没有被使用，有些编译器也会发出对它们的引用。
+    </P
+></DIV
+><DIV
+CLASS="SIMPLESECT"
+><H2
+CLASS="SIMPLESECT"
+><A
+NAME="AEN114845"
+>52.4.3. 编写信号处理器</A
+></H2
+><P
+>     为了能适合在信号处理器中运行，代码必须被非常仔细地编写。根本问题是，除非被阻塞，信号处理器能在任何时候打断代码。如果信号处理器内部的代码使用和外面代码相同的状态，很可能会出现混乱。例如，可以想想如果一个信号处理器试图取得已经在被打断代码中持有的锁时会发生什么。
+    </P
+><P
+>     除特殊安排的代码之外，在信号处理器中只应该调用对异步信号安全的函数（如 POSIX 中定义的那样）并且只访问<TT
+CLASS="LITERAL"
+>volatile sig_atomic_t</TT
+>类型的变量。一些<TT
+CLASS="COMMAND"
+>postgres</TT
+>中的函数也被视作是信号安全的，其中很重要的一个是<CODE
+CLASS="FUNCTION"
+>SetLatch()</CODE
+>。
+    </P
+><P
+>     在大部分情况下，信号处理器应该只提示一个信号已经到达，并且使用一个 latch 唤醒运行在处理器之外的代码。这样一个处理器的例子如下：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>static void
+handle_sighup(SIGNAL_ARGS)
+{
+    int         save_errno = errno;
+
+    got_SIGHUP = true;
+    SetLatch(MyLatch);
+
+    errno = save_errno;
+}</PRE
+><P>
+     <TT
+CLASS="VARNAME"
+>errno</TT
+>会被保存并且恢复，因为<CODE
+CLASS="FUNCTION"
+>SetLatch()</CODE
+>可能会更改它。如果不这样做，当前正在观测<TT
+CLASS="VARNAME"
+>errno</TT
+>的被中断代码可能会看到错误的值。
+    </P
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="error-style-guide.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="nls.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>错误消息风格指导</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="source.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>本国语言支持</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

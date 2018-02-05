@@ -1,0 +1,856 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>编译文档</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="文档"
+HREF="docguide.html"><LINK
+REL="PREVIOUS"
+TITLE="工具集"
+HREF="docguide-toolsets.html"><LINK
+REL="NEXT"
+TITLE="文档写作"
+HREF="docguide-authoring.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/docguide.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="工具集"
+HREF="docguide-toolsets.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="docguide.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#38468;&#24405; J. 文档</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="文档写作"
+HREF="docguide-authoring.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="DOCGUIDE-BUILD"
+>J.3. 编译文档</A
+></H1
+><P
+>   一旦你把所有的东西都设置好以后，切换到<TT
+CLASS="FILENAME"
+>doc/src/sgml</TT
+>目录，并且运行下面小节中介绍的命令之一就可以编译文档（记住使用 GNU make）。
+  </P
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN183596"
+>J.3.1. HTML</A
+></H2
+><P
+>    要编译文档的<ACRONYM
+CLASS="ACRONYM"
+>HTML</ACRONYM
+>版本：
+</P><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>doc/src/sgml$ </SAMP
+><KBD
+CLASS="USERINPUT"
+>make html</KBD
+></PRE
+><P>
+    这也是默认的目标。这个命令的输出将出现在子目录<TT
+CLASS="FILENAME"
+>html</TT
+>中。
+   </P
+><P
+>    要用<A
+HREF="http://postgresql.org/docs/current"
+TARGET="_top"
+>postgresql.org</A
+>所使用的样式表
+    而不是默认的简单样式生成 HTML 文档：
+</P><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>doc/src/sgml$ </SAMP
+><KBD
+CLASS="USERINPUT"
+>make STYLE=website html</KBD
+></PRE
+><P>
+   </P
+><P
+>    要创建正确的索引，编译可能要处理几个不同的阶段。如果你不关心索引，并且只希望校对输出，可以使用<TT
+CLASS="LITERAL"
+>draft</TT
+>目标：
+</P><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>doc/src/sgml$ </SAMP
+><KBD
+CLASS="USERINPUT"
+>make draft</KBD
+></PRE
+><P>
+   </P
+><P
+>    要把文档编译成单个 HTML 页面，可以使用：
+</P><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>doc/src/sgml$ </SAMP
+><KBD
+CLASS="USERINPUT"
+>make postgres.html</KBD
+></PRE
+><P>
+   </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN183618"
+>J.3.2. 手册页</A
+></H2
+><P
+>   我们使用 DocBook XSL 样式表来把<SPAN
+CLASS="PRODUCTNAME"
+>DocBook</SPAN
+>
+   <CODE
+CLASS="SGMLTAG"
+>refentry</CODE
+>页转换成适合于手册页的 *roff 输出。和<ACRONYM
+CLASS="ACRONYM"
+>HTML</ACRONYM
+>版本相似，手册页也是以一个 tar 档案被发布的。要创建手册页，使用命令：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>cd doc/src/sgml
+make man</PRE
+><P>
+  </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN183625"
+>J.3.3. 通过<SPAN
+CLASS="APPLICATION"
+>JadeTeX</SPAN
+>打印输出</A
+></H2
+><P
+>    如果你希望使用<SPAN
+CLASS="APPLICATION"
+>JadeTex</SPAN
+>产生一个本文档的可打印形式，你可以使用下列命令之一：
+
+    <P
+></P
+></P><UL
+><LI
+><P
+>       要通过<ACRONYM
+CLASS="ACRONYM"
+>DVI</ACRONYM
+>产生 A4 格式的 PostScript：
+</P><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>doc/src/sgml$ </SAMP
+><KBD
+CLASS="USERINPUT"
+>make postgres-A4.ps</KBD
+></PRE
+><P>
+       产生 U.S. 信纸格式：
+</P><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>doc/src/sgml$ </SAMP
+><KBD
+CLASS="USERINPUT"
+>make postgres-US.ps</KBD
+></PRE
+><P>
+      </P
+></LI
+><LI
+><P
+>       要创建一个<ACRONYM
+CLASS="ACRONYM"
+>PDF</ACRONYM
+>：
+</P><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>doc/src/sgml$ </SAMP
+><KBD
+CLASS="USERINPUT"
+>make postgres-A4.pdf</KBD
+></PRE
+><P>
+       或
+</P><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>doc/src/sgml$ </SAMP
+><KBD
+CLASS="USERINPUT"
+>make postgres-US.pdf</KBD
+></PRE
+><P>
+       （当然你也可以从 PostScript 创建一个<ACRONYM
+CLASS="ACRONYM"
+>PDF</ACRONYM
+>版本，但是如果你直接生成<ACRONYM
+CLASS="ACRONYM"
+>PDF</ACRONYM
+>，它会具有超链接和其他增强特性）。
+      </P
+></LI
+></UL
+><P>
+   </P
+><P
+>    在使用 JadeTeX 编译 PostgreSQL 文档时，你将可能需要增大某些 TeX 的内部参数。可以在文件<TT
+CLASS="FILENAME"
+>texmf.cnf</TT
+>中设置。在编写本文当时下列的设置是可以工作的：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>hash_extra.jadetex  = 200000
+hash_extra.pdfjadetex  = 200000
+pool_size.jadetex = 2000000
+pool_size.pdfjadetex = 2000000
+string_vacancies.jadetex = 150000
+string_vacancies.pdfjadetex = 150000
+max_strings.jadetex = 300000
+max_strings.pdfjadetex = 300000
+save_size.jadetex = 15000
+save_size.pdfjadetex = 15000</PRE
+><P>
+   </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN183654"
+>J.3.4. 溢出文本</A
+></H2
+><P
+>    有时文本对于打印边距会太宽，并且在极限情况中对于打印页面都会太宽，例如无回卷的文本、很宽的表格。过宽的文本会在 TeX 日志输出文件中产生<SPAN
+CLASS="QUOTE"
+>"Overfull hbox"</SPAN
+>消息，例如<TT
+CLASS="FILENAME"
+>postgres-US.log</TT
+>或<TT
+CLASS="FILENAME"
+>postgres-A4.log</TT
+>。在一英寸中有 72 个点，因此任何被报告为超过 72 个点而过宽的东西都将可能无法放在一个打印页中（假设边距为一英寸）。要寻找导致溢出的<ACRONYM
+CLASS="ACRONYM"
+>SGML</ACRONYM
+>文本，找到提到上述溢出消息的第一页的页号，如<TT
+CLASS="LITERAL"
+>[50 ###]</TT
+>（第 50 页），并且在<ACRONYM
+CLASS="ACRONYM"
+>PDF</ACRONYM
+>文件中查看该页号后的页面（如第 51 页），从中找到溢出文本并且相应地调整<ACRONYM
+CLASS="ACRONYM"
+>SGML</ACRONYM
+>。
+   </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN183664"
+>J.3.5. 通过<ACRONYM
+CLASS="ACRONYM"
+>RTF</ACRONYM
+>打印输出</A
+></H2
+><P
+>    你也可以通过把文档转换到<ACRONYM
+CLASS="ACRONYM"
+>RTF</ACRONYM
+>并且使用一个办公套件应用小幅的格式更正来创建一个<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>文档的可打印版本。基于特定办公套件的能力，你可以把文档转换为<ACRONYM
+CLASS="ACRONYM"
+>PDF</ACRONYM
+>的 PostScript。下面的过程展示了使用<SPAN
+CLASS="PRODUCTNAME"
+>Applixware</SPAN
+>进行这种处理：
+   </P
+><DIV
+CLASS="NOTE"
+><BLOCKQUOTE
+CLASS="NOTE"
+><P
+><B
+>&#27880;&#24847;: </B
+>     It appears that current versions of the 似乎当前版本的<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>文档会触发 OpenJade 的某些缺陷或者超过它的一些尺寸限制。如果<ACRONYM
+CLASS="ACRONYM"
+>RTF</ACRONYM
+>版本的编译处理挂起很长时间并且输出文件大小仍然为 0，那么你可能遇到了那个问题（但是记住一次正常的编译需要 5 到 10 分钟，因此不要太快中止它）。
+    </P
+></BLOCKQUOTE
+></DIV
+><DIV
+CLASS="PROCEDURE"
+><P
+><B
+><SPAN
+CLASS="PRODUCTNAME"
+>Applixware</SPAN
+> <ACRONYM
+CLASS="ACRONYM"
+>RTF</ACRONYM
+> Cleanup</B
+></P
+><P
+>     <SPAN
+CLASS="APPLICATION"
+>OpenJade</SPAN
+>忽略为正文文本指定一个默认风格。在过去，这个未被诊断的问题会导致表格内容生成的长时间处理。不过，在<SPAN
+CLASS="PRODUCTNAME"
+>Applixware</SPAN
+>兄弟们的大力帮助下，这个症状已经被诊断出来并且已经有可用的解决方法。
+    </P
+><OL
+TYPE="1"
+><LI
+CLASS="STEP"
+><P
+>      通过输入以下命令生成<ACRONYM
+CLASS="ACRONYM"
+>RTF</ACRONYM
+>版本：
+</P><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>doc/src/sgml$ </SAMP
+><KBD
+CLASS="USERINPUT"
+>make postgres.rtf</KBD
+></PRE
+><P>
+     </P
+></LI
+><LI
+CLASS="STEP"
+><P
+>      修复 RTF 文件来正确地指定所有风格，特别是默认风格。如果文档包含<CODE
+CLASS="SGMLTAG"
+>refentry</CODE
+>节，我们也必须替换将前一段联系到当前段落的格式化提示，并且将当前段落联系到下一个段落。一个小工具<TT
+CLASS="COMMAND"
+>fixrtf</TT
+>（<TT
+CLASS="FILENAME"
+>doc/src/sgml</TT
+>中可用）可以用来完成这些修复：
+</P><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>doc/src/sgml$ </SAMP
+><KBD
+CLASS="USERINPUT"
+>./fixrtf --refentry postgres.rtf</KBD
+></PRE
+><P>
+     </P
+><P
+>      该脚本增加<TT
+CLASS="LITERAL"
+>{\s0 Normal;}</TT
+>作为文档中的零号风格。根据<SPAN
+CLASS="PRODUCTNAME"
+>Applixware</SPAN
+>，RTF 标准将禁止增加一个隐式的零号风格，尽管微软的 Word 可以处理这种情况。为了修复<CODE
+CLASS="SGMLTAG"
+>refentry</CODE
+>节，该脚本用<TT
+CLASS="LITERAL"
+>\keep</TT
+>标记替换<TT
+CLASS="LITERAL"
+>\keepn</TT
+>标记。
+     </P
+></LI
+><LI
+CLASS="STEP"
+><P
+>      在<SPAN
+CLASS="PRODUCTNAME"
+>Applixware Words</SPAN
+>中打开一个新文档并导入<ACRONYM
+CLASS="ACRONYM"
+>RTF</ACRONYM
+>文件。
+     </P
+></LI
+><LI
+CLASS="STEP"
+><P
+>      使用<SPAN
+CLASS="PRODUCTNAME"
+>Applixware</SPAN
+>生成一个内容的新表（TOC）。
+     </P
+><OL
+CLASS="SUBSTEPS"
+TYPE="a"
+><LI
+CLASS="STEP"
+><P
+>        从第一行的第一个字符到最后一行的最后一个字符，选择现有的 ToC 行。
+       </P
+></LI
+><LI
+CLASS="STEP"
+><P
+>        使用<SPAN
+CLASS="GUIMENU"
+>Tools</SPAN
+>-&gt;<SPAN
+CLASS="GUISUBMENU"
+>Book
+        Building</SPAN
+>-&gt;<SPAN
+CLASS="GUIMENUITEM"
+>Create Table of
+        Contents</SPAN
+>建立一个新的 ToC。选择前三级 header 用于包含在 ToC中。这将把 RTF 中现有的导入行替换为一个本地的<SPAN
+CLASS="PRODUCTNAME"
+>Applixware</SPAN
+> ToC。
+       </P
+></LI
+><LI
+CLASS="STEP"
+><P
+>        通过使用<SPAN
+CLASS="GUIMENU"
+>Format</SPAN
+>-&gt;<SPAN
+CLASS="GUIMENUITEM"
+>Style</SPAN
+>调整 ToC 格式，选择三个 ToC 风格中的每一个并且为<TT
+CLASS="LITERAL"
+>First</TT
+>和<TT
+CLASS="LITERAL"
+>Left</TT
+>调整缩进。使用下列值：
+
+        <DIV
+CLASS="INFORMALTABLE"
+><P
+></P
+><A
+NAME="AEN183727"
+></A
+><TABLE
+BORDER="1"
+CLASS="CALSTABLE"
+><COL><COL><COL><THEAD
+><TR
+><TH
+>风格</TH
+><TH
+>First 缩进（英寸）</TH
+><TH
+>Left 缩进（英寸）</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>TOC-Heading 1</TT
+></TD
+><TD
+><TT
+CLASS="LITERAL"
+>0.4</TT
+></TD
+><TD
+><TT
+CLASS="LITERAL"
+>0.4</TT
+></TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>TOC-Heading 2</TT
+></TD
+><TD
+><TT
+CLASS="LITERAL"
+>0.8</TT
+></TD
+><TD
+><TT
+CLASS="LITERAL"
+>0.8</TT
+></TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>TOC-Heading 3</TT
+></TD
+><TD
+><TT
+CLASS="LITERAL"
+>1.2</TT
+></TD
+><TD
+><TT
+CLASS="LITERAL"
+>1.2</TT
+></TD
+></TR
+></TBODY
+></TABLE
+><P
+></P
+></DIV
+>
+       </P
+></LI
+></OL
+></LI
+><LI
+CLASS="STEP"
+><P
+>      遍历文档：
+
+      <P
+></P
+></P><UL
+><LI
+><P
+>         调整分页。
+        </P
+></LI
+><LI
+><P
+>         调整表格列宽。
+        </P
+></LI
+></UL
+><P>
+     </P
+></LI
+><LI
+CLASS="STEP"
+><P
+>      将该 ToC 中的例子和图表部分中的右对齐页号替换为正确的值。这只需要几分钟。
+     </P
+></LI
+><LI
+CLASS="STEP"
+><P
+>       如果索引节为空，则从文档中删除索引节。
+     </P
+></LI
+><LI
+CLASS="STEP"
+><P
+>       重新生成并调整内容的表格。
+     </P
+><OL
+CLASS="SUBSTEPS"
+TYPE="a"
+><LI
+CLASS="STEP"
+><P
+>         选择  ToC 域。
+        </P
+></LI
+><LI
+CLASS="STEP"
+><P
+>         选择<SPAN
+CLASS="GUIMENU"
+>Tools</SPAN
+>-&gt;<SPAN
+CLASS="GUISUBMENU"
+>Book
+         Building</SPAN
+>-&gt;<SPAN
+CLASS="GUIMENUITEM"
+>Create Table of
+         Contents</SPAN
+>。
+        </P
+></LI
+><LI
+CLASS="STEP"
+><P
+>         通过选择<SPAN
+CLASS="GUIMENU"
+>Tools</SPAN
+>-&gt;<SPAN
+CLASS="GUISUBMENU"
+>Field
+         Editing</SPAN
+>-&gt;<SPAN
+CLASS="GUIMENUITEM"
+>Unprotect</SPAN
+>解除 ToC 绑定。
+        </P
+></LI
+><LI
+CLASS="STEP"
+><P
+>         删除 ToC 中的第一行，它是用于 ToC 本身的项。
+         ToC itself.
+        </P
+></LI
+></OL
+></LI
+><LI
+CLASS="STEP"
+><P
+>      把文档保存为本地<SPAN
+CLASS="PRODUCTNAME"
+>Applixware
+      Words</SPAN
+>格式来使最后一分钟的编辑更容易。
+     </P
+></LI
+><LI
+CLASS="STEP"
+><P
+>      把文档<SPAN
+CLASS="QUOTE"
+>"打印"</SPAN
+>到一个 PostScript 格式的文件。
+     </P
+></LI
+></OL
+></DIV
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN183792"
+>J.3.6. Plain Text Files</A
+></H2
+><P
+>    安装指导也被发布为纯文本，它们被用于那些没有好的阅读工具的情况。<TT
+CLASS="FILENAME"
+>INSTALL</TT
+>文件对应于<A
+HREF="installation.html"
+>第 16 &#31456;</A
+>，但针对不同的环境做了小幅修改。要重建该文件，切换到目录<TT
+CLASS="FILENAME"
+>doc/src/sgml</TT
+>并输入<KBD
+CLASS="USERINPUT"
+>make INSTALL</KBD
+>。
+   </P
+><P
+>    在过去，发行注记和回归测试指导也被作为纯文本发布，但是事实上已经没有这样做了。
+   </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN183800"
+>J.3.7. 语法检查</A
+></H2
+><P
+>    便以文档可能会花很长时间。但是有办法只检查文档中的语法，这个过程只需要数秒：
+</P><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>doc/src/sgml$ </SAMP
+><KBD
+CLASS="USERINPUT"
+>make check</KBD
+></PRE
+><P>
+   </P
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="docguide-toolsets.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="docguide-authoring.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>工具集</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="docguide.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>文档写作</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

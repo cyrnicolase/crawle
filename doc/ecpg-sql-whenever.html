@@ -1,0 +1,286 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>WHENEVER</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="嵌入式 SQL 命令"
+HREF="ecpg-sql-commands.html"><LINK
+REL="PREVIOUS"
+TITLE="VAR"
+HREF="ecpg-sql-var.html"><LINK
+REL="NEXT"
+TITLE="Informix兼容模式"
+HREF="ecpg-informix-compat.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="REFENTRY"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/ecpg.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="VAR"
+HREF="ecpg-sql-var.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="ecpg-sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="Informix兼容模式"
+HREF="ecpg-informix-compat.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="ECPG-SQL-WHENEVER"
+></A
+>WHENEVER</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN52780"
+></A
+><H2
+>&#21517;&#31216;</H2
+>WHENEVER&nbsp;--&nbsp;指定一个要在一个 SQL 语句导致发生一个特定类别的情况时要采取的动作</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN52783"
+></A
+><H2
+>&#22823;&#32434;</H2
+><PRE
+CLASS="SYNOPSIS"
+>WHENEVER { NOT FOUND | SQLERROR | SQLWARNING } <TT
+CLASS="REPLACEABLE"
+><I
+>action</I
+></TT
+></PRE
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN52786"
+></A
+><H2
+>描述</H2
+><P
+>     定义一个行为，它会在 SQL 执行结果的特殊情况（行未找到、SQL 警告或错误）中被调用。
+    </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN52789"
+></A
+><H2
+>参数</H2
+><P
+>     参数描述见<A
+HREF="ecpg-errors.html#ECPG-WHENEVER"
+>第 34.8.1 &#33410;</A
+>。
+    </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN52793"
+></A
+><H2
+>例子</H2
+><PRE
+CLASS="PROGRAMLISTING"
+>EXEC SQL WHENEVER NOT FOUND CONTINUE;
+EXEC SQL WHENEVER NOT FOUND DO BREAK;
+EXEC SQL WHENEVER SQLWARNING SQLPRINT;
+EXEC SQL WHENEVER SQLWARNING DO warn();
+EXEC SQL WHENEVER SQLERROR sqlprint;
+EXEC SQL WHENEVER SQLERROR CALL print2();
+EXEC SQL WHENEVER SQLERROR DO handle_error("select");
+EXEC SQL WHENEVER SQLERROR DO sqlnotice(NULL, NONO);
+EXEC SQL WHENEVER SQLERROR DO sqlprint();
+EXEC SQL WHENEVER SQLERROR GOTO error_label;
+EXEC SQL WHENEVER SQLERROR STOP;</PRE
+><P
+>     一个典型的应用是使用<TT
+CLASS="LITERAL"
+>WHENEVER NOT FOUND BREAK</TT
+>来处理通过结果集的循环：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>int
+main(void)
+{
+    EXEC SQL CONNECT TO testdb AS con1;
+    EXEC SQL ALLOCATE DESCRIPTOR d;
+    EXEC SQL DECLARE cur CURSOR FOR SELECT current_database(), 'hoge', 256;
+    EXEC SQL OPEN cur;
+
+    /* 当到达结果集末尾时，跳出循环 */
+    EXEC SQL WHENEVER NOT FOUND DO BREAK;
+
+    while (1)
+    {
+        EXEC SQL FETCH NEXT FROM cur INTO SQL DESCRIPTOR d;
+        ...
+    }
+
+    EXEC SQL CLOSE cur;
+    EXEC SQL COMMIT;
+
+    EXEC SQL DEALLOCATE DESCRIPTOR d;
+    EXEC SQL DISCONNECT ALL;
+
+    return 0;
+}</PRE
+><P>
+    </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN52799"
+></A
+><H2
+>兼容性</H2
+><P
+>     SQL 标准中说明了<TT
+CLASS="COMMAND"
+>WHENEVER</TT
+>，但是大部分动作是 PostgreSQL 扩展。
+    </P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="ecpg-sql-var.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="ecpg-informix-compat.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>VAR</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="ecpg-sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><SPAN
+CLASS="PRODUCTNAME"
+>Informix</SPAN
+>兼容模式</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

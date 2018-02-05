@@ -1,0 +1,483 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>创建一个数据库集簇</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="服务器设置和操作"
+HREF="runtime.html"><LINK
+REL="PREVIOUS"
+TITLE="PostgreSQL用户账户"
+HREF="postgres-user.html"><LINK
+REL="NEXT"
+TITLE="启动数据库服务器"
+HREF="server-start.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/runtime.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="PostgreSQL用户账户"
+HREF="postgres-user.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="runtime.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#31456; 18. 服务器设置和操作</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="启动数据库服务器"
+HREF="server-start.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="CREATING-CLUSTER"
+>18.2. 创建一个数据库集簇</A
+></H1
+><P
+>   在你能做任何事情之前，你必须在磁盘上初始化一个数据库存储区域。我们称之为一个<I
+CLASS="FIRSTTERM"
+>数据库集簇</I
+>（<ACRONYM
+CLASS="ACRONYM"
+>SQL</ACRONYM
+>标准使用的术语是目录集簇）。一个数据库集簇是被一个运行数据库服务器的单一实例所管理的多个数据库的集合。在初始化之后，一个数据库集簇将包含一个名为<TT
+CLASS="LITERAL"
+>postgres</TT
+>的数据库，它表示被功能、用户和第三方应用所使用的默认数据库。数据库服务器本身并不要求<TT
+CLASS="LITERAL"
+>postgres</TT
+>数据库存在。另一个在初始化过程中为每一个集簇创建的数据库被称为<TT
+CLASS="LITERAL"
+>template1</TT
+>。顾名思义，它将被用于创建后续数据库的模板；它不应该被用于实际工作（在集簇内创建新数据库的更多信息请见<A
+HREF="managing-databases.html"
+>第 22 &#31456;</A
+>）。
+  </P
+><P
+>   在文件系统术语中，一个数据库集簇是一个单一目录，所有数据都将被存储在其中。我们称它为<I
+CLASS="FIRSTTERM"
+>数据目录</I
+>或<I
+CLASS="FIRSTTERM"
+>数据区域</I
+>。在哪里存储你的数据完全由你选择。没有默认的位置，不过<TT
+CLASS="FILENAME"
+>/usr/local/pgsql/data</TT
+>或<TT
+CLASS="FILENAME"
+>/var/lib/pgsql/data</TT
+>位置比较流行。要初始化一个数据库集簇，使用和<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>一起安装的命令<A
+HREF="app-initdb.html"
+>initdb</A
+>。你的数据库集簇的文件系统位置由<TT
+CLASS="OPTION"
+>-D</TT
+>选项指定，例如：
+</P><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>$</SAMP
+> <KBD
+CLASS="USERINPUT"
+>initdb -D /usr/local/pgsql/data</KBD
+></PRE
+><P>
+   注意你必须在使用<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>用户账户（如前一节所示）登录后执行这个命令。
+  </P
+><DIV
+CLASS="TIP"
+><BLOCKQUOTE
+CLASS="TIP"
+><P
+><B
+>&#25552;&#31034;: </B
+>    作为<TT
+CLASS="OPTION"
+>-D</TT
+>选项的一种替换方案，你可以设置环境变量<TT
+CLASS="ENVAR"
+>PGDATA</TT
+>。
+    
+   </P
+></BLOCKQUOTE
+></DIV
+><P
+>   另一种替代方案是，你可以通过<A
+HREF="app-pg-ctl.html"
+><SPAN
+CLASS="APPLICATION"
+>pg_ctl</SPAN
+></A
+>程序来运行<TT
+CLASS="COMMAND"
+>initdb</TT
+>：
+</P><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>$</SAMP
+> <KBD
+CLASS="USERINPUT"
+>pg_ctl -D /usr/local/pgsql/data initdb</KBD
+></PRE
+><P>
+   如果你使用<TT
+CLASS="COMMAND"
+>pg_ctl</TT
+>来启停服务器（见<A
+HREF="server-start.html"
+>第 18.3 &#33410;</A
+>），这种方法可能更直观，以为这样<TT
+CLASS="COMMAND"
+>pg_ctl</TT
+>将是你用来管理数据库服务器实例的唯一命令。
+  </P
+><P
+>   如果你指定的目录还不存在，<TT
+CLASS="COMMAND"
+>initdb</TT
+>将尝试创建它。当然，如果<TT
+CLASS="COMMAND"
+>initdb</TT
+>没有在父目录中的写权限，这将会失败。通常推荐让<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>用户拥有数据目录及其父目录，这样就不存在上面的问题了。如果想要的父目录也不存在，你将需要先创建它，如果父父目录不可写则使用 root 特权。因此，该过程可能像这样：
+</P><PRE
+CLASS="SCREEN"
+>root# <KBD
+CLASS="USERINPUT"
+>mkdir /usr/local/pgsql</KBD
+>
+root# <KBD
+CLASS="USERINPUT"
+>chown postgres /usr/local/pgsql</KBD
+>
+root# <KBD
+CLASS="USERINPUT"
+>su postgres</KBD
+>
+postgres$ <KBD
+CLASS="USERINPUT"
+>initdb -D /usr/local/pgsql/data</KBD
+></PRE
+><P>
+  </P
+><P
+>   如果数据目录存在并且已经包含文件，<TT
+CLASS="COMMAND"
+>initdb</TT
+>将拒绝运行。这可以避免无意中覆盖一个已有的安装。</P
+><P
+>   因为数据目录包含所有存储在数据库里的数据，所以最重要的是保护这个目录不受未授权的访问。因此，<TT
+CLASS="COMMAND"
+>initdb</TT
+>会回收禁止除<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>用户之外所有用户的访问权限。
+  </P
+><P
+>   不过，虽然目录的内容是安全的，但默认的客户端认证设置允许任意本地用户连接到数据库甚至成为数据库超级用户。如果你不信任其他本地用户， 我们建议你使用<TT
+CLASS="COMMAND"
+>initdb</TT
+>的<TT
+CLASS="OPTION"
+>-W</TT
+>、<TT
+CLASS="OPTION"
+>--pwprompt</TT
+>或<TT
+CLASS="OPTION"
+>--pwfile</TT
+>选项之一给数据库超级用户赋予一个口令。还可以指定<TT
+CLASS="OPTION"
+>-A md5</TT
+>或<TT
+CLASS="OPTION"
+>-A password</TT
+>，这样就不会使用默认的<TT
+CLASS="LITERAL"
+>trust</TT
+> 身份认证。或者在执行<TT
+CLASS="COMMAND"
+>initdb</TT
+>之后、第一次启动服务器<SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>之前</I
+></SPAN
+>修改生成的<TT
+CLASS="FILENAME"
+>pg_hba.conf</TT
+>文件（另外一些可行的方法包括<TT
+CLASS="LITERAL"
+>peer</TT
+>认证或者用文件系统权限限制连接。更多信息见<A
+HREF="client-authentication.html"
+>第 20 &#31456;</A
+>）。
+  </P
+><P
+>   <TT
+CLASS="COMMAND"
+>initdb</TT
+>同时也为数据库集簇初始化默认区域。 通常，它将只是使用环境中的区域设置并且把它们应用于被初始化的数据库。 可以为数据库指定一个不同的区域；有关于此的更多信息可以在<A
+HREF="locale.html"
+>第 23.1 &#33410;</A
+>中找到。 特定数据库集簇中使用的默认排序顺序是通过<TT
+CLASS="COMMAND"
+>initdb</TT
+>设置的， 虽然你可以创建使用不同排序顺序的新数据库，但在 initdb 创建的模板数据库中使用的顺序不能更改（除非删除并重建它们）。使用非<TT
+CLASS="LITERAL"
+>C</TT
+>或<TT
+CLASS="LITERAL"
+>POSIX</TT
+>的区域还会对性能造成影响。因此，第一次就正确地选择很重要。
+  </P
+><P
+>   <TT
+CLASS="COMMAND"
+>initdb</TT
+>还为数据库集簇设置默认的字符集编码。通常字符集编码应该选择与区域设置匹配。详见<A
+HREF="multibyte.html"
+>第 23.3 &#33410;</A
+>。
+  </P
+><P
+>   非<TT
+CLASS="LITERAL"
+>C</TT
+>以及非<TT
+CLASS="LITERAL"
+>POSIX</TT
+>区域对于字符集排序依赖于操作系统的排序规则库。这控制着索引中存储的键的排序。为此，通过快照恢复、二进制流复制、更换不同的操作系统或者升级操作系统都不能把一个集簇切换到一种不兼容的排序规则库版本。
+  </P
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="CREATING-CLUSTER-MOUNT-POINTS"
+>18.2.1. 二级文件系统的使用</A
+></H2
+><P
+>    很多安装会在文件系统（卷）而不是机器的<SPAN
+CLASS="QUOTE"
+>"根"</SPAN
+>卷上创建它们的数据库集簇。如果你选择这样做，我们不建议尝试使用二级卷的顶层目录（挂载点）作为数据目录。最好的做法是在<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>用户拥有的挂载点目录中创建一个目录，然后在其中创建数据目录。这可以避免权限问题，特别是对于<SPAN
+CLASS="APPLICATION"
+>pg_upgrade</SPAN
+>这类操作，并且它也能在二级卷被断线后确保干净的失败。
+   </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="CREATING-CLUSTER-NFS"
+>18.2.2. 网络文件系统的使用</A
+></H2
+><P
+>    许多安装会在网络文件系统上创建它们的数据库集簇。有时直接通过<ACRONYM
+CLASS="ACRONYM"
+>NFS</ACRONYM
+>， 或通过内部使用<ACRONYM
+CLASS="ACRONYM"
+>NFS</ACRONYM
+>的网络附加存储设备（<ACRONYM
+CLASS="ACRONYM"
+>NAS</ACRONYM
+>）完成。 <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>不对 <ACRONYM
+CLASS="ACRONYM"
+>NFS</ACRONYM
+>文件系统做特殊处理，即它假定<ACRONYM
+CLASS="ACRONYM"
+>NFS</ACRONYM
+>的行为和本地连接的设备完全一样。如果客户端或者服务器<ACRONYM
+CLASS="ACRONYM"
+>NFS</ACRONYM
+>没有提供标准的文件系统语义，这将导致可靠性问题 （参阅<A
+HREF="http://www.time-travellers.org/shane/papers/NFS_considered_harmful.html"
+TARGET="_top"
+>http://www.time-travellers.org/shane/papers/NFS_considered_harmful.html</A
+>）。 具体来说，延迟（异步）写入到<ACRONYM
+CLASS="ACRONYM"
+>NFS</ACRONYM
+>服务器可以导致数据损坏问题。 如果可能的话，把<ACRONYM
+CLASS="ACRONYM"
+>NFS</ACRONYM
+>文件系统挂载为同步（无高速缓存）可以避免这种灾难。还有，我们不推荐软挂载的<ACRONYM
+CLASS="ACRONYM"
+>NFS</ACRONYM
+>文件系统。
+   </P
+><P
+>    存储区域网络（<ACRONYM
+CLASS="ACRONYM"
+>SAN</ACRONYM
+>）通常使用非<ACRONYM
+CLASS="ACRONYM"
+>NFS</ACRONYM
+>的通讯协议，并且可能或者不可能遭受这类灾难。建议咨询供应商的文档来了解数据一致性保证。<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>无法做到比它所使用的文件系统更可靠。
+   </P
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="postgres-user.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="server-start.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>用户账户</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="runtime.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>启动数据库服务器</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

@@ -1,0 +1,290 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>版本 9.4.3</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="版本说明"
+HREF="release.html"><LINK
+REL="PREVIOUS"
+TITLE="版本 9.4.4"
+HREF="release-9-4-4.html"><LINK
+REL="NEXT"
+TITLE="版本 9.4.2"
+HREF="release-9-4-2.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/release-9.4.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="版本 9.4.4"
+HREF="release-9-4-4.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="release.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#38468;&#24405; E. 版本说明</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="版本 9.4.2"
+HREF="release-9-4-2.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="RELEASE-9-4-3"
+>E.13. 版本 9.4.3</A
+></H1
+><DIV
+CLASS="NOTE"
+><BLOCKQUOTE
+CLASS="NOTE"
+><P
+><B
+>发布日期: </B
+>2015-06-04</P
+></BLOCKQUOTE
+></DIV
+><P
+>  这个版本包含一些9.4.2以来的小的修复。关于9.4主版本的新特性信息，
+  请查看<A
+HREF="release-9-4.html"
+>第 E.16 &#33410;</A
+>。
+  </P
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN134413"
+>E.13.1. 迁移到版本 9.4.3</A
+></H2
+><P
+>    运行9.4.X的用户不需要转储/恢复。
+   </P
+><P
+>    不过，如果你是从一个早于9.4.2的版本升级而来，请查阅<A
+HREF="release-9-4-2.html"
+>第 E.14 &#33410;</A
+>。
+   </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN134418"
+>E.13.2. 修改列表</A
+></H2
+><P
+></P
+><UL
+><LI
+><P
+>      避免崩溃重启期间<CODE
+CLASS="FUNCTION"
+>fsync</CODE
+>数据目录失败 (Abhijit Menon-Sen, Tom Lane)
+     </P
+><P
+>      在之前的小版本中，我们添加了一个补丁，修补崩溃之后在数据目录中<CODE
+CLASS="FUNCTION"
+>fsync</CODE
+>任何东西。
+      不幸的是，它对任何错误条件的响应都是失败，因此阻止服务器重启，
+      即使问题是完全无害的。一个例子是，数据目录中的一个不可写文件在某些平台上会阻止重启；
+      但是共同的是会导致SSL认证文件不能被服务器写。修改这个行为，
+      忽略所有权限失败，并且记录其他类型的失败但是不阻止继续。
+     </P
+><P
+>      也在<TT
+CLASS="LITERAL"
+>initdb --sync-only</TT
+>中应用相同的规则。
+      这个情况不太重要但是也要类似的动作。
+     </P
+></LI
+><LI
+><P
+>      修复<CODE
+CLASS="FUNCTION"
+>pg_get_functiondef()</CODE
+>，显示函数的
+      <TT
+CLASS="LITERAL"
+>LEAKPROOF</TT
+>属性，如果设置了的话 (Jeevan Chalke)
+     </P
+></LI
+><LI
+><P
+>      修复<CODE
+CLASS="FUNCTION"
+>pushJsonbValue()</CODE
+>，解压<TT
+CLASS="TYPE"
+>jbvBinary</TT
+>对象 (Andrew Dunstan)
+     </P
+><P
+>      这个修改并不影响9.4内核代码中的任何行为，但是它避免了可能的第三方调用的极端情况。
+     </P
+></LI
+><LI
+><P
+>      删除<SPAN
+CLASS="APPLICATION"
+>configure</SPAN
+>的检查禁止连接到<SPAN
+CLASS="SYSTEMITEM"
+>OpenBSD</SPAN
+>
+      上的线程<SPAN
+CLASS="APPLICATION"
+>libpython</SPAN
+> (Tom Lane)
+     </P
+><P
+>      为了避免失败的这个限制在当前的<SPAN
+CLASS="SYSTEMITEM"
+>OpenBSD</SPAN
+>
+      版本上看起来不再是一个问题。
+     </P
+></LI
+></UL
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="release-9-4-4.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="release-9-4-2.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>版本 9.4.4</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="release.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>版本 9.4.2</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

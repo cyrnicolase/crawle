@@ -1,0 +1,1616 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>CREATE AGGREGATE</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="SQL 命令"
+HREF="sql-commands.html"><LINK
+REL="PREVIOUS"
+TITLE="CREATE ACCESS METHOD"
+HREF="sql-create-access-method.html"><LINK
+REL="NEXT"
+TITLE="CREATE CAST"
+HREF="sql-createcast.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="REFENTRY"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/ref/create_aggregate.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="CREATE ACCESS METHOD"
+HREF="sql-create-access-method.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="CREATE CAST"
+HREF="sql-createcast.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="SQL-CREATEAGGREGATE"
+></A
+>CREATE AGGREGATE</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN77858"
+></A
+><H2
+>&#21517;&#31216;</H2
+>CREATE AGGREGATE&nbsp;--&nbsp;定义一个新的聚集函数</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN77861"
+></A
+><H2
+>&#22823;&#32434;</H2
+><PRE
+CLASS="SYNOPSIS"
+>CREATE AGGREGATE <TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+> ( [ <TT
+CLASS="REPLACEABLE"
+><I
+>argmode</I
+></TT
+> ] [ <TT
+CLASS="REPLACEABLE"
+><I
+>argname</I
+></TT
+> ] <TT
+CLASS="REPLACEABLE"
+><I
+>arg_data_type</I
+></TT
+> [ , ... ] ) (
+    SFUNC = <TT
+CLASS="REPLACEABLE"
+><I
+>sfunc</I
+></TT
+>,
+    STYPE = <TT
+CLASS="REPLACEABLE"
+><I
+>state_data_type</I
+></TT
+>
+    [ , SSPACE = <TT
+CLASS="REPLACEABLE"
+><I
+>state_data_size</I
+></TT
+> ]
+    [ , FINALFUNC = <TT
+CLASS="REPLACEABLE"
+><I
+>ffunc</I
+></TT
+> ]
+    [ , FINALFUNC_EXTRA ]
+    [ , COMBINEFUNC = <TT
+CLASS="REPLACEABLE"
+><I
+>combinefunc</I
+></TT
+> ]
+    [ , SERIALFUNC = <TT
+CLASS="REPLACEABLE"
+><I
+>serialfunc</I
+></TT
+> ]
+    [ , DESERIALFUNC = <TT
+CLASS="REPLACEABLE"
+><I
+>deserialfunc</I
+></TT
+> ]
+    [ , INITCOND = <TT
+CLASS="REPLACEABLE"
+><I
+>initial_condition</I
+></TT
+> ]
+    [ , MSFUNC = <TT
+CLASS="REPLACEABLE"
+><I
+>msfunc</I
+></TT
+> ]
+    [ , MINVFUNC = <TT
+CLASS="REPLACEABLE"
+><I
+>minvfunc</I
+></TT
+> ]
+    [ , MSTYPE = <TT
+CLASS="REPLACEABLE"
+><I
+>mstate_data_type</I
+></TT
+> ]
+    [ , MSSPACE = <TT
+CLASS="REPLACEABLE"
+><I
+>mstate_data_size</I
+></TT
+> ]
+    [ , MFINALFUNC = <TT
+CLASS="REPLACEABLE"
+><I
+>mffunc</I
+></TT
+> ]
+    [ , MFINALFUNC_EXTRA ]
+    [ , MINITCOND = <TT
+CLASS="REPLACEABLE"
+><I
+>minitial_condition</I
+></TT
+> ]
+    [ , SORTOP = <TT
+CLASS="REPLACEABLE"
+><I
+>sort_operator</I
+></TT
+> ]
+    [ , PARALLEL = { SAFE | RESTRICTED | UNSAFE } ]
+)
+
+CREATE AGGREGATE <TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+> ( [ [ <TT
+CLASS="REPLACEABLE"
+><I
+>argmode</I
+></TT
+> ] [ <TT
+CLASS="REPLACEABLE"
+><I
+>argname</I
+></TT
+> ] <TT
+CLASS="REPLACEABLE"
+><I
+>arg_data_type</I
+></TT
+> [ , ... ] ]
+                        ORDER BY [ <TT
+CLASS="REPLACEABLE"
+><I
+>argmode</I
+></TT
+> ] [ <TT
+CLASS="REPLACEABLE"
+><I
+>argname</I
+></TT
+> ] <TT
+CLASS="REPLACEABLE"
+><I
+>arg_data_type</I
+></TT
+> [ , ... ] ) (
+    SFUNC = <TT
+CLASS="REPLACEABLE"
+><I
+>sfunc</I
+></TT
+>,
+    STYPE = <TT
+CLASS="REPLACEABLE"
+><I
+>state_data_type</I
+></TT
+>
+    [ , SSPACE = <TT
+CLASS="REPLACEABLE"
+><I
+>state_data_size</I
+></TT
+> ]
+    [ , FINALFUNC = <TT
+CLASS="REPLACEABLE"
+><I
+>ffunc</I
+></TT
+> ]
+    [ , FINALFUNC_EXTRA ]
+    [ , INITCOND = <TT
+CLASS="REPLACEABLE"
+><I
+>initial_condition</I
+></TT
+> ]
+    [ , HYPOTHETICAL ]
+    [ , PARALLEL = { SAFE | RESTRICTED | UNSAFE } ]
+)
+
+<SPAN
+CLASS="phrase"
+><SPAN
+CLASS="PHRASE"
+>或者旧的语法</SPAN
+></SPAN
+>
+
+CREATE AGGREGATE <TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+> (
+    BASETYPE = <TT
+CLASS="REPLACEABLE"
+><I
+>base_type</I
+></TT
+>,
+    SFUNC = <TT
+CLASS="REPLACEABLE"
+><I
+>sfunc</I
+></TT
+>,
+    STYPE = <TT
+CLASS="REPLACEABLE"
+><I
+>state_data_type</I
+></TT
+>
+    [ , SSPACE = <TT
+CLASS="REPLACEABLE"
+><I
+>state_data_size</I
+></TT
+> ]
+    [ , FINALFUNC = <TT
+CLASS="REPLACEABLE"
+><I
+>ffunc</I
+></TT
+> ]
+    [ , FINALFUNC_EXTRA ]
+    [ , COMBINEFUNC = <TT
+CLASS="REPLACEABLE"
+><I
+>combinefunc</I
+></TT
+> ]
+    [ , SERIALFUNC = <TT
+CLASS="REPLACEABLE"
+><I
+>serialfunc</I
+></TT
+> ]
+    [ , DESERIALFUNC = <TT
+CLASS="REPLACEABLE"
+><I
+>deserialfunc</I
+></TT
+> ]
+    [ , INITCOND = <TT
+CLASS="REPLACEABLE"
+><I
+>initial_condition</I
+></TT
+> ]
+    [ , MSFUNC = <TT
+CLASS="REPLACEABLE"
+><I
+>msfunc</I
+></TT
+> ]
+    [ , MINVFUNC = <TT
+CLASS="REPLACEABLE"
+><I
+>minvfunc</I
+></TT
+> ]
+    [ , MSTYPE = <TT
+CLASS="REPLACEABLE"
+><I
+>mstate_data_type</I
+></TT
+> ]
+    [ , MSSPACE = <TT
+CLASS="REPLACEABLE"
+><I
+>mstate_data_size</I
+></TT
+> ]
+    [ , MFINALFUNC = <TT
+CLASS="REPLACEABLE"
+><I
+>mffunc</I
+></TT
+> ]
+    [ , MFINALFUNC_EXTRA ]
+    [ , MINITCOND = <TT
+CLASS="REPLACEABLE"
+><I
+>minitial_condition</I
+></TT
+> ]
+    [ , SORTOP = <TT
+CLASS="REPLACEABLE"
+><I
+>sort_operator</I
+></TT
+> ]
+)</PRE
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN77912"
+></A
+><H2
+>描述</H2
+><P
+>   <TT
+CLASS="COMMAND"
+>CREATE AGGREGATE</TT
+>定义一个新的聚集函数。
+   在发布中已经包括了一些基本的和常用的聚集函数，它们的文档请见
+   <A
+HREF="functions-aggregate.html"
+>第 9.20 &#33410;</A
+>。如果要定义一个新类型或者需要
+   一个还没有被提供的聚集函数，那么
+   <TT
+CLASS="COMMAND"
+>CREATE AGGREGATE</TT
+>就可以被用来提供想要
+   的特性。
+  </P
+><P
+>   如果给定了一个模式名（例如<TT
+CLASS="LITERAL"
+>CREATE AGGREGATE
+   myschema.myagg ...</TT
+>），那么该聚集会被创建在指定的模式中。否则它
+   会被创建在当前模式中。
+  </P
+><P
+>   一个聚集函数需要用它的名称和输入数据类型标识。同一个模式中的两个聚集
+   可以具有相同的名称，只要它们在不同的输入类型上操作即可。一个聚集的名称
+   和输入数据类型必须与同一模式中的每一个普通函数区分开。这种行为与普通函
+   数名的重载完全一样（见<A
+HREF="sql-createfunction.html"
+>CREATE FUNCTION</A
+>）。
+  </P
+><P
+>   一个简单的聚集函数由一个或者多个普通函数组成：
+   一个状态转移函数
+   <TT
+CLASS="REPLACEABLE"
+><I
+>sfunc</I
+></TT
+>和一个可选的最终
+   计算函数
+   <TT
+CLASS="REPLACEABLE"
+><I
+>ffunc</I
+></TT
+>。
+   它们被这样使用：
+</P><PRE
+CLASS="PROGRAMLISTING"
+><TT
+CLASS="REPLACEABLE"
+><I
+>sfunc</I
+></TT
+>( internal-state, next-data-values ) ---&#62; next-internal-state
+<TT
+CLASS="REPLACEABLE"
+><I
+>ffunc</I
+></TT
+>( internal-state ) ---&#62; aggregate-value</PRE
+><P>
+  </P
+><P
+>   <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>创建一个数据类型
+   <TT
+CLASS="REPLACEABLE"
+><I
+>stype</I
+></TT
+>的临时变量来
+   保持聚集的当前内部状态。对每一个输入行，聚集参数值会被计算并且状态
+   转移函数会被调用，它用当前状态值和新参数值计算一个新的内部状态值。
+   等所有行都被处理完后，最终函数会被调用一次来计算该聚集的返回值。如果
+   没有最终函数，则最终的状态值会被返回。
+  </P
+><P
+>   一个聚集函数可以提供一个初始条件，即一个用于内部状态值的初始值。它被
+   作为一个类型<TT
+CLASS="TYPE"
+>text</TT
+>的值指定并且存储在数据库中，但是它必须
+   是状态值数据类型的一个常量的合法外部表示。如果没有提供，则状态值从空值
+   开始。
+  </P
+><P
+>   如果状态转移函数被声明为<SPAN
+CLASS="QUOTE"
+>"strict"</SPAN
+>，那么不能用空值输入来
+   调用它。如果有这种转移函数，聚集将按照下面的行为执行。带有任何空值的
+   行会被忽略（函数不被调用并且之前的状态值被保持）。如果初始状态值就是
+   空值，那么碰到第一个没有空值的行时，状态值会被替换成第一个参数值，并且
+   对于每一个后续的没有空值的行都会调用该转移函数。这对实现
+   <CODE
+CLASS="FUNCTION"
+>max</CODE
+>这样的聚集很方便。注意只有当
+   <TT
+CLASS="REPLACEABLE"
+><I
+>state_data_type</I
+></TT
+>
+   和第一个
+   <TT
+CLASS="REPLACEABLE"
+><I
+>arg_data_type</I
+></TT
+>相同时，
+   这种行为才可用。当这些类型不同时，你必须提供一个非空初始条件或者使用
+   一个非严格转移函数。
+  </P
+><P
+>   如果状态转移函数不是严格的，那么在碰到每个输入行时都将会调用它，并且
+   它必须自行处理空值输入和空状态值。这允许聚集的作者完全控制该聚集如何
+   处理空值。
+  </P
+><P
+>   如果最终函数被声明为<SPAN
+CLASS="QUOTE"
+>"strict"</SPAN
+>，那么当最终状态值为空时将
+   不会调用它，而是自动地返回一个空结果（当然，这只是严格函数的普通行为）。
+   在任何情况下最终函数都可以返回一个空值。例如，<CODE
+CLASS="FUNCTION"
+>avg</CODE
+>的最终函数会在看到零个
+   输入行时返回空。
+  </P
+><P
+>   有时候把最终函数声明成不仅采用状态值还采用对应于聚集输入值的额外参数
+   是有用的。这样做的主要原因是，如果最终函数是多态的，那么状态值的数据
+   类型将不适合于用来确定结果类型。这些额外的参数总是以 NULL 形式传递
+   （因此使用<TT
+CLASS="LITERAL"
+>FINALFUNC_EXTRA</TT
+>选项时，最终函数不能是严格的），
+   但尽管如此它们都是合法参数。例如，最终函数可以利用
+   <CODE
+CLASS="FUNCTION"
+>get_fn_expr_argtype</CODE
+>来标识当前调用中的实际参数类型。
+  </P
+><P
+>   如<A
+HREF="xaggr.html#XAGGR-MOVING-AGGREGATES"
+>第 36.10.1 &#33410;</A
+>中所述，一个聚集可以
+   选择支持<I
+CLASS="FIRSTTERM"
+>移动聚集模式</I
+>。这要求指定
+   <TT
+CLASS="LITERAL"
+>MSFUNC</TT
+>、<TT
+CLASS="LITERAL"
+>MINVFUNC</TT
+>以及
+   <TT
+CLASS="LITERAL"
+>MSTYPE</TT
+>参数，并且参数<TT
+CLASS="LITERAL"
+>MSPACE</TT
+>、
+   <TT
+CLASS="LITERAL"
+>MFINALFUNC</TT
+>、<TT
+CLASS="LITERAL"
+>MFINALFUNC_EXTRA</TT
+>
+   和<TT
+CLASS="LITERAL"
+>MINITCOND</TT
+>是可选的。除了<TT
+CLASS="LITERAL"
+>MINVFUNC</TT
+>，
+   这些参数的工作都和对应的不带<TT
+CLASS="LITERAL"
+>M</TT
+>的简单聚集参数相似，它们
+   定义了定义了包括一个逆向转移函数的聚集的一种独立实现。
+  </P
+><P
+>   在参数列表中带有<TT
+CLASS="LITERAL"
+>ORDER BY</TT
+>的语法会创建一种被称为
+   <I
+CLASS="FIRSTTERM"
+>有序集聚集</I
+>的特殊聚集类型。如果指定了
+   <TT
+CLASS="LITERAL"
+>HYPOTHETICAL</TT
+>，则会创建一个
+   <I
+CLASS="FIRSTTERM"
+>假想集聚集</I
+>。这些聚集以依赖排序的方法在排好序
+   的值上操作，因此指定一个输入排序顺序是调用过程的重要一环。还有，它们
+   可以有<I
+CLASS="FIRSTTERM"
+>直接</I
+>参数，这类参数只对每次聚集计算一次，而不是对
+   每一个输入行计算一次。假想集聚集是有序集聚集的一个子类，其中一些直接
+   参数要求在数量和类型上都匹配被聚集的参数列。这允许这些直接参数的值被
+   当做一个附加的<SPAN
+CLASS="QUOTE"
+>"假想"</SPAN
+>行被加入到聚集输入行的集合中。
+  </P
+><P
+>   如<A
+HREF="xaggr.html#XAGGR-PARTIAL-AGGREGATES"
+>第 36.10.4 &#33410;</A
+>中所示，一个聚集可以支持
+   <I
+CLASS="FIRSTTERM"
+>部分聚集</I
+>。这要求指定<TT
+CLASS="LITERAL"
+>COMBINEFUNC</TT
+>参数。
+   如果<TT
+CLASS="REPLACEABLE"
+><I
+>state_data_type</I
+></TT
+>
+   为<TT
+CLASS="TYPE"
+>internal</TT
+>，通常也可以提供<TT
+CLASS="LITERAL"
+>SERIALFUNC</TT
+>和
+   <TT
+CLASS="LITERAL"
+>DESERIALFUNC</TT
+>参数，这样可以让并行聚集成为可能。注意，
+   该聚集还必须被标记为<TT
+CLASS="LITERAL"
+>PARALLEL SAFE</TT
+>以启用并行聚集。
+  </P
+><P
+>   行为与<CODE
+CLASS="FUNCTION"
+>MIN</CODE
+>或<CODE
+CLASS="FUNCTION"
+>MAX</CODE
+>相似的聚集有时可以通过
+   直接查看一个索引而不是扫描每一个输入行来优化。如果这个聚集可以被这样
+   优化，请通过指定一个<I
+CLASS="FIRSTTERM"
+>排序操作符</I
+>来指出。基本要求是，该
+   聚集必须得出由该操作符产生的排序顺序中的第一个元素，换句话说：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>SELECT agg(col) FROM tab;</PRE
+><P>
+   必须等价于：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>SELECT col FROM tab ORDER BY col USING sortop LIMIT 1;</PRE
+><P>
+   进一步的假定是该聚集忽略空输入，并且当且仅当没有非空输入时它才会返回
+   一个空结果。通常，一种数据类型的<TT
+CLASS="LITERAL"
+>&lt;</TT
+>操作符是
+   <CODE
+CLASS="FUNCTION"
+>MIN</CODE
+>的合适的排序操作符，而<TT
+CLASS="LITERAL"
+>&gt;</TT
+>是
+   <CODE
+CLASS="FUNCTION"
+>MAX</CODE
+>的合适的排序操作符。注意，除非指定的操作符是一个
+   B-树索引操作符类的<SPAN
+CLASS="QUOTE"
+>"小于"</SPAN
+>或者<SPAN
+CLASS="QUOTE"
+>"大于"</SPAN
+>
+   策略成员，优化将永远不会产生实际效果。
+  </P
+><P
+>   要能够创建一个聚集函数，你必须具有参数类型、状态类型和返回类型上的
+   <TT
+CLASS="LITERAL"
+>USAGE</TT
+>特权，还有在支持函数上的
+   <TT
+CLASS="LITERAL"
+>EXECUTE</TT
+>特权。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN77988"
+></A
+><H2
+>参数</H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+></DT
+><DD
+><P
+>      要创建的聚集函数的名称（可以是模式限定的）。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>argmode</I
+></TT
+></DT
+><DD
+><P
+>      一个参数的模式：<TT
+CLASS="LITERAL"
+>IN</TT
+>或者<TT
+CLASS="LITERAL"
+>VARIADIC</TT
+>（聚集函数
+      不支持<TT
+CLASS="LITERAL"
+>OUT</TT
+>参数）。如果忽略，默认值是<TT
+CLASS="LITERAL"
+>IN</TT
+>。
+      只有最后一个参数能被标记为<TT
+CLASS="LITERAL"
+>VARIADIC</TT
+>。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>argname</I
+></TT
+></DT
+><DD
+><P
+>      一个参数的名称。当前这只用于文档的目的。如果被忽略，该参数就没有名称。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>arg_data_type</I
+></TT
+></DT
+><DD
+><P
+>      这个聚集函数操作的一个输入数据类型。要创建一个零参数的聚集函数，可以
+      写一个<TT
+CLASS="LITERAL"
+>*</TT
+>来替代参数说明的列表（这类聚集的一个例子是
+      <CODE
+CLASS="FUNCTION"
+>count(*)</CODE
+>）。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>base_type</I
+></TT
+></DT
+><DD
+><P
+>      在<TT
+CLASS="COMMAND"
+>CREATE AGGREGATE</TT
+>的旧语法中，输入数据类型是由
+      一个<TT
+CLASS="LITERAL"
+>basetype</TT
+>参数指定而不是写在聚集名之后。注意这种语法
+      只允许一个输入参数。要用这种语法定义一个零参数的聚集函数，把
+      <TT
+CLASS="LITERAL"
+>basetype</TT
+>指定为<TT
+CLASS="LITERAL"
+>"ANY"</TT
+>（不是<TT
+CLASS="LITERAL"
+>*</TT
+>）。
+      有序集聚集不能用旧语法定义。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>sfunc</I
+></TT
+></DT
+><DD
+><P
+>      要为每一个输入行调用的状态转移函数名。对于一个正常的
+      <TT
+CLASS="REPLACEABLE"
+><I
+>N</I
+></TT
+>-参数的聚集函数，
+      <TT
+CLASS="REPLACEABLE"
+><I
+>sfunc</I
+></TT
+>必须接收
+      <TT
+CLASS="REPLACEABLE"
+><I
+>N</I
+></TT
+>+1 个参数，
+      第一个参数的类型是<TT
+CLASS="REPLACEABLE"
+><I
+>state_data_type</I
+></TT
+>而其余的参数匹配
+      该聚集被声明的输入数据类型。该函数必须返回一个类型为
+      <TT
+CLASS="REPLACEABLE"
+><I
+>state_data_type</I
+></TT
+>
+      的值。这个函数会采用当前的状态值以及当前的输入数据值，并且返回下一个
+      状态值。
+     </P
+><P
+>      对于有序集（包括假想集）聚集，状态转移函数只接收当前的状态值和聚集参数，
+      但无需直接参数。否则它就和其他转移函数一样了。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>state_data_type</I
+></TT
+></DT
+><DD
+><P
+>      聚集的状态值的数据类型。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>state_data_size</I
+></TT
+></DT
+><DD
+><P
+>      聚集的状态值的近似平均尺寸（以字节计）。如果这个参数被忽略或者为零，
+      将使用一个基于<TT
+CLASS="REPLACEABLE"
+><I
+>state_data_type</I
+></TT
+>的默认估计值。规划器
+      使用这个值来估计一个分组聚集查询所需的内存。只有估计哈希表能够放在
+      <A
+HREF="runtime-config-resource.html#GUC-WORK-MEM"
+>work_mem</A
+>大小的内存中时，规划器才会对这类查询
+      使用哈希聚集。因此，对这个参数设置大的值会阻止使用哈希聚集。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>ffunc</I
+></TT
+></DT
+><DD
+><P
+>      最终函数的名称，该函数在所有输入行都被遍历之后被调用来计算聚集的结果。
+      对于一个常规聚集，这个函数必须只接受一个类型为<TT
+CLASS="REPLACEABLE"
+><I
+>state_data_type</I
+></TT
+>的单一参数。该聚集
+      的返回数据类型被定义为这个函数的返回类型。如果没有指定
+      <TT
+CLASS="REPLACEABLE"
+><I
+>ffunc</I
+></TT
+>，则结束状态值
+      被用作聚集的结果，并且返回类型为<TT
+CLASS="REPLACEABLE"
+><I
+>state_data_type</I
+></TT
+>。
+     </P
+><P
+>      对于有序集（包括假想集）聚集，最终函数不仅接收最终状态值，还会接收所
+      有直接参数的值。
+     </P
+><P
+>      如果指定了<TT
+CLASS="LITERAL"
+>FINALFUNC_EXTRA</TT
+>，则除了最终状态值和任何直接
+      参数之外，最终函数还接收额外的对应于该聚集的常规（聚集）参数的 NULL 值。
+      这主要用于在定义了一个多态聚集时允许正确地决定聚集的结果类型。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>combinefunc</I
+></TT
+></DT
+><DD
+><P
+>      <TT
+CLASS="REPLACEABLE"
+><I
+>combinefunc</I
+></TT
+>函数可以被
+      有选择地指定以允许聚集函数支持部分聚集。如果提供这个函数，
+      <TT
+CLASS="REPLACEABLE"
+><I
+>combinefunc</I
+></TT
+>必须组合两个
+      <TT
+CLASS="REPLACEABLE"
+><I
+>state_data_type</I
+></TT
+>值，每一个
+      都包含在输入值某个子集上的聚集结果，它会产生一个新的
+      <TT
+CLASS="REPLACEABLE"
+><I
+>state_data_type</I
+></TT
+>来表示在
+      两个输入集上的聚集结果。这个函数可以被看做是一个
+      <TT
+CLASS="REPLACEABLE"
+><I
+>sfunc</I
+></TT
+>，和后者在一个个体
+      输入行上操作并且把它加到运行聚集状态上不同，这个函数是把另一个聚集状态加
+      到运行状态上。
+     </P
+><P
+>      <TT
+CLASS="REPLACEABLE"
+><I
+>combinefunc</I
+></TT
+>必须被声明为
+      有两个<TT
+CLASS="REPLACEABLE"
+><I
+>state_data_type</I
+></TT
+>参数
+      并且返回一个<TT
+CLASS="REPLACEABLE"
+><I
+>state_data_type</I
+></TT
+>
+      值。这个函数可以有选择性地被标记为<SPAN
+CLASS="QUOTE"
+>"strict"</SPAN
+>。在被标记的情况下，
+      当任何一个输入状态为空时，将不会调用该函数，而是把另一个状态当作正确的结果。
+     </P
+><P
+>      对于<TT
+CLASS="REPLACEABLE"
+><I
+>state_data_type</I
+></TT
+>为
+      <TT
+CLASS="TYPE"
+>internal</TT
+>的聚集函数，
+      <TT
+CLASS="REPLACEABLE"
+><I
+>combinefunc</I
+></TT
+>不能为
+      strict。这种情况下，
+      <TT
+CLASS="REPLACEABLE"
+><I
+>combinefunc</I
+></TT
+>必须确保
+      正确地处理空状态并且被返回的状态能被恰当地存储在聚集内存上下文中。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>serialfunc</I
+></TT
+></DT
+><DD
+><P
+>      <TT
+CLASS="REPLACEABLE"
+><I
+>state_data_type</I
+></TT
+>为
+      <TT
+CLASS="TYPE"
+>internal</TT
+>的一个聚集函数可以参与到并行聚集中，当且仅当它具有一个
+      <TT
+CLASS="REPLACEABLE"
+><I
+>serialfunc</I
+></TT
+>函数，该函数
+      必须把聚集状态序列化成一个<TT
+CLASS="TYPE"
+>bytea</TT
+>值以传送给另一个进程。这个函数
+      必须有一个单一的<TT
+CLASS="TYPE"
+>internal</TT
+>类型参数并且返回类型<TT
+CLASS="TYPE"
+>bytea</TT
+>。
+      相应地也需要一个<TT
+CLASS="REPLACEABLE"
+><I
+>deserialfunc</I
+></TT
+>。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>deserialfunc</I
+></TT
+></DT
+><DD
+><P
+>      把一个之前序列化后的聚集状态反序列化为
+      <TT
+CLASS="REPLACEABLE"
+><I
+>state_data_type</I
+></TT
+>。这个函数
+      必须有两个类型分别为<TT
+CLASS="TYPE"
+>bytea</TT
+>和<TT
+CLASS="TYPE"
+>internal</TT
+>的参数，并且产生
+      一个类型<TT
+CLASS="TYPE"
+>internal</TT
+>的结果（注意：第二个类型为<TT
+CLASS="TYPE"
+>internal</TT
+>的
+      参数是无用的，但是为了类型安全的原因还是要求有该参数）。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>initial_condition</I
+></TT
+></DT
+><DD
+><P
+>      状态值的初始设置。这必须是以数据类型<TT
+CLASS="REPLACEABLE"
+><I
+>state_data_type</I
+></TT
+>能够接受的形式出现
+      的一个字符串常量。如果没有指定，状态值会从空值开始。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>msfunc</I
+></TT
+></DT
+><DD
+><P
+>      前向状态转移函数的名称，在移动聚集模式中会为每个输入行调用这个函数。它
+      非常像常规的转移函数，不过它的第一个参数和结果类型是
+      <TT
+CLASS="REPLACEABLE"
+><I
+>mstate_data_type</I
+></TT
+>，这可能与
+      <TT
+CLASS="REPLACEABLE"
+><I
+>state_data_type</I
+></TT
+>不同。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>minvfunc</I
+></TT
+></DT
+><DD
+><P
+>      在移动聚集模式中用到的逆向状态转移函数的名称。这个函数与
+      <TT
+CLASS="REPLACEABLE"
+><I
+>msfunc</I
+></TT
+>具有相同的参数和结果类型，但是它被用于从当前聚集
+      状态中移除一个值，而不是向其中增加一个值。逆向转移函数必须具有和前向状态
+      转移函数相同的严格性属性。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>mstate_data_type</I
+></TT
+></DT
+><DD
+><P
+>      使用移动聚集模式时，用于聚集状态值的数据类型。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>mstate_data_size</I
+></TT
+></DT
+><DD
+><P
+>      使用移动聚集模式时，聚集状态值的近似平均尺寸（以字节计）。它的作用和
+      <TT
+CLASS="REPLACEABLE"
+><I
+>state_data_size</I
+></TT
+>相同。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>mffunc</I
+></TT
+></DT
+><DD
+><P
+>      使用移动聚集模式时用到的最终函数名称，当所有输入行都被遍历后会调用它来
+      计算聚集的结果。它的工作和<TT
+CLASS="REPLACEABLE"
+><I
+>ffunc</I
+></TT
+>一样，但是它的第一个参
+      数类型是<TT
+CLASS="REPLACEABLE"
+><I
+>mstate_data_type</I
+></TT
+>并且额外的空参数要通过书写
+      <TT
+CLASS="LITERAL"
+>MFINALFUNC_EXTRA</TT
+>来指定。<TT
+CLASS="REPLACEABLE"
+><I
+>mffunc</I
+></TT
+>
+      或者<TT
+CLASS="REPLACEABLE"
+><I
+>mstate_data_type</I
+></TT
+>决定的聚集结果类型必须匹配由聚集
+      的常规实现所确定的类型。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>minitial_condition</I
+></TT
+></DT
+><DD
+><P
+>      使用移动聚集模式时，状态值的初始设置。它的作用和
+      <TT
+CLASS="REPLACEABLE"
+><I
+>initial_condition</I
+></TT
+>一样。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>sort_operator</I
+></TT
+></DT
+><DD
+><P
+>      一个<CODE
+CLASS="FUNCTION"
+>MIN</CODE
+>- 类或者<CODE
+CLASS="FUNCTION"
+>MAX</CODE
+>-类聚集的相关
+      排序操作符。这只是一个操作符名称（可能被模式限定）。这个操作符被
+      假定为具有和该聚集（必须是一个单一参数的常规聚集）相同的输入数据
+      类型。
+     </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>PARALLEL</TT
+></DT
+><DD
+><P
+>      <TT
+CLASS="LITERAL"
+>PARALLEL SAFE</TT
+>、<TT
+CLASS="LITERAL"
+>PARALLEL
+      RESTRICTED</TT
+>和<TT
+CLASS="LITERAL"
+>PARALLEL UNSAFE</TT
+>的含义和
+      <A
+HREF="sql-createfunction.html"
+>CREATE FUNCTION</A
+>中的相同。如果一个聚集被标记为
+      <TT
+CLASS="LITERAL"
+>PARALLEL UNSAFE</TT
+>（默认）或者
+      <TT
+CLASS="LITERAL"
+>PARALLEL RESTRICTED</TT
+>，将不会考虑将它并行化。注意
+      规划器不会参考聚集的支持函数的并行安全性标记，它只会考虑聚集本身
+      的这类标记。
+     </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>HYPOTHETICAL</TT
+></DT
+><DD
+><P
+>      只用于有序集聚集，这个标志指定聚集参数会被根据假想集聚集的要求进行处理：
+      即后面的直接参数必须匹配聚集（<TT
+CLASS="LITERAL"
+>WITHIN GROUP</TT
+>）参数的数据
+      类型。<TT
+CLASS="LITERAL"
+>HYPOTHETICAL</TT
+>标志在运行时没有任何效果，它只在
+      命令解析期间对确定数据类型和聚集参数的排序规则有用。
+     </P
+></DD
+></DL
+></DIV
+><P
+>   <TT
+CLASS="COMMAND"
+>CREATE AGGREGATE</TT
+>的参数可以用任意顺序书写，
+   而无需遵照以上说明的顺序。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN78177"
+></A
+><H2
+>注解</H2
+><P
+>    在指定支持函数名的参数中，如果需要你可以写一个模式名，例如
+    <TT
+CLASS="LITERAL"
+>SFUNC = public.sum</TT
+>。在这里不能写参数类型 &mdash; 支持函数
+    的参数类型是根据其他参数决定的。
+   </P
+><P
+>    如果一个聚集支持移动聚集模式，当该聚集被用于一个具有移动帧起点（即帧起点
+    模式不是<TT
+CLASS="LITERAL"
+>UNBOUNDED PRECEDING</TT
+>）的窗口函数时，它将提升计
+    算效率。在概念上，当从底部进入窗口帧时前向转移函数会把输入值加到聚集的状
+    态上，而逆向转移函数会在从顶部离开帧时再次移除输入值。因此，当值被移除时，
+    它们总是按照被加入的相同顺序被移除。无论何时调用逆向转移函数，它都将因此
+    接收最近增加但是还未被移除的参数值。逆向转移函数可以假定在它移除最旧的行
+    之后至少有一行保留在当前状态中（当情况不是这样时，窗口函数机制会简单地开
+    始一次新的聚集，而不是使用逆向转移函数）。
+   </P
+><P
+>    用于移动聚集模式的前向转移函数不允许返回 NULL 作为新的状态值。如果逆向
+    转移函数返回 NULL，这表明逆向函数无法为这个特定的输入逆转状态计算，并且
+    该聚集计算因此必须从当前帧的开始位置“从零开始”重新被计算。在一些少见的情
+    况中，逆转正在计算中的状态值是不切实际的，这种习惯可以允许在此类情形中使用
+    移动聚集模式。
+   </P
+><P
+>    如果没有提供移动聚集实现，聚集仍然可以被用于移动帧，但是
+    只要帧起点移动，<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>都将会重新计算
+    整个聚集。注意不管聚集有没有支持移动聚集模式，
+    <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>都能处理一个移动帧结束而无需重
+    新计算，这可以通过增加新值到聚集状态完成。人们认为最终函数不会破坏聚集的状
+    态值，这样即使已经为一组帧边界得到了一个聚集结果值，该聚集也能继续下去。
+   </P
+><P
+>    有序集聚集的语法允许为最后一个直接参数以及最后一个聚集（
+    <TT
+CLASS="LITERAL"
+>WITHIN GROUP</TT
+>）参数指定<TT
+CLASS="LITERAL"
+>VARIADIC</TT
+>。但是，当前的
+    实现限制只能以两种方式使用<TT
+CLASS="LITERAL"
+>VARIADIC</TT
+>。第一种，有续集聚集只能
+    使用<TT
+CLASS="LITERAL"
+>VARIADIC "any"</TT
+>，不能使用其他可变数组类型。第二种，如果最
+    后一个直接参数是<TT
+CLASS="LITERAL"
+>VARIADIC "any"</TT
+>，那么只能有一个聚集参数并且它
+    也必须是<TT
+CLASS="LITERAL"
+>VARIADIC "any"</TT
+>（在系统目录中使用的表示中，这两个参数
+    会被合并为一个单一的<TT
+CLASS="LITERAL"
+>VARIADIC "any"</TT
+>项，因为
+    <TT
+CLASS="STRUCTNAME"
+>pg_proc</TT
+>无法表示具有超过一个<TT
+CLASS="LITERAL"
+>VARIADIC</TT
+>参数的
+    函数）。如果该聚集是一个假想集聚集，匹配<TT
+CLASS="LITERAL"
+>VARIADIC "any"</TT
+>参数的
+    直接参数就是假想参数。任何在前面的参数表示额外的直接参数，它们不被约束为需
+    要匹配聚集参数。
+   </P
+><P
+>    当前，有序集聚集无须支持移动聚集模式，因为它们不能被用作窗口函数。
+   </P
+><P
+>    部分（包括并行）聚集当前不被有续集聚集支持。还有，包括
+    <TT
+CLASS="LITERAL"
+>DISTINCT</TT
+>或者<TT
+CLASS="LITERAL"
+>ORDER BY</TT
+>子句的聚集调用将不会使用
+    部分聚集，因为在部分聚集时无法支持那些语义。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN78202"
+></A
+><H2
+>示例</H2
+><P
+>   见<A
+HREF="xaggr.html"
+>第 36.10 &#33410;</A
+>。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN78206"
+></A
+><H2
+>兼容性</H2
+><P
+>   <TT
+CLASS="COMMAND"
+>CREATE AGGREGATE</TT
+>是一种
+   <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>的语言扩展。SQL 标准没有提供
+   用户定义的聚集函数。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN78211"
+></A
+><H2
+>另见</H2
+><A
+HREF="sql-alteraggregate.html"
+>ALTER AGGREGATE</A
+>, <A
+HREF="sql-dropaggregate.html"
+>DROP AGGREGATE</A
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-create-access-method.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="sql-createcast.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>CREATE ACCESS METHOD</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>CREATE CAST</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

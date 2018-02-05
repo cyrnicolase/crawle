@@ -1,0 +1,331 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>文档写作</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="文档"
+HREF="docguide.html"><LINK
+REL="PREVIOUS"
+TITLE="编译文档"
+HREF="docguide-build.html"><LINK
+REL="NEXT"
+TITLE="样式指导"
+HREF="docguide-style.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/docguide.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="编译文档"
+HREF="docguide-build.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="docguide.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#38468;&#24405; J. 文档</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="样式指导"
+HREF="docguide-style.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="DOCGUIDE-AUTHORING"
+>J.4. 文档写作</A
+></H1
+><P
+>    <ACRONYM
+CLASS="ACRONYM"
+>SGML</ACRONYM
+>和<SPAN
+CLASS="PRODUCTNAME"
+>DocBook</SPAN
+>没有受到开源写作工具的过度影响。最常用的工具集是带有适当编辑模式的<SPAN
+CLASS="PRODUCTNAME"
+>Emacs</SPAN
+>/<SPAN
+CLASS="PRODUCTNAME"
+>XEmacs</SPAN
+>编辑器。在某些系统上这些工具通常以完全安装的方式提供。
+   </P
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN183813"
+>J.4.1. Emacs/PSGML</A
+></H2
+><P
+>     <SPAN
+CLASS="PRODUCTNAME"
+>PSGML</SPAN
+>是编辑<ACRONYM
+CLASS="ACRONYM"
+>SGML</ACRONYM
+>文档最常用也是最强大的模式。配置正确时，它将允许你使用<SPAN
+CLASS="APPLICATION"
+>Emacs</SPAN
+>来插入标签并且检查标记的一致性。你也可以把它用于<ACRONYM
+CLASS="ACRONYM"
+>HTML</ACRONYM
+>。可以从<A
+HREF="http://www.lysator.liu.se/projects/about_psgml.html"
+TARGET="_top"
+>PSGML 网站</A
+>找到下载、安装指导和详细文档。
+    </P
+><P
+>     There is one important thing to note with
+     关于<SPAN
+CLASS="PRODUCTNAME"
+>PSGML</SPAN
+>有一件重要的事情需要注意：它的作者假定你的主<ACRONYM
+CLASS="ACRONYM"
+>SGML</ACRONYM
+> <ACRONYM
+CLASS="ACRONYM"
+>DTD</ACRONYM
+>目录是<TT
+CLASS="FILENAME"
+>/usr/local/lib/sgml</TT
+>。如果你采用本章的例子中的做法使用<TT
+CLASS="FILENAME"
+>/usr/local/share/sgml</TT
+>，你必须对此进行补偿，要么设置<TT
+CLASS="ENVAR"
+>SGML_CATALOG_FILES</TT
+>环境变量，要么自定义你的<SPAN
+CLASS="PRODUCTNAME"
+>PSGML</SPAN
+>安装（其手册会告诉你怎么做）。
+    </P
+><P
+>     把下面的东西放在你的<TT
+CLASS="FILENAME"
+>~/.emacs</TT
+>环境文件中（把路径名调整为适合于你的系统）：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>; ********** for SGML mode (psgml)
+
+(setq sgml-omittag t)
+(setq sgml-shorttag t)
+(setq sgml-minimize-attributes nil)
+(setq sgml-always-quote-attributes t)
+(setq sgml-indent-step 1)
+(setq sgml-indent-data t)
+(setq sgml-parent-document nil)
+(setq sgml-exposed-tags nil)
+(setq sgml-catalog-files '("/usr/local/share/sgml/catalog"))
+
+(autoload 'sgml-mode "psgml" "Major mode to edit SGML files." t )</PRE
+><P>
+
+     并且在同一个文件中在现有<TT
+CLASS="VARNAME"
+>auto-mode-alist</TT
+>定义中为<ACRONYM
+CLASS="ACRONYM"
+>SGML</ACRONYM
+>增加一个项：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>(setq
+  auto-mode-alist
+  '(("\\.sgml$" . sgml-mode)
+   ))</PRE
+><P>
+    </P
+><P
+>     你可能发现当使用<SPAN
+CLASS="PRODUCTNAME"
+>PSGML</SPAN
+>时，一种在书籍各部分独立文件上工作的舒服的方法是在编辑它们时插入一个适当的<TT
+CLASS="LITERAL"
+>DOCTYPE</TT
+>声明。如果你在这个源代码上工作，例如是附录章，那么你可以指定文档为一个 DocBook 文档的一个<SPAN
+CLASS="QUOTE"
+>"appendix"</SPAN
+>实例，通过将其第一行变成：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>&lt;!DOCTYPE appendix PUBLIC "-//OASIS//DTD DocBook V4.2//EN"&gt;</PRE
+><P>
+
+     这意味着任何和所有读取<ACRONYM
+CLASS="ACRONYM"
+>SGML</ACRONYM
+>的东西将会回答正确，并且我可以用<TT
+CLASS="COMMAND"
+>nsgmls -s docguide.sgml</TT
+>验证该文档（但是在编译整个文档集之前你需要去掉那一行）。
+    </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN183842"
+>J.4.2. 其他 Emacs 模式</A
+></H2
+><P
+>     <SPAN
+CLASS="PRODUCTNAME"
+>GNU Emacs</SPAN
+>带有一种不同的<ACRONYM
+CLASS="ACRONYM"
+>SGML</ACRONYM
+>模式，但是它不如<SPAN
+CLASS="PRODUCTNAME"
+>PSGML</SPAN
+>那么强大，但是它更直观并且更轻量级。同样，它提供很有用的语法高亮（字体锁）。<TT
+CLASS="FILENAME"
+>src/tools/editors/emacs.samples</TT
+>包含用于这种模式的设置实例。
+    </P
+><P
+>     Norm Walsh 为 DocBook 专门提供了一种<A
+HREF="http://nwalsh.com/emacs/docbookide/index.html"
+TARGET="_top"
+>主模式</A
+>，它也有字体锁和一些减少录入的特性。
+    </P
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="docguide-build.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="docguide-style.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>编译文档</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="docguide.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>样式指导</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

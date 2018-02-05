@@ -1,0 +1,284 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>版本 9.2.12</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="版本说明"
+HREF="release.html"><LINK
+REL="PREVIOUS"
+TITLE="版本 9.2.13"
+HREF="release-9-2-13.html"><LINK
+REL="NEXT"
+TITLE="版本 9.2.11"
+HREF="release-9-2-11.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/release-9.2.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="版本 9.2.13"
+HREF="release-9-2-13.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="release.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#38468;&#24405; E. 版本说明</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="版本 9.2.11"
+HREF="release-9-2-11.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="RELEASE-9-2-12"
+>E.38. 版本 9.2.12</A
+></H1
+><DIV
+CLASS="NOTE"
+><BLOCKQUOTE
+CLASS="NOTE"
+><P
+><B
+>发布日期: </B
+>2015-06-04</P
+></BLOCKQUOTE
+></DIV
+><P
+>   这个版本包含少量自9.2.11以来的修复。
+   关于9.2主版本的新特性信息，请查看<A
+HREF="release-9-2.html"
+>第 E.50 &#33410;</A
+>。
+  </P
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN140404"
+>E.38.1. 迁移到版本 9.2.12</A
+></H2
+><P
+>    运行9.2.X版本的用户不需要转储/恢复。
+   </P
+><P
+>    不过，如果你是从一个早于9.2.11的版本升级而来，
+    请查看<A
+HREF="release-9-2-11.html"
+>第 E.39 &#33410;</A
+>。
+   </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN140409"
+>E.38.2. 修改列表</A
+></H2
+><P
+></P
+><UL
+><LI
+><P
+>避免崩溃重启期间<CODE
+CLASS="FUNCTION"
+>fsync</CODE
+>数据目录时的失败 (Abhijit Menon-Sen, Tom Lane)</P
+><P
+>在以前的小版本中，我们添加了一个补丁，在崩溃之后<CODE
+CLASS="FUNCTION"
+>fsync</CODE
+>
+数据目录中的任何东西。不幸的是，它对任何错误条件的响应都是失败的，
+因此阻止了服务器的启动，即使问题是相当无害的。
+一个例子是，数据目录中的一个不可写的文件在某些平台上会阻止重启；
+但是它通常会使得服务器不能写入SSL认证文件。
+修改这个行为，忽略所有权限失败，记录其他类型的失败但是不阻止继续。</P
+></LI
+><LI
+><P
+>修复<CODE
+CLASS="FUNCTION"
+>pg_get_functiondef()</CODE
+>，显示函数的
+<TT
+CLASS="LITERAL"
+>LEAKPROOF</TT
+>属性，如果设置了 (Jeevan Chalke)</P
+></LI
+><LI
+><P
+>删除<SPAN
+CLASS="SYSTEMITEM"
+>OpenBSD</SPAN
+>上<SPAN
+CLASS="APPLICATION"
+>configure</SPAN
+>
+到线程<SPAN
+CLASS="APPLICATION"
+>libpython</SPAN
+>的检查禁止连接 (Tom Lane)</P
+><P
+>这个限制打算阻止的失败在当前的<SPAN
+CLASS="SYSTEMITEM"
+>OpenBSD</SPAN
+>
+版本上看起来不再是一个问题。</P
+></LI
+><LI
+><P
+>允许<SPAN
+CLASS="APPLICATION"
+>libpq</SPAN
+>使用版本超过v1的TLS协议 (Noah Misch)</P
+><P
+>长期以来，<SPAN
+CLASS="APPLICATION"
+>libpq</SPAN
+>唯一允许的SSL协议是TLS v1。
+由于新的TLS版本开始流行，允许它与服务器协商最高广泛支持的TLS版本。
+（<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>服务器早就具有了这种能力，
+所以服务器端不需要做什么修改。）这是对在9.4.0中发布的修改的一个反向修复。</P
+></LI
+></UL
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="release-9-2-13.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="release-9-2-11.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>版本 9.2.13</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="release.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>版本 9.2.11</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

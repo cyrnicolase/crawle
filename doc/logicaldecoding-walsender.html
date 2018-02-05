@@ -1,0 +1,237 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>流复制协议接口</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="逻辑解码"
+HREF="logicaldecoding.html"><LINK
+REL="PREVIOUS"
+TITLE="逻辑解码概念"
+HREF="logicaldecoding-explanation.html"><LINK
+REL="NEXT"
+TITLE="逻辑解码的 SQL 接口"
+HREF="logicaldecoding-sql.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/logicaldecoding.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="逻辑解码概念"
+HREF="logicaldecoding-explanation.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="logicaldecoding.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#31456; 47. 逻辑解码</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="逻辑解码的 SQL 接口"
+HREF="logicaldecoding-sql.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="LOGICALDECODING-WALSENDER"
+>47.3. 流复制协议接口</A
+></H1
+><P
+>    命令
+    <P
+></P
+></P><UL
+><LI
+><P
+><TT
+CLASS="LITERAL"
+>CREATE_REPLICATION_SLOT <TT
+CLASS="REPLACEABLE"
+><I
+>slot_name</I
+></TT
+> LOGICAL <TT
+CLASS="REPLACEABLE"
+><I
+>output_plugin</I
+></TT
+></TT
+></P
+></LI
+><LI
+><P
+><TT
+CLASS="LITERAL"
+>DROP_REPLICATION_SLOT <TT
+CLASS="REPLACEABLE"
+><I
+>slot_name</I
+></TT
+></TT
+></P
+></LI
+><LI
+><P
+><TT
+CLASS="LITERAL"
+>START_REPLICATION SLOT <TT
+CLASS="REPLACEABLE"
+><I
+>slot_name</I
+></TT
+> LOGICAL ...</TT
+></P
+></LI
+></UL
+><P>
+    被用来创建、删除以及流式传送一个复制槽。这些命令只能在一个复制连接上使用。
+    它们不同通过 SQL 使用。这些命令的详情请见
+    <A
+HREF="protocol-replication.html"
+>第 51.3 &#33410;</A
+>。
+   </P
+><P
+>    命令<A
+HREF="app-pgrecvlogical.html"
+><SPAN
+CLASS="APPLICATION"
+>pg_recvlogical</SPAN
+></A
+>可以被用来控制一个流复制连接上的逻辑
+    解码（它在内部使用上述命令）。
+   </P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="logicaldecoding-explanation.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="logicaldecoding-sql.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>逻辑解码概念</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="logicaldecoding.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>逻辑解码的 <ACRONYM
+CLASS="ACRONYM"
+>SQL</ACRONYM
+> 接口</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

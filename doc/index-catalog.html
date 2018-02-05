@@ -1,0 +1,395 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>索引的基本 API 结构</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="索引访问方法接口定义"
+HREF="indexam.html"><LINK
+REL="PREVIOUS"
+TITLE="索引访问方法接口定义"
+HREF="indexam.html"><LINK
+REL="NEXT"
+TITLE="索引访问方法函数"
+HREF="index-functions.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/indexam.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="索引访问方法接口定义"
+HREF="indexam.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="indexam.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#31456; 59. 索引访问方法接口定义</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="索引访问方法函数"
+HREF="index-functions.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="INDEX-CATALOG"
+>59.1. 索引的基本 API 结构</A
+></H1
+><P
+>   每一个索引访问方法都由<A
+HREF="catalog-pg-am.html"
+><TT
+CLASS="STRUCTNAME"
+>pg_am</TT
+></A
+>系统目录中的一行所描述。<TT
+CLASS="STRUCTNAME"
+>pg_am</TT
+>项为该访问方法指定了名称和一个<I
+CLASS="FIRSTTERM"
+>处理器函数</I
+>。这些项可以用<A
+HREF="sql-create-access-method.html"
+>CREATE ACCESS METHOD</A
+>和<A
+HREF="sql-drop-access-method.html"
+>DROP ACCESS METHOD</A
+> SQL 命令创建和删除。
+  </P
+><P
+>   一个索引访问方法的处理器函数必须被声明为接受单一的类型为<TT
+CLASS="TYPE"
+>internal</TT
+>类型的参数并且返回伪类型<TT
+CLASS="TYPE"
+>index_am_handler</TT
+>。该参数是一个无用值，它只是被用来防止从 SQL 命令直接调用处理器函数。该函数的结果必须是一个已经 palloc 过的<TT
+CLASS="STRUCTNAME"
+>IndexAmRoutine</TT
+>类型结构，它包含核心代码使用该索引访问方法所需的所有信息。<TT
+CLASS="STRUCTNAME"
+>IndexAmRoutine</TT
+>结构（也被称为访问方法的<I
+CLASS="FIRSTTERM"
+>API 结构</I
+>）中的域指定了该访问方法的各种固定性质，例如它是否支持多列索引。更重要的是，它包含用于该访问方法的支持函数的指针，这些函数会完成真正访问索引的工作。这些支持函数是纯 C 函数，并且在 SQL 层面不可见也不可调用。支持函数在<A
+HREF="index-functions.html"
+>第 59.2 &#33410;</A
+>中介绍。
+  </P
+><P
+>   <TT
+CLASS="STRUCTNAME"
+>IndexAmRoutine</TT
+>结构定义如下：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>typedef struct IndexAmRoutine
+{
+    NodeTag     type;
+
+    /*
+     * Total number of strategies (operators) by which we can traverse/search
+     * this AM.  Zero if AM does not have a fixed set of strategy assignments.
+     */
+    uint16      amstrategies;
+    /* total number of support functions that this AM uses */
+    uint16      amsupport;
+    /* does AM support ORDER BY indexed column's value? */
+    bool        amcanorder;
+    /* does AM support ORDER BY result of an operator on indexed column? */
+    bool        amcanorderbyop;
+    /* does AM support backward scanning? */
+    bool        amcanbackward;
+    /* does AM support UNIQUE indexes? */
+    bool        amcanunique;
+    /* does AM support multi-column indexes? */
+    bool        amcanmulticol;
+    /* does AM require scans to have a constraint on the first index column? */
+    bool        amoptionalkey;
+    /* does AM handle ScalarArrayOpExpr quals? */
+    bool        amsearcharray;
+    /* does AM handle IS NULL/IS NOT NULL quals? */
+    bool        amsearchnulls;
+    /* can index storage data type differ from column data type? */
+    bool        amstorage;
+    /* can an index of this type be clustered on? */
+    bool        amclusterable;
+    /* does AM handle predicate locks? */
+    bool        ampredlocks;
+    /* type of data stored in index, or InvalidOid if variable */
+    Oid         amkeytype;
+
+    /* interface functions */
+    ambuild_function ambuild;
+    ambuildempty_function ambuildempty;
+    aminsert_function aminsert;
+    ambulkdelete_function ambulkdelete;
+    amvacuumcleanup_function amvacuumcleanup;
+    amcanreturn_function amcanreturn;   /* can be NULL */
+    amcostestimate_function amcostestimate;
+    amoptions_function amoptions;
+    amproperty_function amproperty;     /* can be NULL */
+    amvalidate_function amvalidate;
+    ambeginscan_function ambeginscan;
+    amrescan_function amrescan;
+    amgettuple_function amgettuple;     /* can be NULL */
+    amgetbitmap_function amgetbitmap;   /* can be NULL */
+    amendscan_function amendscan;
+    ammarkpos_function ammarkpos;       /* can be NULL */
+    amrestrpos_function amrestrpos;     /* can be NULL */
+} IndexAmRoutine;</PRE
+><P>
+  </P
+><P
+>   要想真正有用，一个索引访问方法还必须有一个或多个定义在<A
+HREF="catalog-pg-opfamily.html"
+><TT
+CLASS="STRUCTNAME"
+>pg_opfamily</TT
+></A
+>、
+   <A
+HREF="catalog-pg-opclass.html"
+><TT
+CLASS="STRUCTNAME"
+>pg_opclass</TT
+></A
+>、
+   <A
+HREF="catalog-pg-amop.html"
+><TT
+CLASS="STRUCTNAME"
+>pg_amop</TT
+></A
+>和
+   <A
+HREF="catalog-pg-amproc.html"
+><TT
+CLASS="STRUCTNAME"
+>pg_amproc</TT
+></A
+>中的<I
+CLASS="FIRSTTERM"
+>操作符族</I
+>和<I
+CLASS="FIRSTTERM"
+>操作符类</I
+>。这些项允许规划器判断哪种查询条件适用于这个索引访问方法的索引。操作符族和类在<A
+HREF="xindex.html"
+>第 36.14 &#33410;</A
+>中描述，它是阅读本章所需的前导材料。
+  </P
+><P
+>   一个独立的索引是由一个<A
+HREF="catalog-pg-class.html"
+><TT
+CLASS="STRUCTNAME"
+>pg_class</TT
+></A
+>项定义的，该项描述索引为一个物理关系。还要加上一个<A
+HREF="catalog-pg-index.html"
+><TT
+CLASS="STRUCTNAME"
+>pg_index</TT
+></A
+>项来显示索引的逻辑内容 &mdash; 也就是说，它所拥有的索引列集以及这些列的语义是被相关操作符类刻画的。索引列（键值）可以是底层表的 简单列，也可以是该表行上的表达式。索引访问方法通常不关心索引的键值来自那里（它总是操作预计算过的键值），但是它会对<TT
+CLASS="STRUCTNAME"
+>pg_index</TT
+>中的操作符类信息很感兴趣。所有这些目录项都可以被当作<TT
+CLASS="STRUCTNAME"
+>关系</TT
+>数据结构的一部分访问，这个数据结构会被传递给索引上的所有操作。
+  </P
+><P
+>   <TT
+CLASS="STRUCTNAME"
+>IndexAmRoutine</TT
+>中的有些标志域的含义并不那么直观。<TT
+CLASS="STRUCTFIELD"
+>amcanunique</TT
+>的要求在<A
+HREF="index-unique-checks.html"
+>第 59.5 &#33410;</A
+>中讨论。<TT
+CLASS="STRUCTFIELD"
+>amcanmulticol</TT
+>标志断言该索引访问方法支持多列索引， <TT
+CLASS="STRUCTFIELD"
+>amoptionalkey</TT
+>断言它允许对那种在第一个索引列上没有给出可索引限制子句的扫描。如果<TT
+CLASS="STRUCTFIELD"
+>amcanmulticol</TT
+>为假，那么<TT
+CLASS="STRUCTFIELD"
+>amoptionalkey</TT
+>实际上说的是该访问方法是否允许不带限制子句的全索引扫描。 那些支持多索引列的访问方法<SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>必须</I
+></SPAN
+>支持那些在省略了除第一个列之外的任何或所有其它列上约束的扫描；不过，它们被允许去要求在第一个列上出现一些限制，并且这一点是以把<TT
+CLASS="STRUCTFIELD"
+>amoptionalkey</TT
+>设置为假作为标志的。一个索引 AM 可能将<TT
+CLASS="STRUCTFIELD"
+>amoptionalkey</TT
+>设置为假的一种原因是，如果它不索引空值。因为大多数可索引的操作符都是严格的并且因此不能对空输入返回真，所以不为空值存储索引项咋看上去很吸引人：因为它们不 可能被一个索引扫描返回。不过，当一个索引扫描对于一个给定索引列上没有约束子句时，这种讨论就不成立了。实际上，这意 味着设置了<TT
+CLASS="STRUCTFIELD"
+>amoptionalkey</TT
+>为真的索引必须索引空值，因为规划器可能会决定在根本没有扫描键的时候使用这样的索引。一个相关的限制是一个支持 多索引列的索引访问方法<SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>必须</I
+></SPAN
+>支持索引第一列之后的列中的空值，因 为规划器会认为这个索引可以用于在那些列上没有限制的查询。例如，考虑一个在(a,b)上的索引和一个有<TT
+CLASS="LITERAL"
+>WHERE a = 4</TT
+>的查询。系统会认为该索引可以用于扫描 <TT
+CLASS="LITERAL"
+>a = 4</TT
+>的行， 如果索引忽略了 b 为空的行，那么就是错误的。不过，忽略那些在第一个索引列上值为空的行是 OK 的。一个索引空的索引访问方法可能也会设置<TT
+CLASS="STRUCTFIELD"
+>amsearchnulls</TT
+>，表明它支持将<TT
+CLASS="LITERAL"
+>IS NULL</TT
+>和<TT
+CLASS="LITERAL"
+>IS NOT NULL</TT
+>子句作为搜索条件。
+  </P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="indexam.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="index-functions.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>索引访问方法接口定义</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="indexam.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>索引访问方法函数</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

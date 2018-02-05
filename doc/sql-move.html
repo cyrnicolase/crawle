@@ -1,0 +1,375 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>MOVE</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="SQL 命令"
+HREF="sql-commands.html"><LINK
+REL="PREVIOUS"
+TITLE="LOCK"
+HREF="sql-lock.html"><LINK
+REL="NEXT"
+TITLE="NOTIFY"
+HREF="sql-notify.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="REFENTRY"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/ref/move.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="LOCK"
+HREF="sql-lock.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="NOTIFY"
+HREF="sql-notify.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="SQL-MOVE"
+></A
+>MOVE</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN88772"
+></A
+><H2
+>&#21517;&#31216;</H2
+>MOVE&nbsp;--&nbsp;定位一个游标</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN88775"
+></A
+><H2
+>&#22823;&#32434;</H2
+><PRE
+CLASS="SYNOPSIS"
+>MOVE [ <TT
+CLASS="REPLACEABLE"
+><I
+>direction</I
+></TT
+> [ FROM | IN ] ] <TT
+CLASS="REPLACEABLE"
+><I
+>cursor_name</I
+></TT
+>
+
+<SPAN
+CLASS="phrase"
+><SPAN
+CLASS="PHRASE"
+>其中<TT
+CLASS="REPLACEABLE"
+><I
+>direction</I
+></TT
+>可以为空或者以下之一：</SPAN
+></SPAN
+>
+
+    NEXT
+    PRIOR
+    FIRST
+    LAST
+    ABSOLUTE <TT
+CLASS="REPLACEABLE"
+><I
+>count</I
+></TT
+>
+    RELATIVE <TT
+CLASS="REPLACEABLE"
+><I
+>count</I
+></TT
+>
+    <TT
+CLASS="REPLACEABLE"
+><I
+>count</I
+></TT
+>
+    ALL
+    FORWARD
+    FORWARD <TT
+CLASS="REPLACEABLE"
+><I
+>count</I
+></TT
+>
+    FORWARD ALL
+    BACKWARD
+    BACKWARD <TT
+CLASS="REPLACEABLE"
+><I
+>count</I
+></TT
+>
+    BACKWARD ALL</PRE
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN88786"
+></A
+><H2
+>描述</H2
+><P
+>   <TT
+CLASS="COMMAND"
+>MOVE</TT
+>重新定位一个游标而不检索任何数据。
+   <TT
+CLASS="COMMAND"
+>MOVE</TT
+>的工作完全像
+   <TT
+CLASS="COMMAND"
+>FETCH</TT
+>命令，但是它只定位游标并且不返回行。
+  </P
+><P
+>   用于<TT
+CLASS="COMMAND"
+>MOVE</TT
+>命令的参数和
+   <TT
+CLASS="COMMAND"
+>FETCH</TT
+>命令的一样，可参考
+   <A
+HREF="sql-fetch.html"
+>FETCH</A
+>。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN88796"
+></A
+><H2
+>输出</H2
+><P
+>   成功完成时，<TT
+CLASS="COMMAND"
+>MOVE</TT
+>命令返回的命令标签形式是
+</P><PRE
+CLASS="SCREEN"
+>MOVE <TT
+CLASS="REPLACEABLE"
+><I
+>count</I
+></TT
+></PRE
+><P>
+   <TT
+CLASS="REPLACEABLE"
+><I
+>count</I
+></TT
+>是一个
+   具有同样参数的<TT
+CLASS="COMMAND"
+>FETCH</TT
+>命令会返回的
+   行数（可能为零）。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN88804"
+></A
+><H2
+>示例</H2
+><PRE
+CLASS="PROGRAMLISTING"
+>BEGIN WORK;
+DECLARE liahona CURSOR FOR SELECT * FROM films;
+
+-- 跳过前 5 行：
+MOVE FORWARD 5 IN liahona;
+MOVE 5
+
+-- 从游标 liahona 中取第 6 行：
+FETCH 1 FROM liahona;
+ code  | title  | did | date_prod  |  kind  |  len
+-------+--------+-----+------------+--------+-------
+ P_303 | 48 Hrs | 103 | 1982-10-22 | Action | 01:37
+(1 row)
+
+-- 关闭游标 liahona 并且结束事务：
+CLOSE liahona;
+COMMIT WORK;</PRE
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN88807"
+></A
+><H2
+>兼容性</H2
+><P
+>   在 SQL 标准中没有<TT
+CLASS="COMMAND"
+>MOVE</TT
+>语句。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN88811"
+></A
+><H2
+>另见</H2
+><A
+HREF="sql-close.html"
+>CLOSE</A
+>, <A
+HREF="sql-declare.html"
+>DECLARE</A
+>, <A
+HREF="sql-fetch.html"
+>FETCH</A
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-lock.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="sql-notify.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>LOCK</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>NOTIFY</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

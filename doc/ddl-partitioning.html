@@ -1,0 +1,863 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>划分</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="数据定义"
+HREF="ddl.html"><LINK
+REL="PREVIOUS"
+TITLE="继承"
+HREF="ddl-inherit.html"><LINK
+REL="NEXT"
+TITLE="外部数据"
+HREF="ddl-foreign-data.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/ddl.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="继承"
+HREF="ddl-inherit.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="ddl.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#31456; 5. 数据定义</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="外部数据"
+HREF="ddl-foreign-data.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="DDL-PARTITIONING"
+>5.10. 划分</A
+></H1
+><P
+>    <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>支持基本的表划分。本小节介绍为何以及怎样把划分实现为数据库设计的一部分。
+   </P
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="DDL-PARTITIONING-OVERVIEW"
+>5.10.1. 概述</A
+></H2
+><P
+>    划分指的是将逻辑上的一个大表分成一些小的物理上的片。划分有很多益处：
+   <P
+></P
+></P><UL
+><LI
+><P
+>      在某些情况下查询性能能够显著提升，特别是当那些访问压力大的行在一个分区或者少数几个分区时。划分可以取代索引的主导列、减小索引尺寸以及使索引中访问压力大的部分更有可能被放在内存中。
+     </P
+></LI
+><LI
+><P
+>      当查询或更新访问一个分区的大部分行时，可以通过该分区上的一个顺序扫描来取代分散到整个表上的索引和随机访问，这样可以改善性能。
+     </P
+></LI
+><LI
+><P
+>      如果需求计划使用划分设计，可以通过增加或移除分区来完成批量载入和删除。<TT
+CLASS="COMMAND"
+>ALTER TABLE NO INHERIT</TT
+>和<TT
+CLASS="COMMAND"
+>DROP TABLE</TT
+>都远快于一个批量操作。这些命令也完全避免了由批量<TT
+CLASS="COMMAND"
+>DELETE</TT
+>造成的<TT
+CLASS="COMMAND"
+>VACUUM</TT
+>负载。
+     </P
+></LI
+><LI
+><P
+>      很少使用的数据可以被迁移到便宜且较慢的存储介质上。
+     </P
+></LI
+></UL
+><P>
+
+    当一个表非常大时，划分所带来的好处是非常值得的。一个表何种情况下会从划分获益取决于应用，一个经验法则是当表的尺寸超过了数据库服务器物理内存时，划分会为表带来好处。
+   </P
+><P
+>    目前，<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>支持通过表继承来进行划分。每一个分区被创建为父表的一个子表。父表本身通常是空的，它的存在仅仅为了表示整个数据集。在尝试建立划分之前，应该先熟悉继承（参见<A
+HREF="ddl-inherit.html"
+>第 5.9 &#33410;</A
+>）。
+   </P
+><P
+>    在<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>中可以实现下列形式的划分：
+
+    <P
+></P
+></P><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+>范围划分</DT
+><DD
+><P
+>        表被根据一个关键列或一组列划分为<SPAN
+CLASS="QUOTE"
+>"范围"</SPAN
+>，不同的分区的范围之间没有重叠。例如，我们可以根据日期范围划分，或者根据特定业务对象的标识符划分。
+       </P
+></DD
+><DT
+>列表划分</DT
+><DD
+><P
+>        通过显式地列出每一个分区中出现的键值来划分表。
+       </P
+></DD
+></DL
+></DIV
+><P>
+   </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="DDL-PARTITIONING-IMPLEMENTATION"
+>5.10.2. 实现划分</A
+></H2
+><P
+>     要建立一个划分的表，可以这样做：
+     <P
+></P
+></P><OL
+COMPACT="COMPACT"
+TYPE="1"
+><LI
+><P
+>        创建<SPAN
+CLASS="QUOTE"
+>"主"</SPAN
+>表，所有的分区都将继承它。
+       </P
+><P
+>        这个表将不会包含任何数据。不要在这个表上定义任何检查约束，除非准备将它们应用到所有分区。同样也不需要定义任何索引或者唯一约束。
+       </P
+></LI
+><LI
+><P
+>        创建一些继承于主表的<SPAN
+CLASS="QUOTE"
+>"子"</SPAN
+>表。通常，这些表不会在从主表继承的列集中增加任何列。
+       </P
+><P
+>        我们将这些子表认为是分区，尽管它们在各方面来看普通的<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>表（或者可能是外部表）。
+       </P
+></LI
+><LI
+><P
+>        为分区表增加表约束以定义每个分区中允许的键值。
+       </P
+><P
+>        典型的例子是：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>CHECK ( x = 1 )
+CHECK ( county IN ( 'Oxfordshire', 'Buckinghamshire', 'Warwickshire' ))
+CHECK ( outletID &gt;= 100 AND outletID &lt; 200 )</PRE
+><P>
+        要确保这些约束能够保证在不同分区所允许的键值之间不存在重叠。设置范围约束时一种常见的错误是：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>CHECK ( outletID BETWEEN 100 AND 200 )
+CHECK ( outletID BETWEEN 200 AND 300 )</PRE
+><P>
+        这是错误的，因为键值200并没有被清楚地分配到某一个分区。
+       </P
+><P
+>        注意在语法上范围划分和列表划分没有区别，这些术语只是为了描述方便而存在。
+       </P
+></LI
+><LI
+><P
+>        对于每一个分区，在关键列上创建一个索引，并创建其他我们所需要的索引（关键索引并不是严格必要的，但是在大部分情况下它都是有用的。如果我们希望键值是唯一的，则我们还要为每一个分区创建一个唯一或者主键约束。）。
+       </P
+></LI
+><LI
+><P
+>        还可以有选择地定义一个触发器或者规则将在主表上的数据插入重定向到合适的分区上。
+       </P
+></LI
+><LI
+><P
+>        确保在<TT
+CLASS="FILENAME"
+>postgresql.conf</TT
+>中<A
+HREF="runtime-config-query.html#GUC-CONSTRAINT-EXCLUSION"
+>constraint_exclusion</A
+>配置参数没有被禁用。如果它被禁用，查询将不会被按照期望的方式优化。
+       </P
+></LI
+></OL
+><P>
+    </P
+><P
+>     例如，假设我们正在为一个大型的冰淇淋公司构建一个数据库。该公司测量每天在每一个区域的最高气温以及冰淇淋销售。在概念上，我们想要一个这样的表：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>CREATE TABLE measurement (
+    city_id         int not null,
+    logdate         date not null,
+    peaktemp        int,
+    unitsales       int
+);</PRE
+><P>
+
+     由于该表的主要用途是为管理层提供在线报告，我们知道大部分查询将只会访问上周、上月或者上季度的数据。为了减少需要保存的旧数据的量，我们决定只保留最近3年的数据。在每一个月的开始，我们将删除最老的一个月的数据。
+    </P
+><P
+>     在这种情况下，我们可以使用划分来帮助我们满足对于测量表的所有不同需求。按照上面所勾勒的步骤，划分可以这样来建立：
+    </P
+><P
+>     <P
+></P
+></P><OL
+COMPACT="COMPACT"
+TYPE="1"
+><LI
+><P
+>        主表是<TT
+CLASS="STRUCTNAME"
+>measurement</TT
+>表，完全按照以上的方式声明。
+       </P
+></LI
+><LI
+><P
+>        下一步我们为每一个活动月创建一个分区：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>CREATE TABLE measurement_y2006m02 ( ) INHERITS (measurement);
+CREATE TABLE measurement_y2006m03 ( ) INHERITS (measurement);
+...
+CREATE TABLE measurement_y2007m11 ( ) INHERITS (measurement);
+CREATE TABLE measurement_y2007m12 ( ) INHERITS (measurement);
+CREATE TABLE measurement_y2008m01 ( ) INHERITS (measurement);</PRE
+><P>
+
+        每一个分区自身都是完整的表，但是它们的定义都是从<TT
+CLASS="STRUCTNAME"
+>measurement</TT
+>表继承而来。
+       </P
+><P
+>        这解决了我们的一个问题：删除旧数据。每个月，我们所需要做的是在最旧的子表上执行一个<TT
+CLASS="COMMAND"
+>DROP TABLE</TT
+>命令并为新一个月的数据创建一个新的子表。
+       </P
+></LI
+><LI
+><P
+>        我们必须提供不重叠的表约束。和前面简单地创建分区表不同，实际的表创建脚本应该是：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>CREATE TABLE measurement_y2006m02 (
+    CHECK ( logdate &gt;= DATE '2006-02-01' AND logdate &lt; DATE '2006-03-01' )
+) INHERITS (measurement);
+CREATE TABLE measurement_y2006m03 (
+    CHECK ( logdate &gt;= DATE '2006-03-01' AND logdate &lt; DATE '2006-04-01' )
+) INHERITS (measurement);
+...
+CREATE TABLE measurement_y2007m11 (
+    CHECK ( logdate &gt;= DATE '2007-11-01' AND logdate &lt; DATE '2007-12-01' )
+) INHERITS (measurement);
+CREATE TABLE measurement_y2007m12 (
+    CHECK ( logdate &gt;= DATE '2007-12-01' AND logdate &lt; DATE '2008-01-01' )
+) INHERITS (measurement);
+CREATE TABLE measurement_y2008m01 (
+    CHECK ( logdate &gt;= DATE '2008-01-01' AND logdate &lt; DATE '2008-02-01' )
+) INHERITS (measurement);</PRE
+><P>
+       </P
+></LI
+><LI
+><P
+>        我们可能在关键列上也需要索引：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>CREATE INDEX measurement_y2006m02_logdate ON measurement_y2006m02 (logdate);
+CREATE INDEX measurement_y2006m03_logdate ON measurement_y2006m03 (logdate);
+...
+CREATE INDEX measurement_y2007m11_logdate ON measurement_y2007m11 (logdate);
+CREATE INDEX measurement_y2007m12_logdate ON measurement_y2007m12 (logdate);
+CREATE INDEX measurement_y2008m01_logdate ON measurement_y2008m01 (logdate);</PRE
+><P>
+
+        在这里我们选择不增加更多的索引。
+       </P
+></LI
+><LI
+><P
+>        我们希望我们的应用能够使用<TT
+CLASS="LITERAL"
+>INSERT INTO measurement ...</TT
+>并且数据将被重定向到合适的分区表。我们可以通过为主表附加一个合适的触发器函数来实现这一点。如果数据将只被增加到最后一个分区，我们可以使用一个非常简单的触发器函数：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>CREATE OR REPLACE FUNCTION measurement_insert_trigger()
+RETURNS TRIGGER AS $$
+BEGIN
+    INSERT INTO measurement_y2008m01 VALUES (NEW.*);
+    RETURN NULL;
+END;
+$$
+LANGUAGE plpgsql;</PRE
+><P>
+
+        完成函数创建后，我们创建一个调用该触发器函数的触发器：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>CREATE TRIGGER insert_measurement_trigger
+    BEFORE INSERT ON measurement
+    FOR EACH ROW EXECUTE PROCEDURE measurement_insert_trigger();</PRE
+><P>
+
+        我们必须在每个月重新定义触发器函数，这样它才会总是指向当前分区。而触发器的定义则不需要被更新。
+       </P
+><P
+>        我们也可能希望插入数据时服务器会自动地定位应该加入数据的分区。我们可以通过一个更复杂的触发器函数来实现之，例如：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>CREATE OR REPLACE FUNCTION measurement_insert_trigger()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF ( NEW.logdate &gt;= DATE '2006-02-01' AND
+         NEW.logdate &lt; DATE '2006-03-01' ) THEN
+        INSERT INTO measurement_y2006m02 VALUES (NEW.*);
+    ELSIF ( NEW.logdate &gt;= DATE '2006-03-01' AND
+            NEW.logdate &lt; DATE '2006-04-01' ) THEN
+        INSERT INTO measurement_y2006m03 VALUES (NEW.*);
+    ...
+    ELSIF ( NEW.logdate &gt;= DATE '2008-01-01' AND
+            NEW.logdate &lt; DATE '2008-02-01' ) THEN
+        INSERT INTO measurement_y2008m01 VALUES (NEW.*);
+    ELSE
+        RAISE EXCEPTION 'Date out of range.  Fix the measurement_insert_trigger() function!';
+    END IF;
+    RETURN NULL;
+END;
+$$
+LANGUAGE plpgsql;</PRE
+><P>
+
+        触发器的定义和以前一样。注意每一个<TT
+CLASS="LITERAL"
+>IF</TT
+>测试必须准确地匹配它的分区的<TT
+CLASS="LITERAL"
+>CHECK</TT
+>约束。
+       </P
+><P
+>        当该函数比单月形式更加复杂时，并不需要频繁地更新它，因为可以在需要的时候提前加入分支。
+       </P
+><DIV
+CLASS="NOTE"
+><BLOCKQUOTE
+CLASS="NOTE"
+><P
+><B
+>&#27880;&#24847;: </B
+>         在实践中，如果大部分插入都会进入最新的分区，最好先检查它。为了简洁，我们为触发器的检查采用了和本例中其他部分一致的顺序。
+        </P
+></BLOCKQUOTE
+></DIV
+></LI
+></OL
+><P>
+    </P
+><P
+>     如我们所见，一个复杂的划分模式可能需要大量的DDL。在上面的例子中，我们需要每月创建一个新分区，所以最好能够编写一个脚本自动地生成所需的DDL。
+    </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="DDL-PARTITIONING-MANAGING-PARTITIONS"
+>5.10.3. 管理分区</A
+></H2
+><P
+>     通常当初始定义的表倾向于动态变化时，一组分区会被创建。删除旧的分区并周期性地为新数据增加新分区是很常见的。划分的一个最重要的优点是可以通过操纵分区结构来使得这种痛苦的任务几乎是自发地完成，而不需要去物理地移除大量的数据。
+   </P
+><P
+>     移除旧数据的最简单的选项是直接删除不再需要的分区：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>DROP TABLE measurement_y2006m02;</PRE
+><P>
+     这可以非常快地删除百万级别的记录，因为它不需要逐一地删除记录。
+   </P
+><P
+>     另一个经常使用的选项是将分区从被划分的表中移除，但是把它作为一个独立的表保留下来：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>ALTER TABLE measurement_y2006m02 NO INHERIT measurement;</PRE
+><P>
+     这允许在数据被删除前执行更进一步的操作。例如，这是一个很有用的时机通过<TT
+CLASS="COMMAND"
+>COPY</TT
+>、<SPAN
+CLASS="APPLICATION"
+>pg_dump</SPAN
+>或类似的工具来备份数据。这也是进行数据聚集、执行其他数据操作或运行报表的好时机。
+   </P
+><P
+>     相似地我们也可以增加新分区来处理新数据。我们可以在被划分的表中创建一个新的空分区：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>CREATE TABLE measurement_y2008m02 (
+    CHECK ( logdate &gt;= DATE '2008-02-01' AND logdate &lt; DATE '2008-03-01' )
+) INHERITS (measurement);</PRE
+><P>
+
+     作为一种选择方案，有时创建一个在分区结构之外的新表更方便，并且在以后才将它作为一个合适的分区。这使得数据可以在出现于被划分表中之前被载入、检查和转换：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>CREATE TABLE measurement_y2008m02
+  (LIKE measurement INCLUDING DEFAULTS INCLUDING CONSTRAINTS);
+ALTER TABLE measurement_y2008m02 ADD CONSTRAINT y2008m02
+   CHECK ( logdate &gt;= DATE '2008-02-01' AND logdate &lt; DATE '2008-03-01' );
+\copy measurement_y2008m02 from 'measurement_y2008m02'
+-- 可能做一些其他数据准备工作
+ALTER TABLE measurement_y2008m02 INHERIT measurement;</PRE
+><P>
+    </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="DDL-PARTITIONING-CONSTRAINT-EXCLUSION"
+>5.10.4. 划分和约束排除</A
+></H2
+><P
+>    <I
+CLASS="FIRSTTERM"
+>约束排除</I
+>是一种查询优化技术，它可以为按照以上方式定义的被划分表提高性能。例如：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>SET constraint_exclusion = on;
+SELECT count(*) FROM measurement WHERE logdate &gt;= DATE '2008-01-01';</PRE
+><P>
+
+    如果没有约束排除，上述查询将扫描<TT
+CLASS="STRUCTNAME"
+>measurement</TT
+>表的每一个分区。在启用约束排除后，规划器将检查每一个分区的约束来确定该分区需不需要被扫描，因为分区中可能不包含满足查询<TT
+CLASS="LITERAL"
+>WHERE</TT
+>子句的行。如果规划器能够证实这一点，则它将会把该分区排除在查询计划之外。
+   </P
+><P
+>    可以使用<TT
+CLASS="COMMAND"
+>EXPLAIN</TT
+>命令来显示开启了<TT
+CLASS="VARNAME"
+>constraint_exclusion</TT
+>的计划和没有开启该选项的计划之间的区别。一个典型的未优化的计划是：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>SET constraint_exclusion = off;
+EXPLAIN SELECT count(*) FROM measurement WHERE logdate &gt;= DATE '2008-01-01';
+
+                                          QUERY PLAN
+-----------------------------------------------------------------------------------------------
+ Aggregate  (cost=158.66..158.68 rows=1 width=0)
+   -&gt;  Append  (cost=0.00..151.88 rows=2715 width=0)
+         -&gt;  Seq Scan on measurement  (cost=0.00..30.38 rows=543 width=0)
+               Filter: (logdate &gt;= '2008-01-01'::date)
+         -&gt;  Seq Scan on measurement_y2006m02 measurement  (cost=0.00..30.38 rows=543 width=0)
+               Filter: (logdate &gt;= '2008-01-01'::date)
+         -&gt;  Seq Scan on measurement_y2006m03 measurement  (cost=0.00..30.38 rows=543 width=0)
+               Filter: (logdate &gt;= '2008-01-01'::date)
+...
+         -&gt;  Seq Scan on measurement_y2007m12 measurement  (cost=0.00..30.38 rows=543 width=0)
+               Filter: (logdate &gt;= '2008-01-01'::date)
+         -&gt;  Seq Scan on measurement_y2008m01 measurement  (cost=0.00..30.38 rows=543 width=0)
+               Filter: (logdate &gt;= '2008-01-01'::date)</PRE
+><P>
+
+    其中的某些或者全部分区将会使用索引扫描而不是全表顺序扫描，但是关键在于根本不需要扫描旧分区来回答这个查询。当我们开启约束排除后，对于同一个查询我们会得到一个更加廉价的计划：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>SET constraint_exclusion = on;
+EXPLAIN SELECT count(*) FROM measurement WHERE logdate &gt;= DATE '2008-01-01';
+                                          QUERY PLAN
+-----------------------------------------------------------------------------------------------
+ Aggregate  (cost=63.47..63.48 rows=1 width=0)
+   -&gt;  Append  (cost=0.00..60.75 rows=1086 width=0)
+         -&gt;  Seq Scan on measurement  (cost=0.00..30.38 rows=543 width=0)
+               Filter: (logdate &gt;= '2008-01-01'::date)
+         -&gt;  Seq Scan on measurement_y2008m01 measurement  (cost=0.00..30.38 rows=543 width=0)
+               Filter: (logdate &gt;= '2008-01-01'::date)</PRE
+><P>
+   </P
+><P
+>    注意约束排除只由<TT
+CLASS="LITERAL"
+>CHECK</TT
+>约束驱动，而非索引的存在。因此，没有必要在关键列上定义索引。是否在给定分区上定义索引取决于我们希望查询经常扫描表的大部分还是小部分。在后一种情况中索引将会发挥作用。
+   </P
+><P
+>    <A
+HREF="runtime-config-query.html#GUC-CONSTRAINT-EXCLUSION"
+>constraint_exclusion</A
+>的默认（也是推荐）设置实际上既不是<TT
+CLASS="LITERAL"
+>on</TT
+>也不是<TT
+CLASS="LITERAL"
+>off</TT
+>，而是一个被称为<TT
+CLASS="LITERAL"
+>partition</TT
+>的中间设置，这使得该技术只被应用于将要在被分区表上工作的查询。设置<TT
+CLASS="LITERAL"
+>on</TT
+>将使得规划器在所有的查询中检查<TT
+CLASS="LITERAL"
+>CHECK</TT
+>约束，即使简单查询不会从中受益。
+   </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="DDL-PARTITIONING-ALTERNATIVES"
+>5.10.5. 可选划分方法</A
+></H2
+><P
+>     另一种将插入重定向到合适的分区表的方法是在主表上建立规则而不是触发器，例如：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>CREATE RULE measurement_insert_y2006m02 AS
+ON INSERT TO measurement WHERE
+    ( logdate &gt;= DATE '2006-02-01' AND logdate &lt; DATE '2006-03-01' )
+DO INSTEAD
+    INSERT INTO measurement_y2006m02 VALUES (NEW.*);
+...
+CREATE RULE measurement_insert_y2008m01 AS
+ON INSERT TO measurement WHERE
+    ( logdate &gt;= DATE '2008-01-01' AND logdate &lt; DATE '2008-02-01' )
+DO INSTEAD
+    INSERT INTO measurement_y2008m01 VALUES (NEW.*);</PRE
+><P>
+
+     一个规则比一个触发器具有明显更高的负荷，但是该负荷是由每个查询承担而不是每一个行，因此这种方法可能对于批量插入的情况有益。但是，在大部分情况下触发器方法能提供更好的性能。
+    </P
+><P
+>     注意<TT
+CLASS="COMMAND"
+>COPY</TT
+>会忽略规则。如果希望使用<TT
+CLASS="COMMAND"
+>COPY</TT
+>来插入数据，我们将希望将数据复制到正确的分区表而不是主表。<TT
+CLASS="COMMAND"
+>COPY</TT
+>会引发触发器，因此如果使用触发器方法就可以正常地使用它。
+    </P
+><P
+>     规则方法的另一个缺点是如果一组规则没有覆盖被插入的数据，则该数据将被插入到主表中而不会发出任何错误。
+    </P
+><P
+>     划分也可以使用一个<TT
+CLASS="LITERAL"
+>UNION ALL</TT
+>视图来组织。例如：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>CREATE VIEW measurement AS
+          SELECT * FROM measurement_y2006m02
+UNION ALL SELECT * FROM measurement_y2006m03
+...
+UNION ALL SELECT * FROM measurement_y2007m11
+UNION ALL SELECT * FROM measurement_y2007m12
+UNION ALL SELECT * FROM measurement_y2008m01;</PRE
+><P>
+
+     但是，如果要增加或者删除单独的分区，就需要重新地创建视图。在实践中，相对于使用继承，这种方法很少被推荐。
+    </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="DDL-PARTITIONING-CAVEATS"
+>5.10.6. 警告</A
+></H2
+><P
+>    下面的警告适用于被划分表：
+   <P
+></P
+></P><UL
+><LI
+><P
+>      没有自动的方法来验证所有的<TT
+CLASS="LITERAL"
+>CHECK</TT
+>约束是互斥的。创建代码来生成分区并创建或修改相关对象比手工写命令要更安全。
+     </P
+></LI
+><LI
+><P
+>      这里展示的模式都假设分区的关键列从不改变，或者是其改变不足以导致它被移到另一个分区。一个尝试将行移到另一个分区的<TT
+CLASS="COMMAND"
+>UPDATE</TT
+>会失败，因为<TT
+CLASS="LITERAL"
+>CHECK</TT
+>约束的存在。如果我们需要处理这类情况，我们可以在分区表上放置合适的更新触发器，但是它会使得结构的管理更加复杂。
+     </P
+></LI
+><LI
+><P
+>      如果我们在使用手工的<TT
+CLASS="COMMAND"
+>VACUUM</TT
+>或<TT
+CLASS="COMMAND"
+>ANALYZE</TT
+>命令，别忘了需要在每一个分区上都运行一次。以下的命令：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>ANALYZE measurement;</PRE
+><P>
+      只会处理主表。
+     </P
+></LI
+><LI
+><P
+>      带有<TT
+CLASS="LITERAL"
+>ON CONFLICT</TT
+>子句的<TT
+CLASS="COMMAND"
+>INSERT</TT
+>
+      语句不太可能按照预期的方式工作，因为<TT
+CLASS="LITERAL"
+>ON CONFLICT</TT
+>动作
+      只有在指定的目标关系（而非它的子关系）上有唯一违背的情况下才会被采用。
+     </P
+></LI
+></UL
+><P>
+   </P
+><P
+>    下面的警告适用于约束排除：
+
+   <P
+></P
+></P><UL
+><LI
+><P
+>      只有在查询的<TT
+CLASS="LITERAL"
+>WHERE</TT
+>子句包含常量（或者外部提供的参数）时，约束排除才会起效。例如，一个与非不变函数（例如<CODE
+CLASS="FUNCTION"
+>CURRENT_TIMESTAMP</CODE
+>）的比较不能被优化，因为规划器不知道该函数的值在运行时会落到哪个分区内。
+     </P
+></LI
+><LI
+><P
+>      保持划分约束简单，否则规划器可能没有办法验证无需访问的分区。按前面的例子所示，为列表划分使用简单相等条件或者为范围划分使用简单范围测试。一个好的经验法则是划分约束应该只包含使用B-tree可索引操作符的比较，比较的双方应该是划分列和常量。
+     </P
+></LI
+><LI
+><P
+>      在约束排除期间，主表所有的分区上的所有约束都会被检查，所以大量的分区将会显著地增加查询规划时间。使用这些技术的划分在大约最多100个分区的情况下工作得很好，但是不要尝试使用成千个分区。
+     </P
+></LI
+></UL
+><P>
+   </P
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="ddl-inherit.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="ddl-foreign-data.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>继承</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="ddl.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>外部数据</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

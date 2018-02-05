@@ -1,0 +1,275 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>嵌入式 SQL 命令</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="ECPG - C 中的嵌入式 SQL"
+HREF="ecpg.html"><LINK
+REL="PREVIOUS"
+TITLE="C++ 应用"
+HREF="ecpg-cpp.html"><LINK
+REL="NEXT"
+TITLE="ALLOCATE DESCRIPTOR"
+HREF="ecpg-sql-allocate-descriptor.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/ecpg.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="C++ 应用"
+HREF="ecpg-cpp.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="ecpg.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#31456; 34. <SPAN
+CLASS="APPLICATION"
+>ECPG</SPAN
+> - C 中的嵌入式 <ACRONYM
+CLASS="ACRONYM"
+>SQL</ACRONYM
+></TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="ALLOCATE DESCRIPTOR"
+HREF="ecpg-sql-allocate-descriptor.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="ECPG-SQL-COMMANDS"
+>34.14. 嵌入式 SQL 命令</A
+></H1
+><DIV
+CLASS="TOC"
+><DL
+><DT
+><B
+>&#30446;&#24405;</B
+></DT
+><DT
+><A
+HREF="ecpg-sql-allocate-descriptor.html"
+>ALLOCATE DESCRIPTOR</A
+>&nbsp;--&nbsp;分配一个 SQL 描述符区域</DT
+><DT
+><A
+HREF="ecpg-sql-connect.html"
+>CONNECT</A
+>&nbsp;--&nbsp;建立一个数据库连接</DT
+><DT
+><A
+HREF="ecpg-sql-deallocate-descriptor.html"
+>DEALLOCATE DESCRIPTOR</A
+>&nbsp;--&nbsp;释放一个 SQL 描述符区域</DT
+><DT
+><A
+HREF="ecpg-sql-declare.html"
+>DECLARE</A
+>&nbsp;--&nbsp;定义一个游标</DT
+><DT
+><A
+HREF="ecpg-sql-describe.html"
+>DESCRIBE</A
+>&nbsp;--&nbsp;得到有关一个预备语句或结果集的信息</DT
+><DT
+><A
+HREF="ecpg-sql-disconnect.html"
+>DISCONNECT</A
+>&nbsp;--&nbsp;终止一个数据库连接</DT
+><DT
+><A
+HREF="ecpg-sql-execute-immediate.html"
+>EXECUTE IMMEDIATE</A
+>&nbsp;--&nbsp;动态地准备和执行一个语句</DT
+><DT
+><A
+HREF="ecpg-sql-get-descriptor.html"
+>GET DESCRIPTOR</A
+>&nbsp;--&nbsp;从一个 SQL 描述符区域得到信息</DT
+><DT
+><A
+HREF="ecpg-sql-open.html"
+>OPEN</A
+>&nbsp;--&nbsp;打开一个动态游标</DT
+><DT
+><A
+HREF="ecpg-sql-prepare.html"
+>PREPARE</A
+>&nbsp;--&nbsp;准备一个语句用于执行</DT
+><DT
+><A
+HREF="ecpg-sql-set-autocommit.html"
+>SET AUTOCOMMIT</A
+>&nbsp;--&nbsp;设置当前会话的自动提交行为</DT
+><DT
+><A
+HREF="ecpg-sql-set-connection.html"
+>SET CONNECTION</A
+>&nbsp;--&nbsp;选择一个数据库连接</DT
+><DT
+><A
+HREF="ecpg-sql-set-descriptor.html"
+>SET DESCRIPTOR</A
+>&nbsp;--&nbsp;在一个 SQL 描述符区域中设置信息</DT
+><DT
+><A
+HREF="ecpg-sql-type.html"
+>TYPE</A
+>&nbsp;--&nbsp;定义一种新数据类型</DT
+><DT
+><A
+HREF="ecpg-sql-var.html"
+>VAR</A
+>&nbsp;--&nbsp;定义一个变量</DT
+><DT
+><A
+HREF="ecpg-sql-whenever.html"
+>WHENEVER</A
+>&nbsp;--&nbsp;指定一个要在一个 SQL 语句导致发生一个特定类别的情况时要采取的动作</DT
+></DL
+></DIV
+><P
+>   这一节描述嵌入式 SQL 所有特定的 SQL 命令。<A
+HREF="sql-commands.html"
+>&#21442;&#32771; I, <I
+>SQL 命令</I
+></A
+>中的 SQL 命令也能被用于嵌入式 SQL，如果有例外会特别说明。
+  </P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="ecpg-cpp.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="ecpg-sql-allocate-descriptor.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><ACRONYM
+CLASS="ACRONYM"
+>C++</ACRONYM
+> 应用</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="ecpg.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>ALLOCATE DESCRIPTOR</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

@@ -1,0 +1,347 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>CREATE ACCESS METHOD</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="SQL 命令"
+HREF="sql-commands.html"><LINK
+REL="PREVIOUS"
+TITLE="COPY"
+HREF="sql-copy.html"><LINK
+REL="NEXT"
+TITLE="CREATE AGGREGATE"
+HREF="sql-createaggregate.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="REFENTRY"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/ref/create_access_method.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="COPY"
+HREF="sql-copy.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="CREATE AGGREGATE"
+HREF="sql-createaggregate.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="SQL-CREATE-ACCESS-METHOD"
+></A
+>CREATE ACCESS METHOD</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN77793"
+></A
+><H2
+>&#21517;&#31216;</H2
+>CREATE ACCESS METHOD&nbsp;--&nbsp;定义一种新的访问方法</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN77796"
+></A
+><H2
+>&#22823;&#32434;</H2
+><PRE
+CLASS="SYNOPSIS"
+>CREATE ACCESS METHOD <TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+>
+    TYPE <TT
+CLASS="REPLACEABLE"
+><I
+>access_method_type</I
+></TT
+>
+    HANDLER <TT
+CLASS="REPLACEABLE"
+><I
+>handler_function</I
+></TT
+></PRE
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN77801"
+></A
+><H2
+>简介</H2
+><P
+>   <TT
+CLASS="COMMAND"
+>CREATE ACCESS METHOD</TT
+>创建一种新的访问方法。
+  </P
+><P
+>   访问方法名称在数据库中必须唯一。
+  </P
+><P
+>   只有超级用户可以定义新的访问方法。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN77807"
+></A
+><H2
+>参数</H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+></DT
+><DD
+><P
+>      要创建的访问方法的名称。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>access_method_type</I
+></TT
+></DT
+><DD
+><P
+>      这个子句指定要定义的访问方法的类型。当前只支持<TT
+CLASS="LITERAL"
+>INDEX</TT
+>。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>handler_function</I
+></TT
+></DT
+><DD
+><P
+>      <TT
+CLASS="REPLACEABLE"
+><I
+>handler_function</I
+></TT
+>是一个之前已注册的函数的名称（可能被模式限定），该函数表示要创建的访问方法。处理器函数必须被声明为接收一个单一的<TT
+CLASS="TYPE"
+>internal</TT
+>类型的参数，并且它的返回类型取决于访问方法的类型：对于<TT
+CLASS="LITERAL"
+>INDEX</TT
+>访问方法，它必须是<TT
+CLASS="TYPE"
+>index_am_handler</TT
+>。处理器函数必须实现的 C 级别 API 取决于访问方法的类型。<A
+HREF="indexam.html"
+>第 59 &#31456;</A
+>中描述了索引访问方法的 API。
+     </P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN77831"
+></A
+><H2
+>示例</H2
+><P
+>   用处理器函数<TT
+CLASS="LITERAL"
+>heptree_handler</TT
+>创建一种索引访问方法<TT
+CLASS="LITERAL"
+>heptree</TT
+>：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>CREATE ACCESS METHOD heptree TYPE INDEX HANDLER heptree_handler;</PRE
+><P>
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN77837"
+></A
+><H2
+>兼容性</H2
+><P
+>   <TT
+CLASS="COMMAND"
+>CREATE ACCESS METHOD</TT
+>是一种<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>扩展。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN77842"
+></A
+><H2
+>另见</H2
+><A
+HREF="sql-drop-access-method.html"
+>DROP ACCESS METHOD</A
+>, <A
+HREF="sql-createopclass.html"
+>CREATE OPERATOR CLASS</A
+>, <A
+HREF="sql-createopfamily.html"
+>CREATE OPERATOR FAMILY</A
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-copy.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="sql-createaggregate.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>COPY</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>CREATE AGGREGATE</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

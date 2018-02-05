@@ -1,0 +1,280 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>GIN 提示和技巧</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="GIN 索引"
+HREF="gin.html"><LINK
+REL="PREVIOUS"
+TITLE="实现"
+HREF="gin-implementation.html"><LINK
+REL="NEXT"
+TITLE="限制"
+HREF="gin-limit.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/gin.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="实现"
+HREF="gin-implementation.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="gin.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#31456; 63. GIN 索引</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="限制"
+HREF="gin-limit.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="GIN-TIPS"
+>63.5. GIN 提示和技巧</A
+></H1
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+>创建 vs. 插入</DT
+><DD
+><P
+>     插入到一个<ACRONYM
+CLASS="ACRONYM"
+>GIN</ACRONYM
+>索引可能会很慢，因为为一个项可能需要插入很多歌键。因此，对于一个表的批量插入，我们建议删除 GIN 索引，然后在完成批量插入后重建它。
+    </P
+><P
+>     从<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+> 8.4 开始，这个建议已经不再需要了，因为可以使用延迟索引（详见<A
+HREF="gin-implementation.html#GIN-FAST-UPDATE"
+>第 63.4.1 &#33410;</A
+>）。但是对于非常大量的更新，还是最好先删除再重建索引。
+    </P
+></DD
+><DT
+><A
+HREF="runtime-config-resource.html#GUC-MAINTENANCE-WORK-MEM"
+>maintenance_work_mem</A
+></DT
+><DD
+><P
+>     一个<ACRONYM
+CLASS="ACRONYM"
+>GIN</ACRONYM
+>索引的建立时间对<TT
+CLASS="VARNAME"
+>maintenance_work_mem</TT
+>设置很敏感；它不考虑在索引创建期间在工作内存上的节省。
+    </P
+></DD
+><DT
+><A
+HREF="runtime-config-client.html#GUC-GIN-PENDING-LIST-LIMIT"
+>gin_pending_list_limit</A
+></DT
+><DD
+><P
+>     在向一个已有的开启了<TT
+CLASS="LITERAL"
+>fastupdate</TT
+>的<ACRONYM
+CLASS="ACRONYM"
+>GIN</ACRONYM
+>
+     中进行插入时，系统将在待处理项列表增长到超过<TT
+CLASS="VARNAME"
+>gin_pending_list_limit</TT
+>
+     时清理该列表。为了避免在观测到的响应时间上出现波动，让待处理列表清理操作
+     在后台进行（即通过 autovacuum）比较好。可以通过增加<TT
+CLASS="VARNAME"
+>gin_pending_list_limit</TT
+>
+     或者让 autovacuum 更激进来避免前台的清理操作。不过，增大清理操作的
+     阈值意味着如果一次前台清理发生，它将需要更长的时间。
+    </P
+><P
+>     可以通过改变存储参数为每个 GIN 索引覆盖它所用的<TT
+CLASS="VARNAME"
+>gin_pending_list_limit</TT
+>，
+     这样允许每个 GIN 索引拥有自己的清理阈值。例如，可以只为被大量更新的 GIN 索引增加
+     该阈值，而对其他的索引减小该阈值。
+    </P
+></DD
+><DT
+><A
+HREF="runtime-config-client.html#GUC-GIN-FUZZY-SEARCH-LIMIT"
+>gin_fuzzy_search_limit</A
+></DT
+><DD
+><P
+>     开发<ACRONYM
+CLASS="ACRONYM"
+>GIN</ACRONYM
+>索引的主要目的是在<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>中创建对高可扩展全文搜索的支持，并且一次全文搜索返回一个非常大的结果集也是很常见的情况。此外，当查询包含非常频繁的词时情况也是如此，因此大结果集不是非常有用。因为从磁盘读取很多元组并且对它们排序可能会花费很多时间，这对于产品来说是不可接受的（注意索引搜索本身是很快的）。
+    </P
+><P
+>     为了能够控制这类查询的执行，<ACRONYM
+CLASS="ACRONYM"
+>GIN</ACRONYM
+>对于返回的行数有一个可配置的软上限：<TT
+CLASS="VARNAME"
+>gin_fuzzy_search_limit</TT
+>配置参数。默认它被设置为 0 （意为无限制）。如果设置了一个非零限制，那么被返回的集合是整个结果集的一个子集，并且是随机选择的。
+    </P
+><P
+>     <SPAN
+CLASS="QUOTE"
+>"软"</SPAN
+>意味着被返回结果的实际数量可以与指定的限制不同，这取决于查询和系统随机数生成器的质量。
+    </P
+><P
+>     根据经验，在数千级别的值（如 5000 &mdash; 20000）比较好。
+    </P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="gin-implementation.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="gin-limit.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>实现</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="gin.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>限制</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

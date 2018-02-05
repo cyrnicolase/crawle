@@ -1,0 +1,424 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>unaccent</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="额外提供的模块"
+HREF="contrib.html"><LINK
+REL="PREVIOUS"
+TITLE="tsm_system_time"
+HREF="tsm-system-time.html"><LINK
+REL="NEXT"
+TITLE="uuid-ossp"
+HREF="uuid-ossp.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/unaccent.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="tsm_system_time"
+HREF="tsm-system-time.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="contrib.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#38468;&#24405; F. 额外提供的模块</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="uuid-ossp"
+HREF="uuid-ossp.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="UNACCENT"
+>F.44. unaccent</A
+></H1
+><P
+>  <TT
+CLASS="FILENAME"
+>unaccent</TT
+>是一个文本搜索字典，它能从词位中移除重音（附加符号）。它是一个过滤词典，这表示它的输出总是会被传递给下一个字典（如果有），这和字典的通常行为不同。这允许为全文搜索做与重音无关的处理。
+ </P
+><P
+>  <TT
+CLASS="FILENAME"
+>unaccent</TT
+>的当前实现不能被用作<TT
+CLASS="FILENAME"
+>thesaurus</TT
+>字典的正规化字典。
+ </P
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN182219"
+>F.44.1. 配置</A
+></H2
+><P
+>   <TT
+CLASS="LITERAL"
+>unaccent</TT
+>字典接受下列选项：
+  </P
+><P
+></P
+><UL
+><LI
+><P
+>     <TT
+CLASS="LITERAL"
+>RULES</TT
+>是包含翻译规则列表的文件的基本名。这个文件必须被存储在<TT
+CLASS="FILENAME"
+>$SHAREDIR/tsearch_data/</TT
+>（这里<TT
+CLASS="LITERAL"
+>$SHAREDIR</TT
+>表示<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>安装的共享数据目录）中。它的名称必须以<TT
+CLASS="LITERAL"
+>.rules</TT
+>（不包含在<TT
+CLASS="LITERAL"
+>RULES</TT
+>参数中）结束。
+    </P
+></LI
+></UL
+><P
+>   规则文件具有下面的格式：
+  </P
+><P
+></P
+><UL
+><LI
+><P
+>     每一行表示一个由带有重音的字符和不带重音的字符构成的对。第一个字符将被翻译成第二个。例如：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>&Agrave;        A
+&Aacute;        A
+&Acirc;        A
+&Atilde;        A
+&Auml;        A
+&Aring;        A
+&AElig;        AE</PRE
+><P>
+     两个字符必须由空格分隔，并且一行上的任何前导或尾随空白都将被忽略。
+    </P
+></LI
+><LI
+><P
+>     或者，如果一行只给出一个字符，则删除该字符的实例; 
+     这在用单独的字符表示重音的语言中是有用的。
+    </P
+></LI
+><LI
+><P
+>     实际上，每个<SPAN
+CLASS="QUOTE"
+>"字符"</SPAN
+>可以是不包含空格的任何字符串，因此，
+     除了去除变音符之外，<TT
+CLASS="FILENAME"
+>unaccent</TT
+>字典也可以用于其他类型的字符串替换。
+    </P
+></LI
+><LI
+><P
+>     与其他<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>文本搜索配置文件一样，
+     规则文件必须以UTF-8编码方式存储。加载时，数据将自动转换为当前数据库的编码。
+     任何含有不可翻译字符的行都将被忽略，因此规则文件可以包含当前编码中不适用的规则。
+    </P
+></LI
+></UL
+><P
+>   在<TT
+CLASS="FILENAME"
+>unaccent.rules</TT
+>中可以找到一个更完整的例子，它可以直接用于大部分欧洲语言，当<TT
+CLASS="FILENAME"
+>unaccent</TT
+>模块被安装时，它被安装在<TT
+CLASS="FILENAME"
+>$SHAREDIR/tsearch_data/</TT
+>中。
+  </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN182250"
+>F.44.2. 用法</A
+></H2
+><P
+>   安装<TT
+CLASS="LITERAL"
+>unaccent</TT
+>扩展会创建一个文本搜索模板<TT
+CLASS="LITERAL"
+>unaccent</TT
+>和一个基于前者的字典<TT
+CLASS="LITERAL"
+>unaccent</TT
+>。<TT
+CLASS="LITERAL"
+>unaccent</TT
+>字典有默认的参数设置<TT
+CLASS="LITERAL"
+>RULES='unaccent'</TT
+>，这会让该字典使用标准的<TT
+CLASS="FILENAME"
+>unaccent.rules</TT
+>文件。如果希望修改该参数，可以
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>mydb=# ALTER TEXT SEARCH DICTIONARY unaccent (RULES='my_rules');</PRE
+><P>
+
+   或者基于该模板创建新的字典。
+  </P
+><P
+>   要测试该字典，你可以尝试：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>mydb=# select ts_lexize('unaccent','H&ocirc;tel');
+ ts_lexize
+-----------
+ {Hotel}
+(1 row)</PRE
+><P>
+  </P
+><P
+>   这里是一个展示把<TT
+CLASS="FILENAME"
+>unaccent</TT
+>字典插入到一个文本搜索配置的例子：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>mydb=# CREATE TEXT SEARCH CONFIGURATION fr ( COPY = french );
+mydb=# ALTER TEXT SEARCH CONFIGURATION fr
+        ALTER MAPPING FOR hword, hword_part, word
+        WITH unaccent, french_stem;
+mydb=# select to_tsvector('fr','H&ocirc;tels de la Mer');
+    to_tsvector
+-------------------
+ 'hotel':1 'mer':4
+(1 row)
+
+mydb=# select to_tsvector('fr','H&ocirc;tel de la Mer') @@ to_tsquery('fr','Hotels');
+ ?column?
+----------
+ t
+(1 row)
+
+mydb=# select ts_headline('fr','H&ocirc;tel de la Mer',to_tsquery('fr','Hotels'));
+      ts_headline
+------------------------
+ &lt;b&gt;H&ocirc;tel&lt;/b&gt; de la Mer
+(1 row)</PRE
+><P>
+  </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN182265"
+>F.44.3. 函数</A
+></H2
+><P
+>  <CODE
+CLASS="FUNCTION"
+>unaccent()</CODE
+>函数从一个给定的字符串中移除重音（附加符号）。基本上，它是<TT
+CLASS="FILENAME"
+>unaccent</TT
+>字典的一个包装器，但是它能在普通的文本搜索环境之外使用。
+ </P
+><PRE
+CLASS="SYNOPSIS"
+>unaccent([<SPAN
+CLASS="OPTIONAL"
+><TT
+CLASS="REPLACEABLE"
+><I
+>dictionary</I
+></TT
+>, </SPAN
+>] <TT
+CLASS="REPLACEABLE"
+><I
+>string</I
+></TT
+>) returns <TT
+CLASS="TYPE"
+>text</TT
+></PRE
+><P
+>  如果省略了<TT
+CLASS="REPLACEABLE"
+><I
+>dictionary</I
+></TT
+>参数，
+  则使用<TT
+CLASS="LITERAL"
+>unaccent</TT
+>。
+ </P
+><P
+>  例如：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>SELECT unaccent('unaccent', 'H&ocirc;tel');
+SELECT unaccent('H&ocirc;tel');</PRE
+><P>
+ </P
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="tsm-system-time.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="uuid-ossp.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>tsm_system_time</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="contrib.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>uuid-ossp</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

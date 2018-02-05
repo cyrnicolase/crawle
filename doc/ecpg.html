@@ -1,0 +1,622 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>ECPG - C 中的嵌入式 SQL</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="客户端接口"
+HREF="client-interfaces.html"><LINK
+REL="PREVIOUS"
+TITLE="例子程序"
+HREF="lo-examplesect.html"><LINK
+REL="NEXT"
+TITLE="概念"
+HREF="ecpg-concept.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="CHAPTER"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/ecpg.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="例子程序"
+HREF="lo-examplesect.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="client-interfaces.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="概念"
+HREF="ecpg-concept.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="CHAPTER"
+><H1
+><A
+NAME="ECPG"
+></A
+>&#31456; 34. <SPAN
+CLASS="APPLICATION"
+>ECPG</SPAN
+> - C 中的嵌入式 <ACRONYM
+CLASS="ACRONYM"
+>SQL</ACRONYM
+></H1
+><DIV
+CLASS="TOC"
+><DL
+><DT
+><B
+>&#30446;&#24405;</B
+></DT
+><DT
+>34.1. <A
+HREF="ecpg-concept.html"
+>概念</A
+></DT
+><DT
+>34.2. <A
+HREF="ecpg-connect.html"
+>管理数据库连接</A
+></DT
+><DD
+><DL
+><DT
+>34.2.1. <A
+HREF="ecpg-connect.html#ECPG-CONNECTING"
+>连接到数据库服务器</A
+></DT
+><DT
+>34.2.2. <A
+HREF="ecpg-connect.html#ECPG-SET-CONNECTION"
+>选择一个连接</A
+></DT
+><DT
+>34.2.3. <A
+HREF="ecpg-connect.html#ECPG-DISCONNECT"
+>关闭一个连接</A
+></DT
+></DL
+></DD
+><DT
+>34.3. <A
+HREF="ecpg-commands.html"
+>运行 SQL 命令</A
+></DT
+><DD
+><DL
+><DT
+>34.3.1. <A
+HREF="ecpg-commands.html#ECPG-EXECUTING"
+>执行 SQL 语句</A
+></DT
+><DT
+>34.3.2. <A
+HREF="ecpg-commands.html#ECPG-CURSORS"
+>使用游标</A
+></DT
+><DT
+>34.3.3. <A
+HREF="ecpg-commands.html#ECPG-TRANSACTIONS"
+>管理事务</A
+></DT
+><DT
+>34.3.4. <A
+HREF="ecpg-commands.html#ECPG-PREPARED"
+>预备语句</A
+></DT
+></DL
+></DD
+><DT
+>34.4. <A
+HREF="ecpg-variables.html"
+>使用主变量</A
+></DT
+><DD
+><DL
+><DT
+>34.4.1. <A
+HREF="ecpg-variables.html#ECPG-VARIABLES-OVERVIEW"
+>概述</A
+></DT
+><DT
+>34.4.2. <A
+HREF="ecpg-variables.html#ECPG-DECLARE-SECTIONS"
+>声明小节</A
+></DT
+><DT
+>34.4.3. <A
+HREF="ecpg-variables.html#ECPG-RETRIEVING"
+>检索查询结果</A
+></DT
+><DT
+>34.4.4. <A
+HREF="ecpg-variables.html#ECPG-VARIABLES-TYPE-MAPPING"
+>类型映射</A
+></DT
+><DT
+>34.4.5. <A
+HREF="ecpg-variables.html#ECPG-VARIABLES-NONPRIMITIVE-SQL"
+>处理非简单 SQL 数据类型</A
+></DT
+><DT
+>34.4.6. <A
+HREF="ecpg-variables.html#ECPG-INDICATORS"
+>指示符</A
+></DT
+></DL
+></DD
+><DT
+>34.5. <A
+HREF="ecpg-dynamic.html"
+>动态 SQL</A
+></DT
+><DD
+><DL
+><DT
+>34.5.1. <A
+HREF="ecpg-dynamic.html#ECPG-DYNAMIC-WITHOUT-RESULT"
+>执行没有结果集的语句</A
+></DT
+><DT
+>34.5.2. <A
+HREF="ecpg-dynamic.html#ECPG-DYNAMIC-INPUT"
+>执行一个有输入参数的语句</A
+></DT
+><DT
+>34.5.3. <A
+HREF="ecpg-dynamic.html#ECPG-DYNAMIC-WITH-RESULT"
+>执行一个有结果集的语句</A
+></DT
+></DL
+></DD
+><DT
+>34.6. <A
+HREF="ecpg-pgtypes.html"
+>pgtypes 库</A
+></DT
+><DD
+><DL
+><DT
+>34.6.1. <A
+HREF="ecpg-pgtypes.html#ECPG-PGTYPES-NUMERIC"
+>numeric类型</A
+></DT
+><DT
+>34.6.2. <A
+HREF="ecpg-pgtypes.html#ECPG-PGTYPES-DATE"
+>日期类型</A
+></DT
+><DT
+>34.6.3. <A
+HREF="ecpg-pgtypes.html#ECPG-PGTYPES-TIMESTAMP"
+>时间戳类型</A
+></DT
+><DT
+>34.6.4. <A
+HREF="ecpg-pgtypes.html#ECPG-PGTYPES-INTERVAL"
+>区间类型</A
+></DT
+><DT
+>34.6.5. <A
+HREF="ecpg-pgtypes.html#ECPG-PGTYPES-DECIMAL"
+>decimal类型</A
+></DT
+><DT
+>34.6.6. <A
+HREF="ecpg-pgtypes.html#ECPG-PGTYPES-ERRNO"
+>pgtypeslib 的 errno 值</A
+></DT
+><DT
+>34.6.7. <A
+HREF="ecpg-pgtypes.html#ECPG-PGTYPES-CONSTANTS"
+>pgtypeslib 的特殊常量</A
+></DT
+></DL
+></DD
+><DT
+>34.7. <A
+HREF="ecpg-descriptors.html"
+>使用描述符区域</A
+></DT
+><DD
+><DL
+><DT
+>34.7.1. <A
+HREF="ecpg-descriptors.html#ECPG-NAMED-DESCRIPTORS"
+>命名 SQL 描述符区域</A
+></DT
+><DT
+>34.7.2. <A
+HREF="ecpg-descriptors.html#ECPG-SQLDA-DESCRIPTORS"
+>SQLDA 描述符区域</A
+></DT
+></DL
+></DD
+><DT
+>34.8. <A
+HREF="ecpg-errors.html"
+>错误处理</A
+></DT
+><DD
+><DL
+><DT
+>34.8.1. <A
+HREF="ecpg-errors.html#ECPG-WHENEVER"
+>设置回调</A
+></DT
+><DT
+>34.8.2. <A
+HREF="ecpg-errors.html#ECPG-SQLCA"
+>sqlca</A
+></DT
+><DT
+>34.8.3. <A
+HREF="ecpg-errors.html#ECPG-SQLSTATE-SQLCODE"
+><TT
+CLASS="LITERAL"
+>SQLSTATE</TT
+> 与 <TT
+CLASS="LITERAL"
+>SQLCODE</TT
+></A
+></DT
+></DL
+></DD
+><DT
+>34.9. <A
+HREF="ecpg-preproc.html"
+>预处理器指令</A
+></DT
+><DD
+><DL
+><DT
+>34.9.1. <A
+HREF="ecpg-preproc.html#ECPG-INCLUDE"
+>包括文件</A
+></DT
+><DT
+>34.9.2. <A
+HREF="ecpg-preproc.html#ECPG-DEFINE"
+>define 和 undef 指令</A
+></DT
+><DT
+>34.9.3. <A
+HREF="ecpg-preproc.html#ECPG-IFDEF"
+>ifdef、ifndef、else、elif 以及 endif 指令</A
+></DT
+></DL
+></DD
+><DT
+>34.10. <A
+HREF="ecpg-process.html"
+>处理嵌入式 SQL 程序</A
+></DT
+><DT
+>34.11. <A
+HREF="ecpg-library.html"
+>库函数</A
+></DT
+><DT
+>34.12. <A
+HREF="ecpg-lo.html"
+>大对象</A
+></DT
+><DT
+>34.13. <A
+HREF="ecpg-cpp.html"
+><ACRONYM
+CLASS="ACRONYM"
+>C++</ACRONYM
+> 应用</A
+></DT
+><DD
+><DL
+><DT
+>34.13.1. <A
+HREF="ecpg-cpp.html#ECPG-CPP-SCOPE"
+>主变量的可见范围</A
+></DT
+><DT
+>34.13.2. <A
+HREF="ecpg-cpp.html#ECPG-CPP-AND-C"
+>使用外部 C 模块的 C++ 应用开发</A
+></DT
+></DL
+></DD
+><DT
+>34.14. <A
+HREF="ecpg-sql-commands.html"
+>嵌入式 SQL 命令</A
+></DT
+><DD
+><DL
+><DT
+><A
+HREF="ecpg-sql-allocate-descriptor.html"
+>ALLOCATE DESCRIPTOR</A
+>&nbsp;--&nbsp;分配一个 SQL 描述符区域</DT
+><DT
+><A
+HREF="ecpg-sql-connect.html"
+>CONNECT</A
+>&nbsp;--&nbsp;建立一个数据库连接</DT
+><DT
+><A
+HREF="ecpg-sql-deallocate-descriptor.html"
+>DEALLOCATE DESCRIPTOR</A
+>&nbsp;--&nbsp;释放一个 SQL 描述符区域</DT
+><DT
+><A
+HREF="ecpg-sql-declare.html"
+>DECLARE</A
+>&nbsp;--&nbsp;定义一个游标</DT
+><DT
+><A
+HREF="ecpg-sql-describe.html"
+>DESCRIBE</A
+>&nbsp;--&nbsp;得到有关一个预备语句或结果集的信息</DT
+><DT
+><A
+HREF="ecpg-sql-disconnect.html"
+>DISCONNECT</A
+>&nbsp;--&nbsp;终止一个数据库连接</DT
+><DT
+><A
+HREF="ecpg-sql-execute-immediate.html"
+>EXECUTE IMMEDIATE</A
+>&nbsp;--&nbsp;动态地准备和执行一个语句</DT
+><DT
+><A
+HREF="ecpg-sql-get-descriptor.html"
+>GET DESCRIPTOR</A
+>&nbsp;--&nbsp;从一个 SQL 描述符区域得到信息</DT
+><DT
+><A
+HREF="ecpg-sql-open.html"
+>OPEN</A
+>&nbsp;--&nbsp;打开一个动态游标</DT
+><DT
+><A
+HREF="ecpg-sql-prepare.html"
+>PREPARE</A
+>&nbsp;--&nbsp;准备一个语句用于执行</DT
+><DT
+><A
+HREF="ecpg-sql-set-autocommit.html"
+>SET AUTOCOMMIT</A
+>&nbsp;--&nbsp;设置当前会话的自动提交行为</DT
+><DT
+><A
+HREF="ecpg-sql-set-connection.html"
+>SET CONNECTION</A
+>&nbsp;--&nbsp;选择一个数据库连接</DT
+><DT
+><A
+HREF="ecpg-sql-set-descriptor.html"
+>SET DESCRIPTOR</A
+>&nbsp;--&nbsp;在一个 SQL 描述符区域中设置信息</DT
+><DT
+><A
+HREF="ecpg-sql-type.html"
+>TYPE</A
+>&nbsp;--&nbsp;定义一种新数据类型</DT
+><DT
+><A
+HREF="ecpg-sql-var.html"
+>VAR</A
+>&nbsp;--&nbsp;定义一个变量</DT
+><DT
+><A
+HREF="ecpg-sql-whenever.html"
+>WHENEVER</A
+>&nbsp;--&nbsp;指定一个要在一个 SQL 语句导致发生一个特定类别的情况时要采取的动作</DT
+></DL
+></DD
+><DT
+>34.15. <A
+HREF="ecpg-informix-compat.html"
+><SPAN
+CLASS="PRODUCTNAME"
+>Informix</SPAN
+>兼容模式</A
+></DT
+><DD
+><DL
+><DT
+>34.15.1. <A
+HREF="ecpg-informix-compat.html#ECPG-INFORMIX-TYPES"
+>附加类型</A
+></DT
+><DT
+>34.15.2. <A
+HREF="ecpg-informix-compat.html#ECPG-INFORMIX-STATEMENTS"
+>附加的/缺少的 嵌入式 SQL 语句</A
+></DT
+><DT
+>34.15.3. <A
+HREF="ecpg-informix-compat.html#ECPG-INFORMIX-SQLDA"
+>Informix-兼容的 SQLDA 描述符区域</A
+></DT
+><DT
+>34.15.4. <A
+HREF="ecpg-informix-compat.html#ECPG-INFORMIX-FUNCTIONS"
+>附加函数</A
+></DT
+><DT
+>34.15.5. <A
+HREF="ecpg-informix-compat.html#ECPG-INFORMIX-CONSTANTS"
+>额外的常量</A
+></DT
+></DL
+></DD
+><DT
+>34.16. <A
+HREF="ecpg-develop.html"
+>内部</A
+></DT
+></DL
+></DIV
+><P
+>  这一章描述了用于<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>的嵌入式<ACRONYM
+CLASS="ACRONYM"
+>SQL</ACRONYM
+>包。它由 Linus Tolke（<CODE
+CLASS="EMAIL"
+>&#60;<A
+HREF="mailto:linus@epact.se"
+>linus@epact.se</A
+>&#62;</CODE
+>）和 Michael Meskes（<CODE
+CLASS="EMAIL"
+>&#60;<A
+HREF="mailto:meskes@postgresql.org"
+>meskes@postgresql.org</A
+>&#62;</CODE
+>）编写。最初它是为了与<ACRONYM
+CLASS="ACRONYM"
+>C</ACRONYM
+>一起工作而编写的。它也能与<ACRONYM
+CLASS="ACRONYM"
+>C++</ACRONYM
+>配合，但是它还不识别所有的<ACRONYM
+CLASS="ACRONYM"
+>C++</ACRONYM
+>结构。
+ </P
+><P
+>  这份文档还远没有完成。但是因为这个结构是标准化的，额外的信息可以在有关 SQL 的很多资源中找到。
+ </P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="lo-examplesect.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="ecpg-concept.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>例子程序</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="client-interfaces.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>概念</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

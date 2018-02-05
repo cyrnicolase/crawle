@@ -1,0 +1,347 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>PostgreSQL 中的遗传查询优化（GEQO）</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="遗传查询优化器"
+HREF="geqo.html"><LINK
+REL="PREVIOUS"
+TITLE="遗传算法"
+HREF="geqo-intro2.html"><LINK
+REL="NEXT"
+TITLE="进一步阅读"
+HREF="geqo-biblio.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/geqo.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="遗传算法"
+HREF="geqo-intro2.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="geqo.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#31456; 58. 遗传查询优化器</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="进一步阅读"
+HREF="geqo-biblio.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="GEQO-PG-INTRO"
+>58.3. PostgreSQL 中的遗传查询优化（<ACRONYM
+CLASS="ACRONYM"
+>GEQO</ACRONYM
+>）</A
+></H1
+><P
+>    <ACRONYM
+CLASS="ACRONYM"
+>GEQO</ACRONYM
+>模块把查询优化问题当做著名的货郎担问题（<ACRONYM
+CLASS="ACRONYM"
+>TSP</ACRONYM
+>）来处理。可能的查询计划被编码为整数的串。每一个串表示从查询中一个关系到下一个关系的连接顺序。例如，连接树
+</P><PRE
+CLASS="LITERALLAYOUT"
+>   /\
+  /\ 2
+ /\ 3
+4  1</PRE
+><P>
+    被编码为整数串 '4-1-3-2'，它表示首先连接关系 '4' 和 '1'，然后连接 '3'，最后连接 '2'。这里 1、2、3、4 是<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>优化器中的关系 ID。
+   </P
+><P
+>    <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>中<ACRONYM
+CLASS="ACRONYM"
+>GEQO</ACRONYM
+>实现的特点有：
+
+    <P
+></P
+></P><UL
+COMPACT="COMPACT"
+><LI
+STYLE="list-style-type: disc"
+><P
+>       一种<I
+CLASS="FIRSTTERM"
+>稳态</I
+> <ACRONYM
+CLASS="ACRONYM"
+>GA</ACRONYM
+>（在种群中替换适应度最差的个体，而不是整代替换）的使用允许对改进的查询计划快速收敛。这对在合理时间内处理查询是最重要的；
+      </P
+></LI
+><LI
+STYLE="list-style-type: disc"
+><P
+>       <I
+CLASS="FIRSTTERM"
+>边重组杂交</I
+>的使用特别适合于通过<ACRONYM
+CLASS="ACRONYM"
+>GA</ACRONYM
+>为<ACRONYM
+CLASS="ACRONYM"
+>TSP</ACRONYM
+>的解决方案保持低丢边率；
+      </P
+></LI
+><LI
+STYLE="list-style-type: disc"
+><P
+>       遗传操作符变异被废弃，这样不需要修补机制来产生合法的<ACRONYM
+CLASS="ACRONYM"
+>TSP</ACRONYM
+>旅行。
+      </P
+></LI
+></UL
+><P>
+   </P
+><P
+>    <ACRONYM
+CLASS="ACRONYM"
+>GEQO</ACRONYM
+>模块的一部分是从 D. Whitley 的遗传算法中改编而来。
+   </P
+><P
+>    <ACRONYM
+CLASS="ACRONYM"
+>GEQO</ACRONYM
+>模块允许<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>查询优化器支持通过非穷举搜索高效地处理大量连接的查询。
+   </P
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN116245"
+>58.3.1. 用<ACRONYM
+CLASS="ACRONYM"
+>GEQO</ACRONYM
+>产生可能的计划</A
+></H2
+><P
+>    <ACRONYM
+CLASS="ACRONYM"
+>GEQO</ACRONYM
+>规划处理使用标准的规划器代码来产生用于扫描个体关系的计划。然后使用遗传方法发展连接计划。如上所示，每一个候选连接计划被表示为一个连接基本关系的序列。在初始阶段，<ACRONYM
+CLASS="ACRONYM"
+>GEQO</ACRONYM
+>代码简单地随机产生某些可能的连接序列。对于被考虑的每一个连接序列，标准规划器代码被调用来估算使用该序列执行查询的代价（对于连接序列的每一步，所有三种连接策略都被考虑；并且所有初始决定的关系扫描计划都可用。估计的代价是这些可能性中最低的那个。）。具有较低估计代价的连接序列被认为比具有较高代价的<SPAN
+CLASS="QUOTE"
+>"更适合"</SPAN
+>。遗传算法会丢弃最不适应的候选。然后通过组合更适合的候选的基因来产生新的候选 &mdash; 即使从已知代价低的连接序列随机选择片段来创建用于考虑的新序列。这个处理将被重复，直到已经考虑的连接序列的数量达到一个预设值。然后在搜索中任何时候找到的最好的一个将被用来产生最终的计划。
+   </P
+><P
+>    由于在初始种群选择和后续最佳候选的<SPAN
+CLASS="QUOTE"
+>"变异"</SPAN
+>过程中都采用了随机选择，所以这种处理天生就是非确定性的。要避免被选中计划发生出乎意料的改变，每次 GEQO 算法的运行都会使用当前<A
+HREF="runtime-config-query.html#GUC-GEQO-SEED"
+>geqo_seed</A
+>参数设置来重启它的随机数生成器。只要<TT
+CLASS="VARNAME"
+>geqo_seed</TT
+>以及其他 GEQO 参数保持固定（以及其他规划器输入，如统计信息），对一个给定的查询将产生相同的计划。要试验不同的搜索路径，可以尝试改变<TT
+CLASS="VARNAME"
+>geqo_seed</TT
+>。
+   </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="GEQO-FUTURE"
+>58.3.2. <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+> <ACRONYM
+CLASS="ACRONYM"
+>GEQO</ACRONYM
+>的未来实现任务</A
+></H2
+><P
+>      仍需对改进遗传算法的参数设置做一些工作。在文件<TT
+CLASS="FILENAME"
+>src/backend/optimizer/geqo/geqo_main.c</TT
+>、例程<CODE
+CLASS="FUNCTION"
+>gimme_pool_size</CODE
+>和<CODE
+CLASS="FUNCTION"
+>gimme_number_generations</CODE
+>中，我们必须为参数设置找到一种折中来满足两个互相竞争的需求：
+      <P
+></P
+></P><UL
+COMPACT="COMPACT"
+><LI
+><P
+>         查询计划的最优性
+        </P
+></LI
+><LI
+><P
+>         计算时间
+        </P
+></LI
+></UL
+><P>
+     </P
+><P
+>      在当前的实现中，每一个候选连接序列的适应度通过运行标准规划器的连接选择和代价估计代码从零估算而来。即使不同的候选中使用了相似的连接子序列，还是需要重复大量的工作。通过保留子连接的代价估计可以在这种情况下节省很多时间。但问题在于要避免为了保留那样的状态而不合理地占用过多内存。
+     </P
+><P
+>      在更基础的层面上，用一个为 TSP 设计的 GA 算法来解决查询优化问题是否合适也还需要探讨。在 TSP 情况中，与任何子串（部分旅程）相关的代价独立于剩余的旅程，但是对于查询优化肯定不是这样。因此边重组杂交是否比变异过程更有效还存有疑问。
+     </P
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="geqo-intro2.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="geqo-biblio.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>遗传算法</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="geqo.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>进一步阅读</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

@@ -1,0 +1,357 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>文件位置</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="服务器配置"
+HREF="runtime-config.html"><LINK
+REL="PREVIOUS"
+TITLE="设置参数"
+HREF="config-setting.html"><LINK
+REL="NEXT"
+TITLE="连接和认证"
+HREF="runtime-config-connection.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/config.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="设置参数"
+HREF="config-setting.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="runtime-config.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#31456; 19. 服务器配置</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="连接和认证"
+HREF="runtime-config-connection.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="RUNTIME-CONFIG-FILE-LOCATIONS"
+>19.2. 文件位置</A
+></H1
+><P
+>      除了已经提到过的<TT
+CLASS="FILENAME"
+>postgresql.conf</TT
+>文件之外，<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>还使用另外两个手工编辑的配置文件，它们控制客户端认证（其使用在<A
+HREF="client-authentication.html"
+>第 20 &#31456;</A
+>中讨论）。默认情况下，所有三个配置文件都存放在数据库集簇的数据目录中。 本节描述的参数允许配置文件放在别的地方（这么做可以简化管理，特别是如果配置文件被独立放置，可以很容易保证它得到恰当的备份）。
+     </P
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><A
+NAME="GUC-DATA-DIRECTORY"
+></A
+><TT
+CLASS="VARNAME"
+>data_directory</TT
+> (<TT
+CLASS="TYPE"
+>string</TT
+>)
+      </DT
+><DD
+><P
+>         指定用于数据存储的目录。这个选项只能在服务器启动时设置。
+       </P
+></DD
+><DT
+><A
+NAME="GUC-CONFIG-FILE"
+></A
+><TT
+CLASS="VARNAME"
+>config_file</TT
+> (<TT
+CLASS="TYPE"
+>string</TT
+>)
+      </DT
+><DD
+><P
+>         指定主服务器配置文件（通常叫<TT
+CLASS="FILENAME"
+>postgresql.conf</TT
+>）。这个参数只能在<TT
+CLASS="COMMAND"
+>postgres</TT
+>命令行上设置。
+       </P
+></DD
+><DT
+><A
+NAME="GUC-HBA-FILE"
+></A
+><TT
+CLASS="VARNAME"
+>hba_file</TT
+> (<TT
+CLASS="TYPE"
+>string</TT
+>)
+      </DT
+><DD
+><P
+>         指定基于主机认证配置文件（通常叫<TT
+CLASS="FILENAME"
+>pg_hba.conf</TT
+>）。 这个参数只能在服务器启动的时候设置。
+       </P
+></DD
+><DT
+><A
+NAME="GUC-IDENT-FILE"
+></A
+><TT
+CLASS="VARNAME"
+>ident_file</TT
+> (<TT
+CLASS="TYPE"
+>string</TT
+>)
+      </DT
+><DD
+><P
+>         指定用于<A
+HREF="auth-username-maps.html"
+>第 20.2 &#33410;</A
+>用户名称映射的配置文件（通常叫<TT
+CLASS="FILENAME"
+>pg_ident.conf</TT
+>）。这个参数只能在服务器启动的时候设置。
+       </P
+></DD
+><DT
+><A
+NAME="GUC-EXTERNAL-PID-FILE"
+></A
+><TT
+CLASS="VARNAME"
+>external_pid_file</TT
+> (<TT
+CLASS="TYPE"
+>string</TT
+>)
+      </DT
+><DD
+><P
+>        指定可被服务器创建的用于管理程序的额外进程 ID（PID）文件。这个参数只能在服务器启动的时候设置。
+       </P
+></DD
+></DL
+></DIV
+><P
+>      在默认安装中不会显式设置以上参数。相反，命令行参数<TT
+CLASS="OPTION"
+>-D</TT
+>或者环境变量<TT
+CLASS="ENVAR"
+>PGDATA</TT
+>指定数据目录，并且上述配置文件都能在数据目录中找到。
+     </P
+><P
+>      如果你想把配置文件放在别的地方而不是数据目录中，那么<TT
+CLASS="COMMAND"
+>postgres</TT
+> <TT
+CLASS="OPTION"
+>-D</TT
+>命令行选项或者环境变量<TT
+CLASS="ENVAR"
+>PGDATA</TT
+>必须指向包含配置文件的目录，并且<TT
+CLASS="FILENAME"
+>postgresql.conf</TT
+>中（或者命令行上）的<TT
+CLASS="VARNAME"
+>data_directory</TT
+>参数必须显示数据目录实际存放的地方。请注意，<TT
+CLASS="VARNAME"
+>data_directory</TT
+>将覆盖<TT
+CLASS="OPTION"
+>-D</TT
+>和<TT
+CLASS="ENVAR"
+>PGDATA</TT
+>指定的数据目录位置，但是不覆盖配置文件的位置。
+     </P
+><P
+>      如果你愿意，可以使用选项<TT
+CLASS="VARNAME"
+>config_file</TT
+>、<TT
+CLASS="VARNAME"
+>hba_file</TT
+>和/或<TT
+CLASS="VARNAME"
+>ident_file</TT
+>单独指定配置文件名称和位置。<TT
+CLASS="VARNAME"
+>config_file</TT
+>只能在<TT
+CLASS="COMMAND"
+>postgres</TT
+>命令行上指定，但是其他文件可以在主配置文件中设置。如果所有三个参数外加<TT
+CLASS="VARNAME"
+>data_directory</TT
+>被显式地设置，则不必指定<TT
+CLASS="OPTION"
+>-D</TT
+>或<TT
+CLASS="ENVAR"
+>PGDATA</TT
+>。
+     </P
+><P
+>      在设置任何这些参数时，相对路径将被解释为相对于<TT
+CLASS="COMMAND"
+>postgres</TT
+>启动路径的路径。
+     </P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="config-setting.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="runtime-config-connection.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>设置参数</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="runtime-config.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>连接和认证</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

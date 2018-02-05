@@ -1,0 +1,739 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>信息模式</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="客户端接口"
+HREF="client-interfaces.html"><LINK
+REL="PREVIOUS"
+TITLE="内部"
+HREF="ecpg-develop.html"><LINK
+REL="NEXT"
+TITLE="模式"
+HREF="infoschema-schema.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="CHAPTER"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/information_schema.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="内部"
+HREF="ecpg-develop.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="client-interfaces.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="模式"
+HREF="infoschema-schema.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="CHAPTER"
+><H1
+><A
+NAME="INFORMATION-SCHEMA"
+></A
+>&#31456; 35. 信息模式</H1
+><DIV
+CLASS="TOC"
+><DL
+><DT
+><B
+>&#30446;&#24405;</B
+></DT
+><DT
+>35.1. <A
+HREF="infoschema-schema.html"
+>模式</A
+></DT
+><DT
+>35.2. <A
+HREF="infoschema-datatypes.html"
+>数据类型</A
+></DT
+><DT
+>35.3. <A
+HREF="infoschema-information-schema-catalog-name.html"
+><TT
+CLASS="LITERAL"
+>information_schema_catalog_name</TT
+></A
+></DT
+><DT
+>35.4. <A
+HREF="infoschema-administrable-role-authorizations.html"
+><TT
+CLASS="LITERAL"
+>administrable_role_authorizations</TT
+></A
+></DT
+><DT
+>35.5. <A
+HREF="infoschema-applicable-roles.html"
+><TT
+CLASS="LITERAL"
+>applicable_roles</TT
+></A
+></DT
+><DT
+>35.6. <A
+HREF="infoschema-attributes.html"
+><TT
+CLASS="LITERAL"
+>attributes</TT
+></A
+></DT
+><DT
+>35.7. <A
+HREF="infoschema-character-sets.html"
+><TT
+CLASS="LITERAL"
+>character_sets</TT
+></A
+></DT
+><DT
+>35.8. <A
+HREF="infoschema-check-constraint-routine-usage.html"
+><TT
+CLASS="LITERAL"
+>check_constraint_routine_usage</TT
+></A
+></DT
+><DT
+>35.9. <A
+HREF="infoschema-check-constraints.html"
+><TT
+CLASS="LITERAL"
+>check_constraints</TT
+></A
+></DT
+><DT
+>35.10. <A
+HREF="infoschema-collations.html"
+><TT
+CLASS="LITERAL"
+>collations</TT
+></A
+></DT
+><DT
+>35.11. <A
+HREF="infoschema-collation-character-set-applicab.html"
+><TT
+CLASS="LITERAL"
+>collation_character_set_applicability</TT
+></A
+></DT
+><DT
+>35.12. <A
+HREF="infoschema-column-domain-usage.html"
+><TT
+CLASS="LITERAL"
+>column_domain_usage</TT
+></A
+></DT
+><DT
+>35.13. <A
+HREF="infoschema-column-options.html"
+><TT
+CLASS="LITERAL"
+>column_options</TT
+></A
+></DT
+><DT
+>35.14. <A
+HREF="infoschema-column-privileges.html"
+><TT
+CLASS="LITERAL"
+>column_privileges</TT
+></A
+></DT
+><DT
+>35.15. <A
+HREF="infoschema-column-udt-usage.html"
+><TT
+CLASS="LITERAL"
+>column_udt_usage</TT
+></A
+></DT
+><DT
+>35.16. <A
+HREF="infoschema-columns.html"
+><TT
+CLASS="LITERAL"
+>columns</TT
+></A
+></DT
+><DT
+>35.17. <A
+HREF="infoschema-constraint-column-usage.html"
+><TT
+CLASS="LITERAL"
+>constraint_column_usage</TT
+></A
+></DT
+><DT
+>35.18. <A
+HREF="infoschema-constraint-table-usage.html"
+><TT
+CLASS="LITERAL"
+>constraint_table_usage</TT
+></A
+></DT
+><DT
+>35.19. <A
+HREF="infoschema-data-type-privileges.html"
+><TT
+CLASS="LITERAL"
+>data_type_privileges</TT
+></A
+></DT
+><DT
+>35.20. <A
+HREF="infoschema-domain-constraints.html"
+><TT
+CLASS="LITERAL"
+>domain_constraints</TT
+></A
+></DT
+><DT
+>35.21. <A
+HREF="infoschema-domain-udt-usage.html"
+><TT
+CLASS="LITERAL"
+>domain_udt_usage</TT
+></A
+></DT
+><DT
+>35.22. <A
+HREF="infoschema-domains.html"
+><TT
+CLASS="LITERAL"
+>domains</TT
+></A
+></DT
+><DT
+>35.23. <A
+HREF="infoschema-element-types.html"
+><TT
+CLASS="LITERAL"
+>element_types</TT
+></A
+></DT
+><DT
+>35.24. <A
+HREF="infoschema-enabled-roles.html"
+><TT
+CLASS="LITERAL"
+>enabled_roles</TT
+></A
+></DT
+><DT
+>35.25. <A
+HREF="infoschema-foreign-data-wrapper-options.html"
+><TT
+CLASS="LITERAL"
+>foreign_data_wrapper_options</TT
+></A
+></DT
+><DT
+>35.26. <A
+HREF="infoschema-foreign-data-wrappers.html"
+><TT
+CLASS="LITERAL"
+>foreign_data_wrappers</TT
+></A
+></DT
+><DT
+>35.27. <A
+HREF="infoschema-foreign-server-options.html"
+><TT
+CLASS="LITERAL"
+>foreign_server_options</TT
+></A
+></DT
+><DT
+>35.28. <A
+HREF="infoschema-foreign-servers.html"
+><TT
+CLASS="LITERAL"
+>foreign_servers</TT
+></A
+></DT
+><DT
+>35.29. <A
+HREF="infoschema-foreign-table-options.html"
+><TT
+CLASS="LITERAL"
+>foreign_table_options</TT
+></A
+></DT
+><DT
+>35.30. <A
+HREF="infoschema-foreign-tables.html"
+><TT
+CLASS="LITERAL"
+>foreign_tables</TT
+></A
+></DT
+><DT
+>35.31. <A
+HREF="infoschema-key-column-usage.html"
+><TT
+CLASS="LITERAL"
+>key_column_usage</TT
+></A
+></DT
+><DT
+>35.32. <A
+HREF="infoschema-parameters.html"
+><TT
+CLASS="LITERAL"
+>parameters</TT
+></A
+></DT
+><DT
+>35.33. <A
+HREF="infoschema-referential-constraints.html"
+><TT
+CLASS="LITERAL"
+>referential_constraints</TT
+></A
+></DT
+><DT
+>35.34. <A
+HREF="infoschema-role-column-grants.html"
+><TT
+CLASS="LITERAL"
+>role_column_grants</TT
+></A
+></DT
+><DT
+>35.35. <A
+HREF="infoschema-role-routine-grants.html"
+><TT
+CLASS="LITERAL"
+>role_routine_grants</TT
+></A
+></DT
+><DT
+>35.36. <A
+HREF="infoschema-role-table-grants.html"
+><TT
+CLASS="LITERAL"
+>role_table_grants</TT
+></A
+></DT
+><DT
+>35.37. <A
+HREF="infoschema-role-udt-grants.html"
+><TT
+CLASS="LITERAL"
+>role_udt_grants</TT
+></A
+></DT
+><DT
+>35.38. <A
+HREF="infoschema-role-usage-grants.html"
+><TT
+CLASS="LITERAL"
+>role_usage_grants</TT
+></A
+></DT
+><DT
+>35.39. <A
+HREF="infoschema-routine-privileges.html"
+><TT
+CLASS="LITERAL"
+>routine_privileges</TT
+></A
+></DT
+><DT
+>35.40. <A
+HREF="infoschema-routines.html"
+><TT
+CLASS="LITERAL"
+>routines</TT
+></A
+></DT
+><DT
+>35.41. <A
+HREF="infoschema-schemata.html"
+><TT
+CLASS="LITERAL"
+>schemata</TT
+></A
+></DT
+><DT
+>35.42. <A
+HREF="infoschema-sequences.html"
+><TT
+CLASS="LITERAL"
+>sequences</TT
+></A
+></DT
+><DT
+>35.43. <A
+HREF="infoschema-sql-features.html"
+><TT
+CLASS="LITERAL"
+>sql_features</TT
+></A
+></DT
+><DT
+>35.44. <A
+HREF="infoschema-sql-implementation-info.html"
+><TT
+CLASS="LITERAL"
+>sql_implementation_info</TT
+></A
+></DT
+><DT
+>35.45. <A
+HREF="infoschema-sql-languages.html"
+><TT
+CLASS="LITERAL"
+>sql_languages</TT
+></A
+></DT
+><DT
+>35.46. <A
+HREF="infoschema-sql-packages.html"
+><TT
+CLASS="LITERAL"
+>sql_packages</TT
+></A
+></DT
+><DT
+>35.47. <A
+HREF="infoschema-sql-parts.html"
+><TT
+CLASS="LITERAL"
+>sql_parts</TT
+></A
+></DT
+><DT
+>35.48. <A
+HREF="infoschema-sql-sizing.html"
+><TT
+CLASS="LITERAL"
+>sql_sizing</TT
+></A
+></DT
+><DT
+>35.49. <A
+HREF="infoschema-sql-sizing-profiles.html"
+><TT
+CLASS="LITERAL"
+>sql_sizing_profiles</TT
+></A
+></DT
+><DT
+>35.50. <A
+HREF="infoschema-table-constraints.html"
+><TT
+CLASS="LITERAL"
+>table_constraints</TT
+></A
+></DT
+><DT
+>35.51. <A
+HREF="infoschema-table-privileges.html"
+><TT
+CLASS="LITERAL"
+>table_privileges</TT
+></A
+></DT
+><DT
+>35.52. <A
+HREF="infoschema-tables.html"
+><TT
+CLASS="LITERAL"
+>tables</TT
+></A
+></DT
+><DT
+>35.53. <A
+HREF="infoschema-transforms.html"
+><TT
+CLASS="LITERAL"
+>transforms</TT
+></A
+></DT
+><DT
+>35.54. <A
+HREF="infoschema-triggered-update-columns.html"
+><TT
+CLASS="LITERAL"
+>triggered_update_columns</TT
+></A
+></DT
+><DT
+>35.55. <A
+HREF="infoschema-triggers.html"
+><TT
+CLASS="LITERAL"
+>triggers</TT
+></A
+></DT
+><DT
+>35.56. <A
+HREF="infoschema-udt-privileges.html"
+><TT
+CLASS="LITERAL"
+>udt_privileges</TT
+></A
+></DT
+><DT
+>35.57. <A
+HREF="infoschema-usage-privileges.html"
+><TT
+CLASS="LITERAL"
+>usage_privileges</TT
+></A
+></DT
+><DT
+>35.58. <A
+HREF="infoschema-user-defined-types.html"
+><TT
+CLASS="LITERAL"
+>user_defined_types</TT
+></A
+></DT
+><DT
+>35.59. <A
+HREF="infoschema-user-mapping-options.html"
+><TT
+CLASS="LITERAL"
+>user_mapping_options</TT
+></A
+></DT
+><DT
+>35.60. <A
+HREF="infoschema-user-mappings.html"
+><TT
+CLASS="LITERAL"
+>user_mappings</TT
+></A
+></DT
+><DT
+>35.61. <A
+HREF="infoschema-view-column-usage.html"
+><TT
+CLASS="LITERAL"
+>view_column_usage</TT
+></A
+></DT
+><DT
+>35.62. <A
+HREF="infoschema-view-routine-usage.html"
+><TT
+CLASS="LITERAL"
+>view_routine_usage</TT
+></A
+></DT
+><DT
+>35.63. <A
+HREF="infoschema-view-table-usage.html"
+><TT
+CLASS="LITERAL"
+>view_table_usage</TT
+></A
+></DT
+><DT
+>35.64. <A
+HREF="infoschema-views.html"
+><TT
+CLASS="LITERAL"
+>views</TT
+></A
+></DT
+></DL
+></DIV
+><P
+>  信息模式由一组视图构成，它们包含定义在当前数据库中对象的信息。信息模式以 SQL 标准定义，因此能够被移植并且保持稳定 &mdash; 系统目录则不同，它们是与<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>相关的并且是为了实现的考虑而建模的。不过，信息模式视图不包含与<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>-相关特性有关的信息。要咨询那些信息你需要查询系统目录或其他<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>-相关视图。
+ </P
+><DIV
+CLASS="NOTE"
+><BLOCKQUOTE
+CLASS="NOTE"
+><P
+><B
+>&#27880;&#24847;: </B
+>   当在数据库中查询约束信息时，一个期望返回一行的标准兼容的查询可能返回多行。这是因为 SQL 标准要求约束名在一个模式中唯一，但是<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>并不强制这种限制。<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>自动产生的约束名避免在相同的模式中重复，但是用户能够指定这种重复的名称。
+  </P
+><P
+>   这个问题可能在查询信息模式视图时出现，例如<TT
+CLASS="LITERAL"
+>check_constraint_routine_usage</TT
+>、
+   <TT
+CLASS="LITERAL"
+>check_constraints</TT
+>、<TT
+CLASS="LITERAL"
+>domain_constraints</TT
+>和
+   <TT
+CLASS="LITERAL"
+>referential_constraints</TT
+>。一些其他视图也有相似的问题，但是它们包含了表名来帮助区分重复行，例如<TT
+CLASS="LITERAL"
+>constraint_column_usage</TT
+>、
+   <TT
+CLASS="LITERAL"
+>constraint_table_usage</TT
+>、<TT
+CLASS="LITERAL"
+>table_constraints</TT
+>。
+  </P
+></BLOCKQUOTE
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="ecpg-develop.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="infoschema-schema.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>内部</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="client-interfaces.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>模式</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

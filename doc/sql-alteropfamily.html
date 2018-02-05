@@ -1,0 +1,777 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>ALTER OPERATOR FAMILY</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="SQL 命令"
+HREF="sql-commands.html"><LINK
+REL="PREVIOUS"
+TITLE="ALTER OPERATOR CLASS"
+HREF="sql-alteropclass.html"><LINK
+REL="NEXT"
+TITLE="ALTER POLICY"
+HREF="sql-alterpolicy.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="REFENTRY"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/ref/alter_opfamily.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="ALTER OPERATOR CLASS"
+HREF="sql-alteropclass.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="ALTER POLICY"
+HREF="sql-alterpolicy.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="SQL-ALTEROPFAMILY"
+></A
+>ALTER OPERATOR FAMILY</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN74128"
+></A
+><H2
+>&#21517;&#31216;</H2
+>ALTER OPERATOR FAMILY&nbsp;--&nbsp;更改一个操作符族的定义</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN74131"
+></A
+><H2
+>&#22823;&#32434;</H2
+><PRE
+CLASS="SYNOPSIS"
+>ALTER OPERATOR FAMILY <TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+> USING <TT
+CLASS="REPLACEABLE"
+><I
+>index_method</I
+></TT
+> ADD
+  {  OPERATOR <TT
+CLASS="REPLACEABLE"
+><I
+>strategy_number</I
+></TT
+> <TT
+CLASS="REPLACEABLE"
+><I
+>operator_name</I
+></TT
+> ( <TT
+CLASS="REPLACEABLE"
+><I
+>op_type</I
+></TT
+>, <TT
+CLASS="REPLACEABLE"
+><I
+>op_type</I
+></TT
+> )
+              [ FOR SEARCH | FOR ORDER BY <TT
+CLASS="REPLACEABLE"
+><I
+>sort_family_name</I
+></TT
+> ]
+   | FUNCTION <TT
+CLASS="REPLACEABLE"
+><I
+>support_number</I
+></TT
+> [ ( <TT
+CLASS="REPLACEABLE"
+><I
+>op_type</I
+></TT
+> [ , <TT
+CLASS="REPLACEABLE"
+><I
+>op_type</I
+></TT
+> ] ) ]
+              <TT
+CLASS="REPLACEABLE"
+><I
+>function_name</I
+></TT
+> ( <TT
+CLASS="REPLACEABLE"
+><I
+>argument_type</I
+></TT
+> [, ...] )
+  } [, ... ]
+
+ALTER OPERATOR FAMILY <TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+> USING <TT
+CLASS="REPLACEABLE"
+><I
+>index_method</I
+></TT
+> DROP
+  {  OPERATOR <TT
+CLASS="REPLACEABLE"
+><I
+>strategy_number</I
+></TT
+> ( <TT
+CLASS="REPLACEABLE"
+><I
+>op_type</I
+></TT
+> [ , <TT
+CLASS="REPLACEABLE"
+><I
+>op_type</I
+></TT
+> ] )
+   | FUNCTION <TT
+CLASS="REPLACEABLE"
+><I
+>support_number</I
+></TT
+> ( <TT
+CLASS="REPLACEABLE"
+><I
+>op_type</I
+></TT
+> [ , <TT
+CLASS="REPLACEABLE"
+><I
+>op_type</I
+></TT
+> ] )
+  } [, ... ]
+
+ALTER OPERATOR FAMILY <TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+> USING <TT
+CLASS="REPLACEABLE"
+><I
+>index_method</I
+></TT
+>
+    RENAME TO <TT
+CLASS="REPLACEABLE"
+><I
+>new_name</I
+></TT
+>
+
+ALTER OPERATOR FAMILY <TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+> USING <TT
+CLASS="REPLACEABLE"
+><I
+>index_method</I
+></TT
+>
+    OWNER TO { <TT
+CLASS="REPLACEABLE"
+><I
+>new_owner</I
+></TT
+> | CURRENT_USER | SESSION_USER }
+
+ALTER OPERATOR FAMILY <TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+> USING <TT
+CLASS="REPLACEABLE"
+><I
+>index_method</I
+></TT
+>
+    SET SCHEMA <TT
+CLASS="REPLACEABLE"
+><I
+>new_schema</I
+></TT
+></PRE
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN74162"
+></A
+><H2
+>描述</H2
+><P
+>   <TT
+CLASS="COMMAND"
+>ALTER OPERATOR FAMILY</TT
+>更改一个操作符族
+   的定义。你能增加操作符以及支持函数到该家族、从该族中移除它们或者更改
+   该族的名称或者拥有者。
+  </P
+><P
+>   在用<TT
+CLASS="COMMAND"
+>ALTER OPERATOR FAMILY</TT
+>增加操作符和
+   支持函数到一个族中时，它们不是族内任何特定操作符类的组成部分，而只是
+   <SPAN
+CLASS="QUOTE"
+>"松散"</SPAN
+>地存在于该族中。这表示这些操作符和函数与该族的语义兼
+   容，但是没有被任何特定索引的正确功能所要求（所要求的操作符和函数应该
+   被作为一个操作符类的一部分声明，见<A
+HREF="sql-createopclass.html"
+>CREATE OPERATOR CLASS</A
+>）。
+   <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>将允许一个族的松散成员在
+   任何时候被从该族中删除，但是在删除一个操作符类的成员之前，必须已经删
+   除整个类以及依赖于该成员的索引。具有代表性的是，单一数据类型操作符和
+   函数是操作符类的一部分，因为在特定数据类型上的索引需要它们的支持。而
+   多数据类型操作符和函数则被作为该族的松散成员。
+  </P
+><P
+>   要使用<TT
+CLASS="COMMAND"
+>ALTER OPERATOR FAMILY</TT
+>，你必须是超级用户（
+   做这样的限制是因为一个错误的操作符族定义可能会迷惑服务器甚至让它崩溃）。
+  </P
+><P
+>   <TT
+CLASS="COMMAND"
+>ALTER OPERATOR FAMILY</TT
+>目前不检测操作符族
+   定义是否包括该索引方法所要求的所有操作符和函数，也不检查操作符和函数是
+   否形成了一个有理的集合。定义一个合法的操作符族是用户的责任。
+  </P
+><P
+>   进一步的信息请参考<A
+HREF="xindex.html"
+>第 36.14 &#33410;</A
+>。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN74177"
+></A
+><H2
+>参数</H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+></DT
+><DD
+><P
+>      一个现有操作符族的名称（可以是模式限定的）。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>index_method</I
+></TT
+></DT
+><DD
+><P
+>      这个操作符族所应用的索引方法的名称。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>strategy_number</I
+></TT
+></DT
+><DD
+><P
+>      与该操作符族相关的一个操作符的索引方法策略号。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>operator_name</I
+></TT
+></DT
+><DD
+><P
+>      与该操作符族相关的一个操作符的名称（可以是模式限定的）。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>op_type</I
+></TT
+></DT
+><DD
+><P
+>      在一个<TT
+CLASS="LITERAL"
+>OPERATOR</TT
+>子句中指定该操作符的操作数数据类型，
+      或者用<TT
+CLASS="LITERAL"
+>NONE</TT
+>来表示一个左一元或者右一元操作符。不同于
+      <TT
+CLASS="COMMAND"
+>CREATE OPERATOR CLASS</TT
+>中类似的语法，操作数数据
+      类型总是必须被指定。
+     </P
+><P
+>      在一个<TT
+CLASS="LITERAL"
+>ADD FUNCTION</TT
+>子句中指定该函数意图支持的操作数
+      数据类型（如果不同于该函数的输入数据类型）。对于 B-树比较函数和哈希
+      函数，有必要指定<TT
+CLASS="REPLACEABLE"
+><I
+>op_type</I
+></TT
+>，因为该函数的输入数据类型
+      总是正确的。对于 B-树排序支持函数和 GiST、SP-GiST 和 GIN 操作符类中
+      的所有函数，有必要指定该函数要使用的操作数数据类型。
+     </P
+><P
+>      在一个<TT
+CLASS="LITERAL"
+>DROP FUNCTION</TT
+>子句中，必须指定该函数要支持的操
+      作数数据类型。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>sort_family_name</I
+></TT
+></DT
+><DD
+><P
+>      一个现有<TT
+CLASS="LITERAL"
+>btree</TT
+>操作符族的名称（可能是模式限定的），
+      它描述与一个排序操作符相关的排序顺序。
+     </P
+><P
+>      如果既没有指定<TT
+CLASS="LITERAL"
+>FOR SEARCH</TT
+>也没有指定<TT
+CLASS="LITERAL"
+>FOR ORDER BY</TT
+>，
+      默认值是<TT
+CLASS="LITERAL"
+>FOR SEARCH</TT
+>。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>support_number</I
+></TT
+></DT
+><DD
+><P
+>      一个与该操作符族相关的函数的索引方法支持过程编号。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>function_name</I
+></TT
+></DT
+><DD
+><P
+>      作为该操作符族的一种索引方法支持过程的函数的名称（可以是模式限定的）。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>argument_type</I
+></TT
+></DT
+><DD
+><P
+>      该函数的参数数据类型。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>new_name</I
+></TT
+></DT
+><DD
+><P
+>      该操作符族的新名称。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>new_owner</I
+></TT
+></DT
+><DD
+><P
+>      该操作符族的新拥有者。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>new_schema</I
+></TT
+></DT
+><DD
+><P
+>      该操作符族的新模式。
+     </P
+></DD
+></DL
+></DIV
+><P
+>   <TT
+CLASS="LITERAL"
+>OPERATOR</TT
+>和<TT
+CLASS="LITERAL"
+>FUNCTION</TT
+>子句可以以任何顺序出现。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN74256"
+></A
+><H2
+>注解</H2
+><P
+>   注意<TT
+CLASS="LITERAL"
+>DROP</TT
+>语法只通过策略或者支持号以及输入数据类型指定该
+   操作符族中的<SPAN
+CLASS="QUOTE"
+>"slot"</SPAN
+>。占用这个槽的操作符或函数的名称不会被提及。
+   还有，对于<TT
+CLASS="LITERAL"
+>DROP FUNCTION</TT
+>，要指定的类型是该函数意图支持
+   的输入数据类型。对于 GiST、SP-GiST 以及 GIN 索引，可能无需对该函数的
+   实际输入参数类型做任何事情。
+  </P
+><P
+>   因为索引机制在使用函数之前不会检查其上的访问权限，包括一个操作符族中的
+   函数或操作符都等同于授予了其上的公共执行权限。这对于操作符族中很有用的
+   这类函数来说，这通常不成问题。
+  </P
+><P
+>   操作符应该由 SQL 函数定义。一个 SQL 函数很可能被内联到调用查询中，这将
+   阻止优化器识别出该查询匹配一个索引。
+  </P
+><P
+>   在<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+> 8.4 之前，
+   <TT
+CLASS="LITERAL"
+>OPERATOR</TT
+>子句可以包括一个<TT
+CLASS="LITERAL"
+>RECHECK</TT
+>选项。这不再
+   被支持，因为一个索引操作符是否为<SPAN
+CLASS="QUOTE"
+>"lossy"</SPAN
+>现在会在运行时即时决定。
+   这允许高效地处理一个操作符可能或者不可能为有损的情况。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN74269"
+></A
+><H2
+>示例</H2
+><P
+>   下列示例命令为一个操作符族增加跨数据类型的操作符和支持函数，该操
+   作符族已经包含用于数据类型<TT
+CLASS="TYPE"
+>int4</TT
+>以及<TT
+CLASS="TYPE"
+>int2</TT
+>的 B-树
+   操作符类。
+  </P
+><PRE
+CLASS="PROGRAMLISTING"
+>ALTER OPERATOR FAMILY integer_ops USING btree ADD
+
+  -- int4 vs int2
+  OPERATOR 1 &lt; (int4, int2) ,
+  OPERATOR 2 &lt;= (int4, int2) ,
+  OPERATOR 3 = (int4, int2) ,
+  OPERATOR 4 &gt;= (int4, int2) ,
+  OPERATOR 5 &gt; (int4, int2) ,
+  FUNCTION 1 btint42cmp(int4, int2) ,
+
+  -- int2 vs int4
+  OPERATOR 1 &lt; (int2, int4) ,
+  OPERATOR 2 &lt;= (int2, int4) ,
+  OPERATOR 3 = (int2, int4) ,
+  OPERATOR 4 &gt;= (int2, int4) ,
+  OPERATOR 5 &gt; (int2, int4) ,
+  FUNCTION 1 btint24cmp(int2, int4) ;</PRE
+><P
+>   再次移除这些项：
+  </P
+><PRE
+CLASS="PROGRAMLISTING"
+>ALTER OPERATOR FAMILY integer_ops USING btree DROP
+
+  -- int4 vs int2
+  OPERATOR 1 (int4, int2) ,
+  OPERATOR 2 (int4, int2) ,
+  OPERATOR 3 (int4, int2) ,
+  OPERATOR 4 (int4, int2) ,
+  OPERATOR 5 (int4, int2) ,
+  FUNCTION 1 (int4, int2) ,
+
+  -- int2 vs int4
+  OPERATOR 1 (int2, int4) ,
+  OPERATOR 2 (int2, int4) ,
+  OPERATOR 3 (int2, int4) ,
+  OPERATOR 4 (int2, int4) ,
+  OPERATOR 5 (int2, int4) ,
+  FUNCTION 1 (int2, int4) ;</PRE
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN74277"
+></A
+><H2
+>兼容性</H2
+><P
+>   在 SQL 标准中没有
+   <TT
+CLASS="COMMAND"
+>ALTER OPERATOR FAMILY</TT
+>语句。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN74281"
+></A
+><H2
+>另见</H2
+><A
+HREF="sql-createopfamily.html"
+>CREATE OPERATOR FAMILY</A
+>, <A
+HREF="sql-dropopfamily.html"
+>DROP OPERATOR FAMILY</A
+>, <A
+HREF="sql-createopclass.html"
+>CREATE OPERATOR CLASS</A
+>, <A
+HREF="sql-alteropclass.html"
+>ALTER OPERATOR CLASS</A
+>, <A
+HREF="sql-dropopclass.html"
+>DROP OPERATOR CLASS</A
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-alteropclass.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="sql-alterpolicy.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>ALTER OPERATOR CLASS</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>ALTER POLICY</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

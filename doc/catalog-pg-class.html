@@ -1,0 +1,1018 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>pg_class</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="系统目录"
+HREF="catalogs.html"><LINK
+REL="PREVIOUS"
+TITLE="pg_cast"
+HREF="catalog-pg-cast.html"><LINK
+REL="NEXT"
+TITLE="pg_collation"
+HREF="catalog-pg-collation.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/catalogs.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="pg_cast"
+HREF="catalog-pg-cast.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="catalogs.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#31456; 50. 系统目录</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="pg_collation"
+HREF="catalog-pg-collation.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="CATALOG-PG-CLASS"
+>50.11. <TT
+CLASS="STRUCTNAME"
+>pg_class</TT
+></A
+></H1
+><P
+>   目录<TT
+CLASS="STRUCTNAME"
+>pg_class</TT
+>记录表和几乎所有具有列或者像表的东西。这包括索引（但还要参见<TT
+CLASS="STRUCTNAME"
+>pg_index</TT
+>）、序列、视图、物化视图、组合类型和TOAST表，参见<TT
+CLASS="STRUCTFIELD"
+>relkind</TT
+>。下面，当我们提及所有这些类型的对象时我们使用<SPAN
+CLASS="QUOTE"
+>"关系"</SPAN
+>。并非所有列对于所有关系类型都有意义。
+  </P
+><DIV
+CLASS="TABLE"
+><A
+NAME="AEN105319"
+></A
+><P
+><B
+>&#34920; 50-11. <TT
+CLASS="STRUCTNAME"
+>pg_class</TT
+>的列</B
+></P
+><TABLE
+BORDER="1"
+CLASS="CALSTABLE"
+><COL><COL><COL><COL><THEAD
+><TR
+><TH
+>名称</TH
+><TH
+>类型</TH
+><TH
+>引用</TH
+><TH
+>描述</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+><TT
+CLASS="STRUCTFIELD"
+>oid</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>oid</TT
+></TD
+><TD
+>&nbsp;</TD
+><TD
+>行标识符（隐藏属性，必须被显式选择才会显示）</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="STRUCTFIELD"
+>relname</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>name</TT
+></TD
+><TD
+>&nbsp;</TD
+><TD
+>表、索引、视图等的名字</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="STRUCTFIELD"
+>relnamespace</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>oid</TT
+></TD
+><TD
+><TT
+CLASS="LITERAL"
+><A
+HREF="catalog-pg-namespace.html"
+><TT
+CLASS="STRUCTNAME"
+>pg_namespace</TT
+></A
+>.oid</TT
+></TD
+><TD
+>       包含该关系的名字空间的OID
+      </TD
+></TR
+><TR
+><TD
+><TT
+CLASS="STRUCTFIELD"
+>reltype</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>oid</TT
+></TD
+><TD
+><TT
+CLASS="LITERAL"
+><A
+HREF="catalog-pg-type.html"
+><TT
+CLASS="STRUCTNAME"
+>pg_type</TT
+></A
+>.oid</TT
+></TD
+><TD
+>       可能存在的表行类型所对应数据类型的OID（对索引为0，索引没有<TT
+CLASS="STRUCTNAME"
+>pg_type</TT
+>项）
+      </TD
+></TR
+><TR
+><TD
+><TT
+CLASS="STRUCTFIELD"
+>reloftype</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>oid</TT
+></TD
+><TD
+><TT
+CLASS="LITERAL"
+><A
+HREF="catalog-pg-type.html"
+><TT
+CLASS="STRUCTNAME"
+>pg_type</TT
+></A
+>.oid</TT
+></TD
+><TD
+>       对于有类型的表，为底层组合类型的OID，对于其他所有关系为0
+      </TD
+></TR
+><TR
+><TD
+><TT
+CLASS="STRUCTFIELD"
+>relowner</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>oid</TT
+></TD
+><TD
+><TT
+CLASS="LITERAL"
+><A
+HREF="catalog-pg-authid.html"
+><TT
+CLASS="STRUCTNAME"
+>pg_authid</TT
+></A
+>.oid</TT
+></TD
+><TD
+>关系的拥有者</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="STRUCTFIELD"
+>relam</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>oid</TT
+></TD
+><TD
+><TT
+CLASS="LITERAL"
+><A
+HREF="catalog-pg-am.html"
+><TT
+CLASS="STRUCTNAME"
+>pg_am</TT
+></A
+>.oid</TT
+></TD
+><TD
+>如果这是一个索引，表示索引使用的访问方法（B树、哈希等）</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="STRUCTFIELD"
+>relfilenode</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>oid</TT
+></TD
+><TD
+>&nbsp;</TD
+><TD
+>该关系的磁盘文件的名字，0表示这是一个<SPAN
+CLASS="QUOTE"
+>"映射"</SPAN
+>关系，其磁盘文件名取决于低层状态</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="STRUCTFIELD"
+>reltablespace</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>oid</TT
+></TD
+><TD
+><TT
+CLASS="LITERAL"
+><A
+HREF="catalog-pg-tablespace.html"
+><TT
+CLASS="STRUCTNAME"
+>pg_tablespace</TT
+></A
+>.oid</TT
+></TD
+><TD
+>       该关系所存储的表空间。如果为0，使用数据库的默认表空间。（如果关系无磁盘文件时无意义）
+      </TD
+></TR
+><TR
+><TD
+><TT
+CLASS="STRUCTFIELD"
+>relpages</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>int4</TT
+></TD
+><TD
+>&nbsp;</TD
+><TD
+>       该表磁盘表示的尺寸，以页面计（页面尺寸为<TT
+CLASS="SYMBOL"
+>BLCKSZ</TT
+>）。这只是一个由规划器使用的估计值。它被<TT
+CLASS="COMMAND"
+>VACUUM</TT
+>、<TT
+CLASS="COMMAND"
+>ANALYZE</TT
+>以及一些DDL命令（如<TT
+CLASS="COMMAND"
+>CREATE INDEX</TT
+>）所更新。
+      </TD
+></TR
+><TR
+><TD
+><TT
+CLASS="STRUCTFIELD"
+>reltuples</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>float4</TT
+></TD
+><TD
+>&nbsp;</TD
+><TD
+>       表中的行数。这只是一个由规划器使用的估计值。它被<TT
+CLASS="COMMAND"
+>VACUUM</TT
+>、<TT
+CLASS="COMMAND"
+>ANALYZE</TT
+>以及一些DDL命令（如<TT
+CLASS="COMMAND"
+>CREATE INDEX</TT
+>）所更新。
+      </TD
+></TR
+><TR
+><TD
+><TT
+CLASS="STRUCTFIELD"
+>relallvisible</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>int4</TT
+></TD
+><TD
+>&nbsp;</TD
+><TD
+>       在表的可见性映射表中被标记为全可见的页数。这只是一个由规划器使用的估计值。它被<TT
+CLASS="COMMAND"
+>VACUUM</TT
+>、<TT
+CLASS="COMMAND"
+>ANALYZE</TT
+>以及一些DDL命令（如<TT
+CLASS="COMMAND"
+>CREATE INDEX</TT
+>）所更新。
+      </TD
+></TR
+><TR
+><TD
+><TT
+CLASS="STRUCTFIELD"
+>reltoastrelid</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>oid</TT
+></TD
+><TD
+><TT
+CLASS="LITERAL"
+><A
+HREF="catalog-pg-class.html"
+><TT
+CLASS="STRUCTNAME"
+>pg_class</TT
+></A
+>.oid</TT
+></TD
+><TD
+>       与该表相关联的TOAST表的OID，如果没有则为0。TOAST表将大属性<SPAN
+CLASS="QUOTE"
+>"线外"</SPAN
+>存储在一个二级表中。
+      </TD
+></TR
+><TR
+><TD
+><TT
+CLASS="STRUCTFIELD"
+>relhasindex</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>bool</TT
+></TD
+><TD
+>&nbsp;</TD
+><TD
+>       如果这是一个表并且其上建有（或最近建有）索引则为真
+      </TD
+></TR
+><TR
+><TD
+><TT
+CLASS="STRUCTFIELD"
+>relisshared</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>bool</TT
+></TD
+><TD
+>&nbsp;</TD
+><TD
+>       如果该表在集簇中的所有数据库间共享则为真。只有某些系统目录（如<TT
+CLASS="STRUCTNAME"
+>pg_database</TT
+>）是共享的。
+      </TD
+></TR
+><TR
+><TD
+><TT
+CLASS="STRUCTFIELD"
+>relpersistence</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>char</TT
+></TD
+><TD
+>&nbsp;</TD
+><TD
+>       <TT
+CLASS="LITERAL"
+>p</TT
+> = 永久表，<TT
+CLASS="LITERAL"
+>u</TT
+> = 无日志表，
+       <TT
+CLASS="LITERAL"
+>t</TT
+> = 临时表
+      </TD
+></TR
+><TR
+><TD
+><TT
+CLASS="STRUCTFIELD"
+>relkind</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>char</TT
+></TD
+><TD
+>&nbsp;</TD
+><TD
+>       <TT
+CLASS="LITERAL"
+>r</TT
+> = 普通表，<TT
+CLASS="LITERAL"
+>i</TT
+> = 索引，
+       <TT
+CLASS="LITERAL"
+>S</TT
+> = 序列，<TT
+CLASS="LITERAL"
+>v</TT
+> = 视图，
+       <TT
+CLASS="LITERAL"
+>m</TT
+> = 物化视图，
+       <TT
+CLASS="LITERAL"
+>c</TT
+> = 组合类型，<TT
+CLASS="LITERAL"
+>t</TT
+> = TOAST表，
+       <TT
+CLASS="LITERAL"
+>f</TT
+> = 外部表
+      </TD
+></TR
+><TR
+><TD
+><TT
+CLASS="STRUCTFIELD"
+>relnatts</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>int2</TT
+></TD
+><TD
+>&nbsp;</TD
+><TD
+>       关系中用户列的数目（系统列不计算在内）。在<TT
+CLASS="STRUCTNAME"
+>pg_attribute</TT
+>中必须有这么多对应的项。另请参阅<TT
+CLASS="LITERAL"
+>pg_attribute.attnum</TT
+>。
+      </TD
+></TR
+><TR
+><TD
+><TT
+CLASS="STRUCTFIELD"
+>relchecks</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>int2</TT
+></TD
+><TD
+>&nbsp;</TD
+><TD
+>       表上<TT
+CLASS="LITERAL"
+>CHECK</TT
+>约束的数目，参见<A
+HREF="catalog-pg-constraint.html"
+><TT
+CLASS="STRUCTNAME"
+>pg_constraint</TT
+></A
+>目录
+      </TD
+></TR
+><TR
+><TD
+><TT
+CLASS="STRUCTFIELD"
+>relhasoids</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>bool</TT
+></TD
+><TD
+>&nbsp;</TD
+><TD
+>       如果为关系的每一行生成一个OID则为真
+      </TD
+></TR
+><TR
+><TD
+><TT
+CLASS="STRUCTFIELD"
+>relhaspkey</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>bool</TT
+></TD
+><TD
+>&nbsp;</TD
+><TD
+>       如果表有（或曾有）一个主键则为真
+      </TD
+></TR
+><TR
+><TD
+><TT
+CLASS="STRUCTFIELD"
+>relhasrules</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>bool</TT
+></TD
+><TD
+>&nbsp;</TD
+><TD
+>       如果表有（或曾有）规则则为真，参见
+       <A
+HREF="catalog-pg-rewrite.html"
+><TT
+CLASS="STRUCTNAME"
+>pg_rewrite</TT
+></A
+>目录
+      </TD
+></TR
+><TR
+><TD
+><TT
+CLASS="STRUCTFIELD"
+>relhastriggers</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>bool</TT
+></TD
+><TD
+>&nbsp;</TD
+><TD
+>       如果表有（或曾有）触发器则为真，参见
+       <A
+HREF="catalog-pg-trigger.html"
+><TT
+CLASS="STRUCTNAME"
+>pg_trigger</TT
+></A
+>目录
+      </TD
+></TR
+><TR
+><TD
+><TT
+CLASS="STRUCTFIELD"
+>relhassubclass</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>bool</TT
+></TD
+><TD
+>&nbsp;</TD
+><TD
+>如果表有（或曾有）任何继承子女则为真</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="STRUCTFIELD"
+>relrowsecurity</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>bool</TT
+></TD
+><TD
+>&nbsp;</TD
+><TD
+>       如果表上启用了行级安全性则为真，参见
+       <A
+HREF="catalog-pg-policy.html"
+><TT
+CLASS="STRUCTNAME"
+>pg_policy</TT
+></A
+>目录
+      </TD
+></TR
+><TR
+><TD
+><TT
+CLASS="STRUCTFIELD"
+>relforcerowsecurity</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>bool</TT
+></TD
+><TD
+>&nbsp;</TD
+><TD
+>       如果行级安全性（启用时）也适用于表拥有者则为真，参见
+       <A
+HREF="catalog-pg-policy.html"
+><TT
+CLASS="STRUCTNAME"
+>pg_policy</TT
+></A
+>目录
+      </TD
+></TR
+><TR
+><TD
+><TT
+CLASS="STRUCTFIELD"
+>relispopulated</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>bool</TT
+></TD
+><TD
+>&nbsp;</TD
+><TD
+>如果表已被填充则为真（对于所有关系该列都为真，但对于某些物化视图却不是）</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="STRUCTFIELD"
+>relreplident</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>char</TT
+></TD
+><TD
+>&nbsp;</TD
+><TD
+>       用来为行形成<SPAN
+CLASS="QUOTE"
+>"replica identity"</SPAN
+>的列：
+       <TT
+CLASS="LITERAL"
+>d</TT
+> = 默认 (主键，如果存在),
+       <TT
+CLASS="LITERAL"
+>n</TT
+> = 无,
+       <TT
+CLASS="LITERAL"
+>f</TT
+> = 所有列
+       <TT
+CLASS="LITERAL"
+>i</TT
+> = 索引的<TT
+CLASS="STRUCTFIELD"
+>indisreplident</TT
+>被设置或者为默认
+      </TD
+></TR
+><TR
+><TD
+><TT
+CLASS="STRUCTFIELD"
+>relfrozenxid</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>xid</TT
+></TD
+><TD
+>&nbsp;</TD
+><TD
+>       在此之前的所有事务ID在表中已经被替换为一个永久的（<SPAN
+CLASS="QUOTE"
+>"冻结的"</SPAN
+>) 事务ID。这用于跟踪表是否需要被清理，以便阻止事务ID回卷或者允许<TT
+CLASS="LITERAL"
+>pg_clog</TT
+>被收缩。如果该关系不是一个表则为0（<TT
+CLASS="SYMBOL"
+>InvalidTransactionId</TT
+>）。
+      </TD
+></TR
+><TR
+><TD
+><TT
+CLASS="STRUCTFIELD"
+>relminmxid</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>xid</TT
+></TD
+><TD
+>&nbsp;</TD
+><TD
+>       在此之前的多事务ID在表中已经被替换为一个事务ID。这被用于跟踪表是否需要被清理，以阻止
+       多事务ID回卷或者允许<TT
+CLASS="LITERAL"
+>pg_multixact</TT
+>被收缩。如果关系不是一个表则
+       为0（<TT
+CLASS="SYMBOL"
+>InvalidMultiXactId</TT
+>）。
+      </TD
+></TR
+><TR
+><TD
+><TT
+CLASS="STRUCTFIELD"
+>relacl</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>aclitem[]</TT
+></TD
+><TD
+>&nbsp;</TD
+><TD
+>       访问权限，更多信息参见
+       <A
+HREF="sql-grant.html"
+>GRANT</A
+>和
+       <A
+HREF="sql-revoke.html"
+>REVOKE</A
+>
+      </TD
+></TR
+><TR
+><TD
+><TT
+CLASS="STRUCTFIELD"
+>reloptions</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>text[]</TT
+></TD
+><TD
+>&nbsp;</TD
+><TD
+>       访问方法相关的选项，以<SPAN
+CLASS="QUOTE"
+>"keyword=value"</SPAN
+>字符串形式
+      </TD
+></TR
+></TBODY
+></TABLE
+></DIV
+><P
+>   <TT
+CLASS="STRUCTNAME"
+>pg_class</TT
+>中的一些逻辑标志被以一种懒惰的方式维护：在正确状态时它们被保证为真，但是当条件不再为真时它们并不会被立刻重置为假。例如，<TT
+CLASS="STRUCTFIELD"
+>relhasindex</TT
+>由<TT
+CLASS="COMMAND"
+>CREATE INDEX</TT
+>设置，但它从不会被<TT
+CLASS="COMMAND"
+>DROP INDEX</TT
+>清除。作为替代，<TT
+CLASS="COMMAND"
+>VACUUM</TT
+>会在找到无索引表后清除其<TT
+CLASS="STRUCTFIELD"
+>relhasindex</TT
+>。这种安排避免了竞争条件并且提高了并发性。
+  </P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="catalog-pg-cast.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="catalog-pg-collation.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><TT
+CLASS="STRUCTNAME"
+>pg_cast</TT
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="catalogs.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><TT
+CLASS="STRUCTNAME"
+>pg_collation</TT
+></TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

@@ -1,0 +1,1441 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>动态追踪</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="监控数据库活动"
+HREF="monitoring.html"><LINK
+REL="PREVIOUS"
+TITLE="进度报告"
+HREF="progress-reporting.html"><LINK
+REL="NEXT"
+TITLE="监控磁盘使用"
+HREF="diskusage.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/monitoring.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="进度报告"
+HREF="progress-reporting.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="monitoring.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#31456; 28. 监控数据库活动</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="监控磁盘使用"
+HREF="diskusage.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="DYNAMIC-TRACE"
+>28.5. 动态追踪</A
+></H1
+><P
+>   <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>提供了功能来支持数据库服务器的动态追踪。这样就允许在代码中的特 定点上调用外部工具来追踪执行过程。
+  </P
+><P
+>   一些探针或追踪点已经被插入在源代码中。这些探针的目的是被数据库开发者和管理员使用。默认情况下，探针不被编译到<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>中；用户需要显式地告诉配置脚本使得探针可用。
+  </P
+><P
+>   目前，在写本文当时<A
+HREF="https://en.wikipedia.org/wiki/DTrace"
+TARGET="_top"
+>DTrace</A
+>已被支持，它在 Solaris、OS X、FreeBSD、NetBSD 和 Oracle Linux 上可用。Linux 的<A
+HREF="http://sourceware.org/systemtap/"
+TARGET="_top"
+>SystemTap</A
+>项目提供了一种可用的 DTrace 等价物。支持其他动态追踪工具在理论上可以通过改变<TT
+CLASS="FILENAME"
+>src/include/utils/probes.h</TT
+>中的宏定义实现。
+  </P
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="COMPILING-FOR-TRACE"
+>28.5.1. 动态追踪的编译</A
+></H2
+><P
+>   默认情况下，探针是不可用的，因此你将需要显式地告诉配置脚本让探针在<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>中可用。要包括 DTrace 支持，在配置时指定<TT
+CLASS="OPTION"
+>--enable-dtrace</TT
+>。更多信息请见<A
+HREF="install-procedure.html"
+>第 16.4 &#33410;</A
+>。
+  </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="TRACE-POINTS"
+>28.5.2. 内建探针</A
+></H2
+><P
+>   如<A
+HREF="dynamic-trace.html#DTRACE-PROBE-POINT-TABLE"
+>&#34920; 28-22</A
+>所示，源代码中提供了一些标准探针。<A
+HREF="dynamic-trace.html#TYPEDEFS-TABLE"
+>&#34920; 28-23</A
+>显式了在探针中使用的类型。当然，可以增加更多探针来增强<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>的可观测性。
+  </P
+><DIV
+CLASS="TABLE"
+><A
+NAME="DTRACE-PROBE-POINT-TABLE"
+></A
+><P
+><B
+>&#34920; 28-22. 内建 DTrace 探针</B
+></P
+><TABLE
+BORDER="1"
+CLASS="CALSTABLE"
+><COL><COL><COL><THEAD
+><TR
+><TH
+>名称</TH
+><TH
+>参数</TH
+><TH
+>描述</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>transaction-start</TT
+></TD
+><TD
+><TT
+CLASS="LITERAL"
+>(LocalTransactionId)</TT
+></TD
+><TD
+>在一个新事务开始时触发的探针。arg0 是事务 ID。</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>transaction-commit</TT
+></TD
+><TD
+><TT
+CLASS="LITERAL"
+>(LocalTransactionId)</TT
+></TD
+><TD
+>在一个事务成功完成时触发的探针。arg0 是事务 ID。</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>transaction-abort</TT
+></TD
+><TD
+><TT
+CLASS="LITERAL"
+>(LocalTransactionId)</TT
+></TD
+><TD
+>当一个事务失败完成时触发的探针。arg0 是事务 ID。</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>query-start</TT
+></TD
+><TD
+><TT
+CLASS="LITERAL"
+>(const char *)</TT
+></TD
+><TD
+>当一个查询的处理被开始时触发的探针。arg0 是查询字符串。</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>query-done</TT
+></TD
+><TD
+><TT
+CLASS="LITERAL"
+>(const char *)</TT
+></TD
+><TD
+>当一个查询的处理完成时触发的探针。arg0 是查询字符串。</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>query-parse-start</TT
+></TD
+><TD
+><TT
+CLASS="LITERAL"
+>(const char *)</TT
+></TD
+><TD
+>当一个查询的解析被开始时触发的探针。arg0 是查询字符串。</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>query-parse-done</TT
+></TD
+><TD
+><TT
+CLASS="LITERAL"
+>(const char *)</TT
+></TD
+><TD
+>当一个查询的解析完成时触发的探针。arg0 是查询字符串。</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>query-rewrite-start</TT
+></TD
+><TD
+><TT
+CLASS="LITERAL"
+>(const char *)</TT
+></TD
+><TD
+>当一个查询的重写被开始时触发的探针。arg0 是查询字符串。</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>query-rewrite-done</TT
+></TD
+><TD
+><TT
+CLASS="LITERAL"
+>(const char *)</TT
+></TD
+><TD
+>当一个查询的重写完成时触发的探针。arg0 是查询字符串。</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>query-plan-start</TT
+></TD
+><TD
+><TT
+CLASS="LITERAL"
+>()</TT
+></TD
+><TD
+>当一个查询的规划被开始时触发的探针。</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>query-plan-done</TT
+></TD
+><TD
+><TT
+CLASS="LITERAL"
+>()</TT
+></TD
+><TD
+>当一个查询的规划完成时触发的探针。</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>query-execute-start</TT
+></TD
+><TD
+><TT
+CLASS="LITERAL"
+>()</TT
+></TD
+><TD
+>当一个查询的执行被开始时触发的探针。</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>query-execute-done</TT
+></TD
+><TD
+><TT
+CLASS="LITERAL"
+>()</TT
+></TD
+><TD
+>当一个查询的执行完成时触发的探针。</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>statement-status</TT
+></TD
+><TD
+><TT
+CLASS="LITERAL"
+>(const char *)</TT
+></TD
+><TD
+>任何时候当服务器进程更新它的<TT
+CLASS="STRUCTNAME"
+>pg_stat_activity</TT
+>.<TT
+CLASS="STRUCTFIELD"
+>status</TT
+>时触发的探针。arg0 是新的状态字符串。</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>checkpoint-start</TT
+></TD
+><TD
+><TT
+CLASS="LITERAL"
+>(int)</TT
+></TD
+><TD
+>当一个检查点被开始时触发的探针。arg0 保持逐位标志来区分不同的检查点类型，例如关闭（shutdown）、立即（immediate）或强制（force）。</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>checkpoint-done</TT
+></TD
+><TD
+><TT
+CLASS="LITERAL"
+>(int, int, int, int, int)</TT
+></TD
+><TD
+>当一个检查点完成时触发的探针（检查点处理过程中序列中列出的下一个触发的探针）。arg0 是要写的缓冲区数量。arg1 是缓冲区的总数。arg2、arg3 和 arg4 分别包含了增加、删除和循环回收的 WAL 文件的数量。</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>clog-checkpoint-start</TT
+></TD
+><TD
+><TT
+CLASS="LITERAL"
+>(bool)</TT
+></TD
+><TD
+>当一个检查点的 CLOG 部分被开始时触发的探针。arg0 为真表示正常检查点，为假表示关闭检查点。</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>clog-checkpoint-done</TT
+></TD
+><TD
+><TT
+CLASS="LITERAL"
+>(bool)</TT
+></TD
+><TD
+>当一个检查点的 CLOG 部分完成时触发的探针。arg0 的含义与<TT
+CLASS="LITERAL"
+>clog-checkpoint-start</TT
+>中相同。</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>subtrans-checkpoint-start</TT
+></TD
+><TD
+><TT
+CLASS="LITERAL"
+>(bool)</TT
+></TD
+><TD
+>当一个检查点的 SUBTRANS 部分被开始时触发的探针。arg0 为真表示正常检查点，为假表示关闭检查点。</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>subtrans-checkpoint-done</TT
+></TD
+><TD
+><TT
+CLASS="LITERAL"
+>(bool)</TT
+></TD
+><TD
+>当一个检查点的 SUBTRANS 部分完成时触发的探针。arg0 的含义与<TT
+CLASS="LITERAL"
+>subtrans-checkpoint-start</TT
+>中相同。</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>multixact-checkpoint-start</TT
+></TD
+><TD
+><TT
+CLASS="LITERAL"
+>(bool)</TT
+></TD
+><TD
+>当一个检查点的 MultiXact 部分被开始时触发的探针。arg0 为真表示正常检查点，为假表示关闭检查点。</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>multixact-checkpoint-done</TT
+></TD
+><TD
+><TT
+CLASS="LITERAL"
+>(bool)</TT
+></TD
+><TD
+>当一个检查点的 MultiXact 部分完成时触发的探针。arg0 的含义与<TT
+CLASS="LITERAL"
+>multixact-checkpoint-start</TT
+>中相同。</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>buffer-checkpoint-start</TT
+></TD
+><TD
+><TT
+CLASS="LITERAL"
+>(int)</TT
+></TD
+><TD
+>当一个检查点的写缓冲区部分被开始时触发的探针。arg0 保持逐位标志来区分不同的检查点类型，例如关闭（shutdown）、立即（immediate）或强制（force）。</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>buffer-sync-start</TT
+></TD
+><TD
+><TT
+CLASS="LITERAL"
+>(int, int)</TT
+></TD
+><TD
+>当我们在检查点期间开始写脏缓冲区时（在标识哪些缓冲区必须被写之后）触发的探针。arg0 是缓冲区总数，arg1 是当前为脏并且需要被写的缓冲区数量。</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>buffer-sync-written</TT
+></TD
+><TD
+><TT
+CLASS="LITERAL"
+>(int)</TT
+></TD
+><TD
+>在检查点期间当每个缓冲区被写完之后触发的探针。arg0 是缓冲区的 ID。</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>buffer-sync-done</TT
+></TD
+><TD
+><TT
+CLASS="LITERAL"
+>(int, int, int)</TT
+></TD
+><TD
+>当所有脏缓冲区被写之后触发的探针。arg0 是缓冲区总数。arg1 是检查点进程实际写的缓冲区数量。arg2 是期望写的数目（<TT
+CLASS="LITERAL"
+>buffer-sync-start</TT
+>的 arg1）；arg1 和 arg2 的任何的不同反映在该检查点期间有其他进程刷写了缓冲区。</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>buffer-checkpoint-sync-start</TT
+></TD
+><TD
+><TT
+CLASS="LITERAL"
+>()</TT
+></TD
+><TD
+>在脏缓冲区被写入到内核之后并且在开始发出 fsync 请求之前触发的探针。</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>buffer-checkpoint-done</TT
+></TD
+><TD
+><TT
+CLASS="LITERAL"
+>()</TT
+></TD
+><TD
+>当同步缓冲区到磁盘完成时触发的探针。</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>twophase-checkpoint-start</TT
+></TD
+><TD
+><TT
+CLASS="LITERAL"
+>()</TT
+></TD
+><TD
+>当一个检查点的两阶段部分被开始时触发的探针。</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>twophase-checkpoint-done</TT
+></TD
+><TD
+><TT
+CLASS="LITERAL"
+>()</TT
+></TD
+><TD
+>当一个检查点的两阶段部分完成时触发的探针。</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>buffer-read-start</TT
+></TD
+><TD
+><TT
+CLASS="LITERAL"
+>(ForkNumber, BlockNumber, Oid, Oid, Oid, int, bool)</TT
+></TD
+><TD
+>当一次缓冲区读被开始时触发的探针。arg0 和 arg1 包含该页的分叉号和块号（如果这是一次关系扩展请求，arg1 为 -1）。arg2、arg3 和 arg4 包含表空间、数据库和关系 OID 用以识别该关系。对一个本地缓冲区，arg5 是创建临时关系的后端的 ID；对于一个共享缓冲区，arg5 是 <TT
+CLASS="SYMBOL"
+>InvalidBackendId</TT
+>（-1）。表示真，对共享缓冲区表示假。 arg6 为真表示一次关系扩展请求，为假表示正常读。</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>buffer-read-done</TT
+></TD
+><TD
+><TT
+CLASS="LITERAL"
+>(ForkNumber, BlockNumber, Oid, Oid, Oid, int, bool, bool)</TT
+></TD
+><TD
+>当一次缓冲区读完成时触发的探测器。arg0 和 arg1 包含该页的分叉号和块号（如果这是一次关系扩展请求，arg1 现在包含新增加块的块号）。arg2、arg3 和 arg4 包含表空间、数据库和关系 OID 用以识别该关系。对一个本地缓冲区，arg5 是创建临时关系的后端的 ID；对于一个共享缓冲区，arg5 是 <TT
+CLASS="SYMBOL"
+>InvalidBackendId</TT
+>（-1）。表示真，对共享缓冲区表示假。 arg6 为真表示一次关系扩展请求，为假表示正常读。arg7 为真表示在池中找到该缓冲区，为假表示没有找到。</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>buffer-flush-start</TT
+></TD
+><TD
+><TT
+CLASS="LITERAL"
+>(ForkNumber, BlockNumber, Oid, Oid, Oid)</TT
+></TD
+><TD
+>在发出对一个共享缓冲区的任意写请求之前触发的探针。arg0 和 arg1 包含该页的分叉号和块号。arg2、arg3 和 arg4 包含表空间、数据库和关系 OID 用以识别该关系。</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>buffer-flush-done</TT
+></TD
+><TD
+><TT
+CLASS="LITERAL"
+>(ForkNumber, BlockNumber, Oid, Oid, Oid)</TT
+></TD
+><TD
+>当一个写请求完成时触发的探针（注意这只反映传递数据给内核的时间，它通常并没有实际地被写入到磁盘）。参数和<TT
+CLASS="LITERAL"
+>buffer-flush-start</TT
+>的相同。</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>buffer-write-dirty-start</TT
+></TD
+><TD
+><TT
+CLASS="LITERAL"
+>(ForkNumber, BlockNumber, Oid, Oid, Oid)</TT
+></TD
+><TD
+>当一个服务器进程开始写一个脏缓冲区时触发的探针（如果这经常发生，表示<A
+HREF="runtime-config-resource.html#GUC-SHARED-BUFFERS"
+>shared_buffers</A
+>太小，或需要调整后台写入器的控制参数）。arg0 和 arg1 包含该页的分叉号和块号。arg2、arg3 和 arg4 包含表空间、数据库和关系 OID 用以识别该关系。</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>buffer-write-dirty-done</TT
+></TD
+><TD
+><TT
+CLASS="LITERAL"
+>(ForkNumber, BlockNumber, Oid, Oid, Oid)</TT
+></TD
+><TD
+>当一次脏缓冲区写完成时触发的探针。参数与<TT
+CLASS="LITERAL"
+>buffer-write-dirty-start</TT
+>相同。</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>wal-buffer-write-dirty-start</TT
+></TD
+><TD
+><TT
+CLASS="LITERAL"
+>()</TT
+></TD
+><TD
+>当一个服务器进程因为没有可用 WAL 缓冲区空间开始写一个脏 WAL 缓冲区时触发的探针（如果这经常发生，表示<A
+HREF="runtime-config-wal.html#GUC-WAL-BUFFERS"
+>wal_buffers</A
+>太小）。</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>wal-buffer-write-dirty-done</TT
+></TD
+><TD
+><TT
+CLASS="LITERAL"
+>()</TT
+></TD
+><TD
+>当一次脏 WAL 缓冲区完成时触发的探针。</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>xlog-insert</TT
+></TD
+><TD
+><TT
+CLASS="LITERAL"
+>(unsigned char, unsigned char)</TT
+></TD
+><TD
+>当一个 WAL 记录被插入时触发的探针。arg0 是该记录的资源管理者（rmid）。arg1 包含 info 标志。</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>xlog-switch</TT
+></TD
+><TD
+><TT
+CLASS="LITERAL"
+>()</TT
+></TD
+><TD
+>当请求一次 WAL 段切换时触发的探针。</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>smgr-md-read-start</TT
+></TD
+><TD
+><TT
+CLASS="LITERAL"
+>(ForkNumber, BlockNumber, Oid, Oid, Oid, int)</TT
+></TD
+><TD
+>当开始从一个关系读取一块时触发的探针。arg0 和 arg1 包含该页的分叉号和块号。arg2、arg3 和 arg4 包含表空间、数据库和关系 OID 用以识别该关系。对一个本地缓冲区，arg5 是创建临时关系的后端的 ID；对于一个共享缓冲区，arg5 是<TT
+CLASS="SYMBOL"
+>InvalidBackendId</TT
+>（-1）。</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>smgr-md-read-done</TT
+></TD
+><TD
+><TT
+CLASS="LITERAL"
+>(ForkNumber, BlockNumber, Oid, Oid, Oid, int, int, int)</TT
+></TD
+><TD
+>当一次块读取完成时触发的探针。arg0 和 arg1 包含该页的分叉号和块号。arg2、arg3 和 arg4 包含表空间、数据库和关系 OID 用以识别该关系。对一个本地缓冲区，arg5 是创建临时关系的后端的 ID；对于一个共享缓冲区，arg5 是<TT
+CLASS="SYMBOL"
+>InvalidBackendId</TT
+>（-1）。arg6 是实际读取的字节数，而 arg7 是请求读取的字节数（如果两者不同就意味着麻烦）。</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>smgr-md-write-start</TT
+></TD
+><TD
+><TT
+CLASS="LITERAL"
+>(ForkNumber, BlockNumber, Oid, Oid, Oid, int)</TT
+></TD
+><TD
+>当开始向一个关系中写入一个块时触发的探针。arg0 和 arg1 包含该页的分叉号和块号。arg2、arg3 和 arg4 包含表空间、数据库和关系 OID 用以识别该关系。对一个本地缓冲区，arg5 是创建临时关系的后端的 ID；对于一个共享缓冲区，arg5 是<TT
+CLASS="SYMBOL"
+>InvalidBackendId</TT
+>（-1）。</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>smgr-md-write-done</TT
+></TD
+><TD
+><TT
+CLASS="LITERAL"
+>(ForkNumber, BlockNumber, Oid, Oid, Oid, int, int, int)</TT
+></TD
+><TD
+>当一个块写操作完成时触发的探针。arg0 和 arg1 包含该页的分叉号和块号。arg2、arg3和arg4 包含表空间、数据库和关系 OID来标识该关系。对于一个本地缓冲区，arg5 是创建临时关系的后端 ID；对于一个共享缓冲区，arg5 是<TT
+CLASS="SYMBOL"
+>InvalidBackendId</TT
+>（-1）。arg6 是实际写的字节数，而 arg7 是要求写的字节数（如果这两者不同，则意味着麻烦）。</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>sort-start</TT
+></TD
+><TD
+><TT
+CLASS="LITERAL"
+>(int, bool, int, int, bool)</TT
+></TD
+><TD
+>当一次排序操作开始时触发的探针。arg0 指示是堆排序、索引排序或数据排序。arg1 为真表示唯一值强制。arg2 是键列的数目。arg3 是允许使用的工作内存数（以千字节计）。如果要求随机访问排序结果，那么 arg4 为真。</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>sort-done</TT
+></TD
+><TD
+><TT
+CLASS="LITERAL"
+>(bool, long)</TT
+></TD
+><TD
+>当一次排序完成时触发的探针。arg0 为真表示外排序，为假表示内排序。arg1 是用于一次外排序的磁盘块的数目，或用于一次内排序的以千字节计的内存。</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>lwlock-acquire</TT
+></TD
+><TD
+><TT
+CLASS="LITERAL"
+>(char *, int, LWLockMode)</TT
+></TD
+><TD
+>当成功获得一个 LWLock 时触发的探针。
+      arg0 是该 LWLock 所在的切片（Tranche）。
+      arg1 是该 LWLock 在其所在切片中的偏移量。
+      arg2 所请求的锁模式，是排他或共享。</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>lwlock-release</TT
+></TD
+><TD
+><TT
+CLASS="LITERAL"
+>(char *, int)</TT
+></TD
+><TD
+>当一个 LWLock 被释放时（但是注意还没有唤醒任何一个被释放的等待者）触发的探针。
+     arg0 是该 LWLock 所在的切片（Tranche）。
+     arg1 是该 LWLock 在其所在切片中的偏移量。</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>lwlock-wait-start</TT
+></TD
+><TD
+><TT
+CLASS="LITERAL"
+>(char *, int, LWLockMode)</TT
+></TD
+><TD
+>当一个 LWLock不是当即可用并且一个服务器进程因此开始等待该锁变为可用时触发的探针。
+     arg0 是该 LWLock 所在的切片（Tranche）。
+      arg1 是该 LWLock 在其所在切片中的偏移量。
+      arg2 所请求的锁模式，是排他或共享。</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>lwlock-wait-done</TT
+></TD
+><TD
+><TT
+CLASS="LITERAL"
+>(char *, int, LWLockMode)</TT
+></TD
+><TD
+>当一个进程从对一个 LWLock 的等待中被释放时（它实际还没有得到该锁）时触发的探针。arg0 是该 LWLock 所在的切片（Tranche）。
+      arg1 是该 LWLock 在其所在切片中的偏移量。
+      arg2 所请求的锁模式，是排他或共享。</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>lwlock-condacquire</TT
+></TD
+><TD
+><TT
+CLASS="LITERAL"
+>(char *, int, LWLockMode)</TT
+></TD
+><TD
+>当调用者指定无需等待而成功获得一个 LWLock 时触发的探针。arg0 是该 LWLock 所在的切片（Tranche）。
+      arg1 是该 LWLock 在其所在切片中的偏移量。
+      arg2 所请求的锁模式，是排他或共享。</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>lwlock-condacquire-fail</TT
+></TD
+><TD
+><TT
+CLASS="LITERAL"
+>(char *, int, LWLockMode)</TT
+></TD
+><TD
+>当调用者指定无需等待而没有成功获得一个 LWLock 时触发的探针。arg0 是该 LWLock 所在的切片（Tranche）。
+      arg1 是该 LWLock 在其所在切片中的偏移量。
+      arg2 所请求的锁模式，是排他或共享。</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>lock-wait-start</TT
+></TD
+><TD
+><TT
+CLASS="LITERAL"
+>(unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, LOCKMODE)</TT
+></TD
+><TD
+>当一个重量级锁（lmgr锁）的请求由于锁不可用开始等待时触发的探针。arg0 到 arg3 是标识被锁定对象的标签域。arg4 指示被锁对象的类型。arg5 表示被请求的锁类型。</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>lock-wait-done</TT
+></TD
+><TD
+><TT
+CLASS="LITERAL"
+>(unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, LOCKMODE)</TT
+></TD
+><TD
+>当一个重量级锁（lmgr 锁）的请求结束等待时（即已经得到锁）触发的探针。参数与<TT
+CLASS="LITERAL"
+>lock-wait-start</TT
+>一样。</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>deadlock-found</TT
+></TD
+><TD
+><TT
+CLASS="LITERAL"
+>()</TT
+></TD
+><TD
+>当死锁检测器发现死锁时触发的探针。</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+><DIV
+CLASS="TABLE"
+><A
+NAME="TYPEDEFS-TABLE"
+></A
+><P
+><B
+>&#34920; 28-23. 定义用在探针参数中的类型</B
+></P
+><TABLE
+BORDER="1"
+CLASS="CALSTABLE"
+><COL><COL><THEAD
+><TR
+><TH
+>类型</TH
+><TH
+>定义</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+><TT
+CLASS="TYPE"
+>LocalTransactionId</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>unsigned int</TT
+></TD
+></TR
+><TR
+><TD
+><TT
+CLASS="TYPE"
+>LWLockMode</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>int</TT
+></TD
+></TR
+><TR
+><TD
+><TT
+CLASS="TYPE"
+>LOCKMODE</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>int</TT
+></TD
+></TR
+><TR
+><TD
+><TT
+CLASS="TYPE"
+>BlockNumber</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>unsigned int</TT
+></TD
+></TR
+><TR
+><TD
+><TT
+CLASS="TYPE"
+>Oid</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>unsigned int</TT
+></TD
+></TR
+><TR
+><TD
+><TT
+CLASS="TYPE"
+>ForkNumber</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>int</TT
+></TD
+></TR
+><TR
+><TD
+><TT
+CLASS="TYPE"
+>bool</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>char</TT
+></TD
+></TR
+></TBODY
+></TABLE
+></DIV
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="USING-TRACE-POINTS"
+>28.5.3. 使用探针</A
+></H2
+><P
+>   下面的例子展示了一个分析系统中事务计数的 DTrace 脚本，可以用来代替一次性能测试之前和之后的<TT
+CLASS="STRUCTNAME"
+>pg_stat_database</TT
+>快照：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>#!/usr/sbin/dtrace -qs
+
+postgresql$1:::transaction-start
+{
+      @start["Start"] = count();
+      self-&#62;ts  = timestamp;
+}
+
+postgresql$1:::transaction-abort
+{
+      @abort["Abort"] = count();
+}
+
+postgresql$1:::transaction-commit
+/self-&#62;ts/
+{
+      @commit["Commit"] = count();
+      @time["Total time (ns)"] = sum(timestamp - self-&#62;ts);
+      self-&#62;ts=0;
+}</PRE
+><P>
+   当被执行时，该例子 D 脚本给出这样的输出：
+</P><PRE
+CLASS="SCREEN"
+># ./txn_count.d `pgrep -n postgres` or ./txn_count.d &lt;PID&gt;
+^C
+
+Start                                          71
+Commit                                         70
+Total time (ns)                        2312105013</PRE
+><P>
+  </P
+><DIV
+CLASS="NOTE"
+><BLOCKQUOTE
+CLASS="NOTE"
+><P
+><B
+>&#27880;&#24847;: </B
+>    SystemTap 为追踪脚本使用一个不同于 DTrace 的标记，但是底层的探针是兼容的。值得注意的是，在这样写的时候，SystemTap 脚本必须使用双下划线代替连字符来引用探针名。在未来的 SystemTap 发行中这很可能会被修复。
+   </P
+></BLOCKQUOTE
+></DIV
+><P
+>   你应该记住，DTrace 脚本需要细心地编写和调试，否则被收集的追踪信息可能会毫无意义。在大部分发现问题的情况中，它就是发生问题的部件，而不是底层系统。当讨论使用动态追踪发现的信息时，一定要封闭使用的脚本来允许这些以便被检查和讨论。
+  </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="DEFINING-TRACE-POINTS"
+>28.5.4. 定义新探针</A
+></H2
+><P
+>   开发者可以在代码中任意位置定义新的探针，当然这要重新编译之后才能生效。下面是插入新探针的步骤：
+  </P
+><DIV
+CLASS="PROCEDURE"
+><OL
+TYPE="1"
+><LI
+CLASS="STEP"
+><P
+>     决定探针名称以及探针可用的数据
+    </P
+></LI
+><LI
+CLASS="STEP"
+><P
+>     把该探针定义加入到<TT
+CLASS="FILENAME"
+>src/backend/utils/probes.d</TT
+>
+    </P
+></LI
+><LI
+CLASS="STEP"
+><P
+>     如果<TT
+CLASS="FILENAME"
+>pg_trace.h</TT
+>还不存在于包含该探针点的模块中，包括它，并且在源代码中期望的位置插入<TT
+CLASS="LITERAL"
+>TRACE_POSTGRESQL</TT
+>探针宏
+    </P
+></LI
+><LI
+CLASS="STEP"
+><P
+>     重新编译并验证新探针是可用的
+    </P
+></LI
+></OL
+></DIV
+><DIV
+CLASS="FORMALPARA"
+><P
+><B
+>例子：. </B
+>    这里是一个如何增加一个探针来用事务 ID 追踪所有新事务的例子。
+   </P
+></DIV
+><DIV
+CLASS="PROCEDURE"
+><OL
+TYPE="1"
+><LI
+CLASS="STEP"
+><P
+>     决定探针将被命名为<TT
+CLASS="LITERAL"
+>transaction-start</TT
+>并且需要一个<TT
+CLASS="TYPE"
+>LocalTransactionId</TT
+>类型的参数
+    </P
+></LI
+><LI
+CLASS="STEP"
+><P
+>     将该探针定义加入到<TT
+CLASS="FILENAME"
+>src/backend/utils/probes.d</TT
+>：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>probe transaction__start(LocalTransactionId);</PRE
+><P>
+     注意探针名字中双下划线的使用。在一个使用探针的 DTrace 脚本中，双下划线需要被替换为一个连字符，因此 ，对用户而言<TT
+CLASS="LITERAL"
+>transaction-start</TT
+>是文档名。
+    </P
+></LI
+><LI
+CLASS="STEP"
+><P
+>     在编译时，<TT
+CLASS="LITERAL"
+>transaction__start</TT
+>被转换成一个宏调用<TT
+CLASS="LITERAL"
+>TRACE_POSTGRESQL_TRANSACTION_START</TT
+>（注意这里是单下划线），可以通过包括头文件<TT
+CLASS="FILENAME"
+>pg_trace.h</TT
+>获得。将宏调用加入到源代码中的合适位置。在这种情况下，看起来类似：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>TRACE_POSTGRESQL_TRANSACTION_START(vxid.localTransactionId);</PRE
+><P>
+    </P
+></LI
+><LI
+CLASS="STEP"
+><P
+>     在重新编译和运行新的二进制文件之后，通过运行下面的 DTrace 命令来检查新增的探针是否可用。你应该看到类似下面的输出：
+</P><PRE
+CLASS="SCREEN"
+># dtrace -ln transaction-start
+   ID    PROVIDER          MODULE           FUNCTION NAME
+18705 postgresql49878     postgres     StartTransactionCommand transaction-start
+18755 postgresql49877     postgres     StartTransactionCommand transaction-start
+18805 postgresql49876     postgres     StartTransactionCommand transaction-start
+18855 postgresql49875     postgres     StartTransactionCommand transaction-start
+18986 postgresql49873     postgres     StartTransactionCommand transaction-start</PRE
+><P>
+    </P
+></LI
+></OL
+></DIV
+><P
+>   向C代码中添加追踪宏时，有一些事情需要注意：
+
+   <P
+></P
+></P><UL
+><LI
+><P
+>      需要小心的是，为探针参数指定的数据类型要匹配宏中使用的变量的数据类型，否则会发生编译错误。
+     </P
+></LI
+><LI
+><P
+>      在大多数平台上，如果用<TT
+CLASS="OPTION"
+>--enable-dtrace</TT
+>编译了<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>，无论何时当控制经过一个追踪宏时，都会评估该宏的参数，<SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>即使没有进行追踪也会这样做</I
+></SPAN
+>。通常不需要担心你是否只在报告一些局部变量的值。但要注意将开销大的函数调用放置在这些参数中。如果你需要这样做，考虑通过检查追踪是否真的被启用来保护该宏：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>if (TRACE_POSTGRESQL_TRANSACTION_START_ENABLED())
+    TRACE_POSTGRESQL_TRANSACTION_START(some_function(...));</PRE
+><P>
+
+      每个追踪宏有一个对应的<TT
+CLASS="LITERAL"
+>ENABLED</TT
+>宏。
+     </P
+></LI
+></UL
+><P>
+
+  </P
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="progress-reporting.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="diskusage.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>进度报告</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="monitoring.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>监控磁盘使用</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

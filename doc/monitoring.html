@@ -1,0 +1,281 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>监控数据库活动</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="服务器管理"
+HREF="admin.html"><LINK
+REL="PREVIOUS"
+TITLE="后备服务器设置"
+HREF="standby-settings.html"><LINK
+REL="NEXT"
+TITLE="标准 Unix 工具"
+HREF="monitoring-ps.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="CHAPTER"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/monitoring.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="后备服务器设置"
+HREF="standby-settings.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="admin.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="标准 Unix 工具"
+HREF="monitoring-ps.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="CHAPTER"
+><H1
+><A
+NAME="MONITORING"
+></A
+>&#31456; 28. 监控数据库活动</H1
+><DIV
+CLASS="TOC"
+><DL
+><DT
+><B
+>&#30446;&#24405;</B
+></DT
+><DT
+>28.1. <A
+HREF="monitoring-ps.html"
+>标准 Unix 工具</A
+></DT
+><DT
+>28.2. <A
+HREF="monitoring-stats.html"
+>统计收集器</A
+></DT
+><DD
+><DL
+><DT
+>28.2.1. <A
+HREF="monitoring-stats.html#MONITORING-STATS-SETUP"
+>统计收集配置</A
+></DT
+><DT
+>28.2.2. <A
+HREF="monitoring-stats.html#MONITORING-STATS-VIEWS"
+>查看统计信息</A
+></DT
+><DT
+>28.2.3. <A
+HREF="monitoring-stats.html#MONITORING-STATS-FUNCTIONS"
+>统计函数</A
+></DT
+></DL
+></DD
+><DT
+>28.3. <A
+HREF="monitoring-locks.html"
+>查看锁</A
+></DT
+><DT
+>28.4. <A
+HREF="progress-reporting.html"
+>进度报告</A
+></DT
+><DT
+>28.5. <A
+HREF="dynamic-trace.html"
+>动态追踪</A
+></DT
+><DD
+><DL
+><DT
+>28.5.1. <A
+HREF="dynamic-trace.html#COMPILING-FOR-TRACE"
+>动态追踪的编译</A
+></DT
+><DT
+>28.5.2. <A
+HREF="dynamic-trace.html#TRACE-POINTS"
+>内建探针</A
+></DT
+><DT
+>28.5.3. <A
+HREF="dynamic-trace.html#USING-TRACE-POINTS"
+>使用探针</A
+></DT
+><DT
+>28.5.4. <A
+HREF="dynamic-trace.html#DEFINING-TRACE-POINTS"
+>定义新探针</A
+></DT
+></DL
+></DD
+></DL
+></DIV
+><P
+>  一个数据库管理员常常会疑惑，<SPAN
+CLASS="QUOTE"
+>"系统现在正在做什么？"</SPAN
+>这一章会讨论如何搞清楚这个问题。
+ </P
+><P
+>   一些工具可以用来监控数据库活动并且分析性能。这一章的大部分都致力于描述<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>的统计收集器，但是我们也不能忽视常规的 Unix 监控程序，如<TT
+CLASS="COMMAND"
+>ps</TT
+>、<TT
+CLASS="COMMAND"
+>top</TT
+>、<TT
+CLASS="COMMAND"
+>iostat</TT
+>和<TT
+CLASS="COMMAND"
+>vmstat</TT
+>。另外，一旦我们发现了一个性能差的查询，可能需要<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>的<A
+HREF="sql-explain.html"
+>EXPLAIN</A
+>命令来进行进一步的调查。<A
+HREF="using-explain.html"
+>第 14.1 &#33410;</A
+>会讨论<TT
+CLASS="COMMAND"
+>EXPLAIN</TT
+>以及其他用来理解个体查询行为的方法。
+  </P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="standby-settings.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="monitoring-ps.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>后备服务器设置</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="admin.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>标准 Unix 工具</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

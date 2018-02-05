@@ -1,0 +1,284 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>使用SSH隧道的安全 TCP/IP 连接</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="服务器设置和操作"
+HREF="runtime.html"><LINK
+REL="PREVIOUS"
+TITLE="用 SSL 进行安全的 TCP/IP 连接"
+HREF="ssl-tcp.html"><LINK
+REL="NEXT"
+TITLE="在Windows上注册Event Log"
+HREF="event-log-registration.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/runtime.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="用 SSL 进行安全的 TCP/IP 连接"
+HREF="ssl-tcp.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="runtime.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#31456; 18. 服务器设置和操作</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="在Windows上注册Event Log"
+HREF="event-log-registration.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="SSH-TUNNELS"
+>18.10. 使用<SPAN
+CLASS="APPLICATION"
+>SSH</SPAN
+>隧道的安全 TCP/IP 连接</A
+></H1
+><P
+>   可以使用<SPAN
+CLASS="APPLICATION"
+>SSH</SPAN
+>来加密客户端和<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>服务器之间的网络连接。如果处理得当，这将提供一个足够安全的网络连接，即使是对那些无 SSL 能力的客户端。
+  </P
+><P
+>   首先确认在<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>服务器的同一台机器上正确运行着一个<SPAN
+CLASS="APPLICATION"
+>SSH</SPAN
+>服务器，并且你可以使用<TT
+CLASS="COMMAND"
+>ssh</TT
+>作为某个用户登入。然后你可以从客户端机器采用下面这种形式的命令建立一个安全的隧道：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>ssh -L 63333:localhost:5432 joe@foo.com</PRE
+><P>
+   <TT
+CLASS="OPTION"
+>-L</TT
+>参数中的第一个数（63333）是隧道在你那一端的端口号，它可以是任意未用过的端口（IANA 把端口 49152 到 65535 保留为个人使用）。第二个数（5432）是隧道的远端：你的服务器所使用的端口号。在端口号之间的名字或 IP 地址是你准备连接的数据库服务器的主机，至于你是从哪个主机登入的，在这个例子中则由<TT
+CLASS="LITERAL"
+>foo.com</TT
+>表示。为了使用这个隧道连接到数据库服务器，你在本地机器上连接到端口 63333：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>psql -h localhost -p 63333 postgres</PRE
+><P>
+   对于数据库服务器，在这个环境中它将把你看做是连接到<TT
+CLASS="LITERAL"
+>localhost</TT
+>的主机<TT
+CLASS="LITERAL"
+>foo.com</TT
+>上的真实用户<TT
+CLASS="LITERAL"
+>joe</TT
+>，并且它会使用被配置用于来自这个用户和主机的连接的认证过程。注意服务器将不会认为连接是 SSL 加密的，因为事实上<SPAN
+CLASS="APPLICATION"
+>SSH</SPAN
+>服务器和<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>服务器之间没有加密。只要它们在同一台机器上，这就不会造成任何额外的安全风险。
+  </P
+><P
+>   为了让隧道设置成功，你必须允许通过<TT
+CLASS="COMMAND"
+>ssh</TT
+>作为<TT
+CLASS="LITERAL"
+>joe@foo.com</TT
+>连接，就像你已经尝试使用<TT
+CLASS="COMMAND"
+>ssh</TT
+>来创建一个终端会话。
+  </P
+><P
+>   你应当也已经设定好了端口转发：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>ssh -L 63333:foo.com:5432 joe@foo.com</PRE
+><P>
+   但是数据库服务器则将会看到连接从它的<TT
+CLASS="LITERAL"
+>foo.com</TT
+>接口进来，它没有被默认设置<TT
+CLASS="LITERAL"
+>listen_addresses = 'localhost'</TT
+>所打开。这通常不是你想要的。
+  </P
+><P
+>   如果你必须通过某个登录主机<SPAN
+CLASS="QUOTE"
+>"跳"</SPAN
+>到数据库服务器，一个可能的设置看起来像：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>ssh -L 63333:db.foo.com:5432 joe@shell.foo.com</PRE
+><P>
+   注意这种从<TT
+CLASS="LITERAL"
+>shell.foo.com</TT
+>到<TT
+CLASS="LITERAL"
+>db.foo.com</TT
+>的连接的方法将不会被 SSH 隧道加密。当网络被限制于各种方法时，SSH 提供了相当多的配置可能性。详情请参考 SSH 的文档。
+  </P
+><DIV
+CLASS="TIP"
+><BLOCKQUOTE
+CLASS="TIP"
+><P
+><B
+>&#25552;&#31034;: </B
+>    一些其他的应用可以提供安全隧道，它们使用和刚刚描述的 SSH 概念上相似的过程。
+   </P
+></BLOCKQUOTE
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="ssl-tcp.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="event-log-registration.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>用 SSL 进行安全的 TCP/IP 连接</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="runtime.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>在<SPAN
+CLASS="SYSTEMITEM"
+>Windows</SPAN
+>上注册<SPAN
+CLASS="APPLICATION"
+>Event Log</SPAN
+></TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

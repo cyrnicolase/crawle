@@ -1,0 +1,873 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>pg_recvlogical</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="PostgreSQL 客户端应用"
+HREF="reference-client.html"><LINK
+REL="PREVIOUS"
+TITLE="pg_receivexlog"
+HREF="app-pgreceivexlog.html"><LINK
+REL="NEXT"
+TITLE="pg_restore"
+HREF="app-pgrestore.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="REFENTRY"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/ref/pg_recvlogical.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="pg_receivexlog"
+HREF="app-pgreceivexlog.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="reference-client.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="pg_restore"
+HREF="app-pgrestore.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="APP-PGRECVLOGICAL"
+></A
+><SPAN
+CLASS="APPLICATION"
+>pg_recvlogical</SPAN
+></H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN97337"
+></A
+><H2
+>&#21517;&#31216;</H2
+>pg_recvlogical&nbsp;--&nbsp;控制 <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+> 逻辑解码流</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN97341"
+></A
+><H2
+>&#22823;&#32434;</H2
+><P
+><TT
+CLASS="COMMAND"
+>pg_recvlogical</TT
+> [<TT
+CLASS="REPLACEABLE"
+><I
+>option</I
+></TT
+>...]</P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN97346"
+></A
+><H2
+>描述</H2
+><P
+>   <TT
+CLASS="COMMAND"
+>pg_recvlogical</TT
+>控制逻辑解码复制槽以及来自这种复制槽的流数据。
+  </P
+><P
+>   它会创建一个复制模式的连接，因此它受到和<A
+HREF="app-pgreceivexlog.html"
+>pg_receivexlog</A
+>
+   相同的约束，还有逻辑复制（<A
+HREF="logicaldecoding.html"
+>第 47 &#31456;</A
+>）的约束。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN97353"
+></A
+><H2
+>选项</H2
+><P
+>    必须至少要指定下列选项之一来选择一个动作：
+
+    <P
+></P
+></P><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="OPTION"
+>--create-slot</TT
+></DT
+><DD
+><P
+>        为<TT
+CLASS="OPTION"
+>--dbname</TT
+>指定的数据库用<TT
+CLASS="OPTION"
+>--slot</TT
+>
+        指定的名称创建一个新的逻辑复制槽，使用
+        <TT
+CLASS="OPTION"
+>--plugin</TT
+>指定的输出插件。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>--drop-slot</TT
+></DT
+><DD
+><P
+>        删除名称由<TT
+CLASS="OPTION"
+>--slot</TT
+>指定的复制槽，然后退出。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>--start</TT
+></DT
+><DD
+><P
+>        从<TT
+CLASS="OPTION"
+>--slot</TT
+>指定的逻辑复制槽开始进行流式传送更改，一直继续
+        到被一个信号终止。如果服务器端关机或者断开连接导致更改流结束，会进入一个
+        循环一直重试，通过指定<TT
+CLASS="OPTION"
+>--no-loop</TT
+>可以防止这种情况下进入
+        循环重试。
+       </P
+><P
+>        流格式由槽创建时指定的输出插件决定。
+       </P
+><P
+>        连接必须是连接到用于创建该槽的同一个数据库上。
+       </P
+></DD
+></DL
+></DIV
+><P>
+   </P
+><P
+>    <TT
+CLASS="OPTION"
+>--create-slot</TT
+>和<TT
+CLASS="OPTION"
+>--start</TT
+>可以被一起指定。
+    <TT
+CLASS="OPTION"
+>--drop-slot</TT
+>不能和另一个动作组合在一起。
+   </P
+><P
+>    下面的命令行选项控制输出的位置和格式以及其他复制行为：
+
+    <P
+></P
+></P><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="OPTION"
+>-f <TT
+CLASS="REPLACEABLE"
+><I
+>filename</I
+></TT
+></TT
+><BR><TT
+CLASS="OPTION"
+>--file=<TT
+CLASS="REPLACEABLE"
+><I
+>filename</I
+></TT
+></TT
+></DT
+><DD
+><P
+>        把接收到并且解码好的事务数据写入到一个文件。使用<TT
+CLASS="LITERAL"
+>-</TT
+>可以写到<SPAN
+CLASS="SYSTEMITEM"
+>stdout</SPAN
+>。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-F <TT
+CLASS="REPLACEABLE"
+><I
+>interval_seconds</I
+></TT
+></TT
+><BR><TT
+CLASS="OPTION"
+>--fsync-interval=<TT
+CLASS="REPLACEABLE"
+><I
+>interval_seconds</I
+></TT
+></TT
+></DT
+><DD
+><P
+>        指定<SPAN
+CLASS="APPLICATION"
+>pg_recvlogical</SPAN
+>发出
+        <CODE
+CLASS="FUNCTION"
+>fsync()</CODE
+>调用确保输出文件被安全地刷到磁盘的频度。
+       </P
+><P
+>        服务器将会偶尔要求客户端执行一次刷写并且把刷写位置报告给服务器。
+        这个设置可以在此之外更加频繁地执行刷写。
+       </P
+><P
+>        指定间隔为<TT
+CLASS="LITERAL"
+>0</TT
+>会完全禁止发出<CODE
+CLASS="FUNCTION"
+>fsync()</CODE
+>
+        调用，但是仍会报告进度给服务器。在这种情况下，发生崩溃会导致数据丢失。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-I <TT
+CLASS="REPLACEABLE"
+><I
+>lsn</I
+></TT
+></TT
+><BR><TT
+CLASS="OPTION"
+>--startpos=<TT
+CLASS="REPLACEABLE"
+><I
+>lsn</I
+></TT
+></TT
+></DT
+><DD
+><P
+>        在<TT
+CLASS="OPTION"
+>--start</TT
+>模式中，从给定的 LSN 开始复制。这个参数的
+        效果请见<A
+HREF="logicaldecoding.html"
+>第 47 &#31456;</A
+>和
+        <A
+HREF="protocol-replication.html"
+>第 51.3 &#33410;</A
+>中的文档。在其他模式中会忽略这个参数。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>--if-not-exists</TT
+></DT
+><DD
+><P
+>        当指定<TT
+CLASS="OPTION"
+>--create-slot</TT
+>并且具有指定名称
+        的槽已经存在时不要抛出错误。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-n</TT
+><BR><TT
+CLASS="OPTION"
+>--no-loop</TT
+></DT
+><DD
+><P
+>        当服务器连接丢失时，不要在循环中重试，直接退出。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-o <TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+>[=<TT
+CLASS="REPLACEABLE"
+><I
+>value</I
+></TT
+>]</TT
+><BR><TT
+CLASS="OPTION"
+>--option=<TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+>[=<TT
+CLASS="REPLACEABLE"
+><I
+>value</I
+></TT
+>]</TT
+></DT
+><DD
+><P
+>        如果指定了输出插件，把选项值<TT
+CLASS="REPLACEABLE"
+><I
+>value</I
+></TT
+>
+        传递给选项<TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+>。存在哪些选项以及它们的效果
+        取决于使用的输出插件。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-P <TT
+CLASS="REPLACEABLE"
+><I
+>plugin</I
+></TT
+></TT
+><BR><TT
+CLASS="OPTION"
+>--plugin=<TT
+CLASS="REPLACEABLE"
+><I
+>plugin</I
+></TT
+></TT
+></DT
+><DD
+><P
+>        在创建一个槽时使用指定的逻辑解码输出插件。
+        见<A
+HREF="logicaldecoding.html"
+>第 47 &#31456;</A
+>。如果该槽已经存在，这个选项没有效果。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-s <TT
+CLASS="REPLACEABLE"
+><I
+>interval_seconds</I
+></TT
+></TT
+><BR><TT
+CLASS="OPTION"
+>--status-interval=<TT
+CLASS="REPLACEABLE"
+><I
+>interval_seconds</I
+></TT
+></TT
+></DT
+><DD
+><P
+>        这个选项和<A
+HREF="app-pgreceivexlog.html"
+>pg_receivexlog</A
+>中的同名选项具有
+        相同的效果。请参考那里的描述。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-S <TT
+CLASS="REPLACEABLE"
+><I
+>slot_name</I
+></TT
+></TT
+><BR><TT
+CLASS="OPTION"
+>--slot=<TT
+CLASS="REPLACEABLE"
+><I
+>slot_name</I
+></TT
+></TT
+></DT
+><DD
+><P
+>        在<TT
+CLASS="OPTION"
+>--start</TT
+>模式中，使用名为<TT
+CLASS="REPLACEABLE"
+><I
+>slot_name</I
+></TT
+>
+        的已有逻辑复制槽。在<TT
+CLASS="OPTION"
+>--create-slot</TT
+>模式中，使用这个名称
+        创建该槽。在<TT
+CLASS="OPTION"
+>--drop-slot</TT
+>模式中，删除这个名称指定的槽。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-v</TT
+><BR><TT
+CLASS="OPTION"
+>--verbose</TT
+></DT
+><DD
+><P
+>        开启详细输出模式。
+       </P
+></DD
+></DL
+></DIV
+><P>
+   </P
+><P
+>    下列命令行选项控制数据库连接参数。
+ 
+    <P
+></P
+></P><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="OPTION"
+>-d <TT
+CLASS="REPLACEABLE"
+><I
+>database</I
+></TT
+></TT
+><BR><TT
+CLASS="OPTION"
+>--dbname=<TT
+CLASS="REPLACEABLE"
+><I
+>database</I
+></TT
+></TT
+></DT
+><DD
+><P
+>         要连接的数据库。这个选项的详细含义请见动作的描述。它可以是一个
+         <SPAN
+CLASS="APPLICATION"
+>libpq</SPAN
+>连接
+         字符串，详见<A
+HREF="libpq-connect.html#LIBPQ-CONNSTRING"
+>第 32.1.1 &#33410;</A
+>。默认为用户名。
+        </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-h <TT
+CLASS="REPLACEABLE"
+><I
+>hostname-or-ip</I
+></TT
+></TT
+><BR><TT
+CLASS="OPTION"
+>--host=<TT
+CLASS="REPLACEABLE"
+><I
+>hostname-or-ip</I
+></TT
+></TT
+></DT
+><DD
+><P
+>         指定服务器正在运行的机器的主机名。如果该值开始于一个斜线，
+         它被用作一个 Unix 域套接字的目录。默认是从
+         <TT
+CLASS="ENVAR"
+>PGHOST</TT
+>环境变量中取得（如果被设置），
+         否则将尝试一次 Unix 域套接字连接。
+        </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-p <TT
+CLASS="REPLACEABLE"
+><I
+>port</I
+></TT
+></TT
+><BR><TT
+CLASS="OPTION"
+>--port=<TT
+CLASS="REPLACEABLE"
+><I
+>port</I
+></TT
+></TT
+></DT
+><DD
+><P
+>         指定服务器正在监听连接的 TCP 端口或本地 Unix 域套接字文件扩展名。
+         默认是放在<TT
+CLASS="ENVAR"
+>PGPORT</TT
+>环境变量中（如果被设置），
+         否则使用编译在程序中的默认值。
+        </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-U <TT
+CLASS="REPLACEABLE"
+><I
+>user</I
+></TT
+></TT
+><BR><TT
+CLASS="OPTION"
+>--username=<TT
+CLASS="REPLACEABLE"
+><I
+>user</I
+></TT
+></TT
+></DT
+><DD
+><P
+>         要作为哪个用户连接。默认是用当前操作系统用户名。
+        </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-w</TT
+><BR><TT
+CLASS="OPTION"
+>--no-password</TT
+></DT
+><DD
+><P
+>         从不发出一个口令提示。如果服务器要求口令认证并且没有
+         其他方式提供口令（例如一个<TT
+CLASS="FILENAME"
+>.pgpass</TT
+>文件），
+         那么连接尝试将失败。这个选项对于批处理任务和脚本有用，
+         因为在其中没有一个用户来输入口令。
+        </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-W</TT
+><BR><TT
+CLASS="OPTION"
+>--password</TT
+></DT
+><DD
+><P
+>         强制<SPAN
+CLASS="APPLICATION"
+>pg_dump</SPAN
+>在连接到一个数据库之前提示要求一个口令。
+        </P
+><P
+>         这个选项不是必须的，因为如果服务器要求口令认证，
+         <SPAN
+CLASS="APPLICATION"
+>pg_dump</SPAN
+>将自动提示要求一个口令。
+         但是，<SPAN
+CLASS="APPLICATION"
+>pg_dump</SPAN
+>将浪费一次连接尝试
+         来发现服务器想要一个口令。在某些情况下，值得键入
+         <TT
+CLASS="OPTION"
+>-W</TT
+>来避免额外的连接尝试。
+        </P
+></DD
+></DL
+></DIV
+><P>
+   </P
+><P
+>    还有下列附加选项可用：
+
+    <P
+></P
+></P><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="OPTION"
+>-V</TT
+><BR><TT
+CLASS="OPTION"
+>--version</TT
+></DT
+><DD
+><P
+>        打印<SPAN
+CLASS="APPLICATION"
+>pg_recvlogical</SPAN
+>的版本并且退出。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-?</TT
+><BR><TT
+CLASS="OPTION"
+>--help</TT
+></DT
+><DD
+><P
+>         显示关于<SPAN
+CLASS="APPLICATION"
+>pg_recvlogical</SPAN
+>命令行参数的帮助，并且退出。
+        </P
+></DD
+></DL
+></DIV
+><P>
+   </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN97570"
+></A
+><H2
+>环境</H2
+><P
+>   和大部分其他<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>工具相似，这个工具也使用<SPAN
+CLASS="APPLICATION"
+>libpq</SPAN
+>（见<A
+HREF="libpq-envars.html"
+>第 32.14 &#33410;</A
+>）支持的环境变量。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN97576"
+></A
+><H2
+>例子</H2
+><P
+>   一个例子请见<A
+HREF="logicaldecoding-example.html"
+>第 47.1 &#33410;</A
+>。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN97580"
+></A
+><H2
+>另见</H2
+><A
+HREF="app-pgreceivexlog.html"
+>pg_receivexlog</A
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="app-pgreceivexlog.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="app-pgrestore.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>pg_receivexlog</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="reference-client.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>pg_restore</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

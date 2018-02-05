@@ -1,0 +1,343 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>外部数据包装器中的行锁定</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="编写一个外部数据包装器"
+HREF="fdwhandler.html"><LINK
+REL="PREVIOUS"
+TITLE="外部数据包装器查询规划"
+HREF="fdw-planning.html"><LINK
+REL="NEXT"
+TITLE="编写一种表采样方法"
+HREF="tablesample-method.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/fdwhandler.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="外部数据包装器查询规划"
+HREF="fdw-planning.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="fdwhandler.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#31456; 55. 编写一个外部数据包装器</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="编写一种表采样方法"
+HREF="tablesample-method.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="FDW-ROW-LOCKING"
+>55.5. 外部数据包装器中的行锁定</A
+></H1
+><P
+>     如果一个 FDW 的底层存储机制具有锁定行的概念来阻止对行的并发更新，通常值得 FDW 去执行行级锁定以尽可能接近在普通<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>表中所实际使用的语义。涉及这个问题有多种考虑。
+    </P
+><P
+>     要做出的一个关键决定是执行<I
+CLASS="FIRSTTERM"
+>早期锁定</I
+>还是<I
+CLASS="FIRSTTERM"
+>晚期锁定</I
+>。在早期锁定中，当一行被第一次从底层存储中检索到时，它会被锁定；而在晚期锁定中，只有当行需要被锁定时才锁定它（由于某些行可能被本地检查的限制或者连接条件抛弃，所以会出现不同）。早期锁定更加简单并且能避免额外地与远程存储交互，但是可能会导致一些不需要锁定的行也被锁定，最终造成并发性下降甚至意外的死锁。还有，只有在要被锁定的行可以在后期唯一地重新标识时才可以用晚期锁定。较好的行标识符应该能标识行的特定版本，就像<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+> TID 那样。
+    </P
+><P
+>     默认情况下，<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>在与 FDW 交互时会忽略锁定考虑，但是 FDW 可以在没有核心代码显式支持的情况下执行早期锁定。<A
+HREF="fdw-callbacks.html#FDW-CALLBACKS-ROW-LOCKING"
+>第 55.2.5 &#33410;</A
+>中描述的 API 函数（在<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+> 9.5 中加入）允许 FDW 按照意愿使用晚期锁定。
+    </P
+><P
+>     一个额外的考虑是在<TT
+CLASS="LITERAL"
+>READ COMMITTED</TT
+>隔离模式中，<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>可能需要对某个目标元组的更新版本进行限制以及连接条件的重新检查。重新检查连接条件要求重新获得之前连接成目标元组的非目标行拷贝。在标准<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>表的情况下，这可以通过在连接投影出的列列表中包括非目标表的 TID 并且在需要时重新取得非目标行来做到。这种方法可以让连接数据集保持紧凑，但是它要求代价较低的重新取得元组的功能，还有 TID 要能够唯一地标识要被重新取得的行版本。因此，默认情况下用于外部表的方法是将整个外部表元组的拷贝包括在从连接投影出的列列表中。这不会对 FDW 有特殊的要求，但是会导致归并和哈希连接性能下降。要满足重新取得元组需求的 FDW 可以选择第一种方式。
+    </P
+><P
+>     对于在外部表上的<TT
+CLASS="COMMAND"
+>UPDATE</TT
+>或者<TT
+CLASS="COMMAND"
+>DELETE</TT
+>，推荐目标表上的<TT
+CLASS="LITERAL"
+>ForeignScan</TT
+>操作在它取得的行上执行早期锁定（可能通过<TT
+CLASS="COMMAND"
+>SELECT FOR UPDATE</TT
+>的等效体）。通过在规划时比较一个表的 relid 和<TT
+CLASS="LITERAL"
+>root-&gt;parse-&gt;resultRelation</TT
+>或在执行时使用<CODE
+CLASS="FUNCTION"
+>ExecRelationIsTargetRelation()</CODE
+>，一个 FDW 可以检测该表是否为<TT
+CLASS="COMMAND"
+>UPDATE</TT
+>/<TT
+CLASS="COMMAND"
+>DELETE</TT
+>的目标。另一种可能性是在<CODE
+CLASS="FUNCTION"
+>ExecForeignUpdate</CODE
+>或者<CODE
+CLASS="FUNCTION"
+>ExecForeignDelete</CODE
+>回调中执行晚期锁定，但是对此没有特别的支持。
+    </P
+><P
+>     对于通过<TT
+CLASS="COMMAND"
+>SELECT FOR UPDATE/SHARE</TT
+>命令指定要被锁定的外部表，<TT
+CLASS="LITERAL"
+>ForeignScan</TT
+>操作同样可以通过用<TT
+CLASS="COMMAND"
+>SELECT FOR UPDATE/SHARE</TT
+>的等效体取元组来执行早期锁定。要执行晚期锁定，请提供<A
+HREF="fdw-callbacks.html#FDW-CALLBACKS-ROW-LOCKING"
+>第 55.2.5 &#33410;</A
+>中定义的回调函数。在<CODE
+CLASS="FUNCTION"
+>GetForeignRowMarkType</CODE
+>中，根据请求的锁长度来选择行标记选项<TT
+CLASS="LITERAL"
+>ROW_MARK_EXCLUSIVE</TT
+>、<TT
+CLASS="LITERAL"
+>ROW_MARK_NOKEYEXCLUSIVE</TT
+>、<TT
+CLASS="LITERAL"
+>ROW_MARK_SHARE</TT
+>或者<TT
+CLASS="LITERAL"
+>ROW_MARK_KEYSHARE</TT
+>（不管选择哪一种选项，核心代码都会做同样的事情）。在别的地方，可以在规划时用<CODE
+CLASS="FUNCTION"
+>get_plan_rowmark</CODE
+>或者在执行时用<CODE
+CLASS="FUNCTION"
+>ExecFindRowMark</CODE
+>来检测一个外部表是否被指定由这种类型的命令锁定。你必须不仅仅检测是否返回了一个非空的行标记结构，还要检测它的<TT
+CLASS="STRUCTFIELD"
+>strength</TT
+>域不是<TT
+CLASS="LITERAL"
+>LCS_NONE</TT
+>。
+    </P
+><P
+>     最后，对于在<TT
+CLASS="COMMAND"
+>UPDATE</TT
+>、<TT
+CLASS="COMMAND"
+>DELETE</TT
+>或者<TT
+CLASS="COMMAND"
+>SELECT FOR UPDATE/SHARE</TT
+>命令中使用但是没有被指定要行锁定的外部表，你可以在看到锁长度<TT
+CLASS="LITERAL"
+>LCS_NONE</TT
+>时通过使用<CODE
+CLASS="FUNCTION"
+>GetForeignRowMarkType</CODE
+>选择选项<TT
+CLASS="LITERAL"
+>ROW_MARK_REFERENCE</TT
+>来把默认选择覆盖为拷贝整个行。 这将导致用那个值作为<TT
+CLASS="STRUCTFIELD"
+>markType</TT
+>来调用<CODE
+CLASS="FUNCTION"
+>RefetchForeignRow</CODE
+>。它应该接着重新取得该行而不获取任何新锁（如果你有一个<CODE
+CLASS="FUNCTION"
+>GetForeignRowMarkType</CODE
+>函数，但是不想重新取未锁定的行，可为<TT
+CLASS="LITERAL"
+>LCS_NONE</TT
+>选择选项<TT
+CLASS="LITERAL"
+>ROW_MARK_COPY</TT
+>）。
+    </P
+><P
+>     更多信息可见<TT
+CLASS="FILENAME"
+>src/include/nodes/lockoptions.h</TT
+>，以及<TT
+CLASS="FILENAME"
+>src/include/nodes/plannodes.h</TT
+>中<TT
+CLASS="TYPE"
+>RowMarkType</TT
+>和<TT
+CLASS="TYPE"
+>PlanRowMark</TT
+>的注释，还有<TT
+CLASS="FILENAME"
+>src/include/nodes/execnodes.h</TT
+>中<TT
+CLASS="TYPE"
+>ExecRowMark</TT
+>的注释。
+    </P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="fdw-planning.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="tablesample-method.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>外部数据包装器查询规划</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="fdwhandler.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>编写一种表采样方法</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

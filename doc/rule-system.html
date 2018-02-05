@@ -1,0 +1,237 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>PostgreSQL规则系统</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="PostgreSQL内部概述"
+HREF="overview.html"><LINK
+REL="PREVIOUS"
+TITLE="分析器阶段"
+HREF="parser-stage.html"><LINK
+REL="NEXT"
+TITLE="规划器/优化器"
+HREF="planner-optimizer.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/arch-dev.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="分析器阶段"
+HREF="parser-stage.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="overview.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#31456; 49. PostgreSQL内部概述</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="规划器/优化器"
+HREF="planner-optimizer.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="RULE-SYSTEM"
+>49.4. <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>规则系统</A
+></H1
+><P
+>    <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>支持一个强大的 supports a powerful
+    <I
+CLASS="FIRSTTERM"
+>规则系统</I
+>用于支持<I
+CLASS="FIRSTTERM"
+>视图</I
+>说明和模糊不清的<I
+CLASS="FIRSTTERM"
+>视图更新</I
+>。本来<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>规则系统由两种实现组成：
+
+    <P
+></P
+></P><UL
+><LI
+><P
+>       第一种利用<I
+CLASS="FIRSTTERM"
+>行级</I
+>处理工作，并且被实现于<I
+CLASS="FIRSTTERM"
+>执行器</I
+>深层。当单独一行被访问时规则系统被调用。这种实现在1995年被移除，那时最后一个<SPAN
+CLASS="PRODUCTNAME"
+>Berkeley Postgres</SPAN
+>项目的官方发布被转换为<SPAN
+CLASS="PRODUCTNAME"
+>Postgres95</SPAN
+>。
+      </P
+></LI
+><LI
+><P
+>       第二种规则系统的实现是一种称为<I
+CLASS="FIRSTTERM"
+>查询重写</I
+>的技术。<I
+CLASS="FIRSTTERM"
+>重写系统</I
+>是一个存在于<I
+CLASS="FIRSTTERM"
+>分析器阶段</I
+>和<I
+CLASS="FIRSTTERM"
+>规划器/优化器</I
+>之间的模块。这种技术也被实现了。
+      </P
+></LI
+></UL
+><P>
+   </P
+><P
+>    更多关于查询重写器的讨论可见<A
+HREF="rules.html"
+>第 39 &#31456;</A
+>，因此没有必要在这里涉及这些内容。我们将仅指出重写器的输入和输出都是查询树，即在树的表现形式或语义细节层次上都没有改变。重写可以被看成是某种形式的宏扩展。
+   </P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="parser-stage.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="planner-optimizer.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>分析器阶段</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="overview.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>规划器/优化器</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

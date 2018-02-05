@@ -1,0 +1,795 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>DECLARE</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="SQL 命令"
+HREF="sql-commands.html"><LINK
+REL="PREVIOUS"
+TITLE="DEALLOCATE"
+HREF="sql-deallocate.html"><LINK
+REL="NEXT"
+TITLE="DELETE"
+HREF="sql-delete.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="REFENTRY"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/ref/declare.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="DEALLOCATE"
+HREF="sql-deallocate.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="DELETE"
+HREF="sql-delete.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="SQL-DECLARE"
+></A
+>DECLARE</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN84472"
+></A
+><H2
+>&#21517;&#31216;</H2
+>DECLARE&nbsp;--&nbsp;定义一个游标</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN84475"
+></A
+><H2
+>&#22823;&#32434;</H2
+><PRE
+CLASS="SYNOPSIS"
+>DECLARE <TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+> [ BINARY ] [ INSENSITIVE ] [ [ NO ] SCROLL ]
+    CURSOR [ { WITH | WITHOUT } HOLD ] FOR <TT
+CLASS="REPLACEABLE"
+><I
+>query</I
+></TT
+></PRE
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN84479"
+></A
+><H2
+>描述</H2
+><P
+>   <TT
+CLASS="COMMAND"
+>DECLARE</TT
+>允许用户创建游标，
+   游标可以被用来在大型查询暂停时检索少量的行。游标被创建后，
+   可以用<A
+HREF="sql-fetch.html"
+>FETCH</A
+>从中取得行。
+  </P
+><DIV
+CLASS="NOTE"
+><BLOCKQUOTE
+CLASS="NOTE"
+><P
+><B
+>&#27880;&#24847;: </B
+>    这个页面描述在 SQL 命令层面上游标的用法。如果想要在
+    <SPAN
+CLASS="APPLICATION"
+>PL/pgSQL</SPAN
+>函数中使用游标，其规则是不同的
+     &mdash; 详见<A
+HREF="plpgsql-cursors.html"
+>第 41.7 &#33410;</A
+>。
+   </P
+></BLOCKQUOTE
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN84488"
+></A
+><H2
+>参数</H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+></DT
+><DD
+><P
+>      要创建的游标的名称。
+     </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>BINARY</TT
+></DT
+><DD
+><P
+>      让游标返回二进制数据而不是返回文本格式数据。
+     </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>INSENSITIVE</TT
+></DT
+><DD
+><P
+>      指示从游标中检索数据的过程不受游标创建之后在其底层表上发生的更新的
+      影响。在<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>中，这是默认的
+      行为。因此这个关键词没有实际效果，仅仅被用于兼容 SQL 标准。
+     </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>SCROLL</TT
+><BR><TT
+CLASS="LITERAL"
+>NO SCROLL</TT
+></DT
+><DD
+><P
+><TT
+CLASS="LITERAL"
+>SCROLL</TT
+>指定游标可以用非顺序（例如，反向）
+     的方式从中检索行。根据查询的执行计划的复杂度，指定
+     <TT
+CLASS="LITERAL"
+>SCROLL</TT
+>可能导致查询执行时间上的性能损失。
+      <TT
+CLASS="LITERAL"
+>NO SCROLL</TT
+>指定游标不能以非顺序的方式从中检索
+      行。默认是允许在某些情况下滚动，但这和指定
+      <TT
+CLASS="LITERAL"
+>SCROLL</TT
+>不完全相同。详情请见
+      <A
+HREF="sql-declare.html#SQL-DECLARE-NOTES"
+><I
+>注解</I
+></A
+>。
+     </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>WITH HOLD</TT
+><BR><TT
+CLASS="LITERAL"
+>WITHOUT HOLD</TT
+></DT
+><DD
+><P
+><TT
+CLASS="LITERAL"
+>WITH HOLD</TT
+>指定该游标在创建它的事务提交
+     之后还能被继续使用。<TT
+CLASS="LITERAL"
+>WITHOUT HOLD</TT
+>指定该游标
+     不能在创建它的事务之外使用。如果两者都没有指定，则默认为
+     <TT
+CLASS="LITERAL"
+>WITHOUT HOLD</TT
+>。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>query</I
+></TT
+></DT
+><DD
+><P
+>      用于提供该游标返回的行的<A
+HREF="sql-select.html"
+>SELECT</A
+>或者
+      <A
+HREF="sql-values.html"
+>VALUES</A
+>命令。
+     </P
+></DD
+></DL
+></DIV
+><P
+>   关键词<TT
+CLASS="LITERAL"
+>BINARY</TT
+>、
+   <TT
+CLASS="LITERAL"
+>INSENSITIVE</TT
+>和<TT
+CLASS="LITERAL"
+>SCROLL</TT
+>
+   可以以任意顺序出现。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="SQL-DECLARE-NOTES"
+></A
+><H2
+>注解</H2
+><P
+>   普通游标以文本格式返回数据，这和<TT
+CLASS="COMMAND"
+>SELECT</TT
+>产生的数据一样。
+   <TT
+CLASS="LITERAL"
+>BINARY</TT
+>选项指定游标应该以二进制格式返回数据。这减少了服务
+   器和客户端的转换负担，但程序员需要付出更多工作来处理与平台相关的二进制
+   数据格式。例如，如果一个查询从一个整数列中返回一个值一，用一个默认游标
+   将得到一个字符串<TT
+CLASS="LITERAL"
+>1</TT
+>，而使用一个二进制游标将得到该值的四字节
+   内部表示（big-endian 大端字节顺序）。
+  </P
+><P
+>   使用二进制游标时应该小心。很多应用（包括
+   <SPAN
+CLASS="APPLICATION"
+>psql</SPAN
+>）还没有准备好处理二进制游标，
+   它们仍然期待数据以文本格式到来。
+  </P
+><DIV
+CLASS="NOTE"
+><BLOCKQUOTE
+CLASS="NOTE"
+><P
+><B
+>&#27880;&#24847;: </B
+>    当客户端应用使用<SPAN
+CLASS="QUOTE"
+>"扩展查询"</SPAN
+>协议发出一个
+    <TT
+CLASS="COMMAND"
+>FETCH</TT
+>命令，绑定协议消息会指定使用文本还是
+    二进制格式检索数据。这种选择会覆盖定义游标时指定的方式。因此
+    在使用扩展查询协议时，这样一个二进制游标的概念实际是被废弃的
+    &mdash; 任何游标都可以被视作文本或者二进制。
+   </P
+></BLOCKQUOTE
+></DIV
+><P
+>    除非指定了<TT
+CLASS="LITERAL"
+>WITH HOLD</TT
+>，这个命令创建的游标
+    只能在当前事务中使用。因此，没有<TT
+CLASS="LITERAL"
+>WITH HOLD</TT
+>
+    的<TT
+CLASS="COMMAND"
+>DECLARE</TT
+>在事务块外是没有用的：游标只会生存
+    到该语句结束。因此如果这种命令在事务块之外被使用，
+    <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>会报告一个错误。
+    定义事务块需要使用<A
+HREF="sql-begin.html"
+>BEGIN</A
+>和
+    <A
+HREF="sql-commit.html"
+>COMMIT</A
+>（或者<A
+HREF="sql-rollback.html"
+>ROLLBACK</A
+>）。
+   </P
+><P
+>    如果指定了<TT
+CLASS="LITERAL"
+>WITH HOLD</TT
+>并且创建游标的事务
+    成功提交，在同一个会话中的后续事务中还能够继续访问该游标（
+    但是如果创建事务被中止，游标会被移除）。一个用
+    <TT
+CLASS="LITERAL"
+>WITH HOLD</TT
+>创建的游标可以用一个显式的
+    <TT
+CLASS="COMMAND"
+>CLOSE</TT
+>命令关闭，或者会话结束时它
+    也会被关闭。在当前的实现中，由一个被保持游标表示的行会被复
+    制到一个临时文件或者内存区域中，这样它们才会在后续事务中保
+    持可用。
+   </P
+><P
+>    当查询包括<TT
+CLASS="LITERAL"
+>FOR UPDATE</TT
+>或<TT
+CLASS="LITERAL"
+>FOR SHARE</TT
+>时，
+    不能指定<TT
+CLASS="LITERAL"
+>WITH HOLD</TT
+>。
+   </P
+><P
+>    在定义一个将被反向取元组的游标时，应该指定<TT
+CLASS="LITERAL"
+>SCROLL</TT
+>
+    选项。这是 SQL 标准所要求的。不过，为了和早期版本兼容，
+    如果游标的查询计划足够简单到支持它不需要额外的开销，
+    <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>会允许在没有
+    <TT
+CLASS="LITERAL"
+>SCROLL</TT
+>的情况下反向取元组。不过，建议应用开发者
+    不要依赖于从没有用<TT
+CLASS="LITERAL"
+>SCROLL</TT
+>创建的游标中反向取
+    元组。如果指定了<TT
+CLASS="LITERAL"
+>NO SCROLL</TT
+>，那么任何情况下都不
+    允许反向取元组。
+   </P
+><P
+>    当查询包括<TT
+CLASS="LITERAL"
+>FOR UPDATE</TT
+>或<TT
+CLASS="LITERAL"
+>FOR SHARE</TT
+>时，
+    也不允许反向取元组。因此在这种情况下不能指定
+    <TT
+CLASS="LITERAL"
+>SCROLL</TT
+>。
+   </P
+><DIV
+CLASS="CAUTION"
+><P
+></P
+><TABLE
+CLASS="CAUTION"
+BORDER="1"
+WIDTH="100%"
+><TR
+><TD
+ALIGN="CENTER"
+><B
+>&#23567;&#24515;</B
+></TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+><P
+>     如果可滚动和<TT
+CLASS="LITERAL"
+>WITH HOLD</TT
+>游标调用了任何不稳定的
+     函数（见<A
+HREF="xfunc-volatility.html"
+>第 36.6 &#33410;</A
+>），它们可能给出预期之外
+     的结果。当重新取得一个之前取得过的行时，那些函数会被重新执行，这
+     可能导致得到与第一次不同的结果。对这类情况的一种变通方法是，声明
+     游标为<TT
+CLASS="LITERAL"
+>WITH HOLD</TT
+>并且在从其中读取任何行之前提交
+     事务。这将强制该游标的整个输出被物化在临时存储中，这样针对每一行
+     只会执行一次不稳定函数。
+    </P
+></TD
+></TR
+></TABLE
+></DIV
+><P
+>    如果游标的查询包括<TT
+CLASS="LITERAL"
+>FOR UPDATE</TT
+>或者<TT
+CLASS="LITERAL"
+>FOR
+    SHARE</TT
+>，那么被返回的行会在它们第一次被取得时被锁定，这和带有
+    这些选项的常规<A
+HREF="sql-select.html"
+>SELECT</A
+>命令一样。此外，被返回的
+    行将是最新的版本，因此这些选项提供了被 SQL 标准称为
+    <SPAN
+CLASS="QUOTE"
+>"敏感游标"</SPAN
+>的等效体（把<TT
+CLASS="LITERAL"
+>INSENSITIVE</TT
+>与
+    <TT
+CLASS="LITERAL"
+>FOR UPDATE</TT
+>或者<TT
+CLASS="LITERAL"
+>FOR SHARE</TT
+>一起指定是错误）。
+   </P
+><DIV
+CLASS="CAUTION"
+><P
+></P
+><TABLE
+CLASS="CAUTION"
+BORDER="1"
+WIDTH="100%"
+><TR
+><TD
+ALIGN="CENTER"
+><B
+>&#23567;&#24515;</B
+></TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+><P
+>     如果游标要和<TT
+CLASS="COMMAND"
+>UPDATE ... WHERE CURRENT OF</TT
+>或者
+     <TT
+CLASS="COMMAND"
+>DELETE ... WHERE CURRENT OF</TT
+>一起使用，通常推荐
+     使用<TT
+CLASS="LITERAL"
+>FOR UPDATE</TT
+>。使用<TT
+CLASS="LITERAL"
+>FOR UPDATE</TT
+>可以
+     阻止其他会话在行被取得和被更新之间修改行。如果没有
+     <TT
+CLASS="LITERAL"
+>FOR UPDATE</TT
+>，当行在游标创建后被更改后，一个后续的
+     <TT
+CLASS="LITERAL"
+>WHERE CURRENT OF</TT
+>命令将不会产生效果。
+    </P
+><P
+>     另一个使用<TT
+CLASS="LITERAL"
+>FOR UPDATE</TT
+>的原因是，如果没有它，当游标查询不符合
+     SQL 标准的<SPAN
+CLASS="QUOTE"
+>"简单可更新"</SPAN
+>规则时，后续的
+     <TT
+CLASS="LITERAL"
+>WHERE CURRENT OF</TT
+>可能会失败（特别地，该游标必须只引用一个
+     表并且没有使用分组或者<TT
+CLASS="LITERAL"
+>ORDER BY</TT
+>）。不是简单可更新的游标可能
+     成功也可能不成功，这取决于计划选择的细节。因此在最坏的情况下，应用可能会
+     在测试时成功但是在生产中失败。
+    </P
+><P
+>     不把<TT
+CLASS="LITERAL"
+>FOR UPDATE</TT
+>和<TT
+CLASS="LITERAL"
+>WHERE CURRENT OF</TT
+>一起用的
+     主要原因是，需要游标时可滚动的或者对于后续更新不敏感（也就是说，继续显示
+     旧的数据）。如果这是你的需求，应密切关注安上述警示。
+    </P
+></TD
+></TR
+></TABLE
+></DIV
+><P
+>    SQL 标准只对嵌入式<ACRONYM
+CLASS="ACRONYM"
+>SQL</ACRONYM
+>中的游标做出了规定。
+    <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>服务器没有为游标实现
+    <TT
+CLASS="COMMAND"
+>OPEN</TT
+>语句。当游标被声明时就被认为已经
+    被打开。不过，<SPAN
+CLASS="APPLICATION"
+>ECPG</SPAN
+>（
+    <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>的嵌入式 SQL 预处理器）
+    支持标准 SQL 游标习惯，包括那些<TT
+CLASS="COMMAND"
+>DECLARE</TT
+>
+    和<TT
+CLASS="COMMAND"
+>OPEN</TT
+>语句。
+   </P
+><P
+>    你可以通过查询<A
+HREF="view-pg-cursors.html"
+><TT
+CLASS="STRUCTNAME"
+>pg_cursors</TT
+></A
+>
+    系统视图可以看到所有可用的游标。
+   </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN84618"
+></A
+><H2
+>示例</H2
+><P
+>   声明一个游标：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>DECLARE liahona CURSOR FOR SELECT * FROM films;</PRE
+><P>
+   更多游标的例子请见<A
+HREF="sql-fetch.html"
+>FETCH</A
+>。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN84623"
+></A
+><H2
+>兼容性</H2
+><P
+>   SQL 标准认为游标是否默认对底层数据的并发更新敏感是与实现相关的。在
+   <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>中，默认游标对此是不敏
+   感的，并且可以通过指定<TT
+CLASS="LITERAL"
+>FOR UPDATE</TT
+>让它变得对此敏感。其他
+   产品的行为可能有所不同。
+  </P
+><P
+>   SQL 标准只允许在嵌入式<ACRONYM
+CLASS="ACRONYM"
+>SQL</ACRONYM
+>和模块中使用游标。
+   <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>允许以交互的方式使用游标。
+  </P
+><P
+>   二进制游标是一种<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>
+   扩展。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN84633"
+></A
+><H2
+>另见</H2
+><A
+HREF="sql-close.html"
+>CLOSE</A
+>, <A
+HREF="sql-fetch.html"
+>FETCH</A
+>, <A
+HREF="sql-move.html"
+>MOVE</A
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-deallocate.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="sql-delete.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>DEALLOCATE</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>DELETE</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

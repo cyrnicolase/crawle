@@ -1,0 +1,289 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>外部数据包装器助手函数</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="编写一个外部数据包装器"
+HREF="fdwhandler.html"><LINK
+REL="PREVIOUS"
+TITLE="外部数据包装器回调例程"
+HREF="fdw-callbacks.html"><LINK
+REL="NEXT"
+TITLE="外部数据包装器查询规划"
+HREF="fdw-planning.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/fdwhandler.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="外部数据包装器回调例程"
+HREF="fdw-callbacks.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="fdwhandler.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#31456; 55. 编写一个外部数据包装器</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="外部数据包装器查询规划"
+HREF="fdw-planning.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="FDW-HELPERS"
+>55.3. 外部数据包装器助手函数</A
+></H1
+><P
+>     多个助手函数被从核心服务器输出，这样外部数据包装器的作者们可以很容易访问到FDW相关对象的属性，例如FDW选项。要使用任何其中一个函数，你需要在你的源文件中包括头文件<TT
+CLASS="FILENAME"
+>foreign/foreign.h</TT
+>。这个头也定义了被这些函数返回的结构类型。
+    </P
+><P
+></P><PRE
+CLASS="PROGRAMLISTING"
+>ForeignDataWrapper *
+GetForeignDataWrapper(Oid fdwid);</PRE
+><P>
+
+     这个函数为具有给定 OID 的外部数据包装器返回一个<TT
+CLASS="STRUCTNAME"
+>ForeignDataWrapper</TT
+>对象。一个<TT
+CLASS="STRUCTNAME"
+>ForeignDataWrapper</TT
+>对象包含该FDW的特性（详见<TT
+CLASS="FILENAME"
+>foreign/foreign.h</TT
+>）。
+    </P
+><P
+></P><PRE
+CLASS="PROGRAMLISTING"
+>ForeignServer *
+GetForeignServer(Oid serverid);</PRE
+><P>
+
+     这个函数为一个具有给定 OID 的外部服务器返回<TT
+CLASS="STRUCTNAME"
+>ForeignServer</TT
+>对象。一个<TT
+CLASS="STRUCTNAME"
+>ForeignServer</TT
+>对象包含该服务器的特性（详见<TT
+CLASS="FILENAME"
+>foreign/foreign.h</TT
+>）。
+    </P
+><P
+></P><PRE
+CLASS="PROGRAMLISTING"
+>UserMapping *
+GetUserMapping(Oid userid, Oid serverid);</PRE
+><P>
+
+     这个函数为在给定服务器上的给定角色的用户映射返回<TT
+CLASS="STRUCTNAME"
+>UserMapping</TT
+>对象（如果指定用户没有映射，它将返回<TT
+CLASS="LITERAL"
+>PUBLIC</TT
+>的映射，如果也没有则抛出错误）。一个<TT
+CLASS="STRUCTNAME"
+>UserMapping</TT
+>对象包含该用户映射的特性（详见<TT
+CLASS="FILENAME"
+>foreign/foreign.h</TT
+>）。
+    </P
+><P
+></P><PRE
+CLASS="PROGRAMLISTING"
+>ForeignTable *
+GetForeignTable(Oid relid);</PRE
+><P>
+
+     该函数为一个具有给定 OID 的外部表返回<TT
+CLASS="STRUCTNAME"
+>ForeignTable</TT
+>对象。一个<TT
+CLASS="STRUCTNAME"
+>ForeignTable</TT
+>对象包含该外部表的特性（详见<TT
+CLASS="FILENAME"
+>foreign/foreign.h</TT
+>）。
+    </P
+><P
+></P><PRE
+CLASS="PROGRAMLISTING"
+>List *
+GetForeignColumnOptions(Oid relid, AttrNumber attnum);</PRE
+><P>
+
+     这个函数为一个具有给定外部表 OID 和属性号的列返回针对每一列的FDW选项，形式为一个<TT
+CLASS="STRUCTNAME"
+>DefElem</TT
+>列表。如果该列没有选项则返回 NIL。
+    </P
+><P
+>     某些对象类型除了基于OID的查找函数之外，还具有基于名称的查找函数：
+    </P
+><P
+></P><PRE
+CLASS="PROGRAMLISTING"
+>ForeignDataWrapper *
+GetForeignDataWrapperByName(const char *name, bool missing_ok);</PRE
+><P>
+
+     这个函数为一个具有给定名称的外部数据包装器返回<TT
+CLASS="STRUCTNAME"
+>ForeignDataWrapper</TT
+>对象。如果包装器没有找到，在missing_ok为真时返回 NULL，否则抛出一个错误。
+    </P
+><P
+></P><PRE
+CLASS="PROGRAMLISTING"
+>ForeignServer *
+GetForeignServerByName(const char *name, bool missing_ok);</PRE
+><P>
+
+     这个函数为一个具有给定名称的外部服务器返回<TT
+CLASS="STRUCTNAME"
+>ForeignServer</TT
+>对象。如果该服务器没有被找到，在missing_ok为真时返回 NULL，否则抛出一个错误。
+    </P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="fdw-callbacks.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="fdw-planning.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>外部数据包装器回调例程</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="fdwhandler.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>外部数据包装器查询规划</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

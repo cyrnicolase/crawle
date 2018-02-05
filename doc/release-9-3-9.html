@@ -1,0 +1,366 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>版本 9.3.9</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="版本说明"
+HREF="release.html"><LINK
+REL="PREVIOUS"
+TITLE="版本 9.3.10"
+HREF="release-9-3-10.html"><LINK
+REL="NEXT"
+TITLE="版本 9.3.8"
+HREF="release-9-3-8.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/release-9.3.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="版本 9.3.10"
+HREF="release-9-3-10.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="release.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#38468;&#24405; E. 版本说明</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="版本 9.3.8"
+HREF="release-9-3-8.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="RELEASE-9-3-9"
+>E.22. 版本 9.3.9</A
+></H1
+><DIV
+CLASS="NOTE"
+><BLOCKQUOTE
+CLASS="NOTE"
+><P
+><B
+>发布日期: </B
+>2015-06-12</P
+></BLOCKQUOTE
+></DIV
+><P
+>这个版本包含少量自9.3.8以来的修复。
+关于9.3主版本的新特性信息，请查看<A
+HREF="release-9-3.html"
+>第 E.31 &#33410;</A
+>。</P
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN136985"
+>E.22.1. 迁移到版本 9.3.9</A
+></H2
+><P
+>    运行9.3.X版本的用户不需要转储/恢复。
+   </P
+><P
+>不过，如果你正在升级一个以前使用<SPAN
+CLASS="APPLICATION"
+>pg_upgrade</SPAN
+>
+版本9.3.0到9.3.4（包含）升级的安装，那么请查看下面的第一条修改日志项。</P
+><P
+>另外，如果你是从一个早于9.3.7的版本升级而来，请查看<A
+HREF="release-9-3-7.html"
+>第 E.24 &#33410;</A
+>。</P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN136992"
+>E.22.2. 修改列表</A
+></H2
+><P
+></P
+><UL
+><LI
+><P
+>修复从不一致的数据库状态恢复时可能的失败 (Robert Haas)</P
+><P
+>最近的<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>版本引入了防卫multixact概括的机制，
+但是这些代码没有考虑到当数据库在一个不一致的状态时，
+它需要在崩溃恢复期间运行。这会导致在崩溃之后未能重启，或未能启动次要服务器。
+之前在<SPAN
+CLASS="APPLICATION"
+>pg_upgrade</SPAN
+>中修复的bug，也会导致这样的失败，
+在已经使用了<SPAN
+CLASS="APPLICATION"
+>pg_upgrade</SPAN
+>版本9.3.0到9.3.4的安装中。</P
+><P
+>正在讨论的<SPAN
+CLASS="APPLICATION"
+>pg_upgrade</SPAN
+>错误将在<TT
+CLASS="FILENAME"
+>pg_control</TT
+>
+中将<TT
+CLASS="LITERAL"
+>oldestMultiXid</TT
+>设置为1，即使实际值要高一些。
+由于在这个版本中引入的修复，这样的情况将导致立即紧急的自动清理，
+直到确定出一个正确的<TT
+CLASS="LITERAL"
+>oldestMultiXid</TT
+>值。
+如果这会造成困难，用户可以通过在升级到这个版本<SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>之前</I
+></SPAN
+>手动清理来避免它。
+详细：
+
+      <P
+></P
+></P><OL
+TYPE="1"
+><LI
+><P
+>检查<SPAN
+CLASS="APPLICATION"
+>pg_controldata</SPAN
+>是否报告<SPAN
+CLASS="QUOTE"
+>"Latest
+         checkpoint's oldestMultiXid"</SPAN
+>为1。如果不，则什么也不需要做。</P
+></LI
+><LI
+><P
+>查看<TT
+CLASS="FILENAME"
+>PGDATA/pg_multixact/offsets</TT
+>，看是否有个文件名叫<TT
+CLASS="FILENAME"
+>0000</TT
+>。
+如果有，则什么也不需要做。</P
+></LI
+><LI
+><P
+>否则，对于每个<TT
+CLASS="STRUCTNAME"
+>pg_class</TT
+>.<TT
+CLASS="STRUCTFIELD"
+>relminmxid</TT
+>等于1的表，
+将<A
+HREF="runtime-config-client.html#GUC-VACUUM-MULTIXACT-FREEZE-MIN-AGE"
+>vacuum_multixact_freeze_min_age</A
+>和
+<A
+HREF="runtime-config-client.html#GUC-VACUUM-MULTIXACT-FREEZE-TABLE-AGE"
+>vacuum_multixact_freeze_table_age</A
+>都设置为0，
+<TT
+CLASS="COMMAND"
+>VACUUM</TT
+>该表。（你可以使用<A
+HREF="runtime-config-resource.html#RUNTIME-CONFIG-RESOURCE-VACUUM-COST"
+>第 19.4.4 &#33410;</A
+>
+中描述的清理成本延迟参数，减少当前会话的性能后果。）
+必须使用<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+> 9.3.5或更高版本执行此步骤。</P
+></LI
+></OL
+><P>
+     </P
+></LI
+><LI
+><P
+>修复罕见的失败，无效关系缓存初始化文件 (Tom Lane)</P
+><P
+>在错误的时间并发活动，系统目录上的<TT
+CLASS="COMMAND"
+>VACUUM FULL</TT
+>可能会未能更新
+<SPAN
+CLASS="QUOTE"
+>"初始化文件"</SPAN
+>，初始化文件是用来避免新会话的缓存加载工作的。
+这会导致稍后的会话完全不能访问该目录。这是一个非常老的bug，
+但是因为很难触发它，所以直到最近才看到可再生的情况。</P
+></LI
+><LI
+><P
+>避免到来的会话和<TT
+CLASS="LITERAL"
+>CREATE/DROP DATABASE</TT
+>之间的死锁 (Tom Lane)</P
+><P
+>数据库中启动的一个新会话是<TT
+CLASS="COMMAND"
+>DROP DATABASE</TT
+>命令的目标，
+或者<TT
+CLASS="COMMAND"
+>CREATE DATABASE</TT
+>命令的模板，会导致命令等待5秒钟然后失败，
+即使新会话在此之前退出。</P
+></LI
+><LI
+><P
+>改善规划器对带有内部索引扫描的半连接和反连接的成本估计 (Tom Lane, Tomas Vondra)</P
+><P
+>这种类型的规划在连接子句用作索引扫描条件时是相当便宜的，
+即使内部扫描通常抓取很多行，因为执行器将在获取到一行之后停止。
+规划器只负责部分结果，并且因此过高的评估成本，
+导致它可能选择一些其他较低效率的规划类型。</P
+></LI
+></UL
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="release-9-3-10.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="release-9-3-8.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>版本 9.3.10</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="release.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>版本 9.3.8</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

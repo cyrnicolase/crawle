@@ -1,0 +1,759 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>SET</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="SQL 命令"
+HREF="sql-commands.html"><LINK
+REL="PREVIOUS"
+TITLE="SELECT INTO"
+HREF="sql-selectinto.html"><LINK
+REL="NEXT"
+TITLE="SET CONSTRAINTS"
+HREF="sql-set-constraints.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="REFENTRY"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/ref/set.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="SELECT INTO"
+HREF="sql-selectinto.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="SET CONSTRAINTS"
+HREF="sql-set-constraints.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="SQL-SET"
+></A
+>SET</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN91291"
+></A
+><H2
+>&#21517;&#31216;</H2
+>SET&nbsp;--&nbsp;更改一个运行时参数</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN91294"
+></A
+><H2
+>&#22823;&#32434;</H2
+><PRE
+CLASS="SYNOPSIS"
+>SET [ SESSION | LOCAL ] <TT
+CLASS="REPLACEABLE"
+><I
+>configuration_parameter</I
+></TT
+> { TO | = } { <TT
+CLASS="REPLACEABLE"
+><I
+>value</I
+></TT
+> | '<TT
+CLASS="REPLACEABLE"
+><I
+>value</I
+></TT
+>' | DEFAULT }
+SET [ SESSION | LOCAL ] TIME ZONE { <TT
+CLASS="REPLACEABLE"
+><I
+>timezone</I
+></TT
+> | LOCAL | DEFAULT }</PRE
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN91300"
+></A
+><H2
+>描述</H2
+><P
+>   <TT
+CLASS="COMMAND"
+>SET</TT
+>命令更改运行时配置参数。很多
+   <A
+HREF="runtime-config.html"
+>第 19 &#31456;</A
+>中列出的参数可以用
+   <TT
+CLASS="COMMAND"
+>SET</TT
+>即时更改（但是有些需要超级用户
+   特权才能更改，并且还有一些在服务器或者会话启动之后不能被更改）。
+   <TT
+CLASS="COMMAND"
+>SET</TT
+>只影响当前会话所使用的值。
+  </P
+><P
+>   如果在一个事务内发出<TT
+CLASS="COMMAND"
+>SET</TT
+>
+   （或者等效的<TT
+CLASS="COMMAND"
+>SET SESSION</TT
+>）而该事务后来
+   中止，在该事务被回滚时<TT
+CLASS="COMMAND"
+>SET</TT
+>命令的效果会
+   消失。一旦所在的事务被提交，这些效果将会持续到会话结束（除非被另
+   一个<TT
+CLASS="COMMAND"
+>SET</TT
+>所覆盖）。
+  </P
+><P
+>   <TT
+CLASS="COMMAND"
+>SET LOCAL</TT
+>的效果只持续到当前事务结束，
+   不管事务是否被提交。一种特殊情况是在一个事务内
+   <TT
+CLASS="COMMAND"
+>SET</TT
+>后面跟着
+   <TT
+CLASS="COMMAND"
+>SET LOCAL</TT
+>：
+   <TT
+CLASS="COMMAND"
+>SET LOCAL</TT
+>值将会在该事务结束前一直可见，
+   但是之后（如果该事务被提交）<TT
+CLASS="COMMAND"
+>SET</TT
+>值将会生效。
+  </P
+><P
+>   <TT
+CLASS="COMMAND"
+>SET</TT
+>或<TT
+CLASS="COMMAND"
+>SET LOCAL</TT
+>
+   的效果也会因为回滚到早于它们的保存点而消失。
+  </P
+><P
+>   如果在一个函数内使用<TT
+CLASS="COMMAND"
+>SET LOCAL</TT
+>并且该函数
+   还有对同一变量的<TT
+CLASS="LITERAL"
+>SET</TT
+>选项（见
+   <A
+HREF="sql-createfunction.html"
+>CREATE FUNCTION</A
+>），在函数退出时
+   <TT
+CLASS="COMMAND"
+>SET LOCAL</TT
+>命令的效果会消失。也就是说，该
+   函数被调用时的值会被恢复。这允许用
+   <TT
+CLASS="COMMAND"
+>SET LOCAL</TT
+>在函数内动态地或者重复地更改
+   一个参数，同时仍然能便利地使用<TT
+CLASS="LITERAL"
+>SET</TT
+>选项来保存以及恢复调用
+   者的值。不过，一个常规的<TT
+CLASS="COMMAND"
+>SET</TT
+>命令会覆盖它所在的任何函
+   数的<TT
+CLASS="LITERAL"
+>SET</TT
+>选项，除非回滚，它的效果将一直保持。
+  </P
+><DIV
+CLASS="NOTE"
+><BLOCKQUOTE
+CLASS="NOTE"
+><P
+><B
+>&#27880;&#24847;: </B
+>    在<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+> 版本 8.0 到 8.2 中，
+    一个<TT
+CLASS="COMMAND"
+>SET LOCAL</TT
+>的效果会因为释放较早的
+    保存点或者成功地从一个<SPAN
+CLASS="APPLICATION"
+>PL/pgSQL</SPAN
+>异常块
+    中退出而被取消。这种行为已经被更改，因为它被认为不直观。
+   </P
+></BLOCKQUOTE
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN91335"
+></A
+><H2
+>参数</H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="LITERAL"
+>SESSION</TT
+></DT
+><DD
+><P
+>      指定该命令对当前会话有效（这是默认值）。
+     </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>LOCAL</TT
+></DT
+><DD
+><P
+>      指定该命令只对当前事务有效。在<TT
+CLASS="COMMAND"
+>COMMIT</TT
+>或者
+      <TT
+CLASS="COMMAND"
+>ROLLBACK</TT
+>之后，会话级别的设置会再次生效。
+      在事务块外部发出这个参数会发出一个警告并且不会有效果。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>configuration_parameter</I
+></TT
+></DT
+><DD
+><P
+>      一个可设置运行时参数的名称。可用的参数被记录在
+      <A
+HREF="runtime-config.html"
+>第 19 &#31456;</A
+>和下文中。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>value</I
+></TT
+></DT
+><DD
+><P
+>      参数的新值。根据特定的参数，值可以被指定为字符串常量、标识符、
+      数字或者以上构成的逗号分隔列表。写<TT
+CLASS="LITERAL"
+>DEFAULT</TT
+>
+      可以指定把该参数重置成它的默认值（也就是说在当前会话中还没有
+      执行<TT
+CLASS="COMMAND"
+>SET</TT
+>命令时它具有的值）。
+     </P
+></DD
+></DL
+></DIV
+><P
+>   除了在<A
+HREF="runtime-config.html"
+>第 19 &#31456;</A
+>中记录的配置参数，
+   还有一些参数只能用<TT
+CLASS="COMMAND"
+>SET</TT
+>命令设置
+   或者具有特殊的语法：
+
+   <P
+></P
+></P><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="LITERAL"
+>SCHEMA</TT
+></DT
+><DD
+><P
+><TT
+CLASS="LITERAL"
+>SET SCHEMA '<TT
+CLASS="REPLACEABLE"
+><I
+>value</I
+></TT
+>'</TT
+>是
+       <TT
+CLASS="LITERAL"
+>SET search_path TO <TT
+CLASS="REPLACEABLE"
+><I
+>value</I
+></TT
+></TT
+>的一个别名。
+       使用这种语法只能指定一个模式。
+      </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>NAMES</TT
+></DT
+><DD
+><P
+><TT
+CLASS="LITERAL"
+>SET NAMES <TT
+CLASS="REPLACEABLE"
+><I
+>value</I
+></TT
+></TT
+>是
+       <TT
+CLASS="LITERAL"
+>SET client_encoding TO <TT
+CLASS="REPLACEABLE"
+><I
+>value</I
+></TT
+></TT
+>的一个别名。
+      </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>SEED</TT
+></DT
+><DD
+><P
+>       为随机数生成器（函数<CODE
+CLASS="FUNCTION"
+>random</CODE
+>）设置
+       一个内部种子。允许的值是 -1 和 1 之间的浮点数，它会被乘上
+       2<SUP
+>31</SUP
+>-1。
+      </P
+><P
+>       也可以通过调用函数<CODE
+CLASS="FUNCTION"
+>setseed</CODE
+>来设置种子：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>SELECT setseed(<TT
+CLASS="REPLACEABLE"
+><I
+>value</I
+></TT
+>);</PRE
+><P></P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>TIME ZONE</TT
+></DT
+><DD
+><P
+><TT
+CLASS="LITERAL"
+>SET TIME ZONE <TT
+CLASS="REPLACEABLE"
+><I
+>value</I
+></TT
+></TT
+>是
+       <TT
+CLASS="LITERAL"
+>SET timezone TO <TT
+CLASS="REPLACEABLE"
+><I
+>value</I
+></TT
+></TT
+>的一个别
+       名。语法<TT
+CLASS="LITERAL"
+>SET TIME ZONE</TT
+>允许用于时区指定的特
+       殊语法。这里是合法值的例子：
+
+       <P
+></P
+></P><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="LITERAL"
+>'PST8PDT'</TT
+></DT
+><DD
+><P
+>           加州伯克利的时区。
+          </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>'Europe/Rome'</TT
+></DT
+><DD
+><P
+>           意大利的时区。
+          </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>-7</TT
+></DT
+><DD
+><P
+>           UTC 以西 7 小时的时区（等效于 PDT）。正值则是 UTC 以东。
+          </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>INTERVAL '-08:00' HOUR TO MINUTE</TT
+></DT
+><DD
+><P
+>           UTC 以西 8 小时的时区（等效于 PST）。
+          </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>LOCAL</TT
+><BR><TT
+CLASS="LITERAL"
+>DEFAULT</TT
+></DT
+><DD
+><P
+>           把时区设置为你的本地时区（也就是说服务器的<TT
+CLASS="VARNAME"
+>timezone</TT
+>默认值）。
+          </P
+></DD
+></DL
+></DIV
+><P>
+      </P
+><P
+>       以数字或区间给出的时区设置在内部被翻译成 POSIX 时区语法。
+       例如，在<TT
+CLASS="LITERAL"
+>SET TIME ZONE -7</TT
+>之后，
+       <TT
+CLASS="COMMAND"
+>SHOW TIME ZONE</TT
+>将会报告
+       <TT
+CLASS="LITERAL"
+>&lt;-07&gt;+07</TT
+>。
+      </P
+><P
+>       有关时区的更多信息可见<A
+HREF="datatype-datetime.html#DATATYPE-TIMEZONES"
+>第 8.5.3 &#33410;</A
+>。
+      </P
+></DD
+></DL
+></DIV
+><P>
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN91441"
+></A
+><H2
+>注解</H2
+><P
+>   函数<CODE
+CLASS="FUNCTION"
+>set_config</CODE
+>提供了等效的功能，见
+   <A
+HREF="functions-admin.html"
+>第 9.26 &#33410;</A
+>。此外，可以更新
+   <A
+HREF="view-pg-settings.html"
+><TT
+CLASS="STRUCTNAME"
+>pg_settings</TT
+></A
+>
+   系统视图来执行与<TT
+CLASS="COMMAND"
+>SET</TT
+>等效的工作。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN91449"
+></A
+><H2
+>示例</H2
+><P
+>   设置模式搜索路径：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>SET search_path TO my_schema, public;</PRE
+><P>
+  </P
+><P
+>   把日期风格设置为传统
+   <SPAN
+CLASS="PRODUCTNAME"
+>POSTGRES</SPAN
+>的
+   <SPAN
+CLASS="QUOTE"
+>"日在月之前"</SPAN
+>的输入习惯：
+</P><PRE
+CLASS="SCREEN"
+>SET datestyle TO postgres, dmy;</PRE
+><P>
+  </P
+><P
+>   设置时区为加州伯克利：
+</P><PRE
+CLASS="SCREEN"
+>SET TIME ZONE 'PST8PDT';</PRE
+><P>
+  </P
+><P
+>   设置时区为意大利：
+</P><PRE
+CLASS="SCREEN"
+>SET TIME ZONE 'Europe/Rome';</PRE
+><P></P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN91461"
+></A
+><H2
+>兼容性</H2
+><P
+>   <TT
+CLASS="LITERAL"
+>SET TIME ZONE</TT
+>扩展了 SQL 标准定义的语法。标准
+   只允许数字的时区偏移量而
+   <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>允许更灵活的时区说明。
+   所有其他<TT
+CLASS="LITERAL"
+>SET</TT
+>特性都是
+   <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>扩展。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN91468"
+></A
+><H2
+>另见</H2
+><A
+HREF="sql-reset.html"
+>RESET</A
+>, <A
+HREF="sql-show.html"
+>SHOW</A
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-selectinto.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="sql-set-constraints.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>SELECT INTO</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>SET CONSTRAINTS</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

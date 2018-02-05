@@ -1,0 +1,541 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>ALTER TEXT SEARCH CONFIGURATION</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="SQL 命令"
+HREF="sql-commands.html"><LINK
+REL="PREVIOUS"
+TITLE="ALTER TABLESPACE"
+HREF="sql-altertablespace.html"><LINK
+REL="NEXT"
+TITLE="ALTER TEXT SEARCH DICTIONARY"
+HREF="sql-altertsdictionary.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="REFENTRY"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/ref/alter_tsconfig.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="ALTER TABLESPACE"
+HREF="sql-altertablespace.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="ALTER TEXT SEARCH DICTIONARY"
+HREF="sql-altertsdictionary.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="SQL-ALTERTSCONFIG"
+></A
+>ALTER TEXT SEARCH CONFIGURATION</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN75766"
+></A
+><H2
+>&#21517;&#31216;</H2
+>ALTER TEXT SEARCH CONFIGURATION&nbsp;--&nbsp;更改一个文本搜索配置的定义</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN75769"
+></A
+><H2
+>&#22823;&#32434;</H2
+><PRE
+CLASS="SYNOPSIS"
+>ALTER TEXT SEARCH CONFIGURATION <TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+>
+    ADD MAPPING FOR <TT
+CLASS="REPLACEABLE"
+><I
+>token_type</I
+></TT
+> [, ... ] WITH <TT
+CLASS="REPLACEABLE"
+><I
+>dictionary_name</I
+></TT
+> [, ... ]
+ALTER TEXT SEARCH CONFIGURATION <TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+>
+    ALTER MAPPING FOR <TT
+CLASS="REPLACEABLE"
+><I
+>token_type</I
+></TT
+> [, ... ] WITH <TT
+CLASS="REPLACEABLE"
+><I
+>dictionary_name</I
+></TT
+> [, ... ]
+ALTER TEXT SEARCH CONFIGURATION <TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+>
+    ALTER MAPPING REPLACE <TT
+CLASS="REPLACEABLE"
+><I
+>old_dictionary</I
+></TT
+> WITH <TT
+CLASS="REPLACEABLE"
+><I
+>new_dictionary</I
+></TT
+>
+ALTER TEXT SEARCH CONFIGURATION <TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+>
+    ALTER MAPPING FOR <TT
+CLASS="REPLACEABLE"
+><I
+>token_type</I
+></TT
+> [, ... ] REPLACE <TT
+CLASS="REPLACEABLE"
+><I
+>old_dictionary</I
+></TT
+> WITH <TT
+CLASS="REPLACEABLE"
+><I
+>new_dictionary</I
+></TT
+>
+ALTER TEXT SEARCH CONFIGURATION <TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+>
+    DROP MAPPING [ IF EXISTS ] FOR <TT
+CLASS="REPLACEABLE"
+><I
+>token_type</I
+></TT
+> [, ... ]
+ALTER TEXT SEARCH CONFIGURATION <TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+> RENAME TO <TT
+CLASS="REPLACEABLE"
+><I
+>new_name</I
+></TT
+>
+ALTER TEXT SEARCH CONFIGURATION <TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+> OWNER TO { <TT
+CLASS="REPLACEABLE"
+><I
+>new_owner</I
+></TT
+> | CURRENT_USER | SESSION_USER }
+ALTER TEXT SEARCH CONFIGURATION <TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+> SET SCHEMA <TT
+CLASS="REPLACEABLE"
+><I
+>new_schema</I
+></TT
+></PRE
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN75792"
+></A
+><H2
+>描述</H2
+><P
+>   <TT
+CLASS="COMMAND"
+>ALTER TEXT SEARCH CONFIGURATION</TT
+>
+   更改一个文本搜索配置的定义。你可以修改其从记号类型到词典的映射
+   或者更改该配置的名称或者拥有者。
+  </P
+><P
+>   要使用<TT
+CLASS="COMMAND"
+>ALTER TEXT SEARCH CONFIGURATION</TT
+>，
+   你必须是该配置的拥有者。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN75798"
+></A
+><H2
+>参数</H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+></DT
+><DD
+><P
+>      一个现有文本搜索配置的名称（可以是模式限定的）。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>token_type</I
+></TT
+></DT
+><DD
+><P
+>      由该配置的解析器发出的记号类型的名称。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>dictionary_name</I
+></TT
+></DT
+><DD
+><P
+>      在其中查阅指定记号类型的文本搜索字典的名称。如果列出了
+      多个字典，会按照指定的顺序查阅它们。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>old_dictionary</I
+></TT
+></DT
+><DD
+><P
+>      在映射中要替换的文本搜索字典的名称。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>new_dictionary</I
+></TT
+></DT
+><DD
+><P
+>      被用来替代<TT
+CLASS="REPLACEABLE"
+><I
+>old_dictionary</I
+></TT
+>
+      的文本搜索字典的名称。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>new_name</I
+></TT
+></DT
+><DD
+><P
+>      该文本搜索配置的新名称。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>new_owner</I
+></TT
+></DT
+><DD
+><P
+>      该文本搜索配置的新拥有者。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>new_schema</I
+></TT
+></DT
+><DD
+><P
+>      该文本搜索配置的新模式。
+     </P
+></DD
+></DL
+></DIV
+><P
+>   <TT
+CLASS="LITERAL"
+>ADD MAPPING FOR</TT
+>形式会安装一些词典（用列表列出）用于在其中
+   查阅指定的记号类型。如果对任一记号类型已经有一个映射，则会发生错误。
+   <TT
+CLASS="LITERAL"
+>ALTER MAPPING FOR</TT
+>形式做同样的事情，但是首先会移除这些记号
+   类型的任何现有映射。<TT
+CLASS="LITERAL"
+>ALTER MAPPING REPLACE</TT
+>形式用
+   <TT
+CLASS="REPLACEABLE"
+><I
+>new_dictionary</I
+></TT
+>来替换任何位
+   置上的<TT
+CLASS="REPLACEABLE"
+><I
+>old_dictionary</I
+></TT
+>。当出
+   现<TT
+CLASS="LITERAL"
+>FOR</TT
+>时，只会为指定的记号类型做这样的事情。如果不出现
+   <TT
+CLASS="LITERAL"
+>FOR</TT
+>，则会为该配置中所有的映射都这样做。
+   <TT
+CLASS="LITERAL"
+>DROP MAPPING</TT
+>形式会移除指定记号类型的所有字典，导致该文本
+   搜索配置忽略这些类型。除非出现<TT
+CLASS="LITERAL"
+>IF EXISTS</TT
+>，在那些记号类型没有
+   任何映射时会发生错误。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN75852"
+></A
+><H2
+>示例</H2
+><P
+>   下面的例子把<TT
+CLASS="LITERAL"
+>my_config</TT
+>中任何位置上的<TT
+CLASS="LITERAL"
+>english</TT
+>字典
+   替换为<TT
+CLASS="LITERAL"
+>swedish</TT
+>字典。
+  </P
+><PRE
+CLASS="PROGRAMLISTING"
+>ALTER TEXT SEARCH CONFIGURATION my_config
+  ALTER MAPPING REPLACE english WITH swedish;</PRE
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN75859"
+></A
+><H2
+>兼容性</H2
+><P
+>   在 SQL 标准中没有
+   <TT
+CLASS="COMMAND"
+>ALTER TEXT SEARCH CONFIGURATION</TT
+>
+   语句。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN75863"
+></A
+><H2
+>另见</H2
+><A
+HREF="sql-createtsconfig.html"
+>CREATE TEXT SEARCH CONFIGURATION</A
+>, <A
+HREF="sql-droptsconfig.html"
+>DROP TEXT SEARCH CONFIGURATION</A
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-altertablespace.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="sql-altertsdictionary.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>ALTER TABLESPACE</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>ALTER TEXT SEARCH DICTIONARY</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

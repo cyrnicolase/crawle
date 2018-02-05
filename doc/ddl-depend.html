@@ -1,0 +1,313 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>依赖跟踪</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="数据定义"
+HREF="ddl.html"><LINK
+REL="PREVIOUS"
+TITLE="其他数据库对象"
+HREF="ddl-others.html"><LINK
+REL="NEXT"
+TITLE="数据操纵"
+HREF="dml.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/ddl.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="其他数据库对象"
+HREF="ddl-others.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="ddl.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#31456; 5. 数据定义</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="数据操纵"
+HREF="dml.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="DDL-DEPEND"
+>5.13. 依赖跟踪</A
+></H1
+><P
+>   当我们创建一个涉及到很多具有外键约束、视图、触发器、函数等的表的复杂数据库结构时，我们隐式地创建了一张对象之间的依赖关系网。例如，具有一个外键约束的表依赖于它所引用的表。
+  </P
+><P
+>   为了保证整个数据库结构的完整性，<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>确保我们无法删除仍然被其他对象依赖的对象。例如，尝试删除<A
+HREF="ddl-constraints.html#DDL-CONSTRAINTS-FK"
+>第 5.3.5 &#33410;</A
+>中的产品表会导致一个如下的错误消息，因为有订单表依赖于产品表：
+</P><PRE
+CLASS="SCREEN"
+>DROP TABLE products;
+
+ERROR:  cannot drop table products because other objects depend on it
+DETAIL:  constraint orders_product_no_fkey on table orders depends on table products
+HINT:  Use DROP ... CASCADE to drop the dependent objects too.</PRE
+><P>
+   该错误消息包含了一个有用的提示：如果我们不想一个一个去删除所有的依赖对象，我们可以执行：
+</P><PRE
+CLASS="SCREEN"
+>DROP TABLE products CASCADE;</PRE
+><P>
+   这样所有的依赖对象将被移除，同样依赖于它们的任何对象也会被递归删除。在这种情况下，订单表不会被移除，但是它的外键约束会被移除。之所以在这里会停下，是因为没有什么依赖着外键约束（如果希望检查<TT
+CLASS="COMMAND"
+>DROP ... CASCADE</TT
+>会干什么，运行不带<TT
+CLASS="LITERAL"
+>CASCADE</TT
+>的<TT
+CLASS="COMMAND"
+>DROP</TT
+>并阅读<TT
+CLASS="LITERAL"
+>DETAIL</TT
+>输出）。
+  </P
+><P
+>   <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>中的几乎所有<TT
+CLASS="COMMAND"
+>DROP</TT
+>命令都支持<TT
+CLASS="LITERAL"
+>CASCADE</TT
+>。当然，其本质的区别随着对象的类型而不同。我们也可以用<TT
+CLASS="LITERAL"
+>RESTRICT</TT
+>代替<TT
+CLASS="LITERAL"
+>CASCADE</TT
+>来获得默认行为，它将阻止删除任何被其他对象依赖的对象。
+  </P
+><DIV
+CLASS="NOTE"
+><BLOCKQUOTE
+CLASS="NOTE"
+><P
+><B
+>&#27880;&#24847;: </B
+>    根据SQL标准，在<TT
+CLASS="COMMAND"
+>DROP</TT
+>命令中指定<TT
+CLASS="LITERAL"
+>RESTRICT</TT
+>或<TT
+CLASS="LITERAL"
+>CASCADE</TT
+>是被要求的。但没有哪个数据库系统真正强制了这个规则，但是不同的系统中两种默认行为都是可能的。
+   </P
+></BLOCKQUOTE
+></DIV
+><P
+>   如果一个<TT
+CLASS="COMMAND"
+>DROP</TT
+>命令列出了多个对象，只有在存在指定对象构成的组之外的依赖关系时才需要<TT
+CLASS="LITERAL"
+>CASCADE</TT
+>。例如，如果发出命令<TT
+CLASS="LITERAL"
+>DROP TABLE tab1, tab2</TT
+>且存在从<TT
+CLASS="LITERAL"
+>tab2</TT
+>到<TT
+CLASS="LITERAL"
+>tab1</TT
+>的外键引用，那么就不需要<TT
+CLASS="LITERAL"
+>CASCADE</TT
+>即可成功执行。
+  </P
+><P
+>   对于用户定义的函数，<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>会追踪与函数外部可见性质相关的依赖性，例如它的参数和结果类型，但<SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>不</I
+></SPAN
+>追踪检查函数体才能知道的依赖性。例如，考虑这种情况：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>CREATE TYPE rainbow AS ENUM ('red', 'orange', 'yellow',
+                             'green', 'blue', 'purple');
+
+CREATE TABLE my_colors (color rainbow, note text);
+
+CREATE FUNCTION get_color_note (rainbow) RETURNS text AS
+  'SELECT note FROM my_colors WHERE color = $1'
+  LANGUAGE SQL;</PRE
+><P>
+
+   （SQL 元函数的解释见<A
+HREF="xfunc-sql.html"
+>第 36.4 &#33410;</A
+>）。<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>将会注意到<CODE
+CLASS="FUNCTION"
+>get_color_note</CODE
+>函数依赖于<TT
+CLASS="TYPE"
+>rainbow</TT
+>类型：删掉该类型会强制删除该函数，因为该函数的参数类型就无法定义了。但是<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>不会认为<CODE
+CLASS="FUNCTION"
+>get_color_note</CODE
+>依赖于<TT
+CLASS="STRUCTNAME"
+>my_colors</TT
+>表，因此即使该表被删除也不会删除这个函数。虽然这种方法有缺点，但是也有好处。如果该表丢失，这个函数在某种程度上仍然是有效的，但是执行它会导致错误。创建一个同名的新表将允许该函数重新有效。
+  </P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="ddl-others.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="dml.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>其他数据库对象</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="ddl.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>数据操纵</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

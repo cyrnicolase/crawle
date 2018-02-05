@@ -1,0 +1,567 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>ALTER MATERIALIZED VIEW</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="SQL 命令"
+HREF="sql-commands.html"><LINK
+REL="PREVIOUS"
+TITLE="ALTER LARGE OBJECT"
+HREF="sql-alterlargeobject.html"><LINK
+REL="NEXT"
+TITLE="ALTER OPERATOR"
+HREF="sql-alteroperator.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="REFENTRY"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/ref/alter_materialized_view.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="ALTER LARGE OBJECT"
+HREF="sql-alterlargeobject.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="ALTER OPERATOR"
+HREF="sql-alteroperator.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="SQL-ALTERMATERIALIZEDVIEW"
+></A
+>ALTER MATERIALIZED VIEW</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN73852"
+></A
+><H2
+>&#21517;&#31216;</H2
+>ALTER MATERIALIZED VIEW&nbsp;--&nbsp;更改一个物化视图的定义</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN73855"
+></A
+><H2
+>&#22823;&#32434;</H2
+><PRE
+CLASS="SYNOPSIS"
+>ALTER MATERIALIZED VIEW [ IF EXISTS ] <TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+>
+    <TT
+CLASS="REPLACEABLE"
+><I
+>action</I
+></TT
+> [, ... ]
+ALTER MATERIALIZED VIEW <TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+>
+    DEPENDS ON EXTENSION <TT
+CLASS="REPLACEABLE"
+><I
+>extension_name</I
+></TT
+>
+ALTER MATERIALIZED VIEW [ IF EXISTS ] <TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+>
+    RENAME [ COLUMN ] <TT
+CLASS="REPLACEABLE"
+><I
+>column_name</I
+></TT
+> TO <TT
+CLASS="REPLACEABLE"
+><I
+>new_column_name</I
+></TT
+>
+ALTER MATERIALIZED VIEW [ IF EXISTS ] <TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+>
+    RENAME TO <TT
+CLASS="REPLACEABLE"
+><I
+>new_name</I
+></TT
+>
+ALTER MATERIALIZED VIEW [ IF EXISTS ] <TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+>
+    SET SCHEMA <TT
+CLASS="REPLACEABLE"
+><I
+>new_schema</I
+></TT
+>
+ALTER MATERIALIZED VIEW ALL IN TABLESPACE <TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+> [ OWNED BY <TT
+CLASS="REPLACEABLE"
+><I
+>role_name</I
+></TT
+> [, ... ] ]
+    SET TABLESPACE <TT
+CLASS="REPLACEABLE"
+><I
+>new_tablespace</I
+></TT
+> [ NOWAIT ]
+
+<SPAN
+CLASS="phrase"
+><SPAN
+CLASS="PHRASE"
+>其中 <TT
+CLASS="REPLACEABLE"
+><I
+>action</I
+></TT
+>是下列之一：</SPAN
+></SPAN
+>
+
+    ALTER [ COLUMN ] <TT
+CLASS="REPLACEABLE"
+><I
+>column_name</I
+></TT
+> SET STATISTICS <TT
+CLASS="REPLACEABLE"
+><I
+>integer</I
+></TT
+>
+    ALTER [ COLUMN ] <TT
+CLASS="REPLACEABLE"
+><I
+>column_name</I
+></TT
+> SET ( <TT
+CLASS="REPLACEABLE"
+><I
+>attribute_option</I
+></TT
+> = <TT
+CLASS="REPLACEABLE"
+><I
+>value</I
+></TT
+> [, ... ] )
+    ALTER [ COLUMN ] <TT
+CLASS="REPLACEABLE"
+><I
+>column_name</I
+></TT
+> RESET ( <TT
+CLASS="REPLACEABLE"
+><I
+>attribute_option</I
+></TT
+> [, ... ] )
+    ALTER [ COLUMN ] <TT
+CLASS="REPLACEABLE"
+><I
+>column_name</I
+></TT
+> SET STORAGE { PLAIN | EXTERNAL | EXTENDED | MAIN }
+    CLUSTER ON <TT
+CLASS="REPLACEABLE"
+><I
+>index_name</I
+></TT
+>
+    SET WITHOUT CLUSTER
+    SET ( <TT
+CLASS="REPLACEABLE"
+><I
+>storage_parameter</I
+></TT
+> = <TT
+CLASS="REPLACEABLE"
+><I
+>value</I
+></TT
+> [, ... ] )
+    RESET ( <TT
+CLASS="REPLACEABLE"
+><I
+>storage_parameter</I
+></TT
+> [, ... ] )
+    OWNER TO { <TT
+CLASS="REPLACEABLE"
+><I
+>new_owner</I
+></TT
+> | CURRENT_USER | SESSION_USER }
+    SET TABLESPACE <TT
+CLASS="REPLACEABLE"
+><I
+>new_tablespace</I
+></TT
+></PRE
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN73887"
+></A
+><H2
+>描述</H2
+><P
+>   <TT
+CLASS="COMMAND"
+>ALTER MATERIALIZED VIEW</TT
+>更改一个现有物化视图的
+   多个辅助属性。
+  </P
+><P
+>   要使用<TT
+CLASS="COMMAND"
+>ALTER MATERIALIZED VIEW</TT
+>，你必须拥有该物化视图。要
+   更改一个物化视图的模式，你还必须拥有新模式上的<TT
+CLASS="LITERAL"
+>CREATE</TT
+>特权。要更
+   改拥有者，你还必须是新拥有角色的一个直接或者间接成员，并且该角色必须拥有该
+   物化视图所在模式上的<TT
+CLASS="LITERAL"
+>CREATE</TT
+>特权（这些限制强制修改拥有者不
+   能做一些通过删除和重建该物化视图做不到的事情。不过，一个超级用户怎么都能更改
+   任何视图的所有权。）。
+  </P
+><P
+>   <TT
+CLASS="LITERAL"
+>DEPENDS ON EXTENSION</TT
+>形式把该物化视图标记为依赖于一个
+   扩展，这样该扩展被删除时会自动地删除掉这个物化视图。
+  </P
+><P
+>   可用于<TT
+CLASS="COMMAND"
+>ALTER MATERIALIZED VIEW</TT
+>的语句形式和动作是
+   <TT
+CLASS="COMMAND"
+>ALTER TABLE</TT
+>的一个子集，并且在用于物化视图时具有相
+   同的含义。详见<A
+HREF="sql-altertable.html"
+>ALTER TABLE</A
+>的描述。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN73901"
+></A
+><H2
+>参数</H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+></DT
+><DD
+><P
+>       一个现有物化视图的名称（可以是模式限定的）。
+      </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>column_name</I
+></TT
+></DT
+><DD
+><P
+>       一个新的或者现有的列的名称。
+      </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>extension_name</I
+></TT
+></DT
+><DD
+><P
+>       该物化视图所依赖的扩展的名称。
+      </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>new_column_name</I
+></TT
+></DT
+><DD
+><P
+>       一个现有列的新名称。
+      </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>new_owner</I
+></TT
+></DT
+><DD
+><P
+>      该物化视图的新拥有者的用户名。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>new_name</I
+></TT
+></DT
+><DD
+><P
+>      该物化视图的新名称。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>new_schema</I
+></TT
+></DT
+><DD
+><P
+>      该物化视图的新模式。
+     </P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN73939"
+></A
+><H2
+>示例</H2
+><P
+>   把物化视图<TT
+CLASS="LITERAL"
+>foo</TT
+>重命名为
+   <TT
+CLASS="LITERAL"
+>bar</TT
+>：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>ALTER MATERIALIZED VIEW foo RENAME TO bar;</PRE
+><P></P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN73945"
+></A
+><H2
+>兼容性</H2
+><P
+>   <TT
+CLASS="COMMAND"
+>ALTER MATERIALIZED VIEW</TT
+>是一种
+   <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>扩展。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN73950"
+></A
+><H2
+>另见</H2
+><A
+HREF="sql-creatematerializedview.html"
+>CREATE MATERIALIZED VIEW</A
+>, <A
+HREF="sql-dropmaterializedview.html"
+>DROP MATERIALIZED VIEW</A
+>, <A
+HREF="sql-refreshmaterializedview.html"
+>REFRESH MATERIALIZED VIEW</A
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-alterlargeobject.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="sql-alteroperator.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>ALTER LARGE OBJECT</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>ALTER OPERATOR</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

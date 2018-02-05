@@ -1,0 +1,415 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>选择列表</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="查询"
+HREF="queries.html"><LINK
+REL="PREVIOUS"
+TITLE="表表达式"
+HREF="queries-table-expressions.html"><LINK
+REL="NEXT"
+TITLE="组合查询"
+HREF="queries-union.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/queries.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="表表达式"
+HREF="queries-table-expressions.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="queries.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#31456; 7. 查询</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="组合查询"
+HREF="queries-union.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="QUERIES-SELECT-LISTS"
+>7.3. 选择列表</A
+></H1
+><P
+>   如前面的小节说明的那样， 在<TT
+CLASS="COMMAND"
+>SELECT</TT
+>命令里的表表达式构造了一个中间的虚拟表， 方法可能有组合表、视图、消除行、分组等等。这个表最后被<I
+CLASS="FIRSTTERM"
+>选择列表</I
+>传递下去处理。选择列表判断中间表的哪个<SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>列</I
+></SPAN
+>是实际输出。
+  </P
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="QUERIES-SELECT-LIST-ITEMS"
+>7.3.1. 选择列表项</A
+></H2
+><P
+>    最简单的选择列表类型是<TT
+CLASS="LITERAL"
+>*</TT
+>，它发出表表达式生成的所有列。否则，一个选择列表是一个逗号分隔的值表达式的列表（和在<A
+HREF="sql-expressions.html"
+>第 4.2 &#33410;</A
+>里定义的一样）。 例如，它可能是一个列名的列表：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>SELECT a, b, c FROM ...</PRE
+><P>
+     列名字<TT
+CLASS="LITERAL"
+>a</TT
+>、<TT
+CLASS="LITERAL"
+>b</TT
+>和<TT
+CLASS="LITERAL"
+>c</TT
+>要么是在<TT
+CLASS="LITERAL"
+>FROM</TT
+>子句里引用的表中列的实际名字，要么是像<A
+HREF="queries-table-expressions.html#QUERIES-TABLE-ALIASES"
+>第 7.2.1.2 &#33410;</A
+>里解释的那样的别名。在选择列表里可用的名字空间和在<TT
+CLASS="LITERAL"
+>WHERE</TT
+>子句里的一样， 除非你使用了分组，这时候它和<TT
+CLASS="LITERAL"
+>HAVING</TT
+>子句一样。
+   </P
+><P
+>    如果超过一个表有同样的列名，那么你还必须给出表名字，如：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>SELECT tbl1.a, tbl2.a, tbl1.b FROM ...</PRE
+><P>
+    在使用多个表时，要求一个特定表的所有列也是有用的：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>SELECT tbl1.*, tbl2.a FROM ...</PRE
+><P>
+    （另见<A
+HREF="queries-table-expressions.html#QUERIES-WHERE"
+>第 7.2.2 &#33410;</A
+>）。
+   </P
+><P
+>    如果将任意值表达式用于选择列表，那么它在概念上向返回的表中增加了一个新的虚拟列。 值表达式为结果的每一行进行一次计算，对任何列引用替换行的值。 不过选择列表中的这个表达式并非一定要引用来自<TT
+CLASS="LITERAL"
+>FROM</TT
+>子句中表表达式里面的列，例如它也可以是任意常量算术表达式。
+   </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="QUERIES-COLUMN-LABELS"
+>7.3.2. 列标签</A
+></H2
+><P
+>    选择列表中的项可以被赋予名字，用于进一步的处理。 例如为了在一个<TT
+CLASS="LITERAL"
+>ORDER BY</TT
+>子句中使用或者为了客户端应用显示。例如：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>SELECT a AS value, b + c AS sum FROM ...</PRE
+><P>
+   </P
+><P
+>    如果没有使用<TT
+CLASS="LITERAL"
+>AS</TT
+>指定输出列名，那么系统会分配一个缺省的列名。对于简单的列引用， 它是被引用列的名字。对于函数调用，它是函数的名字。对于复杂表达式，系统会生成一个通用的名字。
+   </P
+><P
+>    只有在新列无法匹配任何<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>关键词（见<A
+HREF="sql-keywords-appendix.html"
+>&#38468;&#24405; C</A
+>）时，<TT
+CLASS="LITERAL"
+>AS</TT
+>关键词是可选的。为了避免一个关键字的意外匹配，你可以使用双引号来修饰列名。例如，<TT
+CLASS="LITERAL"
+>VALUE</TT
+>是一个关键字，所以下面的语句不会工作：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>SELECT a value, b + c AS sum FROM ...</PRE
+><P>
+    但是这个可以：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>SELECT a "value", b + c AS sum FROM ...</PRE
+><P>
+    为了防止未来可能的关键词增加，我们推荐总是写<TT
+CLASS="LITERAL"
+>AS</TT
+>或者用双引号修饰输出列名。
+   </P
+><DIV
+CLASS="NOTE"
+><BLOCKQUOTE
+CLASS="NOTE"
+><P
+><B
+>&#27880;&#24847;: </B
+>     输出列的命名和在<TT
+CLASS="LITERAL"
+>FROM</TT
+>子句里的命名是不一样的 （参阅<A
+HREF="queries-table-expressions.html#QUERIES-TABLE-ALIASES"
+>第 7.2.1.2 &#33410;</A
+>）。 它实际上允许你对同一个列命名两次，但是在选择列表中分配的名字是要传递下去的名字。
+    </P
+></BLOCKQUOTE
+></DIV
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="QUERIES-DISTINCT"
+>7.3.3. <TT
+CLASS="LITERAL"
+>DISTINCT</TT
+></A
+></H2
+><P
+>    在处理完选择列表之后，结果表可以可选的删除重复行。我们可以直接在<TT
+CLASS="LITERAL"
+>SELECT</TT
+>后面写上<TT
+CLASS="LITERAL"
+>DISTINCT</TT
+>关键字来指定：
+</P><PRE
+CLASS="SYNOPSIS"
+>SELECT DISTINCT <TT
+CLASS="REPLACEABLE"
+><I
+>select_list</I
+></TT
+> ...</PRE
+><P>
+    （如果不用<TT
+CLASS="LITERAL"
+>DISTINCT</TT
+>你可以用<TT
+CLASS="LITERAL"
+>ALL</TT
+>关键词来指定获得的所有行的缺省行为）。
+   </P
+><P
+>    显然，如果两行里至少有一个列有不同的值，那么我们认为它是可区分的。空值在这种比较中被认为是相同的。
+   </P
+><P
+>    另外，我们还可以用任意表达式来判断什么行可以被认为是可区分的：
+</P><PRE
+CLASS="SYNOPSIS"
+>SELECT DISTINCT ON (<TT
+CLASS="REPLACEABLE"
+><I
+>expression</I
+></TT
+> [<SPAN
+CLASS="OPTIONAL"
+>, <TT
+CLASS="REPLACEABLE"
+><I
+>expression</I
+></TT
+> ...</SPAN
+>]) <TT
+CLASS="REPLACEABLE"
+><I
+>select_list</I
+></TT
+> ...</PRE
+><P>
+    这里<TT
+CLASS="REPLACEABLE"
+><I
+>expression</I
+></TT
+>是任意值表达式，它为所有行计算。如果一个行集合里所有表达式的值是一样的， 那么我们认为它们是重复的并且因此只有第一行保留在输出中。请注意这里的一个集合的<SPAN
+CLASS="QUOTE"
+>"第一行"</SPAN
+>是不可预料的， 除非你在足够多的列上对该查询排了序，保证到达<TT
+CLASS="LITERAL"
+>DISTINCT</TT
+>过滤器的行的顺序是唯一的（<TT
+CLASS="LITERAL"
+>DISTINCT ON</TT
+>处理是发生在<TT
+CLASS="LITERAL"
+>ORDER BY</TT
+>排序后面的）。
+   </P
+><P
+>    <TT
+CLASS="LITERAL"
+>DISTINCT ON</TT
+>子句不是 SQL 标准的一部分， 有时候有人认为它是一个糟糕的风格，因为它的结果是不可判定的。 如果有选择的使用<TT
+CLASS="LITERAL"
+>GROUP BY</TT
+>和在<TT
+CLASS="LITERAL"
+>FROM</TT
+>中的子查询，那么我们可以避免使用这个构造， 但是通常它是更方便的候选方法。
+   </P
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="queries-table-expressions.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="queries-union.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>表表达式</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="queries.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>组合查询</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

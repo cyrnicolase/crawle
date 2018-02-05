@@ -1,0 +1,294 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>处理嵌入式 SQL 程序</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="ECPG - C 中的嵌入式 SQL"
+HREF="ecpg.html"><LINK
+REL="PREVIOUS"
+TITLE="预处理器指令"
+HREF="ecpg-preproc.html"><LINK
+REL="NEXT"
+TITLE="库函数"
+HREF="ecpg-library.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/ecpg.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="预处理器指令"
+HREF="ecpg-preproc.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="ecpg.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#31456; 34. <SPAN
+CLASS="APPLICATION"
+>ECPG</SPAN
+> - C 中的嵌入式 <ACRONYM
+CLASS="ACRONYM"
+>SQL</ACRONYM
+></TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="库函数"
+HREF="ecpg-library.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="ECPG-PROCESS"
+>34.10. 处理嵌入式 SQL 程序</A
+></H1
+><P
+>   现在你已经对如何构造嵌入式 SQL C 程序有所了解了，你可能希望知道如何编译它们。在编译之前，你需要让该文件通过嵌入式<ACRONYM
+CLASS="ACRONYM"
+>SQL</ACRONYM
+> <ACRONYM
+CLASS="ACRONYM"
+>C</ACRONYM
+>预处理器，它会把你用到的<ACRONYM
+CLASS="ACRONYM"
+>SQL</ACRONYM
+>转换成特殊的函数调用。在编译之后，你必须链接一个包含所需函数的特殊库。这些函数从参数中取得信息、使用<SPAN
+CLASS="APPLICATION"
+>libpq</SPAN
+>执行<ACRONYM
+CLASS="ACRONYM"
+>SQL</ACRONYM
+>命令并且把结果放在指定的参数中用来输出。
+  </P
+><P
+>   该预处理器程序被称作<TT
+CLASS="FILENAME"
+>ecpg</TT
+>并且被包括在一个正常的<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>安装中。嵌入式 SQL 程序通常带有扩展名<TT
+CLASS="FILENAME"
+>.pgc</TT
+>。如果你有一个程序文件<TT
+CLASS="FILENAME"
+>prog1.pgc</TT
+>，你可以调用下面的命令对它进行预处理：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>ecpg prog1.pgc</PRE
+><P>
+   这将创建一个文件<TT
+CLASS="FILENAME"
+>prog1.c</TT
+>。如果你的输入文件不遵循建议的命名模式，你可以用<TT
+CLASS="OPTION"
+>-o</TT
+>选项显式地指定输出文件。
+  </P
+><P
+>   预处理过的文件可以被正常地编译，例如：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>cc -c prog1.c</PRE
+><P>
+   产生的 C 源文件从<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>安装中包括头文件，因此如果你把<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>安装在一个不被默认搜索的位置，你必须在编译命令行中增加一个选项（例如<TT
+CLASS="LITERAL"
+>-I/usr/local/pgsql/include</TT
+>）。
+  </P
+><P
+>   要链接一个嵌入式 SQL 程序，你需要包括<TT
+CLASS="FILENAME"
+>libecpg</TT
+>库，像这样：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>cc -o myprog prog1.o prog2.o ... -lecpg</PRE
+><P>
+   再次，你可能不得不在命令行中增加类似<TT
+CLASS="LITERAL"
+>-L/usr/local/pgsql/lib</TT
+>的选项。
+  </P
+><P
+>   你可以使用<TT
+CLASS="COMMAND"
+>pg_config</TT
+>
+   或者<TT
+CLASS="COMMAND"
+>pkg-config</TT
+> 加上包名<TT
+CLASS="LITERAL"
+>libecpg</TT
+>来得到你的安装路径。
+  </P
+><P
+>   如果你使用<SPAN
+CLASS="APPLICATION"
+>make</SPAN
+>来管理一个大工程的构建过程，把下面的隐式规则包括在你的 makefile 中将会很方便：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>ECPG = ecpg
+
+%.c: %.pgc
+        $(ECPG) $&lt;</PRE
+><P>
+  </P
+><P
+>   <TT
+CLASS="COMMAND"
+>ecpg</TT
+>命令的完整语法可见<A
+HREF="app-ecpg.html"
+><SPAN
+CLASS="APPLICATION"
+>ecpg</SPAN
+></A
+>。
+  </P
+><P
+>   <SPAN
+CLASS="APPLICATION"
+>ecpg</SPAN
+>库默认是线程安全的。不过，你可能需要使用一些线程命令行选项来编译你的客户端代码。
+  </P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="ecpg-preproc.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="ecpg-library.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>预处理器指令</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="ecpg.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>库函数</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

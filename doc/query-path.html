@@ -1,0 +1,280 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>一个查询的路径</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="PostgreSQL内部概述"
+HREF="overview.html"><LINK
+REL="PREVIOUS"
+TITLE="PostgreSQL内部概述"
+HREF="overview.html"><LINK
+REL="NEXT"
+TITLE="连接如何建立"
+HREF="connect-estab.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/arch-dev.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="PostgreSQL内部概述"
+HREF="overview.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="overview.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#31456; 49. PostgreSQL内部概述</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="连接如何建立"
+HREF="connect-estab.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="QUERY-PATH"
+>49.1. 一个查询的路径</A
+></H1
+><P
+>    这里我们将介绍为了获取结果，一个查询将会经历那些阶段。
+   </P
+><DIV
+CLASS="PROCEDURE"
+><OL
+TYPE="1"
+><LI
+CLASS="STEP"
+><P
+>      一个由应用程序到<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>服务器的连接必须被建立。应用程序传递一个查询给服务器并等待接收由服务器传回的结果。
+     </P
+></LI
+><LI
+CLASS="STEP"
+><P
+>      <I
+CLASS="FIRSTTERM"
+>分析阶段</I
+>对由应用程序传递的查询进行语法检查，并创建一个<I
+CLASS="FIRSTTERM"
+>查询树</I
+>。
+     </P
+></LI
+><LI
+CLASS="STEP"
+><P
+>      <I
+CLASS="FIRSTTERM"
+>重写系统</I
+>得到分析阶段创建的查询树，并查找可以应用到该查询树的任何<I
+CLASS="FIRSTTERM"
+>规则</I
+>（存储在<I
+CLASS="FIRSTTERM"
+>系统目录</I
+>中）。对找到的规则，它会执行<I
+CLASS="FIRSTTERM"
+>规则体</I
+>中给定的转换。
+     </P
+><P
+>      重写系统的一个应用是实现<I
+CLASS="FIRSTTERM"
+>视图</I
+>。不论何时发生一个视图（即一个<I
+CLASS="FIRSTTERM"
+>虚拟表</I
+>）上的查询，重写系统将用户查询重写为一个访问<I
+CLASS="FIRSTTERM"
+>视图定义</I
+>中给定的<I
+CLASS="FIRSTTERM"
+>基本表</I
+>的查询来替代。
+     </P
+></LI
+><LI
+CLASS="STEP"
+><P
+>      <I
+CLASS="FIRSTTERM"
+>规划器/优化器</I
+>接手（重写过的）查询树并创建一个将被作为<I
+CLASS="FIRSTTERM"
+>执行器</I
+>输入的<I
+CLASS="FIRSTTERM"
+>查询计划</I
+>。
+     </P
+><P
+>      它会先创建所有可能导向相同结果的<I
+CLASS="FIRSTTERM"
+>路径</I
+>。例如，如果在一个被扫描的关系上有一个索引，则有两条可供扫描的路径。其中之一是一个简单的顺序扫描，而另一个则是使用索引。接下来执行每条路径所需的代价被估算出来并且代价最低的路径将被选中。代价最低的路径将被扩展成一个完整的计划可供执行器使用。
+     </P
+></LI
+><LI
+CLASS="STEP"
+><P
+>      执行器递归地逐步通过<I
+CLASS="FIRSTTERM"
+>计划树</I
+>并按照计划表述的方式获取行。执行器在扫描关系时会使用<I
+CLASS="FIRSTTERM"
+>存储系统</I
+>、执行<I
+CLASS="FIRSTTERM"
+>排序</I
+>和<I
+CLASS="FIRSTTERM"
+>连接</I
+>、估算<I
+CLASS="FIRSTTERM"
+>条件</I
+>并最后归还得到的行。
+     </P
+></LI
+></OL
+></DIV
+><P
+>    在下面的小节中我们将覆盖上述列出的每一项的详细内容，以便更好地理解<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>的内部控制和数据结构。
+   </P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="overview.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="connect-estab.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>PostgreSQL内部概述</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="overview.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>连接如何建立</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

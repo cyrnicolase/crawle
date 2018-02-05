@@ -1,0 +1,518 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>自动清理</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="服务器配置"
+HREF="runtime-config.html"><LINK
+REL="PREVIOUS"
+TITLE="运行时统计数据"
+HREF="runtime-config-statistics.html"><LINK
+REL="NEXT"
+TITLE="客户端连接默认值"
+HREF="runtime-config-client.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/config.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="运行时统计数据"
+HREF="runtime-config-statistics.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="runtime-config.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#31456; 19. 服务器配置</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="客户端连接默认值"
+HREF="runtime-config-client.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="RUNTIME-CONFIG-AUTOVACUUM"
+>19.10. 自动清理</A
+></H1
+><P
+>      这些设置控制<I
+CLASS="FIRSTTERM"
+>自动清理</I
+>特性的行为。
+      详情请见<A
+HREF="routine-vacuuming.html#AUTOVACUUM"
+>第 24.1.6 &#33410;</A
+>。请注意在每个表基础上可以重写这些设置；
+      参阅<A
+HREF="sql-createtable.html#SQL-CREATETABLE-STORAGE-PARAMETERS"
+><I
+>存储参数</I
+></A
+>。
+     </P
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><A
+NAME="GUC-AUTOVACUUM"
+></A
+><TT
+CLASS="VARNAME"
+>autovacuum</TT
+> (<TT
+CLASS="TYPE"
+>boolean</TT
+>)
+      </DT
+><DD
+><P
+>        控制服务器是否运行自动清理启动器后台进程。默认为开启，不过要自动清理正常工作还需要启用<A
+HREF="runtime-config-statistics.html#GUC-TRACK-COUNTS"
+>track_counts</A
+>。该参数只能在<TT
+CLASS="FILENAME"
+>postgresql.conf</TT
+>文件或服务器命令行中设置。
+        然而，为单表通过修改表存储参数可以禁用自动清理。
+       </P
+><P
+>        注意即使该参数被禁用，系统也会在需要防止事务ID回卷时发起清理进程。详情请见<A
+HREF="routine-vacuuming.html#VACUUM-FOR-WRAPAROUND"
+>第 24.1.5 &#33410;</A
+>。
+       </P
+></DD
+><DT
+><A
+NAME="GUC-LOG-AUTOVACUUM-MIN-DURATION"
+></A
+><TT
+CLASS="VARNAME"
+>log_autovacuum_min_duration</TT
+> (<TT
+CLASS="TYPE"
+>integer</TT
+>)
+      </DT
+><DD
+><P
+>        如果自动清理运行至少该值所指定的毫秒数，被自动清理执行的每一个动作都会被日志记录。将该参数设置为0会记录所有的自动清理动作。-1（默认值）将禁用对自动清理动作的记录。例如，如果你将它设置为<TT
+CLASS="LITERAL"
+>250ms</TT
+>，则所有运行250ms或更长时间的自动清理和分析将被记录。此外，当该参数被设置为除<TT
+CLASS="LITERAL"
+>-1</TT
+>外的任何值时，如果一个自动清理动作由于存在一个锁冲突而被跳过，将会为此记录一个消息。开启这个参数对于追踪自动清理活动非常有用。该设置只能在<TT
+CLASS="FILENAME"
+>postgresql.conf</TT
+>文件或者服务器命令行上设置。
+        但是可以通过为单表修改表存储参数重写这个设置。
+       </P
+></DD
+><DT
+><A
+NAME="GUC-AUTOVACUUM-MAX-WORKERS"
+></A
+><TT
+CLASS="VARNAME"
+>autovacuum_max_workers</TT
+> (<TT
+CLASS="TYPE"
+>integer</TT
+>)
+      </DT
+><DD
+><P
+>        指定能同时运行的自动清理进程（除了自动清理启动器之外）的最大数量。默认值为3。该参数只能在服务器启动时设置。
+       </P
+></DD
+><DT
+><A
+NAME="GUC-AUTOVACUUM-NAPTIME"
+></A
+><TT
+CLASS="VARNAME"
+>autovacuum_naptime</TT
+> (<TT
+CLASS="TYPE"
+>integer</TT
+>)
+      </DT
+><DD
+><P
+>        指定自动清理在任意给定数据库上运行的最小延迟。在每一轮中后台进程检查数据库并根据需要为数据库中的表发出<TT
+CLASS="COMMAND"
+>VACUUM</TT
+>和<TT
+CLASS="COMMAND"
+>ANALYZE</TT
+>命令。延迟以秒计，且默认值为1分钟（<TT
+CLASS="LITERAL"
+>1min</TT
+>）。该参数只能在<TT
+CLASS="FILENAME"
+>postgresql.conf</TT
+>文件或在服务器命令行上设置。
+       </P
+></DD
+><DT
+><A
+NAME="GUC-AUTOVACUUM-VACUUM-THRESHOLD"
+></A
+><TT
+CLASS="VARNAME"
+>autovacuum_vacuum_threshold</TT
+> (<TT
+CLASS="TYPE"
+>integer</TT
+>)
+      </DT
+><DD
+><P
+>        指定能在一个表上触发<TT
+CLASS="COMMAND"
+>VACUUM</TT
+>的被插入、被更新或被删除元组的最小数量。默认值为50个元组。该参数只能在<TT
+CLASS="FILENAME"
+>postgresql.conf</TT
+>文件或在服务器命令中设置。对个别表可以通过修改存储参数来覆盖该设置。
+       </P
+></DD
+><DT
+><A
+NAME="GUC-AUTOVACUUM-ANALYZE-THRESHOLD"
+></A
+><TT
+CLASS="VARNAME"
+>autovacuum_analyze_threshold</TT
+> (<TT
+CLASS="TYPE"
+>integer</TT
+>)
+      </DT
+><DD
+><P
+>        指定能在一个表上触发<TT
+CLASS="COMMAND"
+>ANALYZE</TT
+>的被插入、被更新或被删除元组的最小数量。默认值为50个元组。该参数只能在<TT
+CLASS="FILENAME"
+>postgresql.conf</TT
+>文件或在服务器命令中设置。对个别表可以通过修改存储参数来覆盖该设置。
+       </P
+></DD
+><DT
+><A
+NAME="GUC-AUTOVACUUM-VACUUM-SCALE-FACTOR"
+></A
+><TT
+CLASS="VARNAME"
+>autovacuum_vacuum_scale_factor</TT
+> (<TT
+CLASS="TYPE"
+>floating point</TT
+>)
+      </DT
+><DD
+><P
+>        指定一个表尺寸的分数，在决定是否触发<TT
+CLASS="COMMAND"
+>VACUUM</TT
+>时将它加到<TT
+CLASS="VARNAME"
+>autovacuum_vacuum_threshold</TT
+>上。默认值为0.2（表尺寸的20%）。该参数只能在<TT
+CLASS="FILENAME"
+>postgresql.conf</TT
+>文件或在服务器命令中设置。对个别表可以通过修改存储参数来覆盖该设置。
+       </P
+></DD
+><DT
+><A
+NAME="GUC-AUTOVACUUM-ANALYZE-SCALE-FACTOR"
+></A
+><TT
+CLASS="VARNAME"
+>autovacuum_analyze_scale_factor</TT
+> (<TT
+CLASS="TYPE"
+>floating point</TT
+>)
+      </DT
+><DD
+><P
+>        指定一个表尺寸的分数，在决定是否触发<TT
+CLASS="COMMAND"
+>ANALYZE</TT
+>时将它加到<TT
+CLASS="VARNAME"
+>autovacuum_analyze_threshold</TT
+>上。默认值为0.1（表尺寸的10%）。该参数只能在<TT
+CLASS="FILENAME"
+>postgresql.conf</TT
+>文件或在服务器命令中设置。对个别表可以通过修改存储参数来覆盖该设置。
+       </P
+></DD
+><DT
+><A
+NAME="GUC-AUTOVACUUM-FREEZE-MAX-AGE"
+></A
+><TT
+CLASS="VARNAME"
+>autovacuum_freeze_max_age</TT
+> (<TT
+CLASS="TYPE"
+>integer</TT
+>)
+      </DT
+><DD
+><P
+>        指定在一个<TT
+CLASS="COMMAND"
+>VACUUM</TT
+>操作被强制执行来防止表中事务ID回卷之前，一个表的<TT
+CLASS="STRUCTNAME"
+>pg_class</TT
+>.<TT
+CLASS="STRUCTFIELD"
+>relfrozenxid</TT
+>域能保持的最大年龄（事务的）。注意即便自动清理被禁用，系统也将发起自动清理进程来阻止回卷。
+       </P
+><P
+>        清理也允许从<TT
+CLASS="FILENAME"
+>pg_clog</TT
+>子目录中移除旧文件，这也是为什么默认值被设置为较低的2亿事务。该参数只能在服务器启动时设置，但是对于个别表可以通过修改存储参数来降低该设置。详见<A
+HREF="routine-vacuuming.html#VACUUM-FOR-WRAPAROUND"
+>第 24.1.5 &#33410;</A
+>。
+       </P
+></DD
+><DT
+><A
+NAME="GUC-AUTOVACUUM-MULTIXACT-FREEZE-MAX-AGE"
+></A
+><TT
+CLASS="VARNAME"
+>autovacuum_multixact_freeze_max_age</TT
+> (<TT
+CLASS="TYPE"
+>integer</TT
+>)
+      </DT
+><DD
+><P
+>        指定在一个<TT
+CLASS="COMMAND"
+>VACUUM</TT
+>操作被强制执行来防止表中多事务ID回卷之前，一个表的<TT
+CLASS="STRUCTNAME"
+>pg_class</TT
+>.<TT
+CLASS="STRUCTFIELD"
+>relminmxid</TT
+>域能保持的最大年龄（多事务的）。注意即便自动清理被禁用，系统也将发起自动清理进程来阻止回卷。
+       </P
+><P
+>        清理多事务也允许从<TT
+CLASS="FILENAME"
+>pg_multixact/members</TT
+>和<TT
+CLASS="FILENAME"
+>pg_multixact/offsets</TT
+>子目录中移除旧文件，这也是为什么默认值被设置为较低的400万多事务。该参数只能在服务器启动时设置，但是对于个别表可以通过修改存储参数来降低该设置。详见<A
+HREF="routine-vacuuming.html#VACUUM-FOR-MULTIXACT-WRAPAROUND"
+>第 24.1.5.1 &#33410;</A
+>。
+       </P
+></DD
+><DT
+><A
+NAME="GUC-AUTOVACUUM-VACUUM-COST-DELAY"
+></A
+><TT
+CLASS="VARNAME"
+>autovacuum_vacuum_cost_delay</TT
+> (<TT
+CLASS="TYPE"
+>integer</TT
+>)
+      </DT
+><DD
+><P
+>        指定用于自动<TT
+CLASS="COMMAND"
+>VACUUM</TT
+>操作中的代价延迟值。如果指定-1（默认值），则使用<A
+HREF="runtime-config-resource.html#GUC-VACUUM-COST-DELAY"
+>vacuum_cost_delay</A
+>值。默认值为20毫秒。该参数只能在<TT
+CLASS="FILENAME"
+>postgresql.conf</TT
+>文件或在服务器命令中设置。对个别表可以通过修改存储参数来覆盖该设置。
+       </P
+></DD
+><DT
+><A
+NAME="GUC-AUTOVACUUM-VACUUM-COST-LIMIT"
+></A
+><TT
+CLASS="VARNAME"
+>autovacuum_vacuum_cost_limit</TT
+> (<TT
+CLASS="TYPE"
+>integer</TT
+>)
+      </DT
+><DD
+><P
+>        指定用于自动<TT
+CLASS="COMMAND"
+>VACUUM</TT
+>操作中的代价限制值。如果指定-1（默认值），则使用<A
+HREF="runtime-config-resource.html#GUC-VACUUM-COST-LIMIT"
+>vacuum_cost_limit</A
+>值。注意该值被按比例地分配到运行中的自动清理工作者上（如果有多个），因此每一个工作者的限制值之和绝不会超过这个变量中的限制值。该参数只能在<TT
+CLASS="FILENAME"
+>postgresql.conf</TT
+>文件或在服务器命令中设置。对个别表可以通过修改存储参数来覆盖该设置。
+       </P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="runtime-config-statistics.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="runtime-config-client.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>运行时统计数据</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="runtime-config.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>客户端连接默认值</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

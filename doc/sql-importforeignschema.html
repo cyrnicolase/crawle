@@ -1,0 +1,438 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>IMPORT FOREIGN SCHEMA</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="SQL 命令"
+HREF="sql-commands.html"><LINK
+REL="PREVIOUS"
+TITLE="GRANT"
+HREF="sql-grant.html"><LINK
+REL="NEXT"
+TITLE="INSERT"
+HREF="sql-insert.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="REFENTRY"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/ref/import_foreign_schema.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="GRANT"
+HREF="sql-grant.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="INSERT"
+HREF="sql-insert.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="SQL-IMPORTFOREIGNSCHEMA"
+></A
+>IMPORT FOREIGN SCHEMA</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN88069"
+></A
+><H2
+>&#21517;&#31216;</H2
+>IMPORT FOREIGN SCHEMA&nbsp;--&nbsp;从一个外部服务器导入表定义</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN88072"
+></A
+><H2
+>&#22823;&#32434;</H2
+><PRE
+CLASS="SYNOPSIS"
+>IMPORT FOREIGN SCHEMA <TT
+CLASS="REPLACEABLE"
+><I
+>remote_schema</I
+></TT
+>
+    [ { LIMIT TO | EXCEPT } ( <TT
+CLASS="REPLACEABLE"
+><I
+>table_name</I
+></TT
+> [, ...] ) ]
+    FROM SERVER <TT
+CLASS="REPLACEABLE"
+><I
+>server_name</I
+></TT
+>
+    INTO <TT
+CLASS="REPLACEABLE"
+><I
+>local_schema</I
+></TT
+>
+    [ OPTIONS ( <TT
+CLASS="REPLACEABLE"
+><I
+>option</I
+></TT
+> '<TT
+CLASS="REPLACEABLE"
+><I
+>value</I
+></TT
+>' [, ... ] ) ]</PRE
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="SQL-IMPORTFOREIGNSCHEMA-DESCRIPTION"
+></A
+><H2
+>简介</H2
+><P
+>   <TT
+CLASS="COMMAND"
+>IMPORT FOREIGN SCHEMA</TT
+>创建表示存在于
+   外部服务器上的表的外部表。新外部表将由发出该命令的用户所拥有并且用
+   匹配远程表的正确的列定义和选项创建。
+  </P
+><P
+>   默认情况下，存在于外部服务器上一个特定模式中的所有表和视图都会被导入。
+   根据需要，表的列表可以被限制到一个指定的子集，或者可以排除特定的表。
+   新外部表都被创建在一个必须已经存在的目标模式中。
+  </P
+><P
+>   要使用<TT
+CLASS="COMMAND"
+>IMPORT FOREIGN SCHEMA</TT
+>，用户必
+   须具有外部服务器上的<TT
+CLASS="LITERAL"
+>USAGE</TT
+>特权以及在目标模式上的
+   <TT
+CLASS="LITERAL"
+>CREATE</TT
+>特权。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN88089"
+></A
+><H2
+>参数</H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>remote_schema</I
+></TT
+></DT
+><DD
+><P
+>      要从哪个远程模式导入。一个远程模式的特定含义依赖于所使用的外部数据包装器。
+     </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>LIMIT TO ( <TT
+CLASS="REPLACEABLE"
+><I
+>table_name</I
+></TT
+> [, ...] )</TT
+></DT
+><DD
+><P
+>      只导入匹配给定表名之一的外部表。外部模式中其他的表将被忽略。
+     </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>EXCEPT ( <TT
+CLASS="REPLACEABLE"
+><I
+>table_name</I
+></TT
+> [, ...] )</TT
+></DT
+><DD
+><P
+>      把指定的外部表排除在导入之外。除了列在这里的表之外，外部模式
+      中存在的所有表都将被导入。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>server_name</I
+></TT
+></DT
+><DD
+><P
+>      要从哪个外部服务器导入。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>local_schema</I
+></TT
+></DT
+><DD
+><P
+>      被导入的外部表将创建在其中的模式。
+     </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>OPTIONS ( <TT
+CLASS="REPLACEABLE"
+><I
+>option</I
+></TT
+> '<TT
+CLASS="REPLACEABLE"
+><I
+>value</I
+></TT
+>' [, ...] )</TT
+></DT
+><DD
+><P
+>      要在导入期间使用的选项。允许使用的选项名称和值与每一个外部数据包装器
+      有关。
+     </P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="SQL-IMPORTFOREIGNSCHEMA-EXAMPLES"
+></A
+><H2
+>示例</H2
+><P
+>   从服务器<TT
+CLASS="STRUCTNAME"
+>film_server</TT
+>上的远程模式<TT
+CLASS="STRUCTNAME"
+>foreign_films</TT
+>
+   中导入表定义，把外部表创建在本地模式<TT
+CLASS="STRUCTNAME"
+>films</TT
+>中：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>IMPORT FOREIGN SCHEMA foreign_films
+    FROM SERVER film_server INTO films;</PRE
+><P>
+   </P
+><P
+>   同上，但是只导入两个表<TT
+CLASS="STRUCTNAME"
+>actors</TT
+>和
+   <TT
+CLASS="LITERAL"
+>directors</TT
+>（如果存在）：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>IMPORT FOREIGN SCHEMA foreign_films LIMIT TO (actors, directors)
+    FROM SERVER film_server INTO films;</PRE
+><P>
+   </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="SQL-IMPORTFOREIGNSCHEMA-COMPATIBILITY"
+></A
+><H2
+>兼容性</H2
+><P
+>   <TT
+CLASS="COMMAND"
+>IMPORT FOREIGN SCHEMA</TT
+>命令符合
+   <ACRONYM
+CLASS="ACRONYM"
+>SQL</ACRONYM
+>标准，不过<TT
+CLASS="LITERAL"
+>OPTIONS</TT
+>
+   子句是一种<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>扩展。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN88144"
+></A
+><H2
+>另见</H2
+><A
+HREF="sql-createforeigntable.html"
+>CREATE FOREIGN TABLE</A
+>, <A
+HREF="sql-createserver.html"
+>CREATE SERVER</A
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-grant.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="sql-insert.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>GRANT</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>INSERT</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

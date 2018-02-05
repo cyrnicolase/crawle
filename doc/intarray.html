@@ -1,0 +1,943 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>intarray</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="额外提供的模块"
+HREF="contrib.html"><LINK
+REL="PREVIOUS"
+TITLE="intagg"
+HREF="intagg.html"><LINK
+REL="NEXT"
+TITLE="isn"
+HREF="isn.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/intarray.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="intagg"
+HREF="intagg.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="contrib.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#38468;&#24405; F. 额外提供的模块</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="isn"
+HREF="isn.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="INTARRAY"
+>F.18. intarray</A
+></H1
+><P
+>  <TT
+CLASS="FILENAME"
+>intarray</TT
+>模块提供了一些有用的函数和操作符来操纵不含空值的整数数组。也提供了对使用某些操作符的索引搜索的支持。
+ </P
+><P
+>  如果一个提供的数组中包含任何 NULL 元素，所有这些操作都将抛出一个错误。
+ </P
+><P
+>  很多这些操作只对一维数组有意义。尽管它们将接受更多维数的数组输入，数据将被当作一个按照存储顺序排列的线性数组对待。
+ </P
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN177272"
+>F.18.1. <TT
+CLASS="FILENAME"
+>intarray</TT
+> 函数和操作符</A
+></H2
+><P
+>   <TT
+CLASS="FILENAME"
+>intarray</TT
+>模块提供的函数被列在<A
+HREF="intarray.html#INTARRAY-FUNC-TABLE"
+>&#34920; F-10</A
+>中，操作符被列在<A
+HREF="intarray.html#INTARRAY-OP-TABLE"
+>&#34920; F-11</A
+>中。
+  </P
+><DIV
+CLASS="TABLE"
+><A
+NAME="INTARRAY-FUNC-TABLE"
+></A
+><P
+><B
+>&#34920; F-10. <TT
+CLASS="FILENAME"
+>intarray</TT
+> 函数</B
+></P
+><TABLE
+BORDER="1"
+CLASS="CALSTABLE"
+><COL><COL><COL><COL><COL><THEAD
+><TR
+><TH
+>函数</TH
+><TH
+>返回类型</TH
+><TH
+>描述</TH
+><TH
+>例子</TH
+><TH
+>结果</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+><CODE
+CLASS="FUNCTION"
+>icount(int[])</CODE
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>int</TT
+></TD
+><TD
+>数组中元素的数量</TD
+><TD
+><TT
+CLASS="LITERAL"
+>icount('{1,2,3}'::int[])</TT
+></TD
+><TD
+><TT
+CLASS="LITERAL"
+>3</TT
+></TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="FUNCTION"
+>sort(int[], text dir)</CODE
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>int[]</TT
+></TD
+><TD
+>排序数组 &mdash; <TT
+CLASS="PARAMETER"
+>dir</TT
+>必须是<TT
+CLASS="LITERAL"
+>asc</TT
+>或<TT
+CLASS="LITERAL"
+>desc</TT
+></TD
+><TD
+><TT
+CLASS="LITERAL"
+>sort('{1,2,3}'::int[], 'desc')</TT
+></TD
+><TD
+><TT
+CLASS="LITERAL"
+>{3,2,1}</TT
+></TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="FUNCTION"
+>sort(int[])</CODE
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>int[]</TT
+></TD
+><TD
+>以升序排序</TD
+><TD
+><TT
+CLASS="LITERAL"
+>sort(array[11,77,44])</TT
+></TD
+><TD
+><TT
+CLASS="LITERAL"
+>{11,44,77}</TT
+></TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="FUNCTION"
+>sort_asc(int[])</CODE
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>int[]</TT
+></TD
+><TD
+>以升序排序</TD
+><TD
+><TT
+CLASS="LITERAL"
+></TT
+></TD
+><TD
+><TT
+CLASS="LITERAL"
+></TT
+></TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="FUNCTION"
+>sort_desc(int[])</CODE
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>int[]</TT
+></TD
+><TD
+>以降序排序</TD
+><TD
+><TT
+CLASS="LITERAL"
+></TT
+></TD
+><TD
+><TT
+CLASS="LITERAL"
+></TT
+></TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="FUNCTION"
+>uniq(int[])</CODE
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>int[]</TT
+></TD
+><TD
+>移除临近的重复</TD
+><TD
+><TT
+CLASS="LITERAL"
+>uniq(sort('{1,2,3,2,1}'::int[]))</TT
+></TD
+><TD
+><TT
+CLASS="LITERAL"
+>{1,2,3}</TT
+></TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="FUNCTION"
+>idx(int[], int item)</CODE
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>int</TT
+></TD
+><TD
+>匹配<TT
+CLASS="PARAMETER"
+>item</TT
+>的第一个元素的索引（如果没有为 0）</TD
+><TD
+><TT
+CLASS="LITERAL"
+>idx(array[11,22,33,22,11], 22)</TT
+></TD
+><TD
+><TT
+CLASS="LITERAL"
+>2</TT
+></TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="FUNCTION"
+>subarray(int[], int start, int len)</CODE
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>int[]</TT
+></TD
+><TD
+>从位置<TT
+CLASS="PARAMETER"
+>start</TT
+>开始的由<TT
+CLASS="PARAMETER"
+>len</TT
+>个元素组成的元组部分</TD
+><TD
+><TT
+CLASS="LITERAL"
+>subarray('{1,2,3,2,1}'::int[], 2, 3)</TT
+></TD
+><TD
+><TT
+CLASS="LITERAL"
+>{2,3,2}</TT
+></TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="FUNCTION"
+>subarray(int[], int start)</CODE
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>int[]</TT
+></TD
+><TD
+>从位置<TT
+CLASS="PARAMETER"
+>start</TT
+>开始的元组部分</TD
+><TD
+><TT
+CLASS="LITERAL"
+>subarray('{1,2,3,2,1}'::int[], 2)</TT
+></TD
+><TD
+><TT
+CLASS="LITERAL"
+>{2,3,2,1}</TT
+></TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="FUNCTION"
+>intset(int)</CODE
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>int[]</TT
+></TD
+><TD
+>创建单一元素数组</TD
+><TD
+><TT
+CLASS="LITERAL"
+>intset(42)</TT
+></TD
+><TD
+><TT
+CLASS="LITERAL"
+>{42}</TT
+></TD
+></TR
+></TBODY
+></TABLE
+></DIV
+><DIV
+CLASS="TABLE"
+><A
+NAME="INTARRAY-OP-TABLE"
+></A
+><P
+><B
+>&#34920; F-11. <TT
+CLASS="FILENAME"
+>intarray</TT
+> 操作符</B
+></P
+><TABLE
+BORDER="1"
+CLASS="CALSTABLE"
+><COL><COL><COL><THEAD
+><TR
+><TH
+>操作符</TH
+><TH
+>返回</TH
+><TH
+>描述</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>int[] &amp;&amp; int[]</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>boolean</TT
+></TD
+><TD
+>重叠 &mdash; 如果数组有至少一个公共元素，则为<TT
+CLASS="LITERAL"
+>true</TT
+></TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>int[] @&gt; int[]</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>boolean</TT
+></TD
+><TD
+>包含 &mdash; 如果左数组包含右数组，则为<TT
+CLASS="LITERAL"
+>true</TT
+></TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>int[] &lt;@ int[]</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>boolean</TT
+></TD
+><TD
+>被包含 &mdash; 如果左数组被右数组包含，则为<TT
+CLASS="LITERAL"
+>true</TT
+></TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+># int[]</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>int</TT
+></TD
+><TD
+>数组中元素的数目</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>int[] # int</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>int</TT
+></TD
+><TD
+>索引（与<CODE
+CLASS="FUNCTION"
+>idx</CODE
+>函数相同）</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>int[] + int</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>int[]</TT
+></TD
+><TD
+>把元素推到数组中（增加到数组末尾）</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>int[] + int[]  </TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>int[]</TT
+></TD
+><TD
+>数组串接（把右数组增加到左数组的末尾）</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>int[] - int</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>int[]</TT
+></TD
+><TD
+>从数组中移除匹配右参数的项</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>int[] - int[]</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>int[]</TT
+></TD
+><TD
+>从左数组中移除右数组的元素</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>int[] | int</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>int[]</TT
+></TD
+><TD
+>参数的联合</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>int[] | int[]</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>int[]</TT
+></TD
+><TD
+>数组的联合</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>int[] &amp; int[]</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>int[]</TT
+></TD
+><TD
+>数组的交</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>int[] @@ query_int</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>boolean</TT
+></TD
+><TD
+>如果数组满足查询（见下文），则为<TT
+CLASS="LITERAL"
+>true</TT
+></TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>query_int ~~ int[]</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>boolean</TT
+></TD
+><TD
+>如果数组满足查询（<TT
+CLASS="LITERAL"
+>@@</TT
+>交换子），则为<TT
+CLASS="LITERAL"
+>true</TT
+></TD
+></TR
+></TBODY
+></TABLE
+></DIV
+><P
+>   （在 PostgreSQL 8.2 之前，包含操作符<TT
+CLASS="LITERAL"
+>@&gt;</TT
+>和<TT
+CLASS="LITERAL"
+>&lt;@</TT
+>分别被称为<TT
+CLASS="LITERAL"
+>@</TT
+>和<TT
+CLASS="LITERAL"
+>~</TT
+>。这些名称仍然有效，但是已被弃用并且将最终被移除。注意旧名称与核心几何数据类型之前所遵循的习惯相反！）
+  </P
+><P
+>   操作符<TT
+CLASS="LITERAL"
+>&amp;&amp;</TT
+>、<TT
+CLASS="LITERAL"
+>@&gt;</TT
+>和<TT
+CLASS="LITERAL"
+>&lt;@</TT
+>等效于<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>的内建同名操作符，不过它们只能在不含空值的整数数组上工作，而内建的操作符可以对任何数组类型工作。这种限制使它们在很多情况下比内建操作符更快。
+  </P
+><P
+>   <TT
+CLASS="LITERAL"
+>@@</TT
+>和<TT
+CLASS="LITERAL"
+>~~</TT
+>操作符测试一个数组是否满足一个<I
+CLASS="FIRSTTERM"
+>query</I
+>，它被表示成一种特殊数据类型<TT
+CLASS="TYPE"
+>query_int</TT
+>的一个值。一个由整数值组成的<I
+CLASS="FIRSTTERM"
+>查询</I
+>会被针对数组的元素检查，可能会组合使用操作符<TT
+CLASS="LITERAL"
+>&amp;</TT
+>（AND）、<TT
+CLASS="LITERAL"
+>|</TT
+>（OR）以及<TT
+CLASS="LITERAL"
+>!</TT
+>（NOT）。根据需要可以使用圆括号。例如，查询<TT
+CLASS="LITERAL"
+>1&amp;(2|3)</TT
+>匹配包含 1 并且还包括 2 或 3 的数组。
+  </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN177535"
+>F.18.2. 索引支持</A
+></H2
+><P
+>   <TT
+CLASS="FILENAME"
+>intarray</TT
+>提供对于<TT
+CLASS="LITERAL"
+>&amp;&amp;</TT
+>、<TT
+CLASS="LITERAL"
+>@&gt;</TT
+>、<TT
+CLASS="LITERAL"
+>&lt;@</TT
+>和<TT
+CLASS="LITERAL"
+>@@</TT
+>操作符以及常规数组相等的索引支持。
+  </P
+><P
+>   提供了两种 GiST 索引操作符类：<TT
+CLASS="LITERAL"
+>gist__int_ops</TT
+>（被默认使用）适合于中小尺寸的数据集，而<TT
+CLASS="LITERAL"
+>gist__intbig_ops</TT
+>使用一种更大的签名并且更适合于索引大型数据集（即，包含大量可区分数组值的列）。该实现使用了一种带有内建有损压缩的 RD 树结构。
+  </P
+><P
+>   也有一种非默认的 GIN 操作符类<TT
+CLASS="LITERAL"
+>gin__int_ops</TT
+>支持相同的操作符。
+  </P
+><P
+>   在 GiST 和 GIN 索引之间的选择取决于 GiST 和 GIN 的相对性能特点，
+   这将在其他地方讨论。
+  </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN177549"
+>F.18.3. 例子</A
+></H2
+><PRE
+CLASS="PROGRAMLISTING"
+>-- 一个消息可以在一个或多个<SPAN
+CLASS="QUOTE"
+>"小节"</SPAN
+>中
+CREATE TABLE message (mid INT PRIMARY KEY, sections INT[], ...);
+
+-- 创建专门的索引
+CREATE INDEX message_rdtree_idx ON message USING GIST (sections gist__int_ops);
+
+-- 选择小节 1 或 2 中的消息 - OVERLAP 操作符
+SELECT message.mid FROM message WHERE message.sections &amp;&amp; '{1,2}';
+
+-- 选择小节 1 和 2 中的消息 - CONTAINS 操作符
+SELECT message.mid FROM message WHERE message.sections @&gt; '{1,2}';
+
+-- 相同，使用 QUERY 操作符
+SELECT message.mid FROM message WHERE message.sections @@ '1&amp;2'::query_int;</PRE
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN177553"
+>F.18.4. 测试基准</A
+></H2
+><P
+>   源代码目录<TT
+CLASS="FILENAME"
+>contrib/intarray/bench</TT
+>包含有一个基准测试套件，可以针对
+   一个安装好的<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>服务器运行这个套件（还要求安装
+   <TT
+CLASS="FILENAME"
+>DBD::Pg</TT
+>）。要运行测试基准：
+  </P
+><PRE
+CLASS="PROGRAMLISTING"
+>cd .../contrib/intarray/bench
+createdb TEST
+psql -c "CREATE EXTENSION intarray" TEST
+./create_test.pl | psql TEST
+./bench.pl</PRE
+><P
+>   <TT
+CLASS="FILENAME"
+>bench.pl</TT
+>脚本有多个选项，当它不使用任何参数运行时会显示这些选项。
+  </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN177562"
+>F.18.5. 作者</A
+></H2
+><P
+>   所有工作由 Teodor Sigaev（<CODE
+CLASS="EMAIL"
+>&#60;<A
+HREF="mailto:teodor@sigaev.ru"
+>teodor@sigaev.ru</A
+>&#62;</CODE
+>）和 Oleg Bartunov（<CODE
+CLASS="EMAIL"
+>&#60;<A
+HREF="mailto:oleg@sai.msu.su"
+>oleg@sai.msu.su</A
+>&#62;</CODE
+>）完成。更多信息请见<A
+HREF="http://www.sai.msu.su/~megera/postgres/gist/"
+TARGET="_top"
+>http://www.sai.msu.su/~megera/postgres/gist/</A
+>。Andrey Oktyabrski 完成了一项伟大的工作，他增加了新的函数和操作。
+  </P
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="intagg.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="isn.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>intagg</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="contrib.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>isn</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

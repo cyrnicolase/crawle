@@ -1,0 +1,361 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>服务器设置和操作</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="服务器管理"
+HREF="admin.html"><LINK
+REL="PREVIOUS"
+TITLE="使用Visual C++或
+  Borland C++构建libpq"
+HREF="install-windows-libpq.html"><LINK
+REL="NEXT"
+TITLE="PostgreSQL用户账户"
+HREF="postgres-user.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="CHAPTER"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/runtime.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="使用Visual C++或
+  Borland C++构建libpq"
+HREF="install-windows-libpq.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="admin.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="PostgreSQL用户账户"
+HREF="postgres-user.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="CHAPTER"
+><H1
+><A
+NAME="RUNTIME"
+></A
+>&#31456; 18. 服务器设置和操作</H1
+><DIV
+CLASS="TOC"
+><DL
+><DT
+><B
+>&#30446;&#24405;</B
+></DT
+><DT
+>18.1. <A
+HREF="postgres-user.html"
+><SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>用户账户</A
+></DT
+><DT
+>18.2. <A
+HREF="creating-cluster.html"
+>创建一个数据库集簇</A
+></DT
+><DD
+><DL
+><DT
+>18.2.1. <A
+HREF="creating-cluster.html#CREATING-CLUSTER-MOUNT-POINTS"
+>二级文件系统的使用</A
+></DT
+><DT
+>18.2.2. <A
+HREF="creating-cluster.html#CREATING-CLUSTER-NFS"
+>网络文件系统的使用</A
+></DT
+></DL
+></DD
+><DT
+>18.3. <A
+HREF="server-start.html"
+>启动数据库服务器</A
+></DT
+><DD
+><DL
+><DT
+>18.3.1. <A
+HREF="server-start.html#SERVER-START-FAILURES"
+>服务器启动失败</A
+></DT
+><DT
+>18.3.2. <A
+HREF="server-start.html#CLIENT-CONNECTION-PROBLEMS"
+>客户端连接问题</A
+></DT
+></DL
+></DD
+><DT
+>18.4. <A
+HREF="kernel-resources.html"
+>管理内核资源</A
+></DT
+><DD
+><DL
+><DT
+>18.4.1. <A
+HREF="kernel-resources.html#SYSVIPC"
+>共享内存和信号量</A
+></DT
+><DT
+>18.4.2. <A
+HREF="kernel-resources.html#AEN31531"
+>资源限制</A
+></DT
+><DT
+>18.4.3. <A
+HREF="kernel-resources.html#LINUX-MEMORY-OVERCOMMIT"
+>Linux 内存过量使用</A
+></DT
+><DT
+>18.4.4. <A
+HREF="kernel-resources.html#LINUX-HUGE-PAGES"
+>Linux 大页面</A
+></DT
+></DL
+></DD
+><DT
+>18.5. <A
+HREF="server-shutdown.html"
+>关闭服务器</A
+></DT
+><DT
+>18.6. <A
+HREF="upgrading.html"
+>升级一个<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>集簇</A
+></DT
+><DD
+><DL
+><DT
+>18.6.1. <A
+HREF="upgrading.html#UPGRADING-VIA-PGDUMPALL"
+>通过<SPAN
+CLASS="APPLICATION"
+>pg_dumpall</SPAN
+>升级数据</A
+></DT
+><DT
+>18.6.2. <A
+HREF="upgrading.html#UPGRADING-VIA-PG-UPGRADE"
+>通过<SPAN
+CLASS="APPLICATION"
+>pg_upgrade</SPAN
+>升级数据</A
+></DT
+><DT
+>18.6.3. <A
+HREF="upgrading.html#UPGRADING-VIA-REPLICATION"
+>通过复制升级数据</A
+></DT
+></DL
+></DD
+><DT
+>18.7. <A
+HREF="preventing-server-spoofing.html"
+>阻止服务器欺骗</A
+></DT
+><DT
+>18.8. <A
+HREF="encryption-options.html"
+>加密选项</A
+></DT
+><DT
+>18.9. <A
+HREF="ssl-tcp.html"
+>用 SSL 进行安全的 TCP/IP 连接</A
+></DT
+><DD
+><DL
+><DT
+>18.9.1. <A
+HREF="ssl-tcp.html#SSL-CLIENT-CERTIFICATES"
+>使用客户端证书</A
+></DT
+><DT
+>18.9.2. <A
+HREF="ssl-tcp.html#SSL-SERVER-FILES"
+>SSL 服务器文件用法</A
+></DT
+><DT
+>18.9.3. <A
+HREF="ssl-tcp.html#SSL-CERTIFICATE-CREATION"
+>创建自签名的证书</A
+></DT
+></DL
+></DD
+><DT
+>18.10. <A
+HREF="ssh-tunnels.html"
+>使用<SPAN
+CLASS="APPLICATION"
+>SSH</SPAN
+>隧道的安全 TCP/IP 连接</A
+></DT
+><DT
+>18.11. <A
+HREF="event-log-registration.html"
+>在<SPAN
+CLASS="SYSTEMITEM"
+>Windows</SPAN
+>上注册<SPAN
+CLASS="APPLICATION"
+>Event Log</SPAN
+></A
+></DT
+></DL
+></DIV
+><P
+>  本章讨论如何设置和运行数据库服务器，以及它与操作系统的交互。
+ </P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="install-windows-libpq.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="postgres-user.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>使用<SPAN
+CLASS="PRODUCTNAME"
+>Visual C++</SPAN
+>或
+  <SPAN
+CLASS="PRODUCTNAME"
+>Borland C++</SPAN
+>构建<SPAN
+CLASS="APPLICATION"
+>libpq</SPAN
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="admin.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>用户账户</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

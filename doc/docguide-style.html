@@ -1,0 +1,312 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>样式指导</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="文档"
+HREF="docguide.html"><LINK
+REL="PREVIOUS"
+TITLE="文档写作"
+HREF="docguide-authoring.html"><LINK
+REL="NEXT"
+TITLE="首字母缩写词"
+HREF="acronyms.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/docguide.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="文档写作"
+HREF="docguide-authoring.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="docguide.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#38468;&#24405; J. 文档</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="首字母缩写词"
+HREF="acronyms.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="DOCGUIDE-STYLE"
+>J.5. 样式指导</A
+></H1
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN183853"
+>J.5.1. 参考页</A
+></H2
+><P
+>    参考页应该遵循一种标准布局。这允许用户更快找到想要的信息，并且它也鼓励作者记录一个命令的所有相关方面。不止在<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>参考页中需要一致性，操作系统或其他包提供的参考页也需要。因此人们开发了下列方针。它们的大部分与由多个操作系统建立的类似方针保持一致。
+   </P
+><P
+>    描述可执行命令的参考页应该包含以下的小节，并且是按照介绍的顺序。不适用的小节可以被忽略。额外的顶层小节应该只被用在特殊的环境下；通常那些信息属于<SPAN
+CLASS="QUOTE"
+>"Usage"</SPAN
+>小节。
+
+    <P
+></P
+></P><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+>名称</DT
+><DD
+><P
+>        这个小节是自动生成的。它包含命令名称和对其功能的一个半句话摘要。
+       </P
+></DD
+><DT
+>概要</DT
+><DD
+><P
+>        这个小节包含该命令的语法表。概要通常应该不列出每个命令行选项；那些东西由后续小节介绍。概要应该列出命令行的主要部分，比如输入和输出文件会到哪里去。
+       </P
+></DD
+><DT
+>描述</DT
+><DD
+><P
+>        解释命令干什么的几个段落。
+       </P
+></DD
+><DT
+>选项</DT
+><DD
+><P
+>        一个描述每一个命令行选项的列表。如果有很多选项，可以使用子节。
+       </P
+></DD
+><DT
+>退出状态</DT
+><DD
+><P
+>        如果程序用 0 表示成功，非零表示失败，那么你不需要为此写文档。如果在每个非零退出码有不同的含义，那么在这里列出它们。
+       </P
+></DD
+><DT
+>用法</DT
+><DD
+><P
+>        描述程序的任意子语言或者运行时接口。如果程序不是交互式的，那么本节通常可以省略。否则，本节是全方位描述运行时特性的地方。如果需要可以使用子小节。
+       </P
+></DD
+><DT
+>环境</DT
+><DD
+><P
+>        列出所有程序可能使用的环境变量。尽量完整；即使是那些看起来很琐碎的变量，比如<TT
+CLASS="ENVAR"
+>SHELL</TT
+>都可能让读者感兴趣。
+       </P
+></DD
+><DT
+>文件</DT
+><DD
+><P
+>        列出程序可能隐式访问的任何文件。也就是说，不要列出在命令行上指定的输入和输出文件，但是要列出配置文件等。
+       </P
+></DD
+><DT
+>诊断</DT
+><DD
+><P
+>        解释程序可能生成的任何不正常的输出。避免列出所有可能的错误消息。 这样做工作量很大但没有太多实际用处。但是如果错误消息有一种用户可以解析的标准格式，那么它应当在这里解释。
+       </P
+></DD
+><DT
+>注意</DT
+><DD
+><P
+>        任何放在其他地方都不合适的东西可以放在这里，但是特别是缺陷、实现瑕疵、安全考虑、兼容性问题。
+       </P
+></DD
+><DT
+>例子</DT
+><DD
+><P
+>        例子
+       </P
+></DD
+><DT
+>历史</DT
+><DD
+><P
+>        如果在程序的历史上有一些主要的里程碑，那么可以在这里列出。通常，这个小节可以被省略。
+       </P
+></DD
+><DT
+>作者</DT
+><DD
+><P
+>        作者（只在 contrib 节中使用）
+       </P
+></DD
+><DT
+>另见</DT
+><DD
+><P
+>        交叉引用，按照下面的顺序列出：其它<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>命令参考页、<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+> SQL命令参考页、引用<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>手册、 其它参考页（如操作系统、其它包）、其它文档。在同一组中的项按照字母表顺序列出。
+       </P
+></DD
+></DL
+></DIV
+><P>
+   </P
+><P
+>    描述 SQL 命令的参考页应该包含下列小节：名称、概要、描述、参数、输出、注意、例子、兼容性、历史、另见。 用法、诊断、注意、例子、兼容性、历史、又见。参数小节类似选项小节， 但是在选择哪些子句是可列出的方面有更多自由。输出小节只有在命令返回非命令结束标签的东西时才需要。兼容性小节应该解释此命令遵循 SQL 标准的程度，或者它兼容哪种其它数据库系统。SQL 命令的另见小节应该在交叉引用其它程序之前列出 SQL 命令。
+   </P
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="docguide-authoring.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="acronyms.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>文档写作</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="docguide.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>首字母缩写词</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

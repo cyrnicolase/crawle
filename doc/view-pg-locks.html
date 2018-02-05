@@ -1,0 +1,703 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>pg_locks</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="系统目录"
+HREF="catalogs.html"><LINK
+REL="PREVIOUS"
+TITLE="pg_indexes"
+HREF="view-pg-indexes.html"><LINK
+REL="NEXT"
+TITLE="pg_matviews"
+HREF="view-pg-matviews.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/catalogs.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="pg_indexes"
+HREF="view-pg-indexes.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="catalogs.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#31456; 50. 系统目录</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="pg_matviews"
+HREF="view-pg-matviews.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="VIEW-PG-LOCKS"
+>50.65. <TT
+CLASS="STRUCTNAME"
+>pg_locks</TT
+></A
+></H1
+><P
+>   视图<TT
+CLASS="STRUCTNAME"
+>pg_locks</TT
+>提供了数据库服务器上活动进程中保持的锁的信息。更多锁的讨论参见<A
+HREF="mvcc.html"
+>第 13 &#31456;</A
+>。
+  </P
+><P
+>   <TT
+CLASS="STRUCTNAME"
+>pg_locks</TT
+>中对每一个活动可锁对象、请求锁模式和相关进程的组合都有一行。因此，如果多个进程持有或者正在等待一个可锁对象上的锁，同一个可锁对象可能出现很多次。但是，一个当前没有被锁的对象根本不会出现。
+  </P
+><P
+>   有多种不同类型的可锁对象：整个关系（如表）、关系的单个页、关系的单个元组、事务ID（包括虚拟和永久ID）和普通数据库对象（由类OID和对象OID标识，和<TT
+CLASS="STRUCTNAME"
+>pg_description</TT
+>或<TT
+CLASS="STRUCTNAME"
+>pg_depend</TT
+>中的相同方式）。扩展一个关系的权力也被表示为一个独立的可锁对象。<SPAN
+CLASS="QUOTE"
+>"咨询"</SPAN
+>锁可以具有用户定义的意义。
+  </P
+><DIV
+CLASS="TABLE"
+><A
+NAME="AEN110753"
+></A
+><P
+><B
+>&#34920; 50-66. <TT
+CLASS="STRUCTNAME"
+>pg_locks</TT
+>的列</B
+></P
+><TABLE
+BORDER="1"
+CLASS="CALSTABLE"
+><COL><COL><COL><COL><THEAD
+><TR
+><TH
+>名称</TH
+><TH
+>类型</TH
+><TH
+>引用</TH
+><TH
+>描述</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+><TT
+CLASS="STRUCTFIELD"
+>locktype</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>text</TT
+></TD
+><TD
+>&nbsp;</TD
+><TD
+>       可锁对象的类型：
+       <TT
+CLASS="LITERAL"
+>relation</TT
+>,
+       <TT
+CLASS="LITERAL"
+>extend</TT
+>,
+       <TT
+CLASS="LITERAL"
+>page</TT
+>,
+       <TT
+CLASS="LITERAL"
+>tuple</TT
+>,
+       <TT
+CLASS="LITERAL"
+>transactionid</TT
+>,
+       <TT
+CLASS="LITERAL"
+>virtualxid</TT
+>,
+       <TT
+CLASS="LITERAL"
+>object</TT
+>,
+       <TT
+CLASS="LITERAL"
+>userlock</TT
+>, or
+       <TT
+CLASS="LITERAL"
+>advisory</TT
+>
+      </TD
+></TR
+><TR
+><TD
+><TT
+CLASS="STRUCTFIELD"
+>database</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>oid</TT
+></TD
+><TD
+><TT
+CLASS="LITERAL"
+><A
+HREF="catalog-pg-database.html"
+><TT
+CLASS="STRUCTNAME"
+>pg_database</TT
+></A
+>.oid</TT
+></TD
+><TD
+>       锁目标存在的数据库的OID，如果目标是一个共享对象则为0，如果目标是一个事务ID则为空
+      </TD
+></TR
+><TR
+><TD
+><TT
+CLASS="STRUCTFIELD"
+>relation</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>oid</TT
+></TD
+><TD
+><TT
+CLASS="LITERAL"
+><A
+HREF="catalog-pg-class.html"
+><TT
+CLASS="STRUCTNAME"
+>pg_class</TT
+></A
+>.oid</TT
+></TD
+><TD
+>       作为锁目标的关系的OID，如果目标不是一个关系或者只是关系的一部分则此列为空
+      </TD
+></TR
+><TR
+><TD
+><TT
+CLASS="STRUCTFIELD"
+>page</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>integer</TT
+></TD
+><TD
+>&nbsp;</TD
+><TD
+>       作为锁目标的页在关系中的页号，如果目标不是一个关系页或元组则此列为空
+      </TD
+></TR
+><TR
+><TD
+><TT
+CLASS="STRUCTFIELD"
+>tuple</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>smallint</TT
+></TD
+><TD
+>&nbsp;</TD
+><TD
+>       作为锁目标的元组在页中的元组号，如果目标不是一个元组则此列为空
+      </TD
+></TR
+><TR
+><TD
+><TT
+CLASS="STRUCTFIELD"
+>virtualxid</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>text</TT
+></TD
+><TD
+>&nbsp;</TD
+><TD
+>       作为锁目标的事务虚拟ID，如果目标不是一个虚拟事务ID则此列为空
+      </TD
+></TR
+><TR
+><TD
+><TT
+CLASS="STRUCTFIELD"
+>transactionid</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>xid</TT
+></TD
+><TD
+>&nbsp;</TD
+><TD
+>       作为锁目标的事务ID，如果目标不是一个事务ID则此列为空ID
+      </TD
+></TR
+><TR
+><TD
+><TT
+CLASS="STRUCTFIELD"
+>classid</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>oid</TT
+></TD
+><TD
+><TT
+CLASS="LITERAL"
+><A
+HREF="catalog-pg-class.html"
+><TT
+CLASS="STRUCTNAME"
+>pg_class</TT
+></A
+>.oid</TT
+></TD
+><TD
+>       包含锁目标的系统目录的OID，如果目标不是一个普通数据库对象则此列为空
+      </TD
+></TR
+><TR
+><TD
+><TT
+CLASS="STRUCTFIELD"
+>objid</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>oid</TT
+></TD
+><TD
+>任意OID列</TD
+><TD
+>       锁目标在它的系统目录中的OID，如果目标不是一个普通数据库对象则为空
+      </TD
+></TR
+><TR
+><TD
+><TT
+CLASS="STRUCTFIELD"
+>objsubid</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>smallint</TT
+></TD
+><TD
+>&nbsp;</TD
+><TD
+>       锁的目标列号（<TT
+CLASS="STRUCTFIELD"
+>classid</TT
+>和<TT
+CLASS="STRUCTFIELD"
+>objid</TT
+>指表本身），如果目标是某种其他普通数据库对象则此列为0，如果目标不是一个普通数据库对象则此列为空
+      </TD
+></TR
+><TR
+><TD
+><TT
+CLASS="STRUCTFIELD"
+>virtualtransaction</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>text</TT
+></TD
+><TD
+>&nbsp;</TD
+><TD
+>       保持这个锁或者正在等待这个锁的事务的虚拟ID
+      </TD
+></TR
+><TR
+><TD
+><TT
+CLASS="STRUCTFIELD"
+>pid</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>integer</TT
+></TD
+><TD
+>&nbsp;</TD
+><TD
+>       保持这个锁或者正在等待这个锁的服务器进程的PID，如果此锁被一个预备事务所持有则此列为空
+      </TD
+></TR
+><TR
+><TD
+><TT
+CLASS="STRUCTFIELD"
+>mode</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>text</TT
+></TD
+><TD
+>&nbsp;</TD
+><TD
+>此进程已持有或者希望持有的锁模式（参见<A
+HREF="explicit-locking.html#LOCKING-TABLES"
+>第 13.3.1 &#33410;</A
+>和<A
+HREF="transaction-iso.html#XACT-SERIALIZABLE"
+>第 13.2.3 &#33410;</A
+>）</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="STRUCTFIELD"
+>granted</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>boolean</TT
+></TD
+><TD
+>&nbsp;</TD
+><TD
+>如果锁已授予则为真，如果锁被等待则为假</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="STRUCTFIELD"
+>fastpath</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>boolean</TT
+></TD
+><TD
+>&nbsp;</TD
+><TD
+>如果锁通过快速路径获得则为真，通过主锁表获得则为假</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+><P
+>   一个行的<TT
+CLASS="STRUCTFIELD"
+>granted</TT
+>为真表示一个被指定进程持有的锁。为假表示该进程当前正在等待获取这个锁，这意味着至少一个其他进程正持有或等待同一个可锁对象上的一个冲突锁。该等待进程将一直休眠直到其他锁被释放（或者一个死锁状态被检测到）。单个进程在同一时间只能等待最多一个锁。
+  </P
+><P
+>   贯穿一个事务的运行，一个服务器进程在其生存周期内都持有一个在其虚拟事务ID上的排他锁。如果一个永久ID被分配给事务（通常发生在事务改变数据库状态时），它也会持有一个在其永久事务ID上的排他锁直到它结束。当一个事务发现它需要等待另一个事务，它也会尝试获取其他事务ID上的共享锁（不管是虚拟还是永久ID，视情况而定）。这只有当其他进程终止并释放其锁后才会成功。
+  </P
+><P
+>   尽管元组是一种可锁对象，关于行级锁的信息被存储在磁盘而不是内存中，因此行级锁通常不在这个视图中出现。如果一个进程正在等待一个行级锁，它通常在这个视图中出现，并且表示形式为正在等待已持有该行级锁的永久事务ID上的锁。
+  </P
+><P
+>   咨询锁可以在由一个单一<TT
+CLASS="TYPE"
+>bigint</TT
+>值或两个整形值构成的键上获取。一个<TT
+CLASS="TYPE"
+>bigint</TT
+>键被显示为其高位部分在<TT
+CLASS="STRUCTFIELD"
+>classid</TT
+>列中，低位部分在<TT
+CLASS="STRUCTFIELD"
+>objid</TT
+>列中，并且<TT
+CLASS="STRUCTFIELD"
+>objsubid</TT
+>等于1。原来的<TT
+CLASS="TYPE"
+>bigint</TT
+>值可以使用表达式<TT
+CLASS="LITERAL"
+>(classid::bigint &lt;&lt; 32) | objid::bigint</TT
+>重组。整形键被显示为第一个键在<TT
+CLASS="STRUCTFIELD"
+>classid</TT
+>列中，第二个键在<TT
+CLASS="STRUCTFIELD"
+>objid</TT
+>列中，并且<TT
+CLASS="STRUCTFIELD"
+>objsubid</TT
+>等于2。键的实际意义由用户决定。咨询锁是每一个数据库的本地锁，所以<TT
+CLASS="STRUCTFIELD"
+>database</TT
+>列对于一个咨询锁没有意义。
+  </P
+><P
+>   <TT
+CLASS="STRUCTNAME"
+>pg_locks</TT
+>提供了一个对于整个数据集簇中所有锁的全局视图，而不仅仅是与当前数据库相关的锁。尽管它的<TT
+CLASS="STRUCTFIELD"
+>relation</TT
+>列可以被连接到<TT
+CLASS="STRUCTNAME"
+>pg_class</TT
+>.<TT
+CLASS="STRUCTFIELD"
+>oid</TT
+>来标识被锁关系，但这种方法只有在关系属于当前数据库（<TT
+CLASS="STRUCTFIELD"
+>database</TT
+>列是当前数据库OID或者0的锁对应的关系）的情况下才会得到正确的结果。
+  </P
+><P
+>   <TT
+CLASS="STRUCTFIELD"
+>pid</TT
+>列可以被连接到
+   <A
+HREF="monitoring-stats.html#PG-STAT-ACTIVITY-VIEW"
+><TT
+CLASS="STRUCTNAME"
+>pg_stat_activity</TT
+></A
+>视图的<TT
+CLASS="STRUCTFIELD"
+>pid</TT
+>列来得到持有或等待持有每一个锁的会话的信息。
+   例如
+</P><PRE
+CLASS="PROGRAMLISTING"
+>SELECT * FROM pg_locks pl LEFT JOIN pg_stat_activity psa
+    ON pl.pid = psa.pid;</PRE
+><P>
+   另外，如果正在使用预备事务，<TT
+CLASS="STRUCTFIELD"
+>virtualtransaction</TT
+>列可以被连接到<A
+HREF="view-pg-prepared-xacts.html"
+><TT
+CLASS="STRUCTNAME"
+>pg_prepared_xacts</TT
+></A
+>视图的<TT
+CLASS="STRUCTFIELD"
+>transaction</TT
+>列来得到持有该锁的预备事务的信息（一个预备事务不可能正在等待一个锁，但它在运行中会一直持有已获得的锁）。
+   例如：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>SELECT * FROM pg_locks pl LEFT JOIN pg_prepared_xacts ppx
+    ON pl.virtualtransaction = '-1/' || ppx.transaction;</PRE
+><P>
+  </P
+><P
+>   虽然通过自连接<TT
+CLASS="STRUCTNAME"
+>pg_locks</TT
+>可以获得哪些进程阻塞了其他哪些进程的信息，但是很难得到其中的细节。这样一个查询隐藏了关于哪些锁模式与其他哪些锁模式冲突的知识。更糟糕的是，<TT
+CLASS="STRUCTNAME"
+>pg_locks</TT
+>视图无法给出所等待队列中进程的等待顺序，也无法显示哪些进程是代表其他客户端会话运行的并行工作者。更好的方法是使用<CODE
+CLASS="FUNCTION"
+>pg_blocking_pids()</CODE
+>函数（见<A
+HREF="functions-info.html#FUNCTIONS-INFO-SESSION-TABLE"
+>&#34920; 9-59</A
+>）来标识一个等待进程是被哪些进程阻塞的。
+  </P
+><P
+>   <TT
+CLASS="STRUCTNAME"
+>pg_locks</TT
+>视图显示来自于普通锁管理器和谓词锁管理器的数据，它们是独立的系统。此外，普通锁管理器把它的锁分为普通锁和<I
+CLASS="FIRSTTERM"
+>快速路径</I
+>锁。这些数据并不被保证是完全一致的。当视图被查询时，快速路径锁上的数据（<TT
+CLASS="STRUCTFIELD"
+>fastpath</TT
+> = <TT
+CLASS="LITERAL"
+>true</TT
+>）会被一次性从每一个后端收集起来，且并不冻结整个锁管理器的状态。因此有可能某些锁在上述信息被收集的过程中被获得或者释放。注意，不管怎样这些锁是已知不会和任何当前正在发生的锁冲突。在所有后端已经查询了快速路径锁后，普通锁管理器的剩余部分被作为一个单元锁住，并且所有剩余锁的一个一致快照被作为一个原子动作收集。在解锁普通锁管理器后，谓词锁管理器也被类似地锁住并且所有谓词锁被作为一个原子动作收集。因此，在快速路径锁这种特殊情况下，每一个锁管理器会传递一个一致的结果组。但由于我们并不会同时锁上两个锁管理器，  在我们询问完普通锁管理器后或者询问谓词锁管理器之前，锁可以被获得或者释放。
+  </P
+><P
+>   如果对此视图频繁地访问，对普通或者谓词锁管理器加锁可能会对数据库性能产生一定影响。虽然这些锁只会在最少的时间内被保持（足以从锁管理器获得数据），但这无法完全消除可能产生的性能影响。
+  </P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="view-pg-indexes.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="view-pg-matviews.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><TT
+CLASS="STRUCTNAME"
+>pg_indexes</TT
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="catalogs.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><TT
+CLASS="STRUCTNAME"
+>pg_matviews</TT
+></TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

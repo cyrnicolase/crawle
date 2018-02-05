@@ -1,0 +1,412 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>恢复目标设置</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="恢复配置"
+HREF="recovery-config.html"><LINK
+REL="PREVIOUS"
+TITLE="归档恢复设置"
+HREF="archive-recovery-settings.html"><LINK
+REL="NEXT"
+TITLE="后备服务器设置"
+HREF="standby-settings.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/recovery-config.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="归档恢复设置"
+HREF="archive-recovery-settings.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="recovery-config.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#31456; 27. 恢复配置</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="后备服务器设置"
+HREF="standby-settings.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="RECOVERY-TARGET-SETTINGS"
+>27.2. 恢复目标设置</A
+></H1
+><P
+>      默认情况下，恢复将会一直恢复到 WAL 日志的末尾。下面的参数可以被用来指定一个更早的停止点。在<TT
+CLASS="VARNAME"
+>recovery_target</TT
+>、<TT
+CLASS="VARNAME"
+>recovery_target_name</TT
+>、<TT
+CLASS="VARNAME"
+>recovery_target_time</TT
+>和<TT
+CLASS="VARNAME"
+>recovery_target_xid</TT
+>中，最多只能使用一个，如果在配置文件中使用了多个，将使用最后一个。
+     </P
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><A
+NAME="RECOVERY-TARGET"
+></A
+><TT
+CLASS="VARNAME"
+>recovery_target</TT
+><TT
+CLASS="LITERAL"
+> = 'immediate'</TT
+>
+      </DT
+><DD
+><P
+>        这个参数指定恢复应该在达到一个一致状态后尽快结束，即尽早结束。在从一个在线备份中恢复时，这意味着备份结束的那个点。
+       </P
+><P
+>        在技术上，这是一个字符串参数，但是<TT
+CLASS="LITERAL"
+>'immediate'</TT
+>是目前唯一允许的值。
+       </P
+></DD
+><DT
+><A
+NAME="RECOVERY-TARGET-NAME"
+></A
+><TT
+CLASS="VARNAME"
+>recovery_target_name</TT
+>
+           (<TT
+CLASS="TYPE"
+>string</TT
+>)      
+      </DT
+><DD
+><P
+>        这个参数指定（<CODE
+CLASS="FUNCTION"
+>pg_create_restore_point()</CODE
+>所创建）的已命名的恢复点，恢复将进入该恢复点。
+       </P
+></DD
+><DT
+><A
+NAME="RECOVERY-TARGET-TIME"
+></A
+><TT
+CLASS="VARNAME"
+>recovery_target_time</TT
+>
+           (<TT
+CLASS="TYPE"
+>timestamp</TT
+>)      
+      </DT
+><DD
+><P
+>        这个参数指定恢复将进入的时间戳。
+       </P
+></DD
+><DT
+><A
+NAME="RECOVERY-TARGET-XID"
+></A
+><TT
+CLASS="VARNAME"
+>recovery_target_xid</TT
+> (<TT
+CLASS="TYPE"
+>string</TT
+>)
+      </DT
+><DD
+><P
+>        这个参数指定恢复将进入的事务 ID。记住虽然事务 ID 是在事务开始时顺序分配的，但是事务可能以不同的数字顺序完成。那些在指定事务之前（也可以包括该事务）提交的事务将被恢复。精确的停止点也受到<A
+HREF="recovery-target-settings.html#RECOVERY-TARGET-INCLUSIVE"
+>recovery_target_inclusive</A
+>的影响。
+       </P
+></DD
+></DL
+></DIV
+><P
+>       下列选项进一步指定恢复目标，并且影响到达目标时会发生什么：
+     </P
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><A
+NAME="RECOVERY-TARGET-INCLUSIVE"
+></A
+><TT
+CLASS="VARNAME"
+>recovery_target_inclusive</TT
+>
+        (<TT
+CLASS="TYPE"
+>boolean</TT
+>)      
+      </DT
+><DD
+><P
+>        指定我们是否仅在指定的恢复目标之后停止（<TT
+CLASS="LITERAL"
+>true</TT
+>），或者仅在恢复目标之前停止（<TT
+CLASS="LITERAL"
+>false</TT
+>）。适用于<A
+HREF="recovery-target-settings.html#RECOVERY-TARGET-TIME"
+>recovery_target_time</A
+>或者<A
+HREF="recovery-target-settings.html#RECOVERY-TARGET-XID"
+>recovery_target_xid</A
+>被指定的情况。这个设置分别控制事务是否有准确的目标提交时间或 ID 将被包括在该恢复中。默认值为
+        <TT
+CLASS="LITERAL"
+>true</TT
+>。
+       </P
+></DD
+><DT
+><A
+NAME="RECOVERY-TARGET-TIMELINE"
+></A
+><TT
+CLASS="VARNAME"
+>recovery_target_timeline</TT
+>
+        (<TT
+CLASS="TYPE"
+>string</TT
+>)      
+      </DT
+><DD
+><P
+>        指定恢复到一个特定的时间线中。默认值是沿着基础备份建立时的当前时间线恢复。将这个参数设置为<TT
+CLASS="LITERAL"
+>latest</TT
+>会恢复到该归档中能找到的最新的时间线，这在一个后备服务器中有用。除此之外，你只需要在复杂的重恢复情况下设置这个参数，在这种情况下你需要返回到一个状态，该状态本身是在一次时间点恢复之后到达的。相关讨论见<A
+HREF="continuous-archiving.html#BACKUP-TIMELINES"
+>第 25.3.5 &#33410;</A
+>。
+       </P
+></DD
+><DT
+><A
+NAME="RECOVERY-TARGET-ACTION"
+></A
+><TT
+CLASS="VARNAME"
+>recovery_target_action</TT
+> (<TT
+CLASS="TYPE"
+>enum</TT
+>)
+      </DT
+><DD
+><P
+>        指定在达到恢复目标时服务器应该立刻采取的动作。默认动作是<TT
+CLASS="LITERAL"
+>pause</TT
+>，这表示恢复将会被暂停。<TT
+CLASS="LITERAL"
+>promote</TT
+>表示恢复处理将会结束并且服务器将开始接受连接。最后，<TT
+CLASS="LITERAL"
+>shutdown</TT
+>将在达到恢复目标之后停止服务器。
+       </P
+><P
+>        使用<TT
+CLASS="LITERAL"
+>pause</TT
+>设置的目的是：如果这个恢复目标就是恢复最想要的位置，就允许对数据库执行查询。暂停的状态可以使用<CODE
+CLASS="FUNCTION"
+>pg_xlog_replay_resume()</CODE
+>（见<A
+HREF="functions-admin.html#FUNCTIONS-RECOVERY-CONTROL-TABLE"
+>&#34920; 9-80</A
+>）继续，这会让恢复终结。如果这个恢复目标不是想要的停止点，那么关闭服务器，将恢复目标设置改为一个稍后的目标并且重启以继续恢复。
+       </P
+><P
+>        要让实例在想要的重放点那里准备好，<TT
+CLASS="LITERAL"
+>shutdown</TT
+>设置可以派上用场。该实例将仍能重放更多 WAL 记录（并且事实上将不得不重放从下一次它被启动后最后一个检查点以来的 WAL 记录）。
+       </P
+><P
+>        注意由于在<TT
+CLASS="VARNAME"
+>recovery_target_action</TT
+>被设置为<TT
+CLASS="LITERAL"
+>shutdown</TT
+>时，<TT
+CLASS="FILENAME"
+>recovery.conf</TT
+>将不会被重命名，任何后续的启动都将会以立刻关闭为终结，除非该配置被改变或者<TT
+CLASS="FILENAME"
+>recovery.conf</TT
+>文件被手工移除。
+       </P
+><P
+>        如果没有设置恢复目标，这个设置没有效果。如果没有启用<A
+HREF="runtime-config-replication.html#GUC-HOT-STANDBY"
+>hot_standby</A
+>，<TT
+CLASS="LITERAL"
+>pause</TT
+>设置的动作将和<TT
+CLASS="LITERAL"
+>shutdown</TT
+>一样。
+       </P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="archive-recovery-settings.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="standby-settings.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>归档恢复设置</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="recovery-config.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>后备服务器设置</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

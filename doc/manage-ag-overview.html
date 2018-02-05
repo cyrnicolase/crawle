@@ -1,0 +1,242 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>概述</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="管理数据库"
+HREF="managing-databases.html"><LINK
+REL="PREVIOUS"
+TITLE="管理数据库"
+HREF="managing-databases.html"><LINK
+REL="NEXT"
+TITLE="创建一个数据库"
+HREF="manage-ag-createdb.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/manage-ag.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="管理数据库"
+HREF="managing-databases.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="managing-databases.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#31456; 22. 管理数据库</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="创建一个数据库"
+HREF="manage-ag-createdb.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="MANAGE-AG-OVERVIEW"
+>22.1. 概述</A
+></H1
+><P
+>   一个数据库是一些<ACRONYM
+CLASS="ACRONYM"
+>SQL</ACRONYM
+>对象（<SPAN
+CLASS="QUOTE"
+>"数据库对象"</SPAN
+>）的命名集合。通常每个数据库对象（表、函数等） 属于并且只属于一个数据库（不过有几个系统表如<TT
+CLASS="LITERAL"
+>pg_database</TT
+>属于整个集簇并且对集簇中的每个数据库都是可访问的）。更准确地说，一个数据库是一个模式的集合， 而模式包含表、函数等等。因此完整的层次是这样的：服务器、数据库、模式、表（或者某些其他对象类型，如函数）。
+  </P
+><P
+>   当连接到数据库服务器时，客户端必须在它的连接请求中指定它要连接的数据库名。每次连接不能访问超过一个数据库。不过，一个应用能够在同一个或者其他数据库上打开的连接数并没有受到限制。数据库是物理上相互隔离的，并且访问控制是在连接层面进行管理的。 如果一个<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>服务器实例用于承载那些应该分隔并且相互之间并不知晓的用户 和项目，那么我们建议把它们放在不同的数据库里。如果项目或者用户是相互关联的， 并且可以相互使用对方的资源，那么应该把它们放在同一个数据库里，但可能在不同的模式 中。模式只是一个纯粹的逻辑结构并且谁能访问某个模式由权限系统管理。有关管理模式的更多信息在<A
+HREF="ddl-schemas.html"
+>第 5.8 &#33410;</A
+>中。
+  </P
+><P
+>   数据库是使用<TT
+CLASS="COMMAND"
+>CREATE DATABASE</TT
+>（见<A
+HREF="manage-ag-createdb.html"
+>第 22.2 &#33410;</A
+>），并且用<TT
+CLASS="COMMAND"
+>DROP DATABASE</TT
+>命令删除（见<A
+HREF="manage-ag-dropdb.html"
+>第 22.5 &#33410;</A
+>）。要确定现有数据库的集合，可以检查系统目录<TT
+CLASS="STRUCTNAME"
+>pg_database</TT
+>，例如
+</P><PRE
+CLASS="SYNOPSIS"
+>SELECT datname FROM pg_database;</PRE
+><P>
+   <A
+HREF="app-psql.html"
+><SPAN
+CLASS="APPLICATION"
+>psql</SPAN
+></A
+>程序的<TT
+CLASS="LITERAL"
+>\l</TT
+>元命令和<TT
+CLASS="OPTION"
+>-l</TT
+>命令行选项也可以用来列出已有的数据库。
+  </P
+><DIV
+CLASS="NOTE"
+><BLOCKQUOTE
+CLASS="NOTE"
+><P
+><B
+>&#27880;&#24847;: </B
+>    <ACRONYM
+CLASS="ACRONYM"
+>SQL</ACRONYM
+>标准把数据库称作<SPAN
+CLASS="QUOTE"
+>"目录"</SPAN
+>，不过实际上没有区别。
+   </P
+></BLOCKQUOTE
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="managing-databases.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="manage-ag-createdb.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>管理数据库</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="managing-databases.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>创建一个数据库</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

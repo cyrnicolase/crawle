@@ -1,0 +1,389 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>版本8.4.18</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="版本说明"
+HREF="release.html"><LINK
+REL="PREVIOUS"
+TITLE="版本 8.4.19"
+HREF="release-8-4-19.html"><LINK
+REL="NEXT"
+TITLE="版本8.4.17"
+HREF="release-8-4-17.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/release-8.4.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="版本 8.4.19"
+HREF="release-8-4-19.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="release.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#38468;&#24405; E. 版本说明</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="版本8.4.17"
+HREF="release-8-4-17.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="RELEASE-8-4-18"
+>E.103. 版本8.4.18</A
+></H1
+><DIV
+CLASS="NOTE"
+><BLOCKQUOTE
+CLASS="NOTE"
+><P
+><B
+>发布日期: </B
+>2013-10-10</P
+></BLOCKQUOTE
+></DIV
+><P
+>   该发布包含8.4.17的各种修复。关于8.4主要版本的新功能信息，
+   参阅<A
+HREF="release-8-4.html"
+>第 E.121 &#33410;</A
+>。</P
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN153300"
+>E.103.1. 迁移到8.4.18</A
+></H2
+><P
+>   运行8.4.X不需要备份/恢复。</P
+><P
+>   如果你从8.4.17的更早版本中升级，
+   参阅<A
+HREF="release-8-4-17.html"
+>第 E.104 &#33410;</A
+>的发布说明。</P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN153305"
+>E.103.2. 变化</A
+></H2
+><P
+></P
+><UL
+><LI
+><P
+>    在尝试大小写折叠标识符时阻止多字节字符的损坏 (Andrew Dunstan)</P
+><P
+>   <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>仅在使用单字节服务器编码时大小写折叠非ASCII字符。</P
+></LI
+><LI
+><P
+>   修复通过<CODE
+CLASS="FUNCTION"
+>lo_open()</CODE
+>故障导致的内存泄露(Heikki Linnakangas)</P
+></LI
+><LI
+><P
+>   当<TT
+CLASS="VARNAME"
+>work_mem</TT
+>正使用超过24GB内存时，
+   修复内存过量使用错误(Stephen Frost)</P
+></LI
+><LI
+><P
+>     修复使用SSL时libpq中的死锁错误(Stephen Frost)</P
+></LI
+><LI
+><P
+>   
+    正确计算包含许多NULL值的布尔列的行估计(Andrew Gierth)</P
+><P
+>    当估计计划成本时，以前的测试像<TT
+CLASS="LITERAL"
+>col IS NOT TRUE</TT
+>和
+<TT
+CLASS="LITERAL"
+>col IS NOT FALSE</TT
+>没有正确把NULL值因素计算在内。</P
+></LI
+><LI
+><P
+>   防止下压<TT
+CLASS="LITERAL"
+>WHERE</TT
+>子句到不安全<TT
+CLASS="LITERAL"
+>UNION/INTERSECT</TT
+>子查询 (Tom Lane)</P
+><P
+>在<TT
+CLASS="LITERAL"
+>SELECT</TT
+>列表中包含设置返回函数或易变函数的<TT
+CLASS="LITERAL"
+>UNION</TT
+>
+或<TT
+CLASS="LITERAL"
+>INTERSECT</TT
+>的子查询可能会优化不当，导致运行时错误或不正确的查询结果。</P
+></LI
+><LI
+><P
+>修复规划器错误<SPAN
+CLASS="QUOTE"
+>"failed to locate grouping columns"</SPAN
+>的罕见情况 (Tom Lane)</P
+></LI
+><LI
+><P
+>改善视图转储代码对引用表中已删除字段的处理 (Tom Lane)</P
+></LI
+><LI
+><P
+>    修复并发<TT
+CLASS="COMMAND"
+>CREATE INDEX CONCURRENTLY</TT
+>操作间的可能的死锁(Tom Lane)</P
+></LI
+><LI
+><P
+>    修复零长度匹配的<CODE
+CLASS="FUNCTION"
+>regexp_matches()</CODE
+>处理(Jeevan Chalke)</P
+><P
+>    以前，零长度匹配像'^'可以返回许多匹配。</P
+></LI
+><LI
+><P
+>    修复过于复杂的正则表达式崩溃(Heikki Linnakangas)</P
+></LI
+><LI
+><P
+>   修复为反向引用与非贪婪量词相结合的正则表达式匹配错误(Jeevan Chalke)</P
+></LI
+><LI
+><P
+>  防止<TT
+CLASS="COMMAND"
+>CREATE FUNCTION</TT
+>检查<TT
+CLASS="COMMAND"
+>SET</TT
+>变量
+  除非启用函数体检查(Tom Lane)</P
+></LI
+><LI
+><P
+>    修复<CODE
+CLASS="FUNCTION"
+>pgp_pub_decrypt()</CODE
+>因此为带有密码的秘钥工作(Marko Kreen)</P
+></LI
+><LI
+><P
+>     删除无索引表的清理中罕见的不正确警告(Heikki Linnakangas)</P
+></LI
+><LI
+><P
+>    当在预备查询中执行事务控制命令时(比如<TT
+CLASS="COMMAND"
+>ROLLBACK</TT
+>)，
+避免可能错误(Tom Lane)</P
+></LI
+><LI
+><P
+>确保浮点型数据输入在所有平台上接受<SPAN
+CLASS="QUOTE"
+>"infinity"</SPAN
+>的标准拼写 (Tom Lane)</P
+><P
+>    C99标准允许的拼写是<TT
+CLASS="LITERAL"
+>inf</TT
+>、<TT
+CLASS="LITERAL"
+>+inf</TT
+>、<TT
+CLASS="LITERAL"
+>-inf</TT
+>、
+    <TT
+CLASS="LITERAL"
+>infinity</TT
+>、<TT
+CLASS="LITERAL"
+>+infinity</TT
+>和<TT
+CLASS="LITERAL"
+>-infinity</TT
+>。
+    确保我们认识它们，即使平台的<CODE
+CLASS="FUNCTION"
+>strtod</CODE
+>不认识。</P
+></LI
+><LI
+><P
+>   扩展比较行记录和数组能力(Rafal Rzepecki,Tom Lane)</P
+></LI
+><LI
+><P
+>     为Israel，Morocco，Palestine，Paraguay中DST变化规律的DST变化更新
+ 时区数据文件到<SPAN
+CLASS="APPLICATION"
+>tzdata</SPAN
+>发布2013d。
+ 同时为Macquarie Island历史时区数据修正(Tom Lane)</P
+></LI
+></UL
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="release-8-4-19.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="release-8-4-17.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>版本 8.4.19</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="release.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>版本8.4.17</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

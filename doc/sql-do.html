@@ -1,0 +1,349 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>DO</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="SQL 命令"
+HREF="sql-commands.html"><LINK
+REL="PREVIOUS"
+TITLE="DISCARD"
+HREF="sql-discard.html"><LINK
+REL="NEXT"
+TITLE="DROP ACCESS METHOD"
+HREF="sql-drop-access-method.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="REFENTRY"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/ref/do.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="DISCARD"
+HREF="sql-discard.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="DROP ACCESS METHOD"
+HREF="sql-drop-access-method.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="SQL-DO"
+></A
+>DO</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN84866"
+></A
+><H2
+>&#21517;&#31216;</H2
+>DO&nbsp;--&nbsp;执行一个匿名代码块</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN84869"
+></A
+><H2
+>&#22823;&#32434;</H2
+><PRE
+CLASS="SYNOPSIS"
+>DO [ LANGUAGE <TT
+CLASS="REPLACEABLE"
+><I
+>lang_name</I
+></TT
+> ] <TT
+CLASS="REPLACEABLE"
+><I
+>code</I
+></TT
+></PRE
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN84873"
+></A
+><H2
+>描述</H2
+><P
+>   <TT
+CLASS="COMMAND"
+>DO</TT
+>执行一个匿名代码块，或者换句话说
+   执行一个以一种过程语言编写的瞬时匿名函数。
+  </P
+><P
+>   代码块就好像是一个没有参数并且返回<TT
+CLASS="TYPE"
+>void</TT
+>的函数的函数体。
+   它会被在一次时间内解析并且执行。
+  </P
+><P
+>   可选的<TT
+CLASS="LITERAL"
+>LANGUAGE</TT
+>子句可以卸载代码块之前或者之后。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN84881"
+></A
+><H2
+>参数</H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>code</I
+></TT
+></DT
+><DD
+><P
+>      要被执行的过程语言代码。就像在
+      <TT
+CLASS="COMMAND"
+>CREATE FUNCTION</TT
+>中一样，必须把它指定为一个
+      字符串。推荐使用一个美元引用的文本。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>lang_name</I
+></TT
+></DT
+><DD
+><P
+>      编写该代码的过程语言的名称。如果省略，默认为<TT
+CLASS="LITERAL"
+>plpgsql</TT
+>。
+     </P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN84896"
+></A
+><H2
+>注解</H2
+><P
+>   要使用的过程语言必须已经用<TT
+CLASS="COMMAND"
+>CREATE LANGUAGE</TT
+>安装在
+   当前数据库中。默认已经安装了<TT
+CLASS="LITERAL"
+>plpgsql</TT
+>，但是其他语言没有被
+   安装。
+  </P
+><P
+>   用户必须拥有该过程语言的<TT
+CLASS="LITERAL"
+>USAGE</TT
+>特权，如果该语言
+   是不可信的则必须是一个超级用户。这和创建一个该语言的函数对
+   特权的要求相同。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="SQL-DO-EXAMPLES"
+></A
+><H2
+>例子</H2
+><P
+>   把模式<TT
+CLASS="LITERAL"
+>public</TT
+>中所有视图上的所有特权授予
+   给角色<TT
+CLASS="LITERAL"
+>webuser</TT
+>：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>DO $$DECLARE r record;
+BEGIN
+    FOR r IN SELECT table_schema, table_name FROM information_schema.tables
+             WHERE table_type = 'VIEW' AND table_schema = 'public'
+    LOOP
+        EXECUTE 'GRANT ALL ON ' || quote_ident(r.table_schema) || '.' || quote_ident(r.table_name) || ' TO webuser';
+    END LOOP;
+END$$;</PRE
+><P></P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN84909"
+></A
+><H2
+>兼容性</H2
+><P
+>   SQL 标准中没有<TT
+CLASS="COMMAND"
+>DO</TT
+>语句。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN84913"
+></A
+><H2
+>另见</H2
+><A
+HREF="sql-createlanguage.html"
+>CREATE LANGUAGE</A
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-discard.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="sql-drop-access-method.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>DISCARD</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>DROP ACCESS METHOD</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

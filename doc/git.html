@@ -1,0 +1,260 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>通过Git得到源码</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="源代码仓库"
+HREF="sourcerepo.html"><LINK
+REL="PREVIOUS"
+TITLE="源代码仓库"
+HREF="sourcerepo.html"><LINK
+REL="NEXT"
+TITLE="文档"
+HREF="docguide.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/sourcerepo.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="源代码仓库"
+HREF="sourcerepo.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sourcerepo.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#38468;&#24405; I. 源代码仓库</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="文档"
+HREF="docguide.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="GIT"
+>I.1. 通过<SPAN
+CLASS="PRODUCTNAME"
+>Git</SPAN
+>得到源码</A
+></H1
+><P
+>   使用<SPAN
+CLASS="PRODUCTNAME"
+>Git</SPAN
+>你将可以在你的本地机器上创建一份整个代码库的拷贝，这样你将能够离线访问所有历史和分支。这是开发或测试补丁最快也是最灵活的方式。
+  </P
+><DIV
+CLASS="PROCEDURE"
+><P
+><B
+>Git</B
+></P
+><OL
+TYPE="1"
+><LI
+CLASS="STEP"
+><P
+>     你将需要一个已安装的<SPAN
+CLASS="PRODUCTNAME"
+>Git</SPAN
+>版本，你可以从<A
+HREF="http://git-scm.com"
+TARGET="_top"
+>http://git-scm.com</A
+>得到。很多系统已经默认安装了一个最近版本的<SPAN
+CLASS="APPLICATION"
+>Git</SPAN
+>，或者可以从它们的包发布系统中找到。
+    </P
+></LI
+><LI
+CLASS="STEP"
+><P
+>     要开始使用 Git 仓库，先做一个官方镜像的克隆：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>git clone git://git.postgresql.org/git/postgresql.git</PRE
+><P>
+
+     这将复制整个仓库到你的本地机器上，这样它会花上一会儿来完成（特别是如果你使用的互联网连接速度较慢）。文件将被放在你当前目录下的一个新子目录<TT
+CLASS="FILENAME"
+>postgresql</TT
+>中。
+    </P
+><P
+>     Git 镜像也可以通过 HTTP 协议访问，例如一个防火墙屏蔽 Git 协议访问时可以使用 HTTP。只需要将 URL 前缀改成<TT
+CLASS="LITERAL"
+>http</TT
+>：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>git clone http://git.postgresql.org/git/postgresql.git</PRE
+><P>
+
+     HTTP 协议效率不如 Git 协议，因此它用起来很慢。
+    </P
+></LI
+><LI
+CLASS="STEP"
+><P
+>     不管什么时候你希望得到系统的最新更新，<TT
+CLASS="COMMAND"
+>cd</TT
+>进入仓库并且运行：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>git fetch</PRE
+><P>
+    </P
+></LI
+></OL
+></DIV
+><P
+>   除了取得源码，<SPAN
+CLASS="PRODUCTNAME"
+>Git</SPAN
+>可以做更多事情。要了解更多，请参考<SPAN
+CLASS="PRODUCTNAME"
+>Git</SPAN
+>手册页，或者访问网站<A
+HREF="http://git-scm.com"
+TARGET="_top"
+>http://git-scm.com</A
+>。
+  </P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sourcerepo.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="docguide.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>源代码仓库</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="sourcerepo.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>文档</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

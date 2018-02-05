@@ -1,0 +1,519 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>pg_depend</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="系统目录"
+HREF="catalogs.html"><LINK
+REL="PREVIOUS"
+TITLE="pg_default_acl"
+HREF="catalog-pg-default-acl.html"><LINK
+REL="NEXT"
+TITLE="pg_description"
+HREF="catalog-pg-description.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/catalogs.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="pg_default_acl"
+HREF="catalog-pg-default-acl.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="catalogs.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#31456; 50. 系统目录</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="pg_description"
+HREF="catalog-pg-description.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="CATALOG-PG-DEPEND"
+>50.18. <TT
+CLASS="STRUCTNAME"
+>pg_depend</TT
+></A
+></H1
+><P
+>   目录<TT
+CLASS="STRUCTNAME"
+>pg_depend</TT
+>记录数据库对象之间的依赖关系。这些信息允许<TT
+CLASS="COMMAND"
+>DROP</TT
+>命令查找必须被<TT
+CLASS="COMMAND"
+>DROP CASCADE</TT
+>删除的其他对象，或者在<TT
+CLASS="COMMAND"
+>DROP
+   RESTRICT</TT
+>情况下阻止删除。
+  </P
+><P
+>   另请参阅<A
+HREF="catalog-pg-shdepend.html"
+><TT
+CLASS="STRUCTNAME"
+>pg_shdepend</TT
+></A
+>，它对在一个数据库集簇中共享的对象之间的依赖提供了相似的功能。
+  </P
+><DIV
+CLASS="TABLE"
+><A
+NAME="AEN106348"
+></A
+><P
+><B
+>&#34920; 50-18. <TT
+CLASS="STRUCTNAME"
+>pg_depend</TT
+>的列</B
+></P
+><TABLE
+BORDER="1"
+CLASS="CALSTABLE"
+><COL><COL><COL><COL><THEAD
+><TR
+><TH
+>名称</TH
+><TH
+>类型</TH
+><TH
+>引用</TH
+><TH
+>描述</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+><TT
+CLASS="STRUCTFIELD"
+>classid</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>oid</TT
+></TD
+><TD
+><TT
+CLASS="LITERAL"
+><A
+HREF="catalog-pg-class.html"
+><TT
+CLASS="STRUCTNAME"
+>pg_class</TT
+></A
+>.oid</TT
+></TD
+><TD
+>依赖对象所在的系统目录OID</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="STRUCTFIELD"
+>objid</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>oid</TT
+></TD
+><TD
+>any OID column</TD
+><TD
+>指定依赖对象的OID</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="STRUCTFIELD"
+>objsubid</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>int4</TT
+></TD
+><TD
+>&nbsp;</TD
+><TD
+>       对于一个表列，这里是列号（<TT
+CLASS="STRUCTFIELD"
+>objid</TT
+>和<TT
+CLASS="STRUCTFIELD"
+>classid</TT
+>指表本身）。对于所有其他对象类型，此列为0。
+      </TD
+></TR
+><TR
+><TD
+><TT
+CLASS="STRUCTFIELD"
+>refclassid</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>oid</TT
+></TD
+><TD
+><TT
+CLASS="LITERAL"
+><A
+HREF="catalog-pg-class.html"
+><TT
+CLASS="STRUCTNAME"
+>pg_class</TT
+></A
+>.oid</TT
+></TD
+><TD
+>被引用对象所在的系统目录的OID</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="STRUCTFIELD"
+>refobjid</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>oid</TT
+></TD
+><TD
+>any OID column</TD
+><TD
+>指定被引用对象的OID</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="STRUCTFIELD"
+>refobjsubid</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>int4</TT
+></TD
+><TD
+>&nbsp;</TD
+><TD
+>       对于一个表列，这里是列号（<TT
+CLASS="STRUCTFIELD"
+>refobjid</TT
+>和<TT
+CLASS="STRUCTFIELD"
+>refclassid</TT
+>指表本身）。对于所有其他对象类型，此列为0。
+      </TD
+></TR
+><TR
+><TD
+><TT
+CLASS="STRUCTFIELD"
+>deptype</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>char</TT
+></TD
+><TD
+>&nbsp;</TD
+><TD
+>       定义此依赖关系语义的一个代码，见文本
+      </TD
+></TR
+></TBODY
+></TABLE
+></DIV
+><P
+>   在所有情况下，一个<TT
+CLASS="STRUCTNAME"
+>pg_depend</TT
+>项表明被引用对象不能在没有删除其依赖对象的情况下被删除。但是，其中也有多种依赖类型，由<TT
+CLASS="STRUCTFIELD"
+>deptype</TT
+>标识：
+
+   <P
+></P
+></P><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="SYMBOL"
+>DEPENDENCY_NORMAL</TT
+> (<TT
+CLASS="LITERAL"
+>n</TT
+>)</DT
+><DD
+><P
+>       在独立创建的对象之间的一个普通关系。依赖对象可以在不影响被依赖对象的情况下被删除。被引用对象只能通过指定<TT
+CLASS="LITERAL"
+>CASCADE</TT
+>被删除，在这种情况下依赖对象也会被删除。 例子：一个表列对于其数据类型有一个普通依赖。
+      </P
+></DD
+><DT
+><TT
+CLASS="SYMBOL"
+>DEPENDENCY_AUTO</TT
+> (<TT
+CLASS="LITERAL"
+>a</TT
+>)</DT
+><DD
+><P
+>       依赖对象可以被独立于被依赖对象删除，且应该在被引用对象被删除时自动被删除（不管在<TT
+CLASS="LITERAL"
+>RESTRICT</TT
+>或<TT
+CLASS="LITERAL"
+>CASCADE</TT
+>模式）。例子：一个表上的一个命名约束应该被设置为自动依赖于表，这样在表被删除后它也会消失。
+      </P
+></DD
+><DT
+><TT
+CLASS="SYMBOL"
+>DEPENDENCY_INTERNAL</TT
+> (<TT
+CLASS="LITERAL"
+>i</TT
+>)</DT
+><DD
+><P
+>       依赖对象作为被引用对象创建过程的一部分被创建，并且只是其内部实现的一部分。一个依赖对象的<TT
+CLASS="COMMAND"
+>DROP</TT
+>会被直接拒绝（作为替代，我们将告诉用户发出一个针对被引用对象的<TT
+CLASS="COMMAND"
+>DROP</TT
+>）。不管是否指定<TT
+CLASS="COMMAND"
+>CASCADE</TT
+>，一个被引用对象的<TT
+CLASS="COMMAND"
+>DROP</TT
+>将被传播来删除其依赖对象。例子：一个用于强制外键约束的触发器将被设置为内部依赖于其约束的<TT
+CLASS="STRUCTNAME"
+>pg_constraint</TT
+>项。
+      </P
+></DD
+><DT
+><TT
+CLASS="SYMBOL"
+>DEPENDENCY_EXTENSION</TT
+> (<TT
+CLASS="LITERAL"
+>e</TT
+>)</DT
+><DD
+><P
+>       依赖对象是作为<I
+CLASS="FIRSTTERM"
+>扩展</I
+>的被引用对象的一个成员（参见<A
+HREF="catalog-pg-extension.html"
+><TT
+CLASS="STRUCTNAME"
+>pg_extension</TT
+></A
+>）。依赖对象可以通过被引用对象上的<TT
+CLASS="COMMAND"
+>DROP EXTENSION</TT
+>来删除。在功能上，这种依赖类型和一个内部依赖的作用相同，其存在只是为了清晰和简化<SPAN
+CLASS="APPLICATION"
+>pg_dump</SPAN
+>。
+      </P
+></DD
+><DT
+><TT
+CLASS="SYMBOL"
+>DEPENDENCY_AUTO_EXTENSION</TT
+> (<TT
+CLASS="LITERAL"
+>x</TT
+>)</DT
+><DD
+><P
+>       依赖对象不是作为被引用对象的扩展的成员（因此不应该被 pg_dump 忽略），但是没有被引用对象又无法工作，所以当扩展本身被删除时也应该把该依赖对象删除。该依赖对象也可以自己被删除。
+      </P
+></DD
+><DT
+><TT
+CLASS="SYMBOL"
+>DEPENDENCY_PIN</TT
+> (<TT
+CLASS="LITERAL"
+>p</TT
+>)</DT
+><DD
+><P
+>       没有依赖对象，这种类型的项是一个信号，用于说明系统本身依赖于被引用对象，并且该对象永远不能被删除。这种类型的项只能被<TT
+CLASS="COMMAND"
+>initdb</TT
+>创建。而此种项的依赖对象的列都为0。
+      </P
+></DD
+></DL
+></DIV
+><P>
+
+   在未来可能会需要其他依赖类型。
+  </P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="catalog-pg-default-acl.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="catalog-pg-description.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><TT
+CLASS="STRUCTNAME"
+>pg_default_acl</TT
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="catalogs.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><TT
+CLASS="STRUCTNAME"
+>pg_description</TT
+></TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

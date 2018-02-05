@@ -1,0 +1,332 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>CREATE OPERATOR FAMILY</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="SQL 命令"
+HREF="sql-commands.html"><LINK
+REL="PREVIOUS"
+TITLE="CREATE OPERATOR CLASS"
+HREF="sql-createopclass.html"><LINK
+REL="NEXT"
+TITLE="CREATE POLICY"
+HREF="sql-createpolicy.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="REFENTRY"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/ref/create_opfamily.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="CREATE OPERATOR CLASS"
+HREF="sql-createopclass.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="CREATE POLICY"
+HREF="sql-createpolicy.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="SQL-CREATEOPFAMILY"
+></A
+>CREATE OPERATOR FAMILY</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN80664"
+></A
+><H2
+>&#21517;&#31216;</H2
+>CREATE OPERATOR FAMILY&nbsp;--&nbsp;定义一个新的操作符族</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN80667"
+></A
+><H2
+>&#22823;&#32434;</H2
+><PRE
+CLASS="SYNOPSIS"
+>CREATE OPERATOR FAMILY <TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+> USING <TT
+CLASS="REPLACEABLE"
+><I
+>index_method</I
+></TT
+></PRE
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN80671"
+></A
+><H2
+>描述</H2
+><P
+>   <TT
+CLASS="COMMAND"
+>CREATE OPERATOR FAMILY</TT
+>创建一个新的
+   操作符族。一个操作符族定义一个相关操作符类组成的集合，并且可能还
+   包含一些额外的、与这些操作符类兼容但对于任何个体索引的功能不是至关
+   重要的操作符和支持函数（对索引至关重要的操作符和函数应该被分组在
+   相关的操作符类中，而不是<SPAN
+CLASS="QUOTE"
+>"松散地"</SPAN
+>在操作符中。通常，单一
+   数据类型操作符被限制在操作符类中，而跨数据类型操作符可以松散地存在
+   于一个包含用于两种数据类型的操作符类的操作符族中）。
+  </P
+><P
+>   新的操作符族初始时为空。应该通过发出后续的
+   <TT
+CLASS="COMMAND"
+>CREATE OPERATOR CLASS</TT
+>命令来增加包含
+   在其中的操作符类，还可以用可选的
+   <TT
+CLASS="COMMAND"
+>ALTER OPERATOR FAMILY</TT
+>命令来增加
+   <SPAN
+CLASS="QUOTE"
+>"松散的"</SPAN
+>操作符和它们对应的支持函数。
+  </P
+><P
+>   如果给出一个模式名称，该操作符族会被创建在指定的模式中。否则，
+   它会被创建在当前模式中。只有当同一个模式中的两个操作符族是用于
+   不同的索引方法时，它们才能拥有相同的名字。
+  </P
+><P
+>   定义一个操作符族的用户将成为它的拥有者。当前，创建用户必须是超级用户（
+   做出这样的限制是因为错误的操作符族会让服务器混淆甚至崩溃）。
+  </P
+><P
+>   进一步的信息可以参考<A
+HREF="xindex.html"
+>第 36.14 &#33410;</A
+>。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN80684"
+></A
+><H2
+>参数</H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+></DT
+><DD
+><P
+>      要创建的操作符族的名称。该名称可以被模式限定。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>index_method</I
+></TT
+></DT
+><DD
+><P
+>      这个操作符族要用于的索引方法的名称。
+     </P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN80697"
+></A
+><H2
+>兼容性</H2
+><P
+>   <TT
+CLASS="COMMAND"
+>CREATE OPERATOR FAMILY</TT
+>是一种
+   <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>扩展。在 SQL 标准中没有
+   <TT
+CLASS="COMMAND"
+>CREATE OPERATOR FAMILY</TT
+>语句。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN80703"
+></A
+><H2
+>另见</H2
+><A
+HREF="sql-alteropfamily.html"
+>ALTER OPERATOR FAMILY</A
+>, <A
+HREF="sql-dropopfamily.html"
+>DROP OPERATOR FAMILY</A
+>, <A
+HREF="sql-createopclass.html"
+>CREATE OPERATOR CLASS</A
+>, <A
+HREF="sql-alteropclass.html"
+>ALTER OPERATOR CLASS</A
+>, <A
+HREF="sql-dropopclass.html"
+>DROP OPERATOR CLASS</A
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-createopclass.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="sql-createpolicy.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>CREATE OPERATOR CLASS</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>CREATE POLICY</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

@@ -1,0 +1,293 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>复制进度追踪</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="服务器编程"
+HREF="server-programming.html"><LINK
+REL="PREVIOUS"
+TITLE="逻辑解码的同步复制支持"
+HREF="logicaldecoding-synchronous.html"><LINK
+REL="NEXT"
+TITLE="参考"
+HREF="reference.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="CHAPTER"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/replication-origins.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="逻辑解码的同步复制支持"
+HREF="logicaldecoding-synchronous.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="server-programming.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="参考"
+HREF="reference.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="CHAPTER"
+><H1
+><A
+NAME="REPLICATION-ORIGINS"
+></A
+>&#31456; 48. 复制进度追踪</H1
+><P
+>  复制源是为了更容易地在<A
+HREF="logicaldecoding.html"
+>逻辑解码</A
+>
+  上实现逻辑复制解决方案而设计。它们提供了对两种常见问题的解决方案：
+  <P
+></P
+></P><UL
+><LI
+><P
+>如何安全地跟踪复制进度？</P
+></LI
+><LI
+><P
+>如何基于一行的来源更改复制行为？例如，阻止双向复制
+    设置中的循环</P
+></LI
+></UL
+><P>
+ </P
+><P
+>  复制源只有两个属性，名称和 OID。名称应该可以被用来在系统间引用该源，
+  它是一种自由形式的<TT
+CLASS="TYPE"
+>文本</TT
+>。为了避免复制源之间的冲突，可以
+  在复制源的名称前加上复制解决方案的名称。在空间效率很重要的情况下，OID
+  被用来避免不得不存储长版本。OID 不能在系统间被共享。
+ </P
+><P
+>  可以使用函数
+  <A
+HREF="functions-admin.html#PG-REPLICATION-ORIGIN-CREATE"
+><CODE
+CLASS="FUNCTION"
+>pg_replication_origin_create()</CODE
+></A
+>创建复制源，使用函数
+  <A
+HREF="functions-admin.html#PG-REPLICATION-ORIGIN-DROP"
+><CODE
+CLASS="FUNCTION"
+>pg_replication_origin_drop()</CODE
+></A
+>删除复制源，并且在系统目录
+  <A
+HREF="catalog-pg-replication-origin.html"
+><TT
+CLASS="STRUCTNAME"
+>pg_replication_origin</TT
+></A
+>中查看复制源。
+ </P
+><P
+>  构建一套复制解决方案的一个重要部分是以一种安全的方式跟踪重放进度。当应用
+  过程或者整个集簇死掉时，需要能够找出数据被成功地复制到了什么地方。对此的
+  简单解决方案（例如为每一个被重放的事务更新一个表行）有运行时负荷和数据库
+  膨胀的问题。
+ </P
+><P
+>  通过使用复制源，一个会话可以被标记为从一个远程节点重放（使用
+  <A
+HREF="functions-admin.html#PG-REPLICATION-ORIGIN-SESSION-SETUP"
+><CODE
+CLASS="FUNCTION"
+>pg_replication_origin_session_setup()</CODE
+></A
+>函数）。此外，
+  可以使用
+  <A
+HREF="functions-admin.html#PG-REPLICATION-ORIGIN-XACT-SETUP"
+><CODE
+CLASS="FUNCTION"
+>pg_replication_origin_xact_setup()</CODE
+></A
+>以每一个事务为基础配置每一个源事务的
+  <ACRONYM
+CLASS="ACRONYM"
+>LSN</ACRONYM
+>和提交时间戳。如果完成这样的配置，
+  复制过程将保持在一种对崩溃安全的方式中。所有复制源的重放进度可以在
+  <A
+HREF="view-pg-replication-origin-status.html"
+>   <TT
+CLASS="STRUCTNAME"
+>pg_replication_origin_status</TT
+>
+  </A
+>视图中看到。一个源的进度（例如在继续复制时）可以使用
+  <A
+HREF="functions-admin.html#PG-REPLICATION-ORIGIN-PROGRESS"
+><CODE
+CLASS="FUNCTION"
+>pg_replication_origin_progress()</CODE
+></A
+>（用于任何源）或者
+  <A
+HREF="functions-admin.html#PG-REPLICATION-ORIGIN-SESSION-PROGRESS"
+><CODE
+CLASS="FUNCTION"
+>pg_replication_origin_session_progress()</CODE
+></A
+>
+  （用于在当前会话中配置的源）获得。
+ </P
+><P
+>  在比从一个系统复制到另一个系统更复杂的复制拓扑中，另一个问题是很难避免再次
+  复制已经被重放的行。这可能导致复制中的循环和低效。复制源提供了一种可选的机制
+  来识别和阻止这种问题。在使用前一段提到的函数配置时，每一个被传递
+  给输出插件回调（见<A
+HREF="logicaldecoding-output-plugin.html"
+>第 47.6 &#33410;</A
+>）的由该会话
+  生成的改变和事务会被标记上该会话的复制源。这使得可以在输出插件中以不同的方式
+  对待它们，例如忽略除本地生成的行之外的所有行。此外，
+  <A
+HREF="logicaldecoding-output-plugin.html#LOGICALDECODING-OUTPUT-PLUGIN-FILTER-ORIGIN"
+>  <CODE
+CLASS="FUNCTION"
+>filter_by_origin_cb</CODE
+></A
+>回调可以被用来基于来源过滤逻辑
+  解码改变流。虽然灵活性较低，通过这种回调进行过滤比用输出插件过滤效率更高。
+ </P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="logicaldecoding-synchronous.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="reference.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>逻辑解码的同步复制支持</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="server-programming.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>参考</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

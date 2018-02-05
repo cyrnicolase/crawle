@@ -1,0 +1,668 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>CREATE DATABASE</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="SQL 命令"
+HREF="sql-commands.html"><LINK
+REL="PREVIOUS"
+TITLE="CREATE CONVERSION"
+HREF="sql-createconversion.html"><LINK
+REL="NEXT"
+TITLE="CREATE DOMAIN"
+HREF="sql-createdomain.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="REFENTRY"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/ref/create_database.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="CREATE CONVERSION"
+HREF="sql-createconversion.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="CREATE DOMAIN"
+HREF="sql-createdomain.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="SQL-CREATEDATABASE"
+></A
+>CREATE DATABASE</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN78588"
+></A
+><H2
+>&#21517;&#31216;</H2
+>CREATE DATABASE&nbsp;--&nbsp;创建一个新数据库</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN78591"
+></A
+><H2
+>&#22823;&#32434;</H2
+><PRE
+CLASS="SYNOPSIS"
+>CREATE DATABASE <TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+>
+    [ [ WITH ] [ OWNER [=] <TT
+CLASS="REPLACEABLE"
+><I
+>user_name</I
+></TT
+> ]
+           [ TEMPLATE [=] <TT
+CLASS="REPLACEABLE"
+><I
+>template</I
+></TT
+> ]
+           [ ENCODING [=] <TT
+CLASS="REPLACEABLE"
+><I
+>encoding</I
+></TT
+> ]
+           [ LC_COLLATE [=] <TT
+CLASS="REPLACEABLE"
+><I
+>lc_collate</I
+></TT
+> ]
+           [ LC_CTYPE [=] <TT
+CLASS="REPLACEABLE"
+><I
+>lc_ctype</I
+></TT
+> ]
+           [ TABLESPACE [=] <TT
+CLASS="REPLACEABLE"
+><I
+>tablespace_name</I
+></TT
+> ]
+           [ ALLOW_CONNECTIONS [=] <TT
+CLASS="REPLACEABLE"
+><I
+>allowconn</I
+></TT
+> ]
+           [ CONNECTION LIMIT [=] <TT
+CLASS="REPLACEABLE"
+><I
+>connlimit</I
+></TT
+> ] 
+           [ IS_TEMPLATE [=] <TT
+CLASS="REPLACEABLE"
+><I
+>istemplate</I
+></TT
+> ] ]</PRE
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN78603"
+></A
+><H2
+>描述</H2
+><P
+>   <TT
+CLASS="COMMAND"
+>CREATE DATABASE</TT
+>创建一个新的<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>数据库。
+  </P
+><P
+>   要创建一个数据库，你必须是一个超级用户或者具有特殊的<TT
+CLASS="LITERAL"
+>CREATEDB</TT
+>特权。见<A
+HREF="sql-createuser.html"
+>CREATE USER</A
+>。
+  </P
+><P
+>   默认情况下，新数据库将通过克隆标准系统数据库<TT
+CLASS="LITERAL"
+>template1</TT
+>被创建。可以通过写<TT
+CLASS="LITERAL"
+>TEMPLATE <TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+></TT
+>指定一个不同的模板。特别地，通过写<TT
+CLASS="LITERAL"
+>TEMPLATE template0</TT
+>你可以创建一个干净的数据库，它将只包含你的<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>版本所预定义的标准对象。如果你希望避免拷贝任何可能被加入到<TT
+CLASS="LITERAL"
+>template1</TT
+>中的本地安装对象，这将有所帮助。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN78618"
+></A
+><H2
+>参数</H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+></DT
+><DD
+><P
+>        要创建的数据库名。
+       </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>user_name</I
+></TT
+></DT
+><DD
+><P
+>        将拥有新数据库的用户的角色名，或者用<TT
+CLASS="LITERAL"
+>DEFAULT</TT
+>来使用默认值（即，执行该命令的用户）。要创建一个被另一个角色拥有的数据库，你必须是该角色的一个直接或间接成员，或者是一个超级用户。
+       </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>template</I
+></TT
+></DT
+><DD
+><P
+>        要从其创建新数据库的模板名称，或者用<TT
+CLASS="LITERAL"
+>DEFAULT</TT
+>来使用默认模板（<TT
+CLASS="LITERAL"
+>template1</TT
+>）。
+       </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>encoding</I
+></TT
+></DT
+><DD
+><P
+>        要在新数据库中使用的字符集编码。指定一个字符串常量（例如<TT
+CLASS="LITERAL"
+>'SQL_ASCII'</TT
+>），或者一个整数编码编号，或者<TT
+CLASS="LITERAL"
+>DEFAULT</TT
+>来使用默认的编码（即，模板数据库的编码）。<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>服务器所支持的字符集在<A
+HREF="multibyte.html#MULTIBYTE-CHARSET-SUPPORTED"
+>第 23.3.1 &#33410;</A
+>中描述。附加限制见下文。
+       </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>lc_collate</I
+></TT
+></DT
+><DD
+><P
+>        要在新数据库中使用的排序规则顺序（<TT
+CLASS="LITERAL"
+>LC_COLLATE</TT
+>）。这会影响应用到字符串的排序顺序，例如在带 ORDER BY 的查询中，以及文本列上索引所使用的顺序。默认是使用模板数据库的排序规则顺序。附加限制见下文。
+       </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>lc_ctype</I
+></TT
+></DT
+><DD
+><P
+>        要在新数据库中使用的字符分类（<TT
+CLASS="LITERAL"
+>LC_CTYPE</TT
+>）。这会影响字符的类别，如小写、大写和数字。默认是使用模板数据库的字符分类。附加限制见下文。
+       </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>tablespace_name</I
+></TT
+></DT
+><DD
+><P
+>        将与新数据库相关联的表空间名称，或者<TT
+CLASS="LITERAL"
+>DEFAULT</TT
+>来使用模板数据库的表空间。这个表空间将是在这个数据库中创建的对象的表空间。详见<A
+HREF="sql-createtablespace.html"
+>CREATE TABLESPACE</A
+>。
+       </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>allowconn</I
+></TT
+></DT
+><DD
+><P
+>         如果为假，则没有人能连接到这个数据库。默认为真，表示允许连接（除了
+         被其他机制约束以外，例如<TT
+CLASS="LITERAL"
+>GRANT</TT
+>/<TT
+CLASS="LITERAL"
+>REVOKE CONNECT</TT
+>）。
+        </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>connlimit</I
+></TT
+></DT
+><DD
+><P
+>        这个数据库允许多少并发连接。-1 （默认值）表示没有限制。
+       </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>istemplate</I
+></TT
+></DT
+><DD
+><P
+>         如果为真，则任何具有<TT
+CLASS="LITERAL"
+>CREATEDB</TT
+>特权的用户都可以从
+         这个数据库克隆。如果为假（默认），则只有超级用户或者该数据库的拥有者
+         可以克隆它。
+        </P
+></DD
+></DL
+></DIV
+><P
+>   可选的参数可以被写成任何顺序，不用按照上面说明的顺序。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN78686"
+></A
+><H2
+>注解</H2
+><P
+>    <TT
+CLASS="COMMAND"
+>CREATE DATABASE</TT
+>不能在一个事务块内被执行。
+   </P
+><P
+>    带有一行<SPAN
+CLASS="QUOTE"
+>"不能初始化数据库目录"</SPAN
+>的错误大部分与在数据目录上权限不足、磁盘满或其他文件系统问题有关。
+   </P
+><P
+>    使用<A
+HREF="sql-dropdatabase.html"
+>DROP DATABASE</A
+>移除一个数据库。
+   </P
+><P
+>    程序<A
+HREF="app-createdb.html"
+><SPAN
+CLASS="APPLICATION"
+>createdb</SPAN
+></A
+>是这个命令的一个包装器程序，为了使用方便而提供。
+   </P
+><P
+>    不会从模板数据库中复制数据库层面的配置参数（通过<A
+HREF="sql-alterdatabase.html"
+>ALTER DATABASE</A
+>设置）。
+   </P
+><P
+>   尽管可以通过指定一个数据库作为模板来从其中而不是<TT
+CLASS="LITERAL"
+>template1</TT
+>复制，这（还）不是<SPAN
+CLASS="QUOTE"
+>"<TT
+CLASS="COMMAND"
+>COPY DATABASE</TT
+>"</SPAN
+>功能的一般目的。主要的限制是在模板数据库被拷贝期间其他会话不能连接到它。如果<TT
+CLASS="COMMAND"
+>CREATE DATABASE</TT
+>启动时还存在任何其他连接，它将失败。否则，到模板数据库的新连接将被挡在外面直到<TT
+CLASS="COMMAND"
+>CREATE DATABASE</TT
+>完成。详见<A
+HREF="manage-ag-templatedbs.html"
+>第 22.3 &#33410;</A
+>。
+  </P
+><P
+>   为新数据库指定的字符集编码必须与选定的区域设置（<TT
+CLASS="LITERAL"
+>LC_COLLATE</TT
+>和<TT
+CLASS="LITERAL"
+>LC_CTYPE</TT
+>）相兼容。如果区域是<TT
+CLASS="LITERAL"
+>C</TT
+>（或者等效的<TT
+CLASS="LITERAL"
+>POSIX</TT
+>），那么所有编码都被允许，但是对于其他区域设置只有一种编码能正确工作（不过，在 Windows 上 UTF-8 编码能够与任何区域一起使用）。<TT
+CLASS="COMMAND"
+>CREATE DATABASE</TT
+>将允许超级用户指定<TT
+CLASS="LITERAL"
+>SQL_ASCII</TT
+>编码而不管区域设置，但是这种选择已被废弃并且可能在数据与数据库中存储的区域不是编码兼容时让字符串函数行为失当。
+  </P
+><P
+>   编码和区域设置必须匹配模板数据的编码和区域，除非<TT
+CLASS="LITERAL"
+>template0</TT
+>被用作模板。这是因为其他数据库可能包含不匹配指定编码的数据，或者可能包含排序顺序受<TT
+CLASS="LITERAL"
+>LC_COLLATE</TT
+>和<TT
+CLASS="LITERAL"
+>LC_CTYPE</TT
+>影响的索引。拷贝这种数据将导致一个由于该新设置损坏的数据库。不过，<TT
+CLASS="LITERAL"
+>template0</TT
+>是不会含有任何可能被影响的数据或索引的。
+  </P
+><P
+>   <TT
+CLASS="LITERAL"
+>CONNECTION LIMIT</TT
+>选项大概是唯一会被强制的，如果两个新会话在大约同一时间开始并且那时该数据库只剩有一个连接<SPAN
+CLASS="QUOTE"
+>"槽"</SPAN
+>，可能两者都会失败。还有，该限制对超级用户无效。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN78720"
+></A
+><H2
+>例子</H2
+><P
+>   要创建一个新数据库：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>CREATE DATABASE lusiadas;</PRE
+><P>
+  </P
+><P
+>   要在一个默认表空间<TT
+CLASS="LITERAL"
+>salesspace</TT
+>中创建一个被用户<TT
+CLASS="LITERAL"
+>salesapp</TT
+>拥有的新数据库<TT
+CLASS="LITERAL"
+>sales</TT
+>：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>CREATE DATABASE sales OWNER salesapp TABLESPACE salesspace;</PRE
+><P>
+  </P
+><P
+>   要创建一个支持ISO-8859-1字符集的数据库<TT
+CLASS="LITERAL"
+>music</TT
+>：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>CREATE DATABASE music ENCODING 'LATIN1' TEMPLATE template0;</PRE
+><P>
+
+   在这个例子中，<TT
+CLASS="LITERAL"
+>TEMPLATE template0</TT
+>子句只有在<TT
+CLASS="LITERAL"
+>template1</TT
+>的编码不是 ISO-8859-1 时需要。注意改变编码可能要求也选择新的<TT
+CLASS="LITERAL"
+>LC_COLLATE</TT
+>和<TT
+CLASS="LITERAL"
+>LC_CTYPE</TT
+>设置。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN78736"
+></A
+><H2
+>兼容性</H2
+><P
+>   在 SQL 标准中没有<TT
+CLASS="COMMAND"
+>CREATE DATABASE</TT
+>语句。数据库等效于目录，而目录的创建由实现定义。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN78740"
+></A
+><H2
+>参见</H2
+><A
+HREF="sql-alterdatabase.html"
+>ALTER DATABASE</A
+>, <A
+HREF="sql-dropdatabase.html"
+>DROP DATABASE</A
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-createconversion.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="sql-createdomain.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>CREATE CONVERSION</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>CREATE DOMAIN</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

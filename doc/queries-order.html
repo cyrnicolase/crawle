@@ -1,0 +1,382 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>行排序</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="查询"
+HREF="queries.html"><LINK
+REL="PREVIOUS"
+TITLE="组合查询"
+HREF="queries-union.html"><LINK
+REL="NEXT"
+TITLE="LIMIT和OFFSET"
+HREF="queries-limit.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/queries.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="组合查询"
+HREF="queries-union.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="queries.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#31456; 7. 查询</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="LIMIT和OFFSET"
+HREF="queries-limit.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="QUERIES-ORDER"
+>7.5. 行排序</A
+></H1
+><P
+>   在一个查询生成一个输出表之后（在处理完选择列表之后），还可以选择性地对它进行排序。如果没有选择排序，那么行将以未指定的顺序返回。 这时候的实际顺序将取决于扫描和连接计划类型以及行在磁盘上的顺序，但是肯定不能依赖这些东西。一种特定的顺序只能在显式地选择了排序步骤之后才能被保证。
+  </P
+><P
+>   <TT
+CLASS="LITERAL"
+>ORDER BY</TT
+>子句指定了排序顺序：
+</P><PRE
+CLASS="SYNOPSIS"
+>SELECT <TT
+CLASS="REPLACEABLE"
+><I
+>select_list</I
+></TT
+>
+    FROM <TT
+CLASS="REPLACEABLE"
+><I
+>table_expression</I
+></TT
+>
+    ORDER BY <TT
+CLASS="REPLACEABLE"
+><I
+>sort_expression1</I
+></TT
+> [<SPAN
+CLASS="OPTIONAL"
+>ASC | DESC</SPAN
+>] [<SPAN
+CLASS="OPTIONAL"
+>NULLS { FIRST | LAST }</SPAN
+>]
+             [<SPAN
+CLASS="OPTIONAL"
+>, <TT
+CLASS="REPLACEABLE"
+><I
+>sort_expression2</I
+></TT
+> [<SPAN
+CLASS="OPTIONAL"
+>ASC | DESC</SPAN
+>] [<SPAN
+CLASS="OPTIONAL"
+>NULLS { FIRST | LAST }</SPAN
+>] ...</SPAN
+>]</PRE
+><P>
+   排序表达式可以是任何在查询的选择列表中合法的表达式。一个例子是：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>SELECT a, b FROM table1 ORDER BY a + b, c;</PRE
+><P>
+   当多于一个表达式被指定，后面的值将被用于排序那些在前面值上相等的行。每一个表达式后可以选择性地放置一个<TT
+CLASS="LITERAL"
+>ASC</TT
+>或<TT
+CLASS="LITERAL"
+>DESC</TT
+>关键词来设置排序方向为升序或降序。<TT
+CLASS="LITERAL"
+>ASC</TT
+>顺序是默认值。升序会把较小的值放在前面，而<SPAN
+CLASS="QUOTE"
+>"较小"</SPAN
+>则由<TT
+CLASS="LITERAL"
+>&lt;</TT
+>操作符定义。相似地，降序则由<TT
+CLASS="LITERAL"
+>&gt;</TT
+>操作符定义。
+    <A
+NAME="AEN4549"
+HREF="#FTN.AEN4549"
+><SPAN
+CLASS="footnote"
+>[1]</SPAN
+></A
+>
+  </P
+><P
+>   <TT
+CLASS="LITERAL"
+>NULLS FIRST</TT
+>和<TT
+CLASS="LITERAL"
+>NULLS LAST</TT
+>选项将可以被用来决定在排序顺序中，空值是出现在非空值之前或者出现在非空值之后。默认情况下，排序时空值被认为比任何非空值都要大，即<TT
+CLASS="LITERAL"
+>NULLS FIRST</TT
+>是<TT
+CLASS="LITERAL"
+>DESC</TT
+>顺序的默认值，而不是<TT
+CLASS="LITERAL"
+>NULLS LAST</TT
+>的默认值。
+  </P
+><P
+>   注意顺序选项是对每一个排序列独立考虑的。例如<TT
+CLASS="LITERAL"
+>ORDER BY x, y DESC</TT
+>表示<TT
+CLASS="LITERAL"
+>ORDER BY x ASC, y DESC</TT
+>，而和<TT
+CLASS="LITERAL"
+>ORDER BY x DESC, y DESC</TT
+>不同。
+  </P
+><P
+>   一个<TT
+CLASS="REPLACEABLE"
+><I
+>sort_expression</I
+></TT
+>也可以是列标签或者一个输出列的编号，如：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>SELECT a + b AS sum, c FROM table1 ORDER BY sum;
+SELECT a, max(b) FROM table1 GROUP BY a ORDER BY 1;</PRE
+><P>
+   两者都根据第一个输出列排序。注意一个输出列的名字必须孤立，即它不能被用在一个表达式中 &mdash; 例如，这是<SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>不</I
+></SPAN
+>正确的：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>SELECT a + b AS sum, c FROM table1 ORDER BY sum + c;          -- 错误</PRE
+><P>
+   该限制是为了减少混淆。如果一个<TT
+CLASS="LITERAL"
+>ORDER BY</TT
+>项是一个单一名字并且匹配一个输出列名或者一个表表达式的列，仍然会出现混淆。在这种情况中输出列将被使用。只有在你使用<TT
+CLASS="LITERAL"
+>AS</TT
+>来重命名一个输出列来匹配某些其他表列的名字时，这才会导致混淆。
+  </P
+><P
+>   <TT
+CLASS="LITERAL"
+>ORDER BY</TT
+>可以被应用于<TT
+CLASS="LITERAL"
+>UNION</TT
+>、<TT
+CLASS="LITERAL"
+>INTERSECT</TT
+>或<TT
+CLASS="LITERAL"
+>EXCEPT</TT
+>组合的结果，但是在这种情况中它只被允许根据输出列名或编号排序，而不能根据表达式排序。
+  </P
+></DIV
+><H3
+CLASS="FOOTNOTES"
+>&#22791;&#27880;</H3
+><TABLE
+BORDER="0"
+CLASS="FOOTNOTES"
+WIDTH="100%"
+><TR
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+WIDTH="5%"
+><A
+NAME="FTN.AEN4549"
+HREF="queries-order.html#AEN4549"
+><SPAN
+CLASS="footnote"
+>[1]</SPAN
+></A
+></TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+WIDTH="95%"
+><P
+>      事实上，<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>为表达式的数据类型使用<I
+CLASS="FIRSTTERM"
+>默认B-tree操作符类</I
+>来决定<TT
+CLASS="LITERAL"
+>ASC</TT
+>和<TT
+CLASS="LITERAL"
+>DESC</TT
+>的排序顺序。照惯例，数据类型将被建立，这样<TT
+CLASS="LITERAL"
+>&lt;</TT
+>和<TT
+CLASS="LITERAL"
+>&gt;</TT
+>操作符负责这个排序顺序，但是一个用户定义的数据类型的设计者可以选择做些不同的设置。
+     </P
+></TD
+></TR
+></TABLE
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="queries-union.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="queries-limit.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>组合查询</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="queries.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><TT
+CLASS="LITERAL"
+>LIMIT</TT
+>和<TT
+CLASS="LITERAL"
+>OFFSET</TT
+></TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

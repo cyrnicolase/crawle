@@ -1,0 +1,954 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>UPDATE</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="SQL 命令"
+HREF="sql-commands.html"><LINK
+REL="PREVIOUS"
+TITLE="UNLISTEN"
+HREF="sql-unlisten.html"><LINK
+REL="NEXT"
+TITLE="VACUUM"
+HREF="sql-vacuum.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="REFENTRY"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/ref/update.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="UNLISTEN"
+HREF="sql-unlisten.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="VACUUM"
+HREF="sql-vacuum.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="SQL-UPDATE"
+></A
+>UPDATE</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN92128"
+></A
+><H2
+>&#21517;&#31216;</H2
+>UPDATE&nbsp;--&nbsp;更新一个表的行</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN92131"
+></A
+><H2
+>&#22823;&#32434;</H2
+><PRE
+CLASS="SYNOPSIS"
+>[ WITH [ RECURSIVE ] <TT
+CLASS="REPLACEABLE"
+><I
+>with_query</I
+></TT
+> [, ...] ]
+UPDATE [ ONLY ] <TT
+CLASS="REPLACEABLE"
+><I
+>table_name</I
+></TT
+> [ * ] [ [ AS ] <TT
+CLASS="REPLACEABLE"
+><I
+>alias</I
+></TT
+> ]
+    SET { <TT
+CLASS="REPLACEABLE"
+><I
+>column_name</I
+></TT
+> = { <TT
+CLASS="REPLACEABLE"
+><I
+>expression</I
+></TT
+> | DEFAULT } |
+          ( <TT
+CLASS="REPLACEABLE"
+><I
+>column_name</I
+></TT
+> [, ...] ) = ( { <TT
+CLASS="REPLACEABLE"
+><I
+>expression</I
+></TT
+> | DEFAULT } [, ...] ) |
+          ( <TT
+CLASS="REPLACEABLE"
+><I
+>column_name</I
+></TT
+> [, ...] ) = ( <TT
+CLASS="REPLACEABLE"
+><I
+>sub-SELECT</I
+></TT
+> )
+        } [, ...]
+    [ FROM <TT
+CLASS="REPLACEABLE"
+><I
+>from_list</I
+></TT
+> ]
+    [ WHERE <TT
+CLASS="REPLACEABLE"
+><I
+>condition</I
+></TT
+> | WHERE CURRENT OF <TT
+CLASS="REPLACEABLE"
+><I
+>cursor_name</I
+></TT
+> ]
+    [ RETURNING * | <TT
+CLASS="REPLACEABLE"
+><I
+>output_expression</I
+></TT
+> [ [ AS ] <TT
+CLASS="REPLACEABLE"
+><I
+>output_name</I
+></TT
+> ] [, ...] ]</PRE
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN92147"
+></A
+><H2
+>描述</H2
+><P
+>   <TT
+CLASS="COMMAND"
+>UPDATE</TT
+>更改满足条件的所有行中指定列
+   的值。只有要被修改的列需要在<TT
+CLASS="LITERAL"
+>SET</TT
+>子句中提及，
+   没有被显式修改的列保持它们之前的值。
+  </P
+><P
+>   有两种方法使用包含在数据库其他表中的信息来修改一个表：使用子选择
+   或者在<TT
+CLASS="LITERAL"
+>FROM</TT
+>子句中指定额外的表。这种技术只适合
+   特定的环境。
+  </P
+><P
+>   可选的<TT
+CLASS="LITERAL"
+>RETURNING</TT
+>子句导致<TT
+CLASS="COMMAND"
+>UPDATE</TT
+>
+   基于实际被更新的每一行计算并且返回值。任何使用该表的列以及
+   <TT
+CLASS="LITERAL"
+>FROM</TT
+>中提到的其他表的列的表达式都能被计算。
+   计算时会使用该表的列的新（更新后）值。<TT
+CLASS="LITERAL"
+>RETURNING</TT
+>
+   列表的语法和<TT
+CLASS="COMMAND"
+>SELECT</TT
+>的输出列表相同。
+  </P
+><P
+>   你必须拥有该表上的<TT
+CLASS="LITERAL"
+>UPDATE</TT
+>特权，或者至少拥有
+   要被更新的列上的该特权。如果任何一列的值需要被
+   <TT
+CLASS="REPLACEABLE"
+><I
+>expressions</I
+></TT
+>或者
+   <TT
+CLASS="REPLACEABLE"
+><I
+>condition</I
+></TT
+>读取，
+   你还必须拥有该列上的<TT
+CLASS="LITERAL"
+>SELECT</TT
+>特权。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN92165"
+></A
+><H2
+>参数</H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>with_query</I
+></TT
+></DT
+><DD
+><P
+>      <TT
+CLASS="LITERAL"
+>WITH</TT
+>子句允许你指定一个或者更多个在
+      <TT
+CLASS="COMMAND"
+>UPDATE</TT
+>中可用其名称引用的子查询。详见
+      <A
+HREF="queries-with.html"
+>第 7.8 &#33410;</A
+>和<A
+HREF="sql-select.html"
+>SELECT</A
+>。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>table_name</I
+></TT
+></DT
+><DD
+><P
+>      要更新的表的名称（可以是模式限定的）。如果在表名前指定了
+      <TT
+CLASS="LITERAL"
+>ONLY</TT
+>，只会更新所提及表中的匹配行。如果没有指定
+      <TT
+CLASS="LITERAL"
+>ONLY</TT
+>，任何从所提及表继承得到的表中的匹配行也会
+      被更新。可选地，在表名之后指定<TT
+CLASS="LITERAL"
+>*</TT
+>可以显式地指示要
+      把后代表也包括在内。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>alias</I
+></TT
+></DT
+><DD
+><P
+>      目标表的一个替代名称。在提供了一个别名时，它会完全隐藏表的真实
+      名称。例如，给定<TT
+CLASS="LITERAL"
+>UPDATE foo AS f</TT
+>，
+      <TT
+CLASS="COMMAND"
+>UPDATE</TT
+>语句的剩余部分必须用
+      <TT
+CLASS="LITERAL"
+>f</TT
+>而不是<TT
+CLASS="LITERAL"
+>foo</TT
+>来引用该表。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>column_name</I
+></TT
+></DT
+><DD
+><P
+>      <TT
+CLASS="REPLACEABLE"
+><I
+>table_name</I
+></TT
+>
+      所指定的表的一列的名称。如果需要，该列名可以用一个子域名称或者
+      数组下标限定。不要在目标列的说明中包括表的名称 &mdash; 例如
+      <TT
+CLASS="LITERAL"
+>UPDATE table_name SET table_name.col = 1</TT
+>是非法的。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>expression</I
+></TT
+></DT
+><DD
+><P
+>      要被赋值给该列的一个表达式。该表达式可以使用该表中这一列或者
+      其他列的旧值。
+     </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>DEFAULT</TT
+></DT
+><DD
+><P
+>      将该列设置为它的默认值（如果没有为它指定默认值表达式，默认值
+      将会为 NULL）。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>sub-SELECT</I
+></TT
+></DT
+><DD
+><P
+>      一个<TT
+CLASS="LITERAL"
+>SELECT</TT
+>子查询，它产生和在它之前的圆括号中列列表中
+      一样多的输出列。被执行时，该子查询必须得到不超过一行。如果它得到
+      一行，其列值会被赋予给目标列。如果它得不到行，NULL 值将被赋予给
+      目标列。该子查询可以引用被更新表中当前行的旧值。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>from_list</I
+></TT
+></DT
+><DD
+><P
+>      表表达式的列表，允许来自其他表的列出现在<TT
+CLASS="LITERAL"
+>WHERE</TT
+>
+      条件和更新表达式中。这类似于可以在
+      <TT
+CLASS="COMMAND"
+>SELECT</TT
+>语句的<A
+HREF="sql-select.html#SQL-FROM"
+><I
+><I
+>FROM</I
+> 子句</I
+></A
+>中指定的表列表。注意目标表不能出现在
+      <TT
+CLASS="REPLACEABLE"
+><I
+>from_list</I
+></TT
+>中，除非你想做自连接（这种情况下它必须
+      以别名出现在<TT
+CLASS="REPLACEABLE"
+><I
+>from_list</I
+></TT
+>中）。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>condition</I
+></TT
+></DT
+><DD
+><P
+>      一个返回<TT
+CLASS="TYPE"
+>boolean</TT
+>类型值的表达式。让这个
+      表达式返回<TT
+CLASS="LITERAL"
+>true</TT
+>的行将会被更新。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>cursor_name</I
+></TT
+></DT
+><DD
+><P
+>      要在<TT
+CLASS="LITERAL"
+>WHERE CURRENT OF</TT
+>条件中使用的游标名。
+      要被更新的是从这个游标中最近取出的行。该游标必须是一个
+      在<TT
+CLASS="COMMAND"
+>UPDATE</TT
+>目标表上的非分组查询。注意
+      <TT
+CLASS="LITERAL"
+>WHERE CURRENT OF</TT
+>不能和一个布尔条件一起
+      指定。有关对游标使用<TT
+CLASS="LITERAL"
+>WHERE CURRENT OF</TT
+>的
+      更多信息请见<A
+HREF="sql-declare.html"
+>DECLARE</A
+>。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>output_expression</I
+></TT
+></DT
+><DD
+><P
+>      在每一行被更新后，要被<TT
+CLASS="COMMAND"
+>UPDATE</TT
+>命令计算并且返回
+      的表达式。该表达式可以使用
+      <TT
+CLASS="REPLACEABLE"
+><I
+>table_name</I
+></TT
+>指定
+      的表或者<TT
+CLASS="LITERAL"
+>FROM</TT
+>列出的表中的任何列名。写<TT
+CLASS="LITERAL"
+>*</TT
+>
+      可以返回所有列。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>output_name</I
+></TT
+></DT
+><DD
+><P
+>      用于一个被返回列的名称。
+     </P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN92258"
+></A
+><H2
+>输出</H2
+><P
+>   成功完成时，一个<TT
+CLASS="COMMAND"
+>UPDATE</TT
+>命令返回形如
+</P><PRE
+CLASS="SCREEN"
+>UPDATE <TT
+CLASS="REPLACEABLE"
+><I
+>count</I
+></TT
+></PRE
+><P>
+   的命令标签。
+   <TT
+CLASS="REPLACEABLE"
+><I
+>count</I
+></TT
+>是被更新的行数，
+   包括值没有更改的匹配行。注意，当更新被一个<TT
+CLASS="LITERAL"
+>BEFORE UPDATE</TT
+>
+   触发器抑制时，这个数量可能比匹配
+   <TT
+CLASS="REPLACEABLE"
+><I
+>condition</I
+></TT
+>的行数少。如果
+   <TT
+CLASS="REPLACEABLE"
+><I
+>count</I
+></TT
+>为零，没有行被该查
+   询更新（这不是一个错误）。
+  </P
+><P
+>   如果<TT
+CLASS="COMMAND"
+>UPDATE</TT
+>命令包含一个<TT
+CLASS="LITERAL"
+>RETURNING</TT
+>
+   子句，其结果将类似于一个包含<TT
+CLASS="LITERAL"
+>RETURNING</TT
+>列表中定义的
+   列和值的<TT
+CLASS="COMMAND"
+>SELECT</TT
+>语句（在被该命令更新的行上计算）
+   的结果。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN92273"
+></A
+><H2
+>注解</H2
+><P
+>   当存在<TT
+CLASS="LITERAL"
+>FROM</TT
+>子句时，实际发生的是：目标表被连接到
+   <TT
+CLASS="REPLACEABLE"
+><I
+>from_list</I
+></TT
+>中的表，并且该连接的每一
+   个输出行表示对目标表的一个更新操作。在使用<TT
+CLASS="LITERAL"
+>FROM</TT
+>
+   时，你应该确保该连接对每一个要修改的行产生至多一个输出行。换
+   句话说，一个目标行不应该连接到来自其他表的多于一行上。如果发
+   生这种情况，则只有一个连接行将被用于更新目标行，但是将使用哪
+   一行是很难预测的。
+  </P
+><P
+>   由于这种不确定性，只在一个子选择中引用其他表更安全，不过这种
+   语句通常很难写并且也比使用连接慢。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN92280"
+></A
+><H2
+>示例</H2
+><P
+>   把表<TT
+CLASS="STRUCTNAME"
+>films</TT
+>的列<TT
+CLASS="STRUCTFIELD"
+>kind</TT
+>
+   中的单词<TT
+CLASS="LITERAL"
+>Drama</TT
+>改成<TT
+CLASS="LITERAL"
+>Dramatic</TT
+>：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>UPDATE films SET kind = 'Dramatic' WHERE kind = 'Drama';</PRE
+><P>
+  </P
+><P
+>   在表<TT
+CLASS="STRUCTNAME"
+>weather</TT
+>的一行中调整温度项并且
+   把沉淀物重置为它的默认值：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>UPDATE weather SET temp_lo = temp_lo+1, temp_hi = temp_lo+15, prcp = DEFAULT
+  WHERE city = 'San Francisco' AND date = '2003-07-03';</PRE
+><P>
+  </P
+><P
+>   执行相同的操作并且返回更新后的项：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>UPDATE weather SET temp_lo = temp_lo+1, temp_hi = temp_lo+15, prcp = DEFAULT
+  WHERE city = 'San Francisco' AND date = '2003-07-03'
+  RETURNING temp_lo, temp_hi, prcp;</PRE
+><P>
+  </P
+><P
+>   使用另一种列列表语法来做同样的更新：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>UPDATE weather SET (temp_lo, temp_hi, prcp) = (temp_lo+1, temp_lo+15, DEFAULT)
+  WHERE city = 'San Francisco' AND date = '2003-07-03';</PRE
+><P>
+  </P
+><P
+>   为管理Acme Corporation账户的销售人员增加销售量，使用
+   <TT
+CLASS="LITERAL"
+>FROM</TT
+>子句语法：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>UPDATE employees SET sales_count = sales_count + 1 FROM accounts
+  WHERE accounts.name = 'Acme Corporation'
+  AND employees.id = accounts.sales_person;</PRE
+><P>
+  </P
+><P
+>   执行相同的操作，在
+   <TT
+CLASS="LITERAL"
+>WHERE</TT
+>子句中使用子选择：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>UPDATE employees SET sales_count = sales_count + 1 WHERE id =
+  (SELECT sales_person FROM accounts WHERE name = 'Acme Corporation');</PRE
+><P>
+  </P
+><P
+>   更新 accounts 表中的联系人姓名以匹配当前被分配的销售员：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>UPDATE accounts SET (contact_first_name, contact_last_name) =
+    (SELECT first_name, last_name FROM salesmen
+     WHERE salesmen.id = accounts.sales_id);</PRE
+><P>
+   可以用连接完成类似的结果：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>UPDATE accounts SET contact_first_name = first_name,
+                    contact_last_name = last_name
+  FROM salesmen WHERE salesmen.id = accounts.sales_id;</PRE
+><P>
+   不过，如果<TT
+CLASS="STRUCTNAME"
+>salesmen</TT
+>.<TT
+CLASS="STRUCTFIELD"
+>id</TT
+>不是一个唯一键，
+   第二个查询可能会给出令人意外的结果，然而如果有多个<TT
+CLASS="STRUCTFIELD"
+>id</TT
+>匹配，
+   第一个查询保证会发生错误。还有，如果对于一个特定的
+   <TT
+CLASS="STRUCTNAME"
+>accounts</TT
+>.<TT
+CLASS="STRUCTFIELD"
+>sales_id</TT
+>项没有匹配，第一个查询将
+   把相应的姓名域设置为 NULL，而第二个查询完全不会更新该行。
+  </P
+><P
+>   更新一个统计表中的统计数据以匹配当前数据：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>UPDATE summary s SET (sum_x, sum_y, avg_x, avg_y) =
+    (SELECT sum(x), sum(y), avg(x), avg(y) FROM data d
+     WHERE d.group_id = s.group_id);</PRE
+><P>
+  </P
+><P
+>   尝试插入一个新库存项及其库存量。如果该项已经存在，则转而更新
+   已有项的库存量。要这样做并且不让整个事务失败，可以使用保存点：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>BEGIN;
+-- 其他操作
+SAVEPOINT sp1;
+INSERT INTO wines VALUES('Chateau Lafite 2003', '24');
+-- 假定上述语句由于未被唯一键失败，
+-- 那么现在我们发出这些命令：
+ROLLBACK TO sp1;
+UPDATE wines SET stock = stock + 24 WHERE winename = 'Chateau Lafite 2003';
+-- 继续其他操作，并且最终
+COMMIT;</PRE
+><P>
+  </P
+><P
+>   更改表<TT
+CLASS="STRUCTNAME"
+>films</TT
+>中由游标<TT
+CLASS="LITERAL"
+>c_films</TT
+>
+   定位的行的<TT
+CLASS="STRUCTFIELD"
+>kind</TT
+>列：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>UPDATE films SET kind = 'Dramatic' WHERE CURRENT OF c_films;</PRE
+><P></P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN92318"
+></A
+><H2
+>兼容性</H2
+><P
+>   这个命令符合<ACRONYM
+CLASS="ACRONYM"
+>SQL</ACRONYM
+>标准，不过
+   <TT
+CLASS="LITERAL"
+>FROM</TT
+>和<TT
+CLASS="LITERAL"
+>RETURNING</TT
+>子句是
+   <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>扩展，把
+   <TT
+CLASS="LITERAL"
+>WITH</TT
+>用于<TT
+CLASS="COMMAND"
+>UPDATE</TT
+>也是扩展。
+  </P
+><P
+>   有些其他数据库系统提供了一个<TT
+CLASS="LITERAL"
+>FROM</TT
+>选项，在其中在其中目标表
+   可以在<TT
+CLASS="LITERAL"
+>FROM</TT
+>中被再次列出。但
+   <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>不是这样解释
+   <TT
+CLASS="LITERAL"
+>FROM</TT
+>的。在移植使用这种扩展的应用时要小心。
+  </P
+><P
+>   根据标准，一个列名的圆括号子列表的来源值可以是任意得到正确列数的行值
+   表达式。<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>只允许来源值是一个
+   表达式（行构造器）的圆括号列表或者一个子-<TT
+CLASS="LITERAL"
+>SELECT</TT
+>。一个列的
+   被更新值可以在行构造器的情况中被指定为<TT
+CLASS="LITERAL"
+>DEFAULT</TT
+>，但在
+   子-<TT
+CLASS="LITERAL"
+>SELECT</TT
+>的情况中不能这样做。
+  </P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-unlisten.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="sql-vacuum.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>UNLISTEN</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>VACUUM</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

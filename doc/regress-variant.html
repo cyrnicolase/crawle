@@ -1,0 +1,312 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>变体比较文件</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="回归测试"
+HREF="regress.html"><LINK
+REL="PREVIOUS"
+TITLE="测试评估"
+HREF="regress-evaluation.html"><LINK
+REL="NEXT"
+TITLE="TAP Tests"
+HREF="regress-tap.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/regress.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="测试评估"
+HREF="regress-evaluation.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="regress.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#31456; 31. 回归测试</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="TAP Tests"
+HREF="regress-tap.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="REGRESS-VARIANT"
+>31.3. 变体比较文件</A
+></H1
+><P
+>    因为某些测试生来就会产生依赖环境的结果，我们提供了方法来指定替代的<SPAN
+CLASS="QUOTE"
+>"预期"</SPAN
+>结果文件。每一个回归测试可以有多个比较文件来展示在不同平台上的可能结果。有两种独立的机制来决定为每一个测试使用哪个比较文件。
+   </P
+><P
+>    第一种机制允许为指定平台选择比较文件。这是一个映射文件<TT
+CLASS="FILENAME"
+>src/test/regress/resultmap</TT
+>，它定义了为每一个平台使用哪个比较文件。要为一个特定平台消除虚假的测试<SPAN
+CLASS="QUOTE"
+>"失败"</SPAN
+>，你可以首先选择或创建一个变体结果文件，然后在<TT
+CLASS="FILENAME"
+>resultmap</TT
+>文件中增加一行。
+   </P
+><P
+>    在该映射文件中的每一行的形式为：
+</P><PRE
+CLASS="SYNOPSIS"
+>testname:output:platformpattern=comparisonfilename</PRE
+><P>
+    测试名只是该特定回归测试模块的名称。输出值指定要检查哪个输出文件。对于标准回归测试，这总是<TT
+CLASS="LITERAL"
+>out</TT
+>。该值对应于输出文件的文件扩展。平台模式是一个 Unix 工具<TT
+CLASS="COMMAND"
+>expr</TT
+>风格的模式（即在开头带有一个隐式<TT
+CLASS="LITERAL"
+>^</TT
+>锚的正则表达式）。它被与<TT
+CLASS="COMMAND"
+>config.guess</TT
+>打印出的平台名称进行匹配。匹配文件名称是替补的结果比较文件的基础名。
+   </P
+><P
+>    例如：某些系统会把非常小的浮点值解释为零，而不是报告一个下溢错误。这在<TT
+CLASS="FILENAME"
+>float8</TT
+>回归测试中会导致一些差异。因此，我们提供一个变体比较文件<TT
+CLASS="FILENAME"
+>float8-small-is-zero.out</TT
+>，其中包括了在这些系统上的期望结果。要在<SPAN
+CLASS="SYSTEMITEM"
+>OpenBSD</SPAN
+>平台上屏蔽这种虚假的<SPAN
+CLASS="QUOTE"
+>"失败"</SPAN
+>消息，<TT
+CLASS="FILENAME"
+>resultmap</TT
+>包括：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>float8:out:i.86-.*-openbsd=float8-small-is-zero.out</PRE
+><P>
+    这将在任何<TT
+CLASS="COMMAND"
+>config.guess</TT
+>输出匹配<TT
+CLASS="LITERAL"
+>i.86-.*-openbsd</TT
+>的机器上触发。<TT
+CLASS="FILENAME"
+>resultmap</TT
+>中的其他行为其他平台选择变体比较文件。
+   </P
+><P
+>    第二种变体比较文件的选择机制更加自动：它简单地在多个提供的比较文件中采用<SPAN
+CLASS="QUOTE"
+>"最佳匹配"</SPAN
+>。回归测试驱动器脚本对一个测试考虑两种标准比较文件，<TT
+CLASS="LITERAL"
+><TT
+CLASS="REPLACEABLE"
+><I
+>testname</I
+></TT
+>.out</TT
+>以及名为<TT
+CLASS="LITERAL"
+><TT
+CLASS="REPLACEABLE"
+><I
+>testname</I
+></TT
+>_<TT
+CLASS="REPLACEABLE"
+><I
+>digit</I
+></TT
+>.out</TT
+>的变体文件（其中<TT
+CLASS="REPLACEABLE"
+><I
+>digit</I
+></TT
+>是任何单一数字<TT
+CLASS="LITERAL"
+>0</TT
+>-<TT
+CLASS="LITERAL"
+>9</TT
+>）。如果任一这种文件是一个完全匹配，测试被认为是通过的。否则，产生最短区别的文件被用来创建失败报告（如果<TT
+CLASS="FILENAME"
+>resultmap</TT
+>包括特定测试的一个项，那么基础<TT
+CLASS="REPLACEABLE"
+><I
+>testname</I
+></TT
+>是<TT
+CLASS="FILENAME"
+>resultmap</TT
+>中给定的替补名称）。
+   </P
+><P
+>    例如，对于<TT
+CLASS="LITERAL"
+>char</TT
+>测试，比较文件<TT
+CLASS="FILENAME"
+>char.out</TT
+>包含在<TT
+CLASS="LITERAL"
+>C</TT
+>和<TT
+CLASS="LITERAL"
+>POSIX</TT
+>区域中期望的结果，而文件<TT
+CLASS="FILENAME"
+>char_1.out</TT
+>包含在其他很多区域中的排序结果。
+   </P
+><P
+>    最佳匹配机制被设计为与区域依赖的结果协同工作，但是它可以被用在任何测试结果无法只从平台名很容易地预测的情况中。这种机制的一个限制是测试驱动器不能说出哪个变体对当前环境是真正<SPAN
+CLASS="QUOTE"
+>"正确的"</SPAN
+>，它将只是选择看起来工作得最好的变体。因此对你认为在所有上下文中具有同等合法性的变体结果使用这种机制才是最安全的。
+   </P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="regress-evaluation.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="regress-tap.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>测试评估</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="regress.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>TAP Tests</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

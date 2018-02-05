@@ -1,0 +1,335 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>应用级别的数据完整性检查</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="并发控制"
+HREF="mvcc.html"><LINK
+REL="PREVIOUS"
+TITLE="显式锁定"
+HREF="explicit-locking.html"><LINK
+REL="NEXT"
+TITLE="提醒"
+HREF="mvcc-caveats.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/mvcc.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="显式锁定"
+HREF="explicit-locking.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="mvcc.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#31456; 13. 并发控制</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="提醒"
+HREF="mvcc-caveats.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="APPLEVEL-CONSISTENCY"
+>13.4. 应用级别的数据完整性检查</A
+></H1
+><P
+>    对于使用读已提交事务的数据完整性强制业务规则非常困难，因为对每一个语句数据视图都在变化，并且如果一个写冲突发生即使一个单一语句也不能把它自己限制到该语句的快照。
+   </P
+><P
+>    虽然一个可重复读事务在其执行期间有一个稳定的数据视图，在使用<ACRONYM
+CLASS="ACRONYM"
+>MVCC</ACRONYM
+>快照进行数据一致性检查时也有一个小问题，它涉及到被称为<I
+CLASS="FIRSTTERM"
+>读/写冲突</I
+>的东西。如果一个事务写数据并且一个并发事务尝试读相同的数据（不管是在写之前还是之后），它不能看到其他事务的工作。读取事务看起来是第一个执行的，不管哪个是第一个启动或者哪个是第一个提交。如果就到此为止，则没有问题，但是如果读取者也写入被一个并发事务读取的数据，现在有一个事务好像是已经在前面提到的任何一个事务之前运行。如果看起来最后执行的事务实际上第一个提交，在这些事务的执行顺序图中很容易出现一个环。当这样一个环出现时，完整性检查在没有任何帮助的情况下将不会正确地工作。
+   </P
+><P
+>    正如<A
+HREF="transaction-iso.html#XACT-SERIALIZABLE"
+>第 13.2.3 &#33410;</A
+>中提到的，可序列化事务仅仅是可重复读事务增加了对读/写冲突的危险模式的非阻塞监控。当检测到一个可能导致表面的执行顺序中产生环的模式，涉及到的一个事务将被回滚来打破该环。
+   </P
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="SERIALIZABLE-CONSISTENCY"
+>13.4.1. 用可序列化事务来强制一致性</A
+></H2
+><P
+>     如果可序列化事务隔离级别被用于所有需要一个一致数据视图的写入和读取，不需要其他的工作来保证一致性。在<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>中，来自于其他环境的被编写成使用可序列化事务来保证一致性的软件应该<SPAN
+CLASS="QUOTE"
+>"只工作"</SPAN
+>在这一点上。
+    </P
+><P
+>     当使用这种技术时，如果应用软件通过一个框架来自动重试由于序列化错误而回滚的事务，它将避免为应用程序员带来不必要的负担。把<TT
+CLASS="LITERAL"
+>default_transaction_isolation</TT
+>设置为<TT
+CLASS="LITERAL"
+>serializable</TT
+>可能是个好主意。通过触发器中的事务隔离级别检查来采取某些动作来保证没有其他事务隔离级别被使用（由于疏忽或者为了破坏完整性检查）也是明智的。
+    </P
+><P
+>     性能建议见<A
+HREF="transaction-iso.html#XACT-SERIALIZABLE"
+>第 13.2.3 &#33410;</A
+>。
+    </P
+><DIV
+CLASS="WARNING"
+><P
+></P
+><TABLE
+CLASS="WARNING"
+BORDER="1"
+WIDTH="100%"
+><TR
+><TD
+ALIGN="CENTER"
+><B
+>&#35686;&#21578;</B
+></TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+><P
+>      这个级别的使用可序列化事务的完整性保护还没有扩展到热备份模式（<A
+HREF="hot-standby.html"
+>第 26.5 &#33410;</A
+>）。由于这个原因，那些使用热备份的系统可能想要在主控机上使用可重复读和显式锁定。
+     </P
+></TD
+></TR
+></TABLE
+></DIV
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="NON-SERIALIZABLE-CONSISTENCY"
+>13.4.2. 使用显式锁定强制一致性</A
+></H2
+><P
+>     当可以使用非可序列化写时，要保证一行的当前有效性并保护它不受并发更新的影响，我们必须使用<TT
+CLASS="COMMAND"
+>SELECT FOR UPDATE</TT
+>、<TT
+CLASS="COMMAND"
+>SELECT FOR SHARE</TT
+>或一个合适的<TT
+CLASS="COMMAND"
+>LOCK TABLE</TT
+> 语句（<TT
+CLASS="COMMAND"
+>SELECT FOR UPDATE</TT
+>和<TT
+CLASS="COMMAND"
+>SELECT FOR SHARE</TT
+>锁只针对并发更新返回行，而<TT
+CLASS="COMMAND"
+>LOCK TABLE</TT
+>会锁住整个表）。当从其他环境移植应用到<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>时需要考虑这些。
+    </P
+><P
+>     关于这些来自其他环境的转换还需要注意的是<TT
+CLASS="COMMAND"
+>SELECT FOR UPDATE</TT
+>不保证一个并发事务将不会更新或删除一个被选中的行。要在<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>中这样做，你必须真正地更新该行，即便没有值需要被改变。<TT
+CLASS="COMMAND"
+>SELECT FOR UPDATE</TT
+> <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>临时阻塞</I
+></SPAN
+>其他事务，让它们不能获取该相同的锁或者执行一个会影响被锁定行的<TT
+CLASS="COMMAND"
+>UPDATE</TT
+>或<TT
+CLASS="COMMAND"
+>DELETE</TT
+>，但是一旦正持有该所锁的事务提交或回滚，一个被阻塞的事务将继续执行冲突操作，除非当锁被持有时一个该行的实际<TT
+CLASS="COMMAND"
+>UPDATE</TT
+>被执行。
+    </P
+><P
+>     在非可序列化<ACRONYM
+CLASS="ACRONYM"
+>MVCC</ACRONYM
+>环境下，全局有效性检查需要一些额外的考虑。例如，一个银行应用可能会希望检查一个表中的所有扣款总和等于另外一个表中的收款总和，同时两个表还会被更新。比较两个连续的在读已提交模式下不会可靠工作的<TT
+CLASS="LITERAL"
+>SELECT sum(...)</TT
+>命令， 因为第二个查询很可能会包含没有被第一个查询考虑的事务提交的结果。在一个单一的可重复读事务里进行两个求和则给出在可串行化事务开始之前提交的所有事务产生的准确结果 &mdash; 但有人可能会合理地置疑在结果被递交的时候，它们是否仍然相关。 如果可重复读事务本身在尝试做一致性检查之前应用了某些变更，那么检查的有用性就更加值得讨论了， 因为现在它包含了一些（但不是全部）事务开始后的变化。 在这种情况下，一个小心的人可能希望锁住所有需要检查的表，这样才能获得一个无可置疑的当前现状的图像。 一个<TT
+CLASS="LITERAL"
+>SHARE</TT
+>模式（或者更高）的锁保证在被锁定表中除了当前事务所作的更改之外，没有未提交的更改。
+    </P
+><P
+>     还要注意如果某人正在依赖显式锁定来避免并发更改，那么他应该使用读已提交模式， 或者是在可重复读模式里在执行命令之前小心地获取锁。 在可重复读事务里获取的锁保证了不会有其它修改该表的事务正在运行，但是如果事务看到的快照在获取锁之前， 那么它可能早于表中一些现在已经提交的更改。 一个可重复读事务的快照实际上是在它的第一个查询或者数据修改命令（<TT
+CLASS="LITERAL"
+>SELECT</TT
+>、<TT
+CLASS="LITERAL"
+>INSERT</TT
+>、<TT
+CLASS="LITERAL"
+>UPDATE</TT
+>或<TT
+CLASS="LITERAL"
+>DELETE</TT
+>）开始的时候冻结的，因此我们可以在快照冻结之前显式地获取锁。
+    </P
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="explicit-locking.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="mvcc-caveats.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>显式锁定</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="mvcc.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>提醒</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

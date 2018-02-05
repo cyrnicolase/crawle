@@ -1,0 +1,431 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>查询树</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="规则系统"
+HREF="rules.html"><LINK
+REL="PREVIOUS"
+TITLE="规则系统"
+HREF="rules.html"><LINK
+REL="NEXT"
+TITLE="视图和规则系统"
+HREF="rules-views.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/rules.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="规则系统"
+HREF="rules.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="rules.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#31456; 39. 规则系统</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="视图和规则系统"
+HREF="rules-views.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="QUERYTREE"
+>39.1. 查询树</A
+></H1
+><P
+>    要了解规则系统是如何工作的，必须要知道它什么时候被调用以及它的输入和结果是什么。</P
+><P
+>    规则系统位于解析器和规划器之间。它采用解析器的输出（即一个查询树）和用户定义的重写规则（也是查询树，不过带有一些额外信息），并且常见零个或者更多个查询树作为结果。因此它的输入和输出总是那些规划器自身就能产生的东西，并且因此它看到的任何东西都可以被表示成一个<ACRONYM
+CLASS="ACRONYM"
+>SQL</ACRONYM
+>语句。</P
+><P
+>    那么什么是一个查询树？它是一个<ACRONYM
+CLASS="ACRONYM"
+>SQL</ACRONYM
+>语句的一种内部表示，其中用于创建它的每一个单独的部分都被独立存储。如果你设置了配置参数<TT
+CLASS="VARNAME"
+>debug_print_parse</TT
+>、<TT
+CLASS="VARNAME"
+>debug_print_rewritten</TT
+>或<TT
+CLASS="VARNAME"
+>debug_print_plan</TT
+>，这些查询树可以被显示在服务器日志中。规则动作也被做为查询树存储在系统目录<TT
+CLASS="STRUCTNAME"
+>pg_rewrite</TT
+>中。它们没有被格式化为日志输出的形式，但是它们包含完全相同的信息。</P
+><P
+>    阅读一棵未加工的查询树需要要一些经验。但是由于查询树的<ACRONYM
+CLASS="ACRONYM"
+>SQL</ACRONYM
+>表示形式足以用来理解规则系统，本章将不会教授如何阅读查询树。</P
+><P
+>    在阅读本章中查询树的<ACRONYM
+CLASS="ACRONYM"
+>SQL</ACRONYM
+>表现形式时，读者需要能够知道语句被分解成了哪些部分并且能在查询树结构中标识它们。一棵查询树的部分有：
+
+<P
+></P
+></P><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+>命令类型</DT
+><DD
+><P
+>        这是一个简单的值来说明是哪一种命令（<TT
+CLASS="COMMAND"
+>SELECT</TT
+>、<TT
+CLASS="COMMAND"
+>INSERT</TT
+>、<TT
+CLASS="COMMAND"
+>UPDATE</TT
+>、<TT
+CLASS="COMMAND"
+>DELETE</TT
+>）产生了该查询树。
+    </P
+></DD
+><DT
+>范围表
+        </DT
+><DD
+><P
+>        范围表是被使用在该查询中的关系的列表。在一个<TT
+CLASS="COMMAND"
+>SELECT</TT
+>语句中，范围表是在关键词<TT
+CLASS="LITERAL"
+>FROM</TT
+>后面给出的关系。
+    </P
+><P
+>        每一个范围表项标识一个表或视图，并且说明在该查询的其他部分要以哪个名称调用它。在查询树中，范围表项被使用编号而不是名称来引用，因此在一个<ACRONYM
+CLASS="ACRONYM"
+>SQL</ACRONYM
+>语句中出现重复的名字也没有关系。在规则的范围表被合并以后可能会发生这种情况。本章中的例子将不会有这种情况。
+    </P
+></DD
+><DT
+>结果关系</DT
+><DD
+><P
+>        这是一个指向范围表的索引，它标识了该查询的结果应该去哪个关系。
+    </P
+><P
+>        <TT
+CLASS="COMMAND"
+>SELECT</TT
+>查询没有结果关系（特殊情况<TT
+CLASS="COMMAND"
+>SELECT INTO</TT
+>几乎等于<TT
+CLASS="COMMAND"
+>CREATE TABLE</TT
+>后面跟上<TT
+CLASS="LITERAL"
+>INSERT ... SELECT</TT
+>，并且不在这里单独讨论）。
+    </P
+><P
+>        对于<TT
+CLASS="COMMAND"
+>INSERT</TT
+>、<TT
+CLASS="COMMAND"
+>UPDATE</TT
+>和<TT
+CLASS="COMMAND"
+>DELETE</TT
+>命令，结果关系是修改要进行的表（或视图！）。
+    </P
+></DD
+><DT
+>目标列表
+        </DT
+><DD
+><P
+>        目标列表是一个表达式的列表，它定义了查询的结果。在一个<TT
+CLASS="COMMAND"
+>SELECT</TT
+>的情况下，这些表达式会构建出该查询最终的输出。它们对应于关键字<TT
+CLASS="COMMAND"
+>SELECT</TT
+>和<TT
+CLASS="COMMAND"
+>FROM</TT
+>之间的表达式（<TT
+CLASS="LITERAL"
+>*</TT
+>是一个关系所有列名的缩写。解析器会把它扩展成独立的列，因此规则系统永远见不到它）。
+    </P
+><P
+>        <TT
+CLASS="COMMAND"
+>DELETE</TT
+>命令不需要一个目标列表，因为它们不产生任何结果。相反，规则系统会向空的目标列表中加入一个特殊的<ACRONYM
+CLASS="ACRONYM"
+>CTID</ACRONYM
+>项来允许执行器找到要被删除的行（当结果关系是一个普通表时才加入<ACRONYM
+CLASS="ACRONYM"
+>CTID</ACRONYM
+>。如果结果关系是一个视图，会加入一个整行变量，如<A
+HREF="rules-views.html#RULES-VIEWS-UPDATE"
+>第 39.2.4 &#33410;</A
+>所述）。
+    </P
+><P
+>        对于<TT
+CLASS="COMMAND"
+>INSERT</TT
+>命令，目标列表描述了将要进入到结果关系中的新行。它由<TT
+CLASS="LITERAL"
+>VALUES</TT
+>子句中的表达式或来自<TT
+CLASS="LITERAL"
+>INSERT ... SELECT</TT
+>中<TT
+CLASS="COMMAND"
+>SELECT</TT
+>子句的表达式构成。重写处理的第一步会为那些没有被原始命令赋值但有默认值的列增加目标列项。任何剩余的列（既没有给定值也没有默认值）将被规划器用一个常量空值表达式填充。
+    </P
+><P
+>        对于<TT
+CLASS="COMMAND"
+>UPDATE</TT
+>命令，目标列表描述要替换旧行的新行。在规则系统中，它只包含来自命令的<TT
+CLASS="LITERAL"
+>SET column = expression</TT
+>部分的表达式。规划器将处理缺失的列，做法是为它们插入表达式，这种表达式会把旧行的值复制到新行。正如<TT
+CLASS="COMMAND"
+>DELETE</TT
+>一样，规则系统会增加一个<ACRONYM
+CLASS="ACRONYM"
+>CTID</ACRONYM
+>或整行变量，这样执行器能够标识要被更新的旧行。
+    </P
+><P
+>        目标列表中的每一个项所包含的表达式可以是一个常量值、一个指向范围表中关系的列的变量、一个参数或一个由函数调用、常量、变量、操作符等构成的表达式树。
+    </P
+></DD
+><DT
+>条件</DT
+><DD
+><P
+>        查询的条件是一个表达式，它很像包含在目标列表项中的表达式。这个表达式的结果值是一个布尔值，它说明对最终结果行的操作（<TT
+CLASS="COMMAND"
+>INSERT</TT
+>、<TT
+CLASS="COMMAND"
+>UPDATE</TT
+>、<TT
+CLASS="COMMAND"
+>DELETE</TT
+>或<TT
+CLASS="COMMAND"
+>SELECT</TT
+>）是否应该被执行。它对应于一个<ACRONYM
+CLASS="ACRONYM"
+>SQL</ACRONYM
+>语句的<TT
+CLASS="LITERAL"
+>WHERE</TT
+>子句。
+    </P
+></DD
+><DT
+>连接树</DT
+><DD
+><P
+>        查询的连接树展示了<TT
+CLASS="LITERAL"
+>FROM</TT
+>子句的结构。对于一个<TT
+CLASS="LITERAL"
+>SELECT ... FROM a, b, c</TT
+>这样的简单查询，连接树就是<TT
+CLASS="LITERAL"
+>FROM</TT
+>项的一个列表，因为我们被允许以任何顺序连接它们。但是当<TT
+CLASS="LITERAL"
+>JOIN</TT
+>表达式（特别是外连接）被使用时，我们必须按照连接显示的顺序来连接。在这种情况下，连接树展示了<TT
+CLASS="LITERAL"
+>JOIN</TT
+>表达式的结构。与特定<TT
+CLASS="LITERAL"
+>JOIN</TT
+>子句（来自<TT
+CLASS="LITERAL"
+>ON</TT
+>或<TT
+CLASS="LITERAL"
+>USING</TT
+>）相关的限制被存储为附加到那些连接树节点的条件表达式。我们发现把顶层<TT
+CLASS="LITERAL"
+>WHERE</TT
+>表达式存储为附加到顶层连接树项的一个条件也很方便。这样实际上连接树表达了一个<TT
+CLASS="COMMAND"
+>SELECT</TT
+>的<TT
+CLASS="LITERAL"
+>FROM</TT
+>和<TT
+CLASS="LITERAL"
+>WHERE</TT
+>子句。
+    </P
+></DD
+><DT
+>其他</DT
+><DD
+><P
+>        查询树的其他部分（如<TT
+CLASS="LITERAL"
+>ORDER BY</TT
+>子句）在这里并不受到关注。规则系统在应用规则时会替换这里的某些项，但是这些与规则系统的基础没有什么关系。
+    </P
+></DD
+></DL
+></DIV
+><P></P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="rules.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="rules-views.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>规则系统</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="rules.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>视图和规则系统</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

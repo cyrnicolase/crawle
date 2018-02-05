@@ -1,0 +1,337 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>dblink_build_sql_update</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="dblink"
+HREF="dblink.html"><LINK
+REL="PREVIOUS"
+TITLE="dblink_build_sql_delete"
+HREF="contrib-dblink-build-sql-delete.html"><LINK
+REL="NEXT"
+TITLE="dict_int"
+HREF="dict-int.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="REFENTRY"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/dblink.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="dblink_build_sql_delete"
+HREF="contrib-dblink-build-sql-delete.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="dblink.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="dict_int"
+HREF="dict-int.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="CONTRIB-DBLINK-BUILD-SQL-UPDATE"
+></A
+>dblink_build_sql_update</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN176173"
+></A
+><H2
+>&#21517;&#31216;</H2
+>dblink_build_sql_update&nbsp;--&nbsp;使用一个本地元组构建一个 UPDATE 语句，将主键域值替换为提供的值
+   </DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN176176"
+></A
+><H2
+>&#22823;&#32434;</H2
+><PRE
+CLASS="SYNOPSIS"
+>dblink_build_sql_update(text relname,
+                        int2vector primary_key_attnums,
+                        integer num_primary_key_atts,
+                        text[] src_pk_att_vals_array,
+                        text[] tgt_pk_att_vals_array) 返回 text</PRE
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN176178"
+></A
+><H2
+>描述</H2
+><P
+>    <CODE
+CLASS="FUNCTION"
+>dblink_build_sql_update</CODE
+>在选择性地将一个本地表复制到一个远程数据库时很有用。它从本地表基于主键选择一行，并且接着构建一个 SQL <TT
+CLASS="COMMAND"
+>UPDATE</TT
+>命令来复制该行，但是其中的主键值被替换为最后一个参数中的值（要创建该行的一个准确拷贝，只要为最后两个参数指定相同的值）。<TT
+CLASS="COMMAND"
+>UPDATE</TT
+>命令总是为该行的所有域赋值 &mdash; 这个函数与<CODE
+CLASS="FUNCTION"
+>dblink_build_sql_insert</CODE
+>之间的主要区别是它假定目标行已经存在于远程表中。
+   </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN176185"
+></A
+><H2
+>参数</H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="PARAMETER"
+>relname</TT
+></DT
+><DD
+><P
+>       一个本地关系的名称，例如<TT
+CLASS="LITERAL"
+>foo</TT
+>或者<TT
+CLASS="LITERAL"
+>myschema.mytab</TT
+>。如果该名称是大小写混合的或包含特殊字符，要包括双引号，例如<TT
+CLASS="LITERAL"
+>"FooBar"</TT
+>；如果没有引号，字符串将被折叠到小写形式。
+      </P
+></DD
+><DT
+><TT
+CLASS="PARAMETER"
+>primary_key_attnums</TT
+></DT
+><DD
+><P
+>       主键域的属性号（从 1 开始），例如<TT
+CLASS="LITERAL"
+>1 2</TT
+>。
+      </P
+></DD
+><DT
+><TT
+CLASS="PARAMETER"
+>num_primary_key_atts</TT
+></DT
+><DD
+><P
+>       主键域的数量。
+      </P
+></DD
+><DT
+><TT
+CLASS="PARAMETER"
+>src_pk_att_vals_array</TT
+></DT
+><DD
+><P
+>       要被用来查找本地元组的主键域值。每一个域都被表示为文本形式。如果没有行具有这些主键值，则抛出一个错误。
+      </P
+></DD
+><DT
+><TT
+CLASS="PARAMETER"
+>tgt_pk_att_vals_array</TT
+></DT
+><DD
+><P
+>       要用在结果<TT
+CLASS="COMMAND"
+>UPDATE</TT
+>命令中的主键域值。每一个域都被表示为文本形式。
+      </P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN176218"
+></A
+><H2
+>返回值</H2
+><P
+>将要求的 SQL 语句返回为文本。</P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN176221"
+></A
+><H2
+>注解</H2
+><P
+>    自<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+> 9.0 开始，<TT
+CLASS="PARAMETER"
+>primary_key_attnums</TT
+>中的属性号被解释为逻辑列号，对应于列在<TT
+CLASS="LITERAL"
+>SELECT * FROM relname</TT
+>中的位置。之前的版本将属性号解释为物理列位置。如果指示出的列的左边有任意列在该表的生存期内被删除，这两种解释就有区别。
+   </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN176227"
+></A
+><H2
+>例子</H2
+><PRE
+CLASS="SCREEN"
+>SELECT dblink_build_sql_update('foo', '1 2', 2, '{"1", "a"}', '{"1", "b"}');
+                   dblink_build_sql_update
+-------------------------------------------------------------
+ UPDATE foo SET f1='1',f2='b',f3='1' WHERE f1='1' AND f2='b'
+(1 row)</PRE
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="contrib-dblink-build-sql-delete.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="dict-int.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>dblink_build_sql_delete</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="dblink.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>dict_int</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

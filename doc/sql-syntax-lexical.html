@@ -1,0 +1,1880 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>词法结构</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="SQL语法"
+HREF="sql-syntax.html"><LINK
+REL="PREVIOUS"
+TITLE="SQL语法"
+HREF="sql-syntax.html"><LINK
+REL="NEXT"
+TITLE="值表达式"
+HREF="sql-expressions.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/syntax.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="SQL语法"
+HREF="sql-syntax.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-syntax.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#31456; 4. SQL语法</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="值表达式"
+HREF="sql-expressions.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="SQL-SYNTAX-LEXICAL"
+>4.1. 词法结构</A
+></H1
+><P
+>   SQL输入由一个<I
+CLASS="FIRSTTERM"
+>命令</I
+>序列组成。一个命令由一个<I
+CLASS="FIRSTTERM"
+>记号</I
+>的序列构成，并由一个分号（<SPAN
+CLASS="QUOTE"
+>";"</SPAN
+>）终结。输入流的末端也会标志一个命令的结束。具体哪些记号是合法的与具体命令的语法有关。
+  </P
+><P
+>   一个记号可以是一个<I
+CLASS="FIRSTTERM"
+>关键词</I
+>、一个<I
+CLASS="FIRSTTERM"
+>标识符</I
+>、一个<I
+CLASS="FIRSTTERM"
+>带引号的标识符</I
+>、一个<I
+CLASS="FIRSTTERM"
+>literal</I
+>（或常量）或者一个特殊字符符号。记号通常以空白（空格、制表符、新行）来分隔，但在无歧义时并不强制要求如此（唯一的例子是一个特殊字符紧挨着其他记号）。
+  </P
+><P
+>    例如，下面是一个（语法上）合法的SQL输入：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>SELECT * FROM MY_TABLE;
+UPDATE MY_TABLE SET A = 5;
+INSERT INTO MY_TABLE VALUES (3, 'hi there');</PRE
+><P>
+    这是一个由三个命令组成的序列，每一行一个命令（尽管这不是必须地，在同一行中可以有超过一个命令，而且命令还可以被跨行分割）。
+   </P
+><P
+>   另外，<I
+CLASS="FIRSTTERM"
+>注释</I
+>也可以出现在SQL输入中。它们不是记号，它们和空白完全一样。
+  </P
+><P
+>   根据标识命令、操作符、参数的记号不同，SQL的语法不很一致。最前面的一些记号通常是命令名，因此在上面的例子中我们通常会说一个<SPAN
+CLASS="QUOTE"
+>"SELECT"</SPAN
+>、一个<SPAN
+CLASS="QUOTE"
+>"UPDATE"</SPAN
+>和一个<SPAN
+CLASS="QUOTE"
+>"INSERT"</SPAN
+>命令。但是例如<TT
+CLASS="COMMAND"
+>UPDATE</TT
+>命令总是要求一个<TT
+CLASS="TOKEN"
+>SET</TT
+>记号出现在一个特定位置，而<TT
+CLASS="COMMAND"
+>INSERT</TT
+>则要求一个<TT
+CLASS="TOKEN"
+>VALUES</TT
+>来完成命令。每个命令的精确语法规则在<A
+HREF="reference.html"
+>第 VI &#37096;&#20998;</A
+>中介绍。
+  </P
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="SQL-SYNTAX-IDENTIFIERS"
+>4.1.1. 标识符和关键词</A
+></H2
+><P
+>    上例中的<TT
+CLASS="TOKEN"
+>SELECT</TT
+>、<TT
+CLASS="TOKEN"
+>UPDATE</TT
+>或<TT
+CLASS="TOKEN"
+>VALUES</TT
+>记号是<I
+CLASS="FIRSTTERM"
+>关键词</I
+>的例子，即SQL语言中具有特定意义的词。记号<TT
+CLASS="TOKEN"
+>MY_TABLE</TT
+>和<TT
+CLASS="TOKEN"
+>A</TT
+>则是<I
+CLASS="FIRSTTERM"
+>标识符</I
+>的例子。它们标识表、列或者其他数据库对象的名字，取决于使用它们的命令。因此它们有时也被简称为<SPAN
+CLASS="QUOTE"
+>"名字"</SPAN
+>。关键词和标识符具有相同的词法结构，这意味着我们无法在没有语言知识的前提下区分一个标识符和关键词。一个关键词的完整列表可以在<A
+HREF="sql-keywords-appendix.html"
+>&#38468;&#24405; C</A
+>中找到。
+   </P
+><P
+>    SQL标识符和关键词必须以一个字母（<TT
+CLASS="LITERAL"
+>a</TT
+>-<TT
+CLASS="LITERAL"
+>z</TT
+>，也可以是带变音符的字母和非拉丁字母）或一个下划线（_）开始。后续字符可以是字母、下划线（<TT
+CLASS="LITERAL"
+>_</TT
+>）、数字（<TT
+CLASS="LITERAL"
+>0</TT
+>-<TT
+CLASS="LITERAL"
+>9</TT
+>）或美元符号（<TT
+CLASS="LITERAL"
+>$</TT
+>）。注意根据SQL标准的字母规定，美元符号是不允许出现在标识符中的，因此它们的使用可能会降低应用的可移植性。SQL标准不会定义包含数字或者以下划线开头或结尾的关键词，因此这种形式的标识符不会与未来可能的标准扩展冲突 。
+   </P
+><P
+>    
+    系统中一个标识符的长度不能超过 <TT
+CLASS="SYMBOL"
+>NAMEDATALEN</TT
+>-1 字节，在命令中可以写超过此长度的标识符，但是它们会被截断。默认情况下，<TT
+CLASS="SYMBOL"
+>NAMEDATALEN</TT
+> 的值为64，因此标识符的长度上限为63字节。如果这个限制有问题，可以在<TT
+CLASS="FILENAME"
+>src/include/pg_config_manual.h</TT
+>中修改 <TT
+CLASS="SYMBOL"
+>NAMEDATALEN</TT
+> 常量。
+   </P
+><P
+>    
+    关键词和不被引号修饰的标识符是大小写不敏感的。因此：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>UPDATE MY_TABLE SET A = 5;</PRE
+><P>
+    可以等价地写成：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>uPDaTE my_TabLE SeT a = 5;</PRE
+><P>
+    一个常见的习惯是将关键词写成大写，而名称写成小写，例如：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>UPDATE my_table SET a = 5;</PRE
+><P>
+   </P
+><P
+>    
+    这里还有第二种形式的标识符：<I
+CLASS="FIRSTTERM"
+>受限标识符</I
+>或<I
+CLASS="FIRSTTERM"
+>被引号修饰的标识符</I
+>。它是由双引号（<TT
+CLASS="LITERAL"
+>"</TT
+>）包围的一个任意字符序列。一个受限标识符总是一个标识符而不会是一个关键字。因此<TT
+CLASS="LITERAL"
+>"select"</TT
+>可以用于引用一个名为<SPAN
+CLASS="QUOTE"
+>"select"</SPAN
+>的列或者表，而一个没有引号修饰的<TT
+CLASS="LITERAL"
+>select</TT
+>则会被当作一个关键词，从而在本应使用表或列名的地方引起解析错误。在上例中使用受限标识符的例子如下：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>UPDATE "my_table" SET "a" = 5;</PRE
+><P>
+   </P
+><P
+>    受限标识符可以包含任何字符，除了代码为0的字符（如果要包含一个双引号，则写两个双引号）。这使得可以构建原本不被允许的表或列的名称，例如包含空格或花号的名字。但是长度限制依然有效。
+   </P
+><P
+>    一种受限标识符的变体允许包括转义的用代码点标识的Unicode字符。这种变体以<TT
+CLASS="LITERAL"
+>U&amp;</TT
+>（大写或小写U跟上一个花号）开始，后面紧跟双引号修饰的名称，两者之间没有任何空白，如<TT
+CLASS="LITERAL"
+>U&amp;"foo"</TT
+>（注意这里与操作符<TT
+CLASS="LITERAL"
+>&amp;</TT
+>似乎有一些混淆，但是在<TT
+CLASS="LITERAL"
+>&amp;</TT
+>操作符周围使用空白避免了这个问题） 。在引号内，Unicode字符可以以转义的形式指定：反斜线接上4位16进制代码点号码或者反斜线和加号接上6位16进制代码点号码。例如，标识符<TT
+CLASS="LITERAL"
+>"data"</TT
+>可以写成：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>U&amp;"d\0061t\+000061"</PRE
+><P>
+    下面的例子用斯拉夫语字母写出了俄语单词 <SPAN
+CLASS="QUOTE"
+>"slon"</SPAN
+>（大象）：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>U&amp;"\0441\043B\043E\043D"</PRE
+><P>
+   </P
+><P
+>    如果希望使用其他转义字符来代替反斜线，可以在字符串后使用<TT
+CLASS="LITERAL"
+>UESCAPE</TT
+>子句，例如：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>U&amp;"d!0061t!+000061" UESCAPE '!'</PRE
+><P>
+    转义字符可以是除了16进制位、加号、单引号、双引号、空白字符之外的任意单个字符。注意转义字符是被写在单引号而不是双引号内。
+   </P
+><P
+>    为了在标识符中包括转义字符本身，将其写两次即可。
+   </P
+><P
+>    Unicode转义语法只有在服务器编码为<TT
+CLASS="LITERAL"
+>UTF8</TT
+>时才起效。当使用其他服务器编码时，只有在ASCII范围内（最高到<TT
+CLASS="LITERAL"
+>\007F</TT
+>）的编码点才能被使用。4位和6位形式都可以被用来定义UTF-16代理对来组成代码点大于U+FFFF的字符，尽管6位形式的存在使得这种做法变得不必要（代理对并不被直接存储，而是被被绑定到一个单独的代码点然后被编码到UTF-8）。
+   </P
+><P
+>    将一个标识符变得受限同时也使它变成大小写敏感的，反之非受限名称总是被转换成小写形 式。例如，标识符<TT
+CLASS="LITERAL"
+>FOO</TT
+>、<TT
+CLASS="LITERAL"
+>foo</TT
+>和<TT
+CLASS="LITERAL"
+>"foo"</TT
+>在<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>中被认为是相同的，而<TT
+CLASS="LITERAL"
+>"Foo"</TT
+>和<TT
+CLASS="LITERAL"
+>"FOO"</TT
+>则互 不相同且也不同于前面三个标识符（<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>将非受限名字转换为小写形式与SQL标准是不兼容 
+的，SQL标准中要求将非受限名称转换为大写形式。这样根据标准， <TT
+CLASS="LITERAL"
+>foo</TT
+>应该和 <TT
+CLASS="LITERAL"
+>"FOO"</TT
+>而不是<TT
+CLASS="LITERAL"
+>"foo"</TT
+>相同。如果希望写一个可移植的应用，我们应该总是用引号修饰一个特定名字或者 从不使用 引号修饰）。
+   </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="SQL-SYNTAX-CONSTANTS"
+>4.1.2. 常量</A
+></H2
+><P
+>    在<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>中有三种<I
+CLASS="FIRSTTERM"
+>隐式类型常量</I
+>：字符串、位串和数字。常量也可以被指定显示类型，这可以使得它被更精确地展示以及更有效地处理。这些选择将会在后续小节中讨论。
+   </P
+><DIV
+CLASS="SECT3"
+><H3
+CLASS="SECT3"
+><A
+NAME="SQL-SYNTAX-STRINGS"
+>4.1.2.1. 字符串常量</A
+></H3
+><P
+>     
+     
+     在SQL中，一个字符串常量是一个由单引号（<TT
+CLASS="LITERAL"
+>'</TT
+>）包围的任意字符序列，例如<TT
+CLASS="LITERAL"
+>'This is a string'</TT
+>。为了在一个字符串中包括一个单引号，可以写两个相连的单引号，例如<TT
+CLASS="LITERAL"
+>'Dianne''s horse'</TT
+>。注意这和一个双引号（<TT
+CLASS="LITERAL"
+>"</TT
+>）<SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>不</I
+></SPAN
+>同。
+    </P
+><P
+>     两个只由空白及<SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>至少一个新行</I
+></SPAN
+>分隔的字符串常量会被连接在一起，并且将作为一个写在一起的字符串常量来对待。例如：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>SELECT 'foo'
+'bar';</PRE
+><P>
+     等同于：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>SELECT 'foobar';</PRE
+><P>
+     但是：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>SELECT 'foo'      'bar';</PRE
+><P>
+     则不是合法的语法（这种有些奇怪的行为是<ACRONYM
+CLASS="ACRONYM"
+>SQL</ACRONYM
+>指定的，<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>遵循了该标准）。
+    </P
+></DIV
+><DIV
+CLASS="SECT3"
+><H3
+CLASS="SECT3"
+><A
+NAME="SQL-SYNTAX-STRINGS-ESCAPE"
+>4.1.2.2. C风格转义的字符串常量</A
+></H3
+><P
+>     <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>也接受<SPAN
+CLASS="QUOTE"
+>"转义"</SPAN
+>字符串常量，这也是SQL标准的一个扩展。一个转义字符串常量可以通过在开单引号前面写一个字母<TT
+CLASS="LITERAL"
+>E</TT
+>（大写或小写形式）来指定，例如<TT
+CLASS="LITERAL"
+>E'foo'</TT
+>（当一个转义字符串常量跨行时，只在第一个开引号之前写<TT
+CLASS="LITERAL"
+>E</TT
+>）。在一个转义字符串内部，一个反斜线字符（<TT
+CLASS="LITERAL"
+>\</TT
+>）会开始一个 C 风格的<I
+CLASS="FIRSTTERM"
+>反斜线转义</I
+>序列，在其中反斜线和后续字符的组合表示一个特殊的字节值（如<A
+HREF="sql-syntax-lexical.html#SQL-BACKSLASH-TABLE"
+>&#34920; 4-1</A
+>中所示）。
+    </P
+><DIV
+CLASS="TABLE"
+><A
+NAME="SQL-BACKSLASH-TABLE"
+></A
+><P
+><B
+>&#34920; 4-1. 反斜线转义序列</B
+></P
+><TABLE
+BORDER="1"
+CLASS="CALSTABLE"
+><COL><COL><THEAD
+><TR
+><TH
+>反斜线转义序列</TH
+><TH
+>解释</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>\b</TT
+></TD
+><TD
+>退格</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>\f</TT
+></TD
+><TD
+>换页</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>\n</TT
+></TD
+><TD
+>换行</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>\r</TT
+></TD
+><TD
+>回车</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>\t</TT
+></TD
+><TD
+>制表符</TD
+></TR
+><TR
+><TD
+>         <TT
+CLASS="LITERAL"
+>\<TT
+CLASS="REPLACEABLE"
+><I
+>o</I
+></TT
+></TT
+>,
+         <TT
+CLASS="LITERAL"
+>\<TT
+CLASS="REPLACEABLE"
+><I
+>oo</I
+></TT
+></TT
+>,
+         <TT
+CLASS="LITERAL"
+>\<TT
+CLASS="REPLACEABLE"
+><I
+>ooo</I
+></TT
+></TT
+>
+         (<TT
+CLASS="REPLACEABLE"
+><I
+>o</I
+></TT
+> = 0 - 7)
+        </TD
+><TD
+>八进制字节值</TD
+></TR
+><TR
+><TD
+>         <TT
+CLASS="LITERAL"
+>\x<TT
+CLASS="REPLACEABLE"
+><I
+>h</I
+></TT
+></TT
+>,
+         <TT
+CLASS="LITERAL"
+>\x<TT
+CLASS="REPLACEABLE"
+><I
+>hh</I
+></TT
+></TT
+>
+         (<TT
+CLASS="REPLACEABLE"
+><I
+>h</I
+></TT
+> = 0 - 9, A - F)
+        </TD
+><TD
+>十六进制字节值</TD
+></TR
+><TR
+><TD
+>         <TT
+CLASS="LITERAL"
+>\u<TT
+CLASS="REPLACEABLE"
+><I
+>xxxx</I
+></TT
+></TT
+>,
+         <TT
+CLASS="LITERAL"
+>\U<TT
+CLASS="REPLACEABLE"
+><I
+>xxxxxxxx</I
+></TT
+></TT
+>
+         (<TT
+CLASS="REPLACEABLE"
+><I
+>x</I
+></TT
+> = 0 - 9, A - F)
+        </TD
+><TD
+>16 或 32-位十六进制 Unicode 字符值</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+><P
+>     跟随在一个反斜线后面的任何其他字符被当做其字面意思。因此，要包括一个反斜线字符，请写两个反斜线（<TT
+CLASS="LITERAL"
+>\\</TT
+>）。在一个转义字符串中包括一个单引号除了普通方法<TT
+CLASS="LITERAL"
+>''</TT
+>之外，还可以写成<TT
+CLASS="LITERAL"
+>\'</TT
+>。
+    </P
+><P
+>     你要负责保证你创建的字节序列由服务器字符集编码中合法的字符组成，特别是在使用八进制或十六进制转义时。如果服务器编码为 UTF-8，那么应该使用 Unicode 转义或替代的 Unicode 转义语法（在<A
+HREF="sql-syntax-lexical.html#SQL-SYNTAX-STRINGS-UESCAPE"
+>第 4.1.2.3 &#33410;</A
+>中解释）。替代方案可能是手工写出 UTF-8 编码字节，这可能会非常麻烦。
+    </P
+><P
+>     只有当服务器编码是<TT
+CLASS="LITERAL"
+>UTF8</TT
+>时，Unicode 转义语法才能完全工作。当使用其他服务器编码时，只有在 ASCII 范围（低于<TT
+CLASS="LITERAL"
+>\u007F</TT
+>）内的代码点能够被指定。4 位和 8 位形式都能被用来指定 UTF-16 代理对，用来组成代码点超过 U+FFFF 的字符，不过 8 位形式的可用从技术上使得这种做法不再是必须的（当服务器编码为<TT
+CLASS="LITERAL"
+>UTF8</TT
+>并使用代理对时，它们首先被结合到一个单一代码点，然后会被用 UTF-8 编码）。
+    </P
+><DIV
+CLASS="CAUTION"
+><P
+></P
+><TABLE
+CLASS="CAUTION"
+BORDER="1"
+WIDTH="100%"
+><TR
+><TD
+ALIGN="CENTER"
+><B
+>&#23567;&#24515;</B
+></TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+><P
+>     如果配置参数<A
+HREF="runtime-config-compatible.html#GUC-STANDARD-CONFORMING-STRINGS"
+>standard_conforming_strings</A
+>为<TT
+CLASS="LITERAL"
+>off</TT
+>，那么<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>对常规字符串常量和转义字符串常量中的反斜线转义都识别。不过，从<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+> 9.1 开始，该参数的默认值为<TT
+CLASS="LITERAL"
+>on</TT
+>，意味着只在转义字符串常量中识别反斜线转义。这种行为更兼容标准，但是可能打断依赖于历史行为（反斜线转义总是会被识别）的应用。作为一种变通，你可以设置该参数为<TT
+CLASS="LITERAL"
+>off</TT
+>，但是最好迁移到符合新的行为。如果你需要使用一个反斜线转义来表示一个特殊字符，为该字符串常量写上一个<TT
+CLASS="LITERAL"
+>E</TT
+>。
+    </P
+><P
+>     在<TT
+CLASS="VARNAME"
+>standard_conforming_strings</TT
+>之外，配置参数<A
+HREF="runtime-config-compatible.html#GUC-ESCAPE-STRING-WARNING"
+>escape_string_warning</A
+>和<A
+HREF="runtime-config-compatible.html#GUC-BACKSLASH-QUOTE"
+>backslash_quote</A
+>也决定了如何对待字符串常量中的反斜线。
+    </P
+></TD
+></TR
+></TABLE
+></DIV
+><P
+>     代码零的字符不能出现在一个字符串常量中。
+    </P
+></DIV
+><DIV
+CLASS="SECT3"
+><H3
+CLASS="SECT3"
+><A
+NAME="SQL-SYNTAX-STRINGS-UESCAPE"
+>4.1.2.3. 带有 Unicode 转义的字符串常量</A
+></H3
+><P
+>     <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>也支持另一种类型的字符串转义语法，它允许用代码点指定任意 Unicode 字符。一个 Unicode 转义字符串常量开始于<TT
+CLASS="LITERAL"
+>U&amp;</TT
+>（大写或小写形式的字母 U，后跟花号），后面紧跟着开引号，之间没有任何空白，例如<TT
+CLASS="LITERAL"
+>U&amp;'foo'</TT
+>（注意这产生了与操作符<TT
+CLASS="LITERAL"
+>&amp;</TT
+>的混淆。在操作符周围使用空白来避免这个问题）。在引号内，Unicode 字符可以通过写一个后跟 4 位十六进制代码点编号或者一个前面有加号的 6 位十六进制代码点编号的反斜线来指定。例如，字符串<TT
+CLASS="LITERAL"
+>'data'</TT
+>可以被写为
+</P><PRE
+CLASS="PROGRAMLISTING"
+>U&amp;'d\0061t\+000061'</PRE
+><P>
+     下面的例子用斯拉夫字母写出了俄语的单词<SPAN
+CLASS="QUOTE"
+>"slon"</SPAN
+>（大象）：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>U&amp;'\0441\043B\043E\043D'</PRE
+><P>
+    </P
+><P
+>     如果想要一个不是反斜线的转义字符，可以在字符串之后使用<TT
+CLASS="LITERAL"
+>UESCAPE</TT
+>子句来指定，例如：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>U&amp;'d!0061t!+000061' UESCAPE '!'</PRE
+><P>
+     转义字符可以是出一个十六进制位、加号、单引号、双引号或空白字符之外的任何单一字符。
+    </P
+><P
+>     只有当服务器编码是<TT
+CLASS="LITERAL"
+>UTF8</TT
+>时，Unicode 转义语法才能完全工作。当使用其他服务器编码时，只有在 ASCII 范围（低于<TT
+CLASS="LITERAL"
+>\u007F</TT
+>）内的代码点能够被指定。4 位和 8 位形式都能被用来指定 UTF-16 代理对，用来组成代码点超过 U+FFFF 的字符，不过 8 位形式的可用从技术上使得这种做法不再是必须的（当服务器编码为<TT
+CLASS="LITERAL"
+>UTF8</TT
+>并使用代理对时，它们首先被结合到一个单一代码点，然后会被用 UTF-8 编码）。
+    </P
+><P
+>     还有，只有当配置参数<A
+HREF="runtime-config-compatible.html#GUC-STANDARD-CONFORMING-STRINGS"
+>standard_conforming_strings</A
+>被打开时，用于字符串常量的 Unicode 转义语法才能工作。这是因为否则这种语法将迷惑客户端中肯地解析 SQL 语句，进而会导致 SQL 注入以及类似的安全性问题。如果这个参数被设置为关闭，这种语法将被拒绝并且报告一个错误消息。
+    </P
+><P
+>     要在一个字符串中包括一个表示其字面意思的转义字符，把它写两次。
+    </P
+></DIV
+><DIV
+CLASS="SECT3"
+><H3
+CLASS="SECT3"
+><A
+NAME="SQL-SYNTAX-DOLLAR-QUOTING"
+>4.1.2.4. 美元引用的字符串常量</A
+></H3
+><P
+>     虽然用于指定字符串常量的标准语法通常都很方便，但是当字符串中包含了很多单引号或反斜线时很难理解它，因为每一个都需要被双写。要在这种情形下允许可读性更好的查询，<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>提供了另一种被称为<SPAN
+CLASS="QUOTE"
+>"美元引用"</SPAN
+>的方式来书写字符串常量。一个美元引用的字符串常量由一个美元符号（<TT
+CLASS="LITERAL"
+>$</TT
+>）、一个可选的另个或更多字符的<SPAN
+CLASS="QUOTE"
+>"标签"</SPAN
+>、另一个美元符号、一个构成字符串内容的任意字符序列、一个美元符号、开始这个美元引用的相同标签和一个美元符号组成。例如，这里有两种不同的方法使用美元引用指定字符串<SPAN
+CLASS="QUOTE"
+>"Dianne's horse"</SPAN
+>：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>$$Dianne's horse$$
+$SomeTag$Dianne's horse$SomeTag$</PRE
+><P>
+     注意在美元引用字符串中，单引号可以在不被转义的情况下使用。事实上，在一个美元引用字符串中不需要对字符进行转义：字符串内容总是按其字面意思写出。反斜线不是特殊的，并且美元符号也不是特殊的，除非它们是匹配开标签的一个序列的一部分。
+    </P
+><P
+>     可以通过在每一个嵌套级别上选择不同的标签来嵌套美元引用字符串常量。这最常被用在编写函数定义上。例如：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>$function$
+BEGIN
+    RETURN ($1 ~ $q$[\t\r\n\v\\]$q$);
+END;
+$function$</PRE
+><P>
+     这里，序列<TT
+CLASS="LITERAL"
+>$q$[\t\r\n\v\\]$q$</TT
+>表示一个美元引用的文字串<TT
+CLASS="LITERAL"
+>[\t\r\n\v\\]</TT
+>，当该函数体被<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>执行时它将被识别。但是因为该序列不匹配外层的美元引用的定界符<TT
+CLASS="LITERAL"
+>$function$</TT
+>，它只是一些在外层字符串所关注的常量中的字符而已。
+    </P
+><P
+>     一个美元引用字符串的标签（如果有）遵循一个未被引用标识符的相同规则，除了它不能包含一个美元符号之外。标签是大小写敏感的，因此<TT
+CLASS="LITERAL"
+>$tag$String content$tag$</TT
+>是正确的，但是<TT
+CLASS="LITERAL"
+>$TAG$String content$tag$</TT
+>不正确。
+    </P
+><P
+>     一个跟着一个关键词或标识符的美元引用字符串必须用空白与之分隔开，否则美元引用定界符可能会被作为前面标识符的一部分。
+    </P
+><P
+>     美元引用不是 SQL 标准的一部分，但是在书写复杂字符串文字方面，它常常是一种比兼容标准的单引号语法更方便的方法。当要表示的字符串常量位于其他常量中时它特别有用，这种情况常常在过程函数定义中出现。如果用单引号语法，上一个例子中的每个反斜线将必须被写成四个反斜线，这在解析原始字符串常量时会被缩减到两个反斜线，并且接着在函数执行期间重新解析内层字符串常量时变成一个。
+    </P
+></DIV
+><DIV
+CLASS="SECT3"
+><H3
+CLASS="SECT3"
+><A
+NAME="SQL-SYNTAX-BIT-STRINGS"
+>4.1.2.5. 位串常量</A
+></H3
+><P
+>     位串常量看起来像常规字符串常量在开引号之前（中间无空白）加了一个<TT
+CLASS="LITERAL"
+>B</TT
+>（大写或小写形式），例如<TT
+CLASS="LITERAL"
+>B'1001'</TT
+>。位串常量中允许的字符只有<TT
+CLASS="LITERAL"
+>0</TT
+>和<TT
+CLASS="LITERAL"
+>1</TT
+>。
+    </P
+><P
+>     作为一种选择，位串常量可以用十六进制记号法指定，使用一个前导<TT
+CLASS="LITERAL"
+>X</TT
+>（大写或小写形式）,例如<TT
+CLASS="LITERAL"
+>X'1FF'</TT
+>。这种记号法等价于一个用四个二进制位取代每个十六进制位的位串常量。
+    </P
+><P
+>     两种形式的位串常量可以以常规字符串常量相同的方式跨行继续。美元引用不能被用在位串常量中。
+    </P
+></DIV
+><DIV
+CLASS="SECT3"
+><H3
+CLASS="SECT3"
+><A
+NAME="SQL-SYNTAX-CONSTANTS-NUMERIC"
+>4.1.2.6. 数字常量</A
+></H3
+><P
+>     在这些一般形式中可以接受数字常量：
+</P><PRE
+CLASS="SYNOPSIS"
+><TT
+CLASS="REPLACEABLE"
+><I
+>digits</I
+></TT
+>
+<TT
+CLASS="REPLACEABLE"
+><I
+>digits</I
+></TT
+>.[<SPAN
+CLASS="OPTIONAL"
+><TT
+CLASS="REPLACEABLE"
+><I
+>digits</I
+></TT
+></SPAN
+>][<SPAN
+CLASS="OPTIONAL"
+>e[<SPAN
+CLASS="OPTIONAL"
+>+-</SPAN
+>]<TT
+CLASS="REPLACEABLE"
+><I
+>digits</I
+></TT
+></SPAN
+>]
+[<SPAN
+CLASS="OPTIONAL"
+><TT
+CLASS="REPLACEABLE"
+><I
+>digits</I
+></TT
+></SPAN
+>].<TT
+CLASS="REPLACEABLE"
+><I
+>digits</I
+></TT
+>[<SPAN
+CLASS="OPTIONAL"
+>e[<SPAN
+CLASS="OPTIONAL"
+>+-</SPAN
+>]<TT
+CLASS="REPLACEABLE"
+><I
+>digits</I
+></TT
+></SPAN
+>]
+<TT
+CLASS="REPLACEABLE"
+><I
+>digits</I
+></TT
+>e[<SPAN
+CLASS="OPTIONAL"
+>+-</SPAN
+>]<TT
+CLASS="REPLACEABLE"
+><I
+>digits</I
+></TT
+></PRE
+><P>
+     其中<TT
+CLASS="REPLACEABLE"
+><I
+>digits</I
+></TT
+>是一个或多个十进制数字（0 到 9）。如果使用了小数点，在小数点前面或后面必须至少有一个数字。如果存在一个指数标记（<TT
+CLASS="LITERAL"
+>e</TT
+>），在其后必须跟着至少一个数字。在该常量中不能嵌入任何空白或其他字符。注意任何前导的加号或减号并不实际被考虑为常量的一部分，它是一个应用到该常量的操作符。
+    </P
+><P
+>     这些是合法数字常量的例子：
+<P
+CLASS="LITERALLAYOUT"
+>42<br>
+3.5<br>
+4.<br>
+.001<br>
+5e2<br>
+1.925e-3</P
+>
+    </P
+><P
+>     
+     
+     
+     如果一个不包含小数点和指数的数字常量的值适合类型<TT
+CLASS="TYPE"
+>integer</TT
+>（32 位），它首先被假定为类型<TT
+CLASS="TYPE"
+>integer</TT
+>。否则如果它的值适合类型<TT
+CLASS="TYPE"
+>bigint</TT
+>（64 位），它被假定为类型<TT
+CLASS="TYPE"
+>bigint</TT
+>。再否则它会被取做类型<TT
+CLASS="TYPE"
+>numeric</TT
+>。包含小数点和/或指数的常量总是首先被假定为类型<TT
+CLASS="TYPE"
+>numeric</TT
+>。
+    </P
+><P
+>     一个数字常量初始指派的数据类型只是类型转换算法的一个开始点。在大部分情况中，常量将被根据上下文自动被强制到最合适的类型。必要时，你可以通过造型它来强制一个数字值被解释为一种指定数据类型。例如，你可以这样强制一个数字值被当做类型<TT
+CLASS="TYPE"
+>real</TT
+>（<TT
+CLASS="TYPE"
+>float4</TT
+>）：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>REAL '1.23'  -- string style
+1.23::REAL   -- PostgreSQL (historical) style</PRE
+><P>
+
+     这些实际上只是接下来要讨论的一般造型记号的特例。
+    </P
+></DIV
+><DIV
+CLASS="SECT3"
+><H3
+CLASS="SECT3"
+><A
+NAME="SQL-SYNTAX-CONSTANTS-GENERIC"
+>4.1.2.7. 其他类型的常量</A
+></H3
+><P
+>      一种<SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>任意</I
+></SPAN
+>类型的一个常量可以使用下列记号中的任意一种输入：
+</P><PRE
+CLASS="SYNOPSIS"
+><TT
+CLASS="REPLACEABLE"
+><I
+>type</I
+></TT
+> '<TT
+CLASS="REPLACEABLE"
+><I
+>string</I
+></TT
+>'
+'<TT
+CLASS="REPLACEABLE"
+><I
+>string</I
+></TT
+>'::<TT
+CLASS="REPLACEABLE"
+><I
+>type</I
+></TT
+>
+CAST ( '<TT
+CLASS="REPLACEABLE"
+><I
+>string</I
+></TT
+>' AS <TT
+CLASS="REPLACEABLE"
+><I
+>type</I
+></TT
+> )</PRE
+><P>
+     字符串常量的文本被传递到名为<TT
+CLASS="REPLACEABLE"
+><I
+>type</I
+></TT
+>的类型的输入转换例程中。其结果是指定类型的一个常量。如果对该常量的类型没有歧义（例如，当它被直接指派给一个表列时），显式类型造型可以被忽略，在那种情况下它会被自动强制。
+    </P
+><P
+>     字符串常量可以使用常规 SQL 记号或美元引用书写。
+    </P
+><P
+>     也可以使用一个类似函数的语法来指定一个类型强制：
+</P><PRE
+CLASS="SYNOPSIS"
+><TT
+CLASS="REPLACEABLE"
+><I
+>typename</I
+></TT
+> ( '<TT
+CLASS="REPLACEABLE"
+><I
+>string</I
+></TT
+>' )</PRE
+><P>
+     但是并非所有类型名都可以用在这种方法中，详见<A
+HREF="sql-expressions.html#SQL-SYNTAX-TYPE-CASTS"
+>第 4.2.9 &#33410;</A
+>。
+    </P
+><P
+>     如<A
+HREF="sql-expressions.html#SQL-SYNTAX-TYPE-CASTS"
+>第 4.2.9 &#33410;</A
+>中讨论的，<TT
+CLASS="LITERAL"
+>::</TT
+>、<TT
+CLASS="LITERAL"
+>CAST()</TT
+>以及函数调用语法也可以被用来指定任意表达式的运行时类型转换。要避免语法歧义，<TT
+CLASS="LITERAL"
+><TT
+CLASS="REPLACEABLE"
+><I
+>type</I
+></TT
+> '<TT
+CLASS="REPLACEABLE"
+><I
+>string</I
+></TT
+>'</TT
+>语法只能被用来指定简单文字常量的类型。<TT
+CLASS="LITERAL"
+><TT
+CLASS="REPLACEABLE"
+><I
+>type</I
+></TT
+> '<TT
+CLASS="REPLACEABLE"
+><I
+>string</I
+></TT
+>'</TT
+>语法上的另一个限制是它无法对数组类型工作，指定一个数组常量的类型可使用<TT
+CLASS="LITERAL"
+>::</TT
+>或<TT
+CLASS="LITERAL"
+>CAST()</TT
+>。
+    </P
+><P
+>     <TT
+CLASS="LITERAL"
+>CAST()</TT
+>语法符合 SQL。<TT
+CLASS="LITERAL"
+><TT
+CLASS="REPLACEABLE"
+><I
+>type</I
+></TT
+> '<TT
+CLASS="REPLACEABLE"
+><I
+>string</I
+></TT
+>'</TT
+>语法是该标准的一般化：SQL 指定这种语法只用于一些数据类型，但是<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>允许它用于所有类型。带有<TT
+CLASS="LITERAL"
+>::</TT
+>的语法是<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>的历史用法，就像函数调用语法一样。
+    </P
+></DIV
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="SQL-SYNTAX-OPERATORS"
+>4.1.3. 操作符</A
+></H2
+><P
+>    一个操作符名是最多<TT
+CLASS="SYMBOL"
+>NAMEDATALEN</TT
+>-1（默认为 63）的一个字符序列，其中的字符来自下面的列表：
+<P
+CLASS="LITERALLAYOUT"
+>+&nbsp;-&nbsp;*&nbsp;/&nbsp;&lt;&nbsp;&gt;&nbsp;=&nbsp;~&nbsp;!&nbsp;@&nbsp;#&nbsp;%&nbsp;^&nbsp;&amp;&nbsp;|&nbsp;`&nbsp;?</P
+>
+
+    不过，在操作符名上有一些限制：
+    <P
+></P
+></P><UL
+><LI
+><P
+>       <TT
+CLASS="LITERAL"
+>--</TT
+> and <TT
+CLASS="LITERAL"
+>/*</TT
+>不能在一个操作符名的任何地方出现，因为它们将被作为一段注释的开始。
+      </P
+></LI
+><LI
+><P
+>       一个多字符操作符名不能以<TT
+CLASS="LITERAL"
+>+</TT
+>或<TT
+CLASS="LITERAL"
+>-</TT
+>结尾，除非该名称也至少包含这些字符中的一个：
+<P
+CLASS="LITERALLAYOUT"
+>~&nbsp;!&nbsp;@&nbsp;#&nbsp;%&nbsp;^&nbsp;&amp;&nbsp;|&nbsp;`&nbsp;?</P
+>
+       例如，<TT
+CLASS="LITERAL"
+>@-</TT
+>是一个被允许的操作符名，但<TT
+CLASS="LITERAL"
+>*-</TT
+>不是。这些限制允许<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>解析 SQL 兼容的查询而不需要在记号之间有空格。
+      </P
+></LI
+></UL
+><P>
+   </P
+><P
+>    当使用非 SQL 标准的操作符名时，你通常需要用空格分隔相邻的操作符来避免歧义。例如，如果你定义了一个名为<TT
+CLASS="LITERAL"
+>@</TT
+>的左一元操作符，你不能写<TT
+CLASS="LITERAL"
+>X*@Y</TT
+>，你必须写<TT
+CLASS="LITERAL"
+>X* @Y</TT
+>来确保<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>把它读作两个操作符名而不是一个。
+   </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="SQL-SYNTAX-SPECIAL-CHARS"
+>4.1.4. 特殊字符</A
+></H2
+><P
+>   一些不是数字字母的字符有一种不同于作为操作符的特殊含义。这些字符的详细用法可以在描述相应语法元素的地方找到。这一节只是为了告知它们的存在以及总结这些字符的目的。
+
+   <P
+></P
+></P><UL
+><LI
+><P
+>      跟随在一个美元符号（<TT
+CLASS="LITERAL"
+>$</TT
+>）后面的数字被用来表示在一个函数定义或一个预备语句中的位置参数。在其他上下文中该美元符号可以作为一个标识符或者一个美元引用字符串常量的一部分。
+     </P
+></LI
+><LI
+><P
+>      圆括号（<TT
+CLASS="LITERAL"
+>()</TT
+>）具有它们通常的含义，用来分组表达式并且强制优先。在某些情况中，圆括号被要求作为一个特定 SQL 命令的固定语法的一部分。
+     </P
+></LI
+><LI
+><P
+>      方括号（<TT
+CLASS="LITERAL"
+>[]</TT
+>）被用来选择一个数组中的元素。更多关于数组的信息见<A
+HREF="arrays.html"
+>第 8.15 &#33410;</A
+>。
+     </P
+></LI
+><LI
+><P
+>      逗号（<TT
+CLASS="LITERAL"
+>,</TT
+>）被用在某些语法结构中来分割一个列表的元素。
+     </P
+></LI
+><LI
+><P
+>      分号（<TT
+CLASS="LITERAL"
+>;</TT
+>）结束一个 SQL 命令。它不能出现在一个命令中间的任何位置，除了在一个字符串常量中或者一个被引用的标识符中。
+     </P
+></LI
+><LI
+><P
+>      冒号（<TT
+CLASS="LITERAL"
+>:</TT
+>）被用来从数组中选择<SPAN
+CLASS="QUOTE"
+>"切片"</SPAN
+>（见<A
+HREF="arrays.html"
+>第 8.15 &#33410;</A
+>）。在某些 SQL 的“方言”（例如嵌入式 SQL）中，冒号被用来作为变量名的前缀。
+     </P
+></LI
+><LI
+><P
+>      星号（<TT
+CLASS="LITERAL"
+>*</TT
+>）被用在某些上下文中标记一个表的所有域或者组合值。当它被用作一个聚集函数的参数时，它还有一种特殊的含义，即该聚集不要求任何显式参数。
+     </P
+></LI
+><LI
+><P
+>      句点（<TT
+CLASS="LITERAL"
+>.</TT
+>）被用在数字常量中，并且被用来分割模式、表和列名。
+     </P
+></LI
+></UL
+><P>
+
+   </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="SQL-SYNTAX-COMMENTS"
+>4.1.5. 注释</A
+></H2
+><P
+>    一段注释是以双斜线开始并且延伸到行结尾的一个字符序列，例如：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>-- This is a standard SQL comment</PRE
+><P>
+   </P
+><P
+>    另外，也可以使用 C 风格注释块：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>/* multiline comment
+ * with nesting: /* nested block comment */
+ */</PRE
+><P>
+    这里该注释开始于<TT
+CLASS="LITERAL"
+>/*</TT
+>并且延伸到匹配出现的<TT
+CLASS="LITERAL"
+>*/</TT
+>。这些注释块可按照 SQL 标准中指定的方式嵌套，但和 C 中不同。这样我们可以注释掉一大段可能包含注释块的代码。
+   </P
+><P
+>    在进一步的语法分析前，注释会被从输入流中被移除并且实际被替换为空白。
+   </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="SQL-PRECEDENCE"
+>4.1.6. 操作符优先级</A
+></H2
+><P
+>    <A
+HREF="sql-syntax-lexical.html#SQL-PRECEDENCE-TABLE"
+>&#34920; 4-2</A
+>显示了<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>
+    中操作符的优先级和结合性。大部分操作符具有相同的优先并且是左结合的。
+    操作符的优先级和结合性被硬写在解析器中。
+    </P
+><P
+>    当使用二元和一元操作符的组合时，有时你将需要增加圆括号。例如：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>SELECT 5 ! - 6;</PRE
+><P>
+   将被解析为：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>SELECT 5 ! (- 6);</PRE
+><P>
+    因为解析器不知道 &mdash; 知道时就为时已晚 &mdash; <TT
+CLASS="TOKEN"
+>!</TT
+>被定义为一个后缀操作符而不是一个中缀操作符。在这种情况下要得到想要的行为，你必须写成：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>SELECT (5 !) - 6;</PRE
+><P>
+    只是为了扩展性必须付出的代价。
+   </P
+><DIV
+CLASS="TABLE"
+><A
+NAME="SQL-PRECEDENCE-TABLE"
+></A
+><P
+><B
+>&#34920; 4-2. 操作符优先级（最高到最低）</B
+></P
+><TABLE
+BORDER="1"
+CLASS="CALSTABLE"
+><COL><COL><COL><THEAD
+><TR
+><TH
+>操作符/元素</TH
+><TH
+>结合性</TH
+><TH
+>描述</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+><TT
+CLASS="TOKEN"
+>.</TT
+></TD
+><TD
+>左</TD
+><TD
+>表/列名分隔符</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="TOKEN"
+>::</TT
+></TD
+><TD
+>左</TD
+><TD
+><SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>-风格的类型转换</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="TOKEN"
+>[</TT
+> <TT
+CLASS="TOKEN"
+>]</TT
+></TD
+><TD
+>左</TD
+><TD
+>数组元素选择</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="TOKEN"
+>+</TT
+> <TT
+CLASS="TOKEN"
+>-</TT
+></TD
+><TD
+>右</TD
+><TD
+>一元加、一元减</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="TOKEN"
+>^</TT
+></TD
+><TD
+>左</TD
+><TD
+>指数</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="TOKEN"
+>*</TT
+> <TT
+CLASS="TOKEN"
+>/</TT
+> <TT
+CLASS="TOKEN"
+>%</TT
+></TD
+><TD
+>左</TD
+><TD
+>乘、除、模</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="TOKEN"
+>+</TT
+> <TT
+CLASS="TOKEN"
+>-</TT
+></TD
+><TD
+>左</TD
+><TD
+>加、减</TD
+></TR
+><TR
+><TD
+>（任意其他操作符）</TD
+><TD
+>左</TD
+><TD
+>所有其他本地以及用户定义的操作符</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="TOKEN"
+>BETWEEN</TT
+> <TT
+CLASS="TOKEN"
+>IN</TT
+> <TT
+CLASS="TOKEN"
+>LIKE</TT
+> <TT
+CLASS="TOKEN"
+>ILIKE</TT
+> <TT
+CLASS="TOKEN"
+>SIMILAR</TT
+></TD
+><TD
+>&nbsp;</TD
+><TD
+>范围包含，设置成员，字符串匹配</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="TOKEN"
+>&lt;</TT
+> <TT
+CLASS="TOKEN"
+>&gt;</TT
+> <TT
+CLASS="TOKEN"
+>=</TT
+> <TT
+CLASS="TOKEN"
+>&lt;=</TT
+> <TT
+CLASS="TOKEN"
+>&gt;=</TT
+> <TT
+CLASS="TOKEN"
+>&lt;&gt;</TT
+></TD
+><TD
+>&nbsp;</TD
+><TD
+>比较操作符</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="TOKEN"
+>IS</TT
+> <TT
+CLASS="TOKEN"
+>ISNULL</TT
+> <TT
+CLASS="TOKEN"
+>NOTNULL</TT
+></TD
+><TD
+>&nbsp;</TD
+><TD
+><TT
+CLASS="LITERAL"
+>IS TRUE</TT
+>、<TT
+CLASS="LITERAL"
+>IS FALSE</TT
+>、<TT
+CLASS="LITERAL"
+>IS
+       NULL</TT
+>、<TT
+CLASS="LITERAL"
+>IS DISTINCT FROM</TT
+>等</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="TOKEN"
+>NOT</TT
+></TD
+><TD
+>右</TD
+><TD
+>逻辑否定</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="TOKEN"
+>AND</TT
+></TD
+><TD
+>左</TD
+><TD
+>逻辑合取</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="TOKEN"
+>OR</TT
+></TD
+><TD
+>左</TD
+><TD
+>逻辑析取</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+><P
+>    注意该操作符有限规则也适用于与上述内建操作符具有相同名称的用户定义的操作符。例如，如果你为某种自定义数据类型定义了一个<SPAN
+CLASS="QUOTE"
+>"+"</SPAN
+>操作符，它将具有和内建的<SPAN
+CLASS="QUOTE"
+>"+"</SPAN
+>操作符相同的优先级，不管你的操作符要做什么。
+   </P
+><P
+>    当一个模式限定的操作符名被用在<TT
+CLASS="LITERAL"
+>OPERATOR</TT
+>语法中时，如下面的例子：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>SELECT 3 OPERATOR(pg_catalog.+) 4;</PRE
+><P>
+    <TT
+CLASS="LITERAL"
+>OPERATOR</TT
+>结构被用来为<SPAN
+CLASS="QUOTE"
+>"任意其他操作符"</SPAN
+>获得
+    <A
+HREF="sql-syntax-lexical.html#SQL-PRECEDENCE-TABLE"
+>&#34920; 4-2</A
+>中默认的优先级。不管出现在
+    <TT
+CLASS="LITERAL"
+>OPERATOR()</TT
+>中的是哪个指定操作符，这都是真的。
+   </P
+><DIV
+CLASS="NOTE"
+><BLOCKQUOTE
+CLASS="NOTE"
+><P
+><B
+>&#27880;&#24847;: </B
+>     版本 9.5 之前的<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>使用的操作符优先级规则略有不同。
+     特别是，<TT
+CLASS="TOKEN"
+>&lt;=</TT
+>、<TT
+CLASS="TOKEN"
+>&gt;=</TT
+>和<TT
+CLASS="TOKEN"
+>&lt;&gt;</TT
+>
+     习惯于被当作普通操作符，<TT
+CLASS="LITERAL"
+>IS</TT
+>测试习惯于具有较高的优先级。
+     并且在一些具有<TT
+CLASS="LITERAL"
+>NOT</TT
+>而不是<TT
+CLASS="LITERAL"
+>BETWEEN</TT
+>优先级的情况下，
+     <TT
+CLASS="LITERAL"
+>NOT BETWEEN</TT
+>和相关的结构的行为不一致。
+     为了更好地兼容 SQL 标准并且减少对逻辑上等价的结构不一致的处理，
+     这些规则也得到了修改。在大部分情况下，这些变化不会导致行为上的变化，
+     或者可能会产生<SPAN
+CLASS="QUOTE"
+>"no such operator"</SPAN
+>错误，但可以通过增加圆括号解决。
+     不过在一些极端情况中，查询可能在没有被报告解析错误的情况下发生行为的改变。
+     如果你担心这些改变悄悄地破坏了一些事情，可以打开
+     <A
+HREF="runtime-config-compatible.html#GUC-OPERATOR-PRECEDENCE-WARNING"
+>operator_precedence_warning</A
+>配置参数，
+     然后测试你的应用看看有没有一些警告被记录。
+
+    </P
+></BLOCKQUOTE
+></DIV
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-syntax.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="sql-expressions.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>SQL语法</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="sql-syntax.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>值表达式</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

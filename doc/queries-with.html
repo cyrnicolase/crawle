@@ -1,0 +1,857 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>WITH查询（公共表表达式）</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="查询"
+HREF="queries.html"><LINK
+REL="PREVIOUS"
+TITLE="VALUES列表"
+HREF="queries-values.html"><LINK
+REL="NEXT"
+TITLE="数据类型"
+HREF="datatype.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/queries.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="VALUES列表"
+HREF="queries-values.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="queries.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#31456; 7. 查询</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="数据类型"
+HREF="datatype.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="QUERIES-WITH"
+>7.8. <TT
+CLASS="LITERAL"
+>WITH</TT
+>查询（公共表表达式）</A
+></H1
+><P
+>   <TT
+CLASS="LITERAL"
+>WITH</TT
+>提供了一种方式来书写在一个大型查询中使用的辅助语句。这些语句通常被称为公共表表达式或<ACRONYM
+CLASS="ACRONYM"
+>CTE</ACRONYM
+>，它们可以被看成是定义只在一个查询中存在的临时表。在<TT
+CLASS="LITERAL"
+>WITH</TT
+>子句中的每一个辅助语句可以是一个<TT
+CLASS="COMMAND"
+>SELECT</TT
+>、<TT
+CLASS="COMMAND"
+>INSERT</TT
+>、<TT
+CLASS="COMMAND"
+>UPDATE</TT
+>或<TT
+CLASS="COMMAND"
+>DELETE</TT
+>，并且<TT
+CLASS="LITERAL"
+>WITH</TT
+>子句本身也可以被附加到一个主语句，主语句也可以是<TT
+CLASS="COMMAND"
+>SELECT</TT
+>、<TT
+CLASS="COMMAND"
+>INSERT</TT
+>、<TT
+CLASS="COMMAND"
+>UPDATE</TT
+>或<TT
+CLASS="COMMAND"
+>DELETE</TT
+>。
+  </P
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="QUERIES-WITH-SELECT"
+>7.8.1. <TT
+CLASS="LITERAL"
+>WITH</TT
+>中的<TT
+CLASS="COMMAND"
+>SELECT</TT
+></A
+></H2
+><P
+>   <TT
+CLASS="LITERAL"
+>WITH</TT
+>中<TT
+CLASS="COMMAND"
+>SELECT</TT
+>的基本价值是将复杂的查询分解称为简单的部分。一个例子：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>WITH regional_sales AS (
+        SELECT region, SUM(amount) AS total_sales
+        FROM orders
+        GROUP BY region
+     ), top_regions AS (
+        SELECT region
+        FROM regional_sales
+        WHERE total_sales &gt; (SELECT SUM(total_sales)/10 FROM regional_sales)
+     )
+SELECT region,
+       product,
+       SUM(quantity) AS product_units,
+       SUM(amount) AS product_sales
+FROM orders
+WHERE region IN (SELECT region FROM top_regions)
+GROUP BY region, product;</PRE
+><P>
+
+   它只显示在高销售区域每种产品的销售总额。<TT
+CLASS="LITERAL"
+>WITH</TT
+>子句定义了两个辅助语句<TT
+CLASS="STRUCTNAME"
+>regional_sales</TT
+>和<TT
+CLASS="STRUCTNAME"
+>top_regions</TT
+>，其中<TT
+CLASS="STRUCTNAME"
+>regional_sales</TT
+>的输出用在<TT
+CLASS="STRUCTNAME"
+>top_regions</TT
+>中而<TT
+CLASS="STRUCTNAME"
+>top_regions</TT
+>的输出用在主<TT
+CLASS="COMMAND"
+>SELECT</TT
+>查询。这个例子可以不用<TT
+CLASS="LITERAL"
+>WITH</TT
+>来书写，但是我们必须要用两层嵌套的子<TT
+CLASS="COMMAND"
+>SELECT</TT
+>。使用这种方法要更简单些。
+  </P
+><P
+>   可选的<TT
+CLASS="LITERAL"
+>RECURSIVE</TT
+>修饰符将<TT
+CLASS="LITERAL"
+>WITH</TT
+>从单纯的句法便利变成了一种在标准SQL中不能完成的特性。通过使用<TT
+CLASS="LITERAL"
+>RECURSIVE</TT
+>，一个<TT
+CLASS="LITERAL"
+>WITH</TT
+>查询可以引用它自己的输出。一个非常简单的例子是计算从1到100的整数合的查询：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>WITH RECURSIVE t(n) AS (
+    VALUES (1)
+  UNION ALL
+    SELECT n+1 FROM t WHERE n &lt; 100
+)
+SELECT sum(n) FROM t;</PRE
+><P>
+
+   一个递归<TT
+CLASS="LITERAL"
+>WITH</TT
+>查询的通常形式总是一个<I
+CLASS="FIRSTTERM"
+>非递归项</I
+>，然后是<TT
+CLASS="LITERAL"
+>UNION</TT
+>（或者<TT
+CLASS="LITERAL"
+>UNION ALL</TT
+>），再然后是一个<I
+CLASS="FIRSTTERM"
+>递归项</I
+>，其中只有递归项能够包含对于查询自身输出的引用。这样一个查询可以被这样执行：
+  </P
+><DIV
+CLASS="PROCEDURE"
+><P
+><B
+>递归查询求值</B
+></P
+><OL
+TYPE="1"
+><LI
+CLASS="STEP"
+><P
+>     计算非递归项。对<TT
+CLASS="LITERAL"
+>UNION</TT
+>（但不对<TT
+CLASS="LITERAL"
+>UNION ALL</TT
+>），抛弃重复行。把所有剩余的行包括在递归查询的结果中，并且也把它们放在一个临时的<I
+CLASS="FIRSTTERM"
+>工作表</I
+>中。
+    </P
+></LI
+><LI
+CLASS="STEP"
+><P
+>     只要工作表不为空，重复下列步骤：
+    </P
+><OL
+CLASS="SUBSTEPS"
+TYPE="a"
+><LI
+CLASS="STEP"
+><P
+>       计算递归项，用当前工作表的内容替换递归自引用。对<TT
+CLASS="LITERAL"
+>UNION</TT
+>（不是<TT
+CLASS="LITERAL"
+>UNION ALL</TT
+>），抛弃重复行以及那些与之前结果行重复的行。将剩下的所有行包括在递归查询的结果中，并且也把它们放在一个临时的<I
+CLASS="FIRSTTERM"
+>中间表</I
+>中。
+      </P
+></LI
+><LI
+CLASS="STEP"
+><P
+>       用中间表的内容替换工作表的内容，然后清空中间表。
+      </P
+></LI
+></OL
+></LI
+></OL
+></DIV
+><DIV
+CLASS="NOTE"
+><BLOCKQUOTE
+CLASS="NOTE"
+><P
+><B
+>&#27880;&#24847;: </B
+>    严格来说，这个处理是迭代而不是递归，但是<TT
+CLASS="LITERAL"
+>RECURSIVE</TT
+>是SQL标准委员会选择的术语。
+   </P
+></BLOCKQUOTE
+></DIV
+><P
+>   在上面的例子中，工作表在每一步只有一个行，并且它在连续的步骤中取值从1到100。在第100步，由于<TT
+CLASS="LITERAL"
+>WHERE</TT
+>子句导致没有输出，因此查询终止。
+  </P
+><P
+>   递归查询通常用于处理层次或者树状结构的数据。一个有用的例子是这个用于找到一个产品的直接或间接部件的查询，只要给定一个显示了直接包含关系的表：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>WITH RECURSIVE included_parts(sub_part, part, quantity) AS (
+    SELECT sub_part, part, quantity FROM parts WHERE part = 'our_product'
+  UNION ALL
+    SELECT p.sub_part, p.part, p.quantity
+    FROM included_parts pr, parts p
+    WHERE p.part = pr.sub_part
+  )
+SELECT sub_part, SUM(quantity) as total_quantity
+FROM included_parts
+GROUP BY sub_part</PRE
+><P>
+  </P
+><P
+>   在使用递归查询时，确保查询的递归部分最终将不返回元组非常重要，否则查询将会无限循环。在某些时候，使用<TT
+CLASS="LITERAL"
+>UNION</TT
+>替代<TT
+CLASS="LITERAL"
+>UNION ALL</TT
+>可以通过抛弃与之前输出行重复的行来达到这个目的。不过，经常有循环不涉及到完全重复的输出行：它可能只需要检查一个或几个域来看相同点之前是否达到过。处理这种情况的标准方法是计算一个已经访问过值的数组。例如，考虑下面这个使用<TT
+CLASS="STRUCTFIELD"
+>link</TT
+>域搜索表<TT
+CLASS="STRUCTNAME"
+>graph</TT
+>的查询：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>WITH RECURSIVE search_graph(id, link, data, depth) AS (
+        SELECT g.id, g.link, g.data, 1
+        FROM graph g
+      UNION ALL
+        SELECT g.id, g.link, g.data, sg.depth + 1
+        FROM graph g, search_graph sg
+        WHERE g.id = sg.link
+)
+SELECT * FROM search_graph;</PRE
+><P>
+
+   如果<TT
+CLASS="STRUCTFIELD"
+>link</TT
+>关系包含环，这个查询将会循环。因为我们要求一个<SPAN
+CLASS="QUOTE"
+>"depth"</SPAN
+>输出，仅仅将<TT
+CLASS="LITERAL"
+>UNION ALL</TT
+> 改为<TT
+CLASS="LITERAL"
+>UNION</TT
+>不会消除循环。反过来在我们顺着一个特定链接路径搜索时，我们需要识别我们是否再次到达了一个相同的行。我们可以项这个有循环倾向的查询增加两个列<TT
+CLASS="STRUCTFIELD"
+>path</TT
+>和<TT
+CLASS="STRUCTFIELD"
+>cycle</TT
+>：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>WITH RECURSIVE search_graph(id, link, data, depth, path, cycle) AS (
+        SELECT g.id, g.link, g.data, 1,
+          ARRAY[g.id],
+          false
+        FROM graph g
+      UNION ALL
+        SELECT g.id, g.link, g.data, sg.depth + 1,
+          path || g.id,
+          g.id = ANY(path)
+        FROM graph g, search_graph sg
+        WHERE g.id = sg.link AND NOT cycle
+)
+SELECT * FROM search_graph;</PRE
+><P>
+
+   除了阻止环，数组值对于它们自己的工作显示到达任何特定行的<SPAN
+CLASS="QUOTE"
+>"path"</SPAN
+>也有用。
+  </P
+><P
+>   在通常情况下如果需要检查多于一个域来识别一个环，请用行数组。例如，如果我们需要比较域<TT
+CLASS="STRUCTFIELD"
+>f1</TT
+>和<TT
+CLASS="STRUCTFIELD"
+>f2</TT
+>：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>WITH RECURSIVE search_graph(id, link, data, depth, path, cycle) AS (
+        SELECT g.id, g.link, g.data, 1,
+          ARRAY[ROW(g.f1, g.f2)],
+          false
+        FROM graph g
+      UNION ALL
+        SELECT g.id, g.link, g.data, sg.depth + 1,
+          path || ROW(g.f1, g.f2),
+          ROW(g.f1, g.f2) = ANY(path)
+        FROM graph g, search_graph sg
+        WHERE g.id = sg.link AND NOT cycle
+)
+SELECT * FROM search_graph;</PRE
+><P>
+  </P
+><DIV
+CLASS="TIP"
+><BLOCKQUOTE
+CLASS="TIP"
+><P
+><B
+>&#25552;&#31034;: </B
+>    在通常情况下只有一个域需要被检查来识别一个环，可以省略<TT
+CLASS="LITERAL"
+>ROW()</TT
+>语法。这允许使用一个简单的数组而不是一个组合类型数组，可以获得效率。
+   </P
+></BLOCKQUOTE
+></DIV
+><DIV
+CLASS="TIP"
+><BLOCKQUOTE
+CLASS="TIP"
+><P
+><B
+>&#25552;&#31034;: </B
+>    递归查询计算算法使用宽度优先搜索顺序产生它的输出。你可以通过让外部查询<TT
+CLASS="LITERAL"
+>ORDER BY</TT
+>一个以这种方法构建的<SPAN
+CLASS="QUOTE"
+>"path"</SPAN
+>，用来以深度优先搜索顺序显示结果。
+   </P
+></BLOCKQUOTE
+></DIV
+><P
+>   当你不确定查询是否可能循环时，一个测试查询的有用技巧是在父查询中放一个<TT
+CLASS="LITERAL"
+>LIMIT</TT
+>。例如，这个查询没有<TT
+CLASS="LITERAL"
+>LIMIT</TT
+>时会永远循环：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>WITH RECURSIVE t(n) AS (
+    SELECT 1
+  UNION ALL
+    SELECT n+1 FROM t
+)
+SELECT n FROM t LIMIT 100;</PRE
+><P>
+
+   这会起作用，因为<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>的实现只计算<TT
+CLASS="LITERAL"
+>WITH</TT
+>查询中被父查询实际取到的行。不推荐在生产中使用这个技巧，因为其他系统可能以不同方式工作。同样，如果你让外层查询排序递归查询的结果或者把它们连接成某种其他表，这个技巧将不会起作用，因为在这些情况下外层查询通常将尝试取得<TT
+CLASS="LITERAL"
+>WITH</TT
+>查询的所有输出。
+  </P
+><P
+>   <TT
+CLASS="LITERAL"
+>WITH</TT
+>查询的一个有用的特性是在每一次父查询的执行中它们只被计算一次，即使它们被父查询或兄弟<TT
+CLASS="LITERAL"
+>WITH</TT
+>查询引用了超过一次。因此，在多个地方需要的昂贵计算可以被放在一个<TT
+CLASS="LITERAL"
+>WITH</TT
+>查询中来避免冗余工作。另一种可能的应用是阻止不希望的多个函数计算产生副作用。但是，从另一方面来看，优化器不能将来自父查询的约束下推到<TT
+CLASS="LITERAL"
+>WITH</TT
+>查询中而不是一个普通子查询。<TT
+CLASS="LITERAL"
+>WITH</TT
+>查询通常将会被按照所写的方式计算，而不抑制父查询以后可能会抛弃的行（但是，如上所述，如果对查询的引用只请求有限数目的行，计算可能会提前停止）。
+  </P
+><P
+>   以上的例子只展示了和<TT
+CLASS="COMMAND"
+>SELECT</TT
+>一起使用的<TT
+CLASS="LITERAL"
+>WITH</TT
+>，但是它可以被以相同的方式附加在<TT
+CLASS="COMMAND"
+>INSERT</TT
+>、<TT
+CLASS="COMMAND"
+>UPDATE</TT
+>或<TT
+CLASS="COMMAND"
+>DELETE</TT
+>上。在每一种情况中，它实际上提供了可在主命令中引用的临时表。
+  </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="QUERIES-WITH-MODIFYING"
+>7.8.2. <TT
+CLASS="LITERAL"
+>WITH</TT
+>中的数据修改语句</A
+></H2
+><P
+>    你可以在<TT
+CLASS="LITERAL"
+>WITH</TT
+>中使用数据修改语句（<TT
+CLASS="COMMAND"
+>INSERT</TT
+>、<TT
+CLASS="COMMAND"
+>UPDATE</TT
+>或<TT
+CLASS="COMMAND"
+>DELETE</TT
+>）。这允许你在同一个查询中执行多个而不同操作。一个例子：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>WITH moved_rows AS (
+    DELETE FROM products
+    WHERE
+        "date" &gt;= '2010-10-01' AND
+        "date" &lt; '2010-11-01'
+    RETURNING *
+)
+INSERT INTO products_log
+SELECT * FROM moved_rows;</PRE
+><P>
+
+    这个查询实际上从<TT
+CLASS="STRUCTNAME"
+>products</TT
+>把行移动到<TT
+CLASS="STRUCTNAME"
+>products_log</TT
+>。<TT
+CLASS="LITERAL"
+>WITH</TT
+>中的<TT
+CLASS="COMMAND"
+>DELETE</TT
+>删除来自<TT
+CLASS="STRUCTNAME"
+>products</TT
+>的指定行，以它的<TT
+CLASS="LITERAL"
+>RETURNING</TT
+>子句返回它们的内容，并且接着主查询读该输出并将它插入到<TT
+CLASS="STRUCTNAME"
+>products_log</TT
+>。
+   </P
+><P
+>    上述例子中好的一点是<TT
+CLASS="LITERAL"
+>WITH</TT
+>子句被附加给<TT
+CLASS="COMMAND"
+>INSERT</TT
+>，而没有附加给<TT
+CLASS="COMMAND"
+>INSERT</TT
+>的子<TT
+CLASS="COMMAND"
+>SELECT</TT
+>。这是必需的，因为数据修改语句只允许出现在附加给顶层语句的<TT
+CLASS="LITERAL"
+>WITH</TT
+>子句中。不过，普通<TT
+CLASS="LITERAL"
+>WITH</TT
+>可见性规则应用，这样才可能从子<TT
+CLASS="COMMAND"
+>SELECT</TT
+>中引用到<TT
+CLASS="LITERAL"
+>WITH</TT
+>语句的输出。
+   </P
+><P
+>    正如上述例子所示，<TT
+CLASS="LITERAL"
+>WITH</TT
+>中的数据修改语句通常具有<TT
+CLASS="LITERAL"
+>RETURNING</TT
+>子句。它是<TT
+CLASS="LITERAL"
+>RETURNING</TT
+>子句的输出，<SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>不是</I
+></SPAN
+>数据修改语句的目标表，它形成了剩余查询可以引用的临时表。如果一个<TT
+CLASS="LITERAL"
+>WITH</TT
+>中的数据修改语句缺少一个<TT
+CLASS="LITERAL"
+>RETURNING</TT
+>子句，则它形不成临时表并且不能在剩余的查询中被引用。但是这样一个语句将被执行。一个非特殊使用的例子：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>WITH t AS (
+    DELETE FROM foo
+)
+DELETE FROM bar;</PRE
+><P>
+
+    这个例子将从表<TT
+CLASS="STRUCTNAME"
+>foo</TT
+>和<TT
+CLASS="STRUCTNAME"
+>bar</TT
+>中移除所有行。被报告给客户端的受影响行的数目可能只包括从<TT
+CLASS="STRUCTNAME"
+>bar</TT
+>中移除的行。
+   </P
+><P
+>    数据修改语句中不允许递归自引用。在某些情况中可以采取引用一个递归<TT
+CLASS="LITERAL"
+>WITH</TT
+>的输出来操作这个限制，例如：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>WITH RECURSIVE included_parts(sub_part, part) AS (
+    SELECT sub_part, part FROM parts WHERE part = 'our_product'
+  UNION ALL
+    SELECT p.sub_part, p.part
+    FROM included_parts pr, parts p
+    WHERE p.part = pr.sub_part
+  )
+DELETE FROM parts
+  WHERE part IN (SELECT part FROM included_parts);</PRE
+><P>
+
+    这个查询将会移除一个产品的所有直接或间接子部件。
+   </P
+><P
+>    <TT
+CLASS="LITERAL"
+>WITH</TT
+>中的数据修改语句只被执行一次，并且总是能结束，而不管主查询是否读取它们所有（或者任何）的输出。注意这和<TT
+CLASS="LITERAL"
+>WITH</TT
+>中<TT
+CLASS="COMMAND"
+>SELECT</TT
+>的规则不同：正如前一小节所述，直到主查询要求<TT
+CLASS="COMMAND"
+>SELECT</TT
+>的输出时，<TT
+CLASS="COMMAND"
+>SELECT</TT
+>才会被执行。
+   </P
+><P
+>    The sub-statements in <TT
+CLASS="LITERAL"
+>WITH</TT
+>中的子语句被和每一个其他子语句以及主查询并发执行。因此在使用<TT
+CLASS="LITERAL"
+>WITH</TT
+>中的数据修改语句时，指定更新的顺序实际是以不可预测的方式发生的。所有的语句都使用同一个<I
+CLASS="FIRSTTERM"
+>snapshot</I
+>执行（参见<A
+HREF="mvcc.html"
+>第 13 &#31456;</A
+>），因此它们不能<SPAN
+CLASS="QUOTE"
+>"看见"</SPAN
+>在目标表上另一个执行的效果。这减轻了行更新的实际顺序的不可预见性的影响，并且意味着<TT
+CLASS="LITERAL"
+>RETURNING</TT
+>数据是在不同<TT
+CLASS="LITERAL"
+>WITH</TT
+>子语句和主查询之间传达改变的唯一方法。其例子
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>WITH t AS (
+    UPDATE products SET price = price * 1.05
+    RETURNING *
+)
+SELECT * FROM products;</PRE
+><P>
+
+    外层<TT
+CLASS="COMMAND"
+>SELECT</TT
+>可以返回在<TT
+CLASS="COMMAND"
+>UPDATE</TT
+>动作之前的原始价格，而在
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>WITH t AS (
+    UPDATE products SET price = price * 1.05
+    RETURNING *
+)
+SELECT * FROM t;</PRE
+><P>
+
+    外部<TT
+CLASS="COMMAND"
+>SELECT</TT
+>将返回更新过的数据。
+   </P
+><P
+>    在一个语句中试图两次更新同一行是不被支持的。只会发生一次修改，但是该办法不能很容易地（有时是不可能）可靠地预测哪一个会被执行。这也应用于删除一个已经在同一个语句中被更新过的行：只有更新被执行。因此你通常应该避免尝试在一个语句中尝试两次修改同一个行。尤其是防止书写可能影响被主语句或兄弟子语句修改的相同行。这样一个语句的效果将是不可预测的。
+   </P
+><P
+>    当前，在<TT
+CLASS="LITERAL"
+>WITH</TT
+>中一个数据修改语句中被用作目标的任何表不能有条件规则、<TT
+CLASS="LITERAL"
+>ALSO</TT
+>规则或<TT
+CLASS="LITERAL"
+>INSTEAD</TT
+>规则，这些规则会扩展成为多个语句。
+   </P
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="queries-values.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="datatype.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><TT
+CLASS="LITERAL"
+>VALUES</TT
+>列表</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="queries.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>数据类型</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

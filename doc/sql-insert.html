@@ -1,0 +1,1606 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>INSERT</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="SQL 命令"
+HREF="sql-commands.html"><LINK
+REL="PREVIOUS"
+TITLE="IMPORT FOREIGN SCHEMA"
+HREF="sql-importforeignschema.html"><LINK
+REL="NEXT"
+TITLE="LISTEN"
+HREF="sql-listen.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="REFENTRY"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/ref/insert.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="IMPORT FOREIGN SCHEMA"
+HREF="sql-importforeignschema.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="LISTEN"
+HREF="sql-listen.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="SQL-INSERT"
+></A
+>INSERT</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN88158"
+></A
+><H2
+>&#21517;&#31216;</H2
+>INSERT&nbsp;--&nbsp;在一个表中创建新行</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN88161"
+></A
+><H2
+>&#22823;&#32434;</H2
+><PRE
+CLASS="SYNOPSIS"
+>[ WITH [ RECURSIVE ] <TT
+CLASS="REPLACEABLE"
+><I
+>with_query</I
+></TT
+> [, ...] ]
+INSERT INTO <TT
+CLASS="REPLACEABLE"
+><I
+>table_name</I
+></TT
+> [ AS <TT
+CLASS="REPLACEABLE"
+><I
+>alias</I
+></TT
+> ] [ ( <TT
+CLASS="REPLACEABLE"
+><I
+>column_name</I
+></TT
+> [, ...] ) ]
+    { DEFAULT VALUES | VALUES ( { <TT
+CLASS="REPLACEABLE"
+><I
+>expression</I
+></TT
+> | DEFAULT } [, ...] ) [, ...] | <TT
+CLASS="REPLACEABLE"
+><I
+>query</I
+></TT
+> }
+    [ ON CONFLICT [ <TT
+CLASS="REPLACEABLE"
+><I
+>conflict_target</I
+></TT
+> ] <TT
+CLASS="REPLACEABLE"
+><I
+>conflict_action</I
+></TT
+> ]
+    [ RETURNING * | <TT
+CLASS="REPLACEABLE"
+><I
+>output_expression</I
+></TT
+> [ [ AS ] <TT
+CLASS="REPLACEABLE"
+><I
+>output_name</I
+></TT
+> ] [, ...] ]
+
+<SPAN
+CLASS="phrase"
+><SPAN
+CLASS="PHRASE"
+>其中 <TT
+CLASS="REPLACEABLE"
+><I
+>conflict_target</I
+></TT
+> 可以是以下之一：</SPAN
+></SPAN
+>
+
+    ( { <TT
+CLASS="REPLACEABLE"
+><I
+>index_column_name</I
+></TT
+> | ( <TT
+CLASS="REPLACEABLE"
+><I
+>index_expression</I
+></TT
+> ) } [ COLLATE <TT
+CLASS="REPLACEABLE"
+><I
+>collation</I
+></TT
+> ] [ <TT
+CLASS="REPLACEABLE"
+><I
+>opclass</I
+></TT
+> ] [, ...] ) [ WHERE <TT
+CLASS="REPLACEABLE"
+><I
+>index_predicate</I
+></TT
+> ]
+    ON CONSTRAINT <TT
+CLASS="REPLACEABLE"
+><I
+>constraint_name</I
+></TT
+>
+
+<SPAN
+CLASS="phrase"
+><SPAN
+CLASS="PHRASE"
+>并且 <TT
+CLASS="REPLACEABLE"
+><I
+>conflict_action</I
+></TT
+> 是以下之一：</SPAN
+></SPAN
+>
+
+    DO NOTHING
+    DO UPDATE SET { <TT
+CLASS="REPLACEABLE"
+><I
+>column_name</I
+></TT
+> = { <TT
+CLASS="REPLACEABLE"
+><I
+>expression</I
+></TT
+> | DEFAULT } |
+                    ( <TT
+CLASS="REPLACEABLE"
+><I
+>column_name</I
+></TT
+> [, ...] ) = ( { <TT
+CLASS="REPLACEABLE"
+><I
+>expression</I
+></TT
+> | DEFAULT } [, ...] ) |
+                    ( <TT
+CLASS="REPLACEABLE"
+><I
+>column_name</I
+></TT
+> [, ...] ) = ( <TT
+CLASS="REPLACEABLE"
+><I
+>sub-SELECT</I
+></TT
+> )
+                  } [, ...]
+              [ WHERE <TT
+CLASS="REPLACEABLE"
+><I
+>condition</I
+></TT
+> ]</PRE
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN88190"
+></A
+><H2
+>描述</H2
+><P
+>   <TT
+CLASS="COMMAND"
+>INSERT</TT
+>将新行插入到一个表中。我们可以
+   插入一个或者更多由值表达式指定的行，或者插入来自一个查询的零行
+   或者更多行。
+  </P
+><P
+>   目标列的名称可以以任意顺序列出。如果没有给出列名列表，则有两种确定
+   目标列的可能性。第一种是以被声明的顺序列出该表的所有列。另一种可能
+   性是，如果<TT
+CLASS="LITERAL"
+>VALUES</TT
+> 子句或者<TT
+CLASS="REPLACEABLE"
+><I
+>query</I
+></TT
+>只提
+   供<TT
+CLASS="REPLACEABLE"
+><I
+>N</I
+></TT
+>个列，则以被声明的顺序列出该表的前
+   <TT
+CLASS="REPLACEABLE"
+><I
+>N</I
+></TT
+>列。<TT
+CLASS="LITERAL"
+>VALUES</TT
+> 子句或者
+   <TT
+CLASS="REPLACEABLE"
+><I
+>query</I
+></TT
+>提供的值会被从左至右关联到这些显式或者隐式
+   给出的目标列。
+  </P
+><P
+>   每一个没有出现在显式或者隐式列列表中的列都将被默认填充，如果为该列
+   声明过默认值则用默认值填充，否则用空值填充。
+  </P
+><P
+>   如果任意列的表达式不是正确的数据类型，将会尝试自动类型转换。
+  </P
+><P
+>   <TT
+CLASS="LITERAL"
+>ON CONFLICT</TT
+>可以用来指定发生唯一约束或者排除约束
+   违背错误时的替换动作（见下文的<A
+HREF="sql-insert.html#SQL-ON-CONFLICT"
+><I
+><I
+>ON CONFLICT</I
+> 子句</I
+></A
+>）。
+  </P
+><P
+>   可选的<TT
+CLASS="LITERAL"
+>RETURNING</TT
+>子句让<TT
+CLASS="COMMAND"
+>INSERT</TT
+>根据
+   实际被插入（如果使用了<TT
+CLASS="LITERAL"
+>ON CONFLICT DO UPDATE</TT
+>子句，
+   可能是被更新）的每一行来计算和返回值。这主要用来获取由默认值提供
+   的值，例如一个序列号。不过，允许在其中包括使用该表列的任何表达式。
+   <TT
+CLASS="LITERAL"
+>RETURNING</TT
+>列表的语法与<TT
+CLASS="COMMAND"
+>SELECT</TT
+>的输出
+   列表的相同。只有被成功地插入或者更新的行才将被返回。例如，如果一
+   行被锁定但由于不满足<TT
+CLASS="LITERAL"
+>ON CONFLICT DO UPDATE
+   ... WHERE</TT
+> clause <TT
+CLASS="REPLACEABLE"
+><I
+>condition</I
+></TT
+>没有被更新，该行将
+   不被返回。
+  </P
+><P
+>   为了向表中插入，你必须具有其上的<TT
+CLASS="LITERAL"
+>INSERT</TT
+>特权。
+   如果存在<TT
+CLASS="LITERAL"
+>ON CONFLICT DO UPDATE</TT
+>子句，还要求该表上
+   的<TT
+CLASS="LITERAL"
+>UPDATE</TT
+>特权。
+  </P
+><P
+>   如果指定了字段列表，则只需要所列出字段上的<TT
+CLASS="LITERAL"
+>INSERT</TT
+>
+   权限。类似的，如果指定了<TT
+CLASS="LITERAL"
+>ON CONFLICT DO UPDATE</TT
+>，
+   则只需要所列出的要更新的字段上的<TT
+CLASS="LITERAL"
+>UPDATE</TT
+>权限。
+   不过<TT
+CLASS="LITERAL"
+>ON CONFLICT DO UPDATE</TT
+>还需要其值被
+   <TT
+CLASS="LITERAL"
+>ON CONFLICT DO UPDATE</TT
+>表达式或<TT
+CLASS="REPLACEABLE"
+><I
+>condition</I
+></TT
+>
+   使用的字段上的<TT
+CLASS="LITERAL"
+>SELECT</TT
+>权限。
+  </P
+><P
+>   如果一个列列表被指定，你只需要其中的列上的<TT
+CLASS="LITERAL"
+>INSERT</TT
+>
+   特权。类似地，在指定了<TT
+CLASS="LITERAL"
+>ON CONFLICT DO UPDATE</TT
+>时，你只
+   需要被列出要更新的列上的<TT
+CLASS="LITERAL"
+>UPDATE</TT
+>特权。不过，
+   <TT
+CLASS="LITERAL"
+>ON CONFLICT DO UPDATE</TT
+>还要求其值被
+   <TT
+CLASS="LITERAL"
+>ON CONFLICT DO UPDATE</TT
+>表达式或者
+   <TT
+CLASS="REPLACEABLE"
+><I
+>condition</I
+></TT
+>使用的列上的<TT
+CLASS="LITERAL"
+>SELECT</TT
+>特权。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN88234"
+></A
+><H2
+>参数</H2
+><DIV
+CLASS="REFSECT2"
+><A
+NAME="SQL-INSERTING-PARAMS"
+></A
+><H3
+>插入</H3
+><P
+>    这个小节介绍了在只插入新行时可以使用的参数。
+    <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>专门用于</I
+></SPAN
+><TT
+CLASS="LITERAL"
+>ON CONFLICT</TT
+>子句的
+    参数会单独介绍。
+   </P
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>with_query</I
+></TT
+></DT
+><DD
+><P
+>       <TT
+CLASS="LITERAL"
+>WITH</TT
+>子句允许指定一个或者更多子查询，在
+       <TT
+CLASS="COMMAND"
+>INSERT</TT
+>查询中可以用名称引用这些子查询。详见
+       <A
+HREF="queries-with.html"
+>第 7.8 &#33410;</A
+>以及<A
+HREF="sql-select.html"
+>SELECT</A
+>。
+      </P
+><P
+>       <TT
+CLASS="REPLACEABLE"
+><I
+>query</I
+></TT
+>
+       （<TT
+CLASS="COMMAND"
+>SELECT</TT
+>语句）也可以包含一个
+       <TT
+CLASS="LITERAL"
+>WITH</TT
+>子句。在这种情况下
+       <TT
+CLASS="REPLACEABLE"
+><I
+>query</I
+></TT
+>中可以引用
+       两组<TT
+CLASS="REPLACEABLE"
+><I
+>with_query</I
+></TT
+>，但是第二个优先级更
+       高（因为它被嵌套更近）。
+      </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>table_name</I
+></TT
+></DT
+><DD
+><P
+>       一个已有表的名称（可以被模式限定）。
+      </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>alias</I
+></TT
+></DT
+><DD
+><P
+>        <TT
+CLASS="REPLACEABLE"
+><I
+>table_name</I
+></TT
+>
+        的替补名称。当提供了一个别名时，它会完全隐藏掉表的实际名称。
+        当<TT
+CLASS="LITERAL"
+>ON CONFLICT DO UPDATE</TT
+>的目标是一个被
+        排除的表时这特别有用，因为那也是表示要被插入行的特殊表的名称。
+       </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>column_name</I
+></TT
+></DT
+><DD
+><P
+>        名为<TT
+CLASS="REPLACEABLE"
+><I
+>table_name</I
+></TT
+>的表中的一个列
+        的名称。如有必要，列名可以用一个子域名或者数组下标限定（指向
+        一个组合列的某些列中插入会让其他域为空）。当用
+        <TT
+CLASS="LITERAL"
+>ON CONFLICT DO UPDATE</TT
+>引用一列时，不要在一个
+        目标列的说明中国包括表名。例如，
+        <TT
+CLASS="LITERAL"
+>INSERT INTO table_name ... ON CONFLICT DO UPDATE
+        SET table_name.col = 1</TT
+>是非法的（这遵循<TT
+CLASS="COMMAND"
+>UPDATE</TT
+>
+        的一般行为）。
+       </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>DEFAULT VALUES</TT
+></DT
+><DD
+><P
+>        所有列都将被其默认值填充。
+       </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>expression</I
+></TT
+></DT
+><DD
+><P
+>        要赋予给相应列的表达式或者值。
+       </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>DEFAULT</TT
+></DT
+><DD
+><P
+>        相应的列将被其默认值填充。
+       </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>query</I
+></TT
+></DT
+><DD
+><P
+>        提供要被插入行的查询（<TT
+CLASS="COMMAND"
+>SELECT</TT
+>语句）。
+        其语法描述请参考<A
+HREF="sql-select.html"
+>SELECT</A
+>语句。
+       </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>output_expression</I
+></TT
+></DT
+><DD
+><P
+>        在每一行被插入或更新后由<TT
+CLASS="COMMAND"
+>INSERT</TT
+>命令计算并且返回的
+        表达式。该表达式可以使用<TT
+CLASS="REPLACEABLE"
+><I
+>table_name</I
+></TT
+>
+        指定的表中的任何列。写成<TT
+CLASS="LITERAL"
+>*</TT
+>可返回被插入或更新行的所有列。
+       </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>output_name</I
+></TT
+></DT
+><DD
+><P
+>        要用于被返回列的名称。
+       </P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT2"
+><A
+NAME="SQL-ON-CONFLICT"
+></A
+><H3
+><TT
+CLASS="LITERAL"
+>ON CONFLICT</TT
+> 子句</H3
+><P
+>    可选的<TT
+CLASS="LITERAL"
+>ON CONFLICT</TT
+>子句为出现唯一性违背或排除
+    约束违背错误时提供另一种可供选择的动作。对于每一个要插入的行，
+    不管是插入进行下去还是由<TT
+CLASS="PARAMETER"
+>conflict_target</TT
+>
+    指定的一个<SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>仲裁者</I
+></SPAN
+>约束或者索引被违背，都会
+    采取可供选择的<TT
+CLASS="PARAMETER"
+>conflict_action</TT
+>。
+    <TT
+CLASS="LITERAL"
+>ON CONFLICT DO NOTHING</TT
+>简单地把避免插入行。
+    <TT
+CLASS="LITERAL"
+>ON CONFLICT DO UPDATE</TT
+>则会
+    更新与要插入的行冲突的已有行。
+   </P
+><P
+>    <TT
+CLASS="PARAMETER"
+>conflict_target</TT
+>可以执行
+    <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>唯一索引推断</I
+></SPAN
+>。在执行推断时，它由一个或者多个
+    <TT
+CLASS="REPLACEABLE"
+><I
+>index_column_name</I
+></TT
+>
+    列或者
+    <TT
+CLASS="REPLACEABLE"
+><I
+>index_expression</I
+></TT
+>
+    表达式以及一个可选的<TT
+CLASS="REPLACEABLE"
+><I
+>    index_predicate</I
+></TT
+>构成。所有刚好包含
+    <TT
+CLASS="PARAMETER"
+>conflict_target</TT
+>指定的列/表达式的<TT
+CLASS="REPLACEABLE"
+><I
+>table_name</I
+></TT
+>唯一索引（不管顺序）都
+    会被推断为（选择为）仲裁者索引。如果指定了
+    <TT
+CLASS="REPLACEABLE"
+><I
+>index_predicate</I
+></TT
+>，它
+    必须满足仲裁者索引（也是推断过程的一个进一步的要求）。注意这意味着如果
+    有一个满足其他条件的非部分唯一索引（没有谓词的唯一索引）可用，它将被
+    推断为仲裁者（并且会被<TT
+CLASS="LITERAL"
+>ON CONFLICT</TT
+>使用）。如果推断
+    尝试不成功，则会发生一个错误。
+   </P
+><P
+>    <TT
+CLASS="LITERAL"
+>ON CONFLICT DO UPDATE</TT
+>保证一个原子的
+    <TT
+CLASS="COMMAND"
+>INSERT</TT
+>或者
+    <TT
+CLASS="COMMAND"
+>UPDATE</TT
+>结果。在没有无关错误的前提下，这两种
+    结果之一可以得到保证，即使在很高的并发度也能保证。这也可以被称作
+    <I
+CLASS="FIRSTTERM"
+>UPSERT</I
+> &mdash; <SPAN
+CLASS="QUOTE"
+>"UPDATE 或
+    INSERT"</SPAN
+>。
+   </P
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>conflict_target</I
+></TT
+></DT
+><DD
+><P
+>        通过选择<I
+CLASS="FIRSTTERM"
+>仲裁者索引</I
+>来指定哪些行与
+        <TT
+CLASS="LITERAL"
+>ON CONFLICT</TT
+>在其上采取可替代动作的行相冲突。
+        要么执行<SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>唯一索引推断</I
+></SPAN
+>，要么显式命名一个
+        约束。对于<TT
+CLASS="LITERAL"
+>ON CONFLICT DO NOTHING</TT
+>来说，
+        它对于指定一个<TT
+CLASS="PARAMETER"
+>conflict_target</TT
+>是可选的。
+        在被省略时，与所有有效约束（以及唯一索引）的冲突都会被处理。对于
+        <TT
+CLASS="LITERAL"
+>ON CONFLICT DO UPDATE</TT
+>，<SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>必须</I
+></SPAN
+>
+        提供一个<TT
+CLASS="PARAMETER"
+>conflict_target</TT
+>。
+       </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>conflict_action</I
+></TT
+></DT
+><DD
+><P
+>        <TT
+CLASS="PARAMETER"
+>conflict_action</TT
+>指定一个可替换的
+        <TT
+CLASS="LITERAL"
+>ON CONFLICT</TT
+>动作。它可以是
+        <TT
+CLASS="LITERAL"
+>DO NOTHING</TT
+>，也可以是一个指定在冲突情况下
+        要被执行的<TT
+CLASS="LITERAL"
+>UPDATE</TT
+>动作细节的<TT
+CLASS="LITERAL"
+>DO
+        UPDATE</TT
+>子句。<TT
+CLASS="LITERAL"
+>ON CONFLICT DO
+        UPDATE</TT
+>中的<TT
+CLASS="LITERAL"
+>SET</TT
+>和
+        <TT
+CLASS="LITERAL"
+>WHERE</TT
+>子句能够使用该表的名称（或者别名）
+        访问现有的行，并且可以用特殊的<TT
+CLASS="VARNAME"
+>被排除</TT
+>
+        表访问要插入的行。这个动作要求<TT
+CLASS="VARNAME"
+>被排除</TT
+>
+        列所在目标表的任何列上的<TT
+CLASS="LITERAL"
+>SELECT</TT
+>特权。
+       </P
+><P
+>        注意所有行级<TT
+CLASS="LITERAL"
+>BEFORE INSERT</TT
+>触发器的效果都会
+        反映在<TT
+CLASS="VARNAME"
+>被排除</TT
+>值中，因为那些效果可能会
+        让该行避免被插入。
+       </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>index_column_name</I
+></TT
+></DT
+><DD
+><P
+>        一个<TT
+CLASS="REPLACEABLE"
+><I
+>table_name</I
+></TT
+>列
+        的名称。它被用来推断仲裁者索引。它遵循<TT
+CLASS="COMMAND"
+>CREATE
+        INDEX</TT
+>格式。这要求
+        <TT
+CLASS="REPLACEABLE"
+><I
+>index_column_name</I
+></TT
+>
+        上的<TT
+CLASS="LITERAL"
+>SELECT</TT
+>特权。
+       </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>index_expression</I
+></TT
+></DT
+><DD
+><P
+>        和<TT
+CLASS="REPLACEABLE"
+><I
+>index_column_name</I
+></TT
+>类似，但是
+        被用来推断出现在索引定义中的<TT
+CLASS="REPLACEABLE"
+><I
+>table_name</I
+></TT
+>列（非简单列）上的
+        表达式。遵循<TT
+CLASS="COMMAND"
+>CREATE INDEX</TT
+>格式。这要求
+        任何出现在<TT
+CLASS="REPLACEABLE"
+><I
+>index_expression</I
+></TT
+>中的列上的
+        <TT
+CLASS="LITERAL"
+>SELECT</TT
+>特权。
+       </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>collation</I
+></TT
+></DT
+><DD
+><P
+>        指定时，强制相应的<TT
+CLASS="REPLACEABLE"
+><I
+>index_column_name</I
+></TT
+>或
+        <TT
+CLASS="REPLACEABLE"
+><I
+>index_expression</I
+></TT
+>
+        使用一种特定的排序规则以便在推断期间能被匹配上。通常
+        会被省略，因为排序规则通常不会影响约束违背的发生。遵循
+        <TT
+CLASS="COMMAND"
+>CREATE INDEX</TT
+>格式。
+       </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>opclass</I
+></TT
+></DT
+><DD
+><P
+>        指定时，强制相应的<TT
+CLASS="REPLACEABLE"
+><I
+>index_column_name</I
+></TT
+>或
+        <TT
+CLASS="REPLACEABLE"
+><I
+>index_expression</I
+></TT
+>
+        使用特定的操作符类以便在推断期间能被匹配上。通常会被省略，
+        因为<SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>相等</I
+></SPAN
+>语义在一种类型的操作符类
+        之间都是等价的，或者因为足以信任已定义的唯一索引具有适当的
+        相等定义。遵循<TT
+CLASS="COMMAND"
+>CREATE INDEX</TT
+>格式。
+       </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>index_predicate</I
+></TT
+></DT
+><DD
+><P
+>        用于允许推断部分唯一索引。任何满足该谓词（不一定需要真的是
+        部分索引）的索引都能被推断。遵循<TT
+CLASS="COMMAND"
+>CREATE
+        INDEX</TT
+>格式。这要求任何出现在<TT
+CLASS="REPLACEABLE"
+><I
+>index_predicate</I
+></TT
+>中的列上
+        的<TT
+CLASS="LITERAL"
+>SELECT</TT
+>特权。
+       </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>constraint_name</I
+></TT
+></DT
+><DD
+><P
+>        用名称显式地指定一个仲裁者<SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>约束</I
+></SPAN
+>，
+        而不是推断一个约束或者索引。
+       </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>condition</I
+></TT
+></DT
+><DD
+><P
+>        一个能返回<TT
+CLASS="TYPE"
+>boolean</TT
+>值的表达式。只有让这个表达式返回
+        <TT
+CLASS="LITERAL"
+>true</TT
+>的行才将被更新，不过在采用
+        <TT
+CLASS="LITERAL"
+>ON CONFLICT DO UPDATE</TT
+>动作时所有的行都会被锁定。
+        注意<TT
+CLASS="REPLACEABLE"
+><I
+>condition</I
+></TT
+>会被最后计算，即一个冲突
+        被标识为要更新的候选对象之后。
+       </P
+></DD
+></DL
+></DIV
+><P
+>    注意不支持把排除约束作为<TT
+CLASS="LITERAL"
+>ON CONFLICT DO UPDATE</TT
+>的
+    仲裁者。在所有的情况中，只支持<TT
+CLASS="LITERAL"
+>NOT DEFERRABLE</TT
+>约束和
+    唯一索引作为仲裁者。
+   </P
+><P
+>    带有<TT
+CLASS="LITERAL"
+>ON CONFLICT DO UPDATE</TT
+>子句的
+    <TT
+CLASS="COMMAND"
+>INSERT</TT
+>是一种<SPAN
+CLASS="QUOTE"
+>"确定性的"</SPAN
+>
+    语句。这表明不允许该命令影响任何单个现有行超过一次，如果发生则会
+    发生一个基数违背错误。要插入的行不应该在仲裁者索引或约束所限制的
+    属性上相重复。
+   </P
+><DIV
+CLASS="TIP"
+><BLOCKQUOTE
+CLASS="TIP"
+><P
+><B
+>&#25552;&#31034;: </B
+>     使用唯一索引推断通常比使用<TT
+CLASS="LITERAL"
+>ON CONFLICT ON
+     CONSTRAINT</TT
+> <TT
+CLASS="REPLACEABLE"
+><I
+>     constraint_name</I
+></TT
+>直接提名一个约束更好。当底层索引
+     被以重叠方式替换成另一个或多或少等效的索引时，推断将能继续正确地
+     工作，例如在删除要被替换的索引之前使用
+     <TT
+CLASS="LITERAL"
+>CREATE UNIQUE INDEX ...  CONCURRENTLY</TT
+>。
+    </P
+></BLOCKQUOTE
+></DIV
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN88447"
+></A
+><H2
+>输出</H2
+><P
+>   成功完成时，<TT
+CLASS="COMMAND"
+>INSERT</TT
+>命令会返回以下形式的命令标签：
+</P><PRE
+CLASS="SCREEN"
+>INSERT <TT
+CLASS="REPLACEABLE"
+><I
+>oid</I
+></TT
+> <TT
+CLASS="REPLACEABLE"
+><I
+>count</I
+></TT
+></PRE
+><P>
+   <TT
+CLASS="REPLACEABLE"
+><I
+>count</I
+></TT
+>是被插入或更新的行数。
+   如果<TT
+CLASS="REPLACEABLE"
+><I
+>count</I
+></TT
+>正好为 1 并且
+   目标表具有 OID，那么
+   <TT
+CLASS="REPLACEABLE"
+><I
+>oid</I
+></TT
+>就是分配给被插入行的
+   <ACRONYM
+CLASS="ACRONYM"
+>OID</ACRONYM
+>。这个单一行必须已经被插入而不是被更新。
+   否则<TT
+CLASS="REPLACEABLE"
+><I
+>oid</I
+></TT
+>为零。
+  </P
+><P
+>   如果<TT
+CLASS="COMMAND"
+>INSERT</TT
+>命令包含<TT
+CLASS="LITERAL"
+>RETURNING</TT
+>子句，
+   其结果会类似于包含<TT
+CLASS="LITERAL"
+>RETURNING</TT
+>列表中定义的列和值的
+   <TT
+CLASS="COMMAND"
+>SELECT</TT
+>语句，这些结果是由该命令在被插入或更新行上
+   计算得到。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN88464"
+></A
+><H2
+>示例</H2
+><P
+>   向<TT
+CLASS="LITERAL"
+>films</TT
+>中插入一行：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>INSERT INTO films VALUES
+    ('UA502', 'Bananas', 105, '1971-07-13', 'Comedy', '82 minutes');</PRE
+><P>
+  </P
+><P
+>   在这个例子中，<TT
+CLASS="LITERAL"
+>len</TT
+>列被省略并且因此会具有默认值：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>INSERT INTO films (code, title, did, date_prod, kind)
+    VALUES ('T_601', 'Yojimbo', 106, '1961-06-16', 'Drama');</PRE
+><P>
+  </P
+><P
+>   这个例子为日期列使用<TT
+CLASS="LITERAL"
+>DEFAULT</TT
+>子句而不是指定一个值：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>INSERT INTO films VALUES
+    ('UA502', 'Bananas', 105, DEFAULT, 'Comedy', '82 minutes');
+INSERT INTO films (code, title, did, date_prod, kind)
+    VALUES ('T_601', 'Yojimbo', 106, DEFAULT, 'Drama');</PRE
+><P>
+  </P
+><P
+>   插入一个完全由默认值构成的行：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>INSERT INTO films DEFAULT VALUES;</PRE
+><P>
+  </P
+><P
+>   用多行<TT
+CLASS="COMMAND"
+>VALUES</TT
+>语法插入多个行：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>INSERT INTO films (code, title, did, date_prod, kind) VALUES
+    ('B6717', 'Tampopo', 110, '1985-02-10', 'Comedy'),
+    ('HG120', 'The Dinner Game', 140, DEFAULT, 'Comedy');</PRE
+><P>
+  </P
+><P
+>   这个例子从表<TT
+CLASS="LITERAL"
+>tmp_films</TT
+>中获得一些行插入到表
+   <TT
+CLASS="LITERAL"
+>films</TT
+>中，两个表具有相同的列布局：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>INSERT INTO films SELECT * FROM tmp_films WHERE date_prod &lt; '2004-05-07';</PRE
+><P>
+  </P
+><P
+>   这个例子插入数组列：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>-- 为 noughts-and-crosses 游戏创建一个空的 3x3 棋盘
+INSERT INTO tictactoe (game, board[1:3][1:3])
+    VALUES (1, '{{" "," "," "},{" "," "," "},{" "," "," "}}');
+-- 实际上可以不用上面例子中的下标
+INSERT INTO tictactoe (game, board)
+    VALUES (2, '{{X," "," "},{" ",O," "},{" ",X," "}}');</PRE
+><P>
+  </P
+><P
+>   向表<TT
+CLASS="LITERAL"
+>distributors</TT
+>中插入一行，返回由
+   <TT
+CLASS="LITERAL"
+>DEFAULT</TT
+>子句生成的序号：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>INSERT INTO distributors (did, dname) VALUES (DEFAULT, 'XYZ Widgets')
+   RETURNING did;</PRE
+><P>
+  </P
+><P
+>   增加为 Acme Corporation 管理账户的销售人员的销量，并且把整个被
+   更新的行以及当前时间记录到一个日志表中：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>WITH upd AS (
+  UPDATE employees SET sales_count = sales_count + 1 WHERE id =
+    (SELECT sales_person FROM accounts WHERE name = 'Acme Corporation')
+    RETURNING *
+)
+INSERT INTO employees_log SELECT *, current_timestamp FROM upd;</PRE
+><P>
+  </P
+><P
+>   酌情插入或者更新新的 distributor。假设已经定义了一个唯一索引来约束
+   出现在<TT
+CLASS="LITERAL"
+>did</TT
+>列中的值。注意，特殊的
+   <TT
+CLASS="VARNAME"
+>excluded</TT
+>表被用来引用原来要插入的值：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>INSERT INTO distributors (did, dname)
+    VALUES (5, 'Gizmo Transglobal'), (6, 'Associated Computing, Inc')
+    ON CONFLICT (did) DO UPDATE SET dname = EXCLUDED.dname;</PRE
+><P>
+  </P
+><P
+>   插入一个 distributor，或者在一个被排除的行（具有一个匹配约束的列或者
+   会让行级前（或者后）插入触发器引发的列的行）存在时不处理要插入的行。
+   例子假设已经定义了一个唯一触发器来约束出现在<TT
+CLASS="LITERAL"
+>did</TT
+>列
+   中的值：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>INSERT INTO distributors (did, dname) VALUES (7, 'Redline GmbH')
+    ON CONFLICT (did) DO NOTHING;</PRE
+><P>
+  </P
+><P
+>   酌情插入或者更新新的 distributor。例子假设已经定义了一个唯一触发器来
+   约束出现在<TT
+CLASS="LITERAL"
+>did</TT
+>列中的值。<TT
+CLASS="LITERAL"
+>WHERE</TT
+>子句被用
+   来限制实际被更新的行（不过，任何没有被更新的已有行仍将被锁定）：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>-- 根据一个特定的 ZIP 编码更新 distributors
+INSERT INTO distributors AS d (did, dname) VALUES (8, 'Anvil Distribution')
+    ON CONFLICT (did) DO UPDATE
+    SET dname = EXCLUDED.dname || ' (formerly ' || d.dname || ')'
+    WHERE d.zipcode &lt;&gt; '21201';
+
+-- 直接在语句中命名一个约束（使用相关的索引来判断是否做
+-- DO NOTHING 动作）
+INSERT INTO distributors (did, dname) VALUES (9, 'Antwerp Design')
+    ON CONFLICT ON CONSTRAINT distributors_pkey DO NOTHING;</PRE
+><P>
+  </P
+><P
+>   如果可能就插入新的 distributor，否则<TT
+CLASS="LITERAL"
+>DO NOTHING</TT
+>。
+   例子假设已经定义了一个唯一索引，它约束让<TT
+CLASS="LITERAL"
+>is_active</TT
+>
+   布尔列为<TT
+CLASS="LITERAL"
+>true</TT
+>的行子集上<TT
+CLASS="LITERAL"
+>did</TT
+>列中的值：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>-- 这个语句可能推断出一个在 "did" 上带有谓词 "WHERE is_active"
+-- 的部分唯一索引，但是它可能也只是使用了 "did" 上的一个常规唯一约束
+INSERT INTO distributors (did, dname) VALUES (10, 'Conrad International')
+    ON CONFLICT (did) WHERE is_active DO NOTHING;</PRE
+><P>
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN88509"
+></A
+><H2
+>兼容性</H2
+><P
+>   <TT
+CLASS="COMMAND"
+>INSERT</TT
+>符合 SQL 标准，不过
+   <TT
+CLASS="LITERAL"
+>RETURNING</TT
+>子句是一种
+   <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>扩展， 在
+   <TT
+CLASS="COMMAND"
+>INSERT</TT
+>中使用<TT
+CLASS="LITERAL"
+>WITH</TT
+>也是，
+   用<TT
+CLASS="LITERAL"
+>ON CONFLICT</TT
+>指定一个替代动作也是扩展。
+   还有，标准不允许省略列名列表但不通过
+   <TT
+CLASS="LITERAL"
+>VALUES</TT
+>子句或者<TT
+CLASS="REPLACEABLE"
+><I
+>query</I
+></TT
+>填充
+   所有列的情况。
+  </P
+><P
+>   <TT
+CLASS="REPLACEABLE"
+><I
+>query</I
+></TT
+>子句可能的限制在
+   <A
+HREF="sql-select.html"
+>SELECT</A
+>有介绍。
+  </P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-importforeignschema.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="sql-listen.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>IMPORT FOREIGN SCHEMA</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>LISTEN</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

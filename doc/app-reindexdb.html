@@ -1,0 +1,881 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>reindexdb</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="PostgreSQL 客户端应用"
+HREF="reference-client.html"><LINK
+REL="PREVIOUS"
+TITLE="psql"
+HREF="app-psql.html"><LINK
+REL="NEXT"
+TITLE="vacuumdb"
+HREF="app-vacuumdb.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="REFENTRY"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/ref/reindexdb.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="psql"
+HREF="app-psql.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="reference-client.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="vacuumdb"
+HREF="app-vacuumdb.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="APP-REINDEXDB"
+></A
+><SPAN
+CLASS="APPLICATION"
+>reindexdb</SPAN
+></H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN100674"
+></A
+><H2
+>&#21517;&#31216;</H2
+>reindexdb&nbsp;--&nbsp;重索引一个<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>数据库</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN100678"
+></A
+><H2
+>&#22823;&#32434;</H2
+><P
+><TT
+CLASS="COMMAND"
+>reindexdb</TT
+> [<TT
+CLASS="REPLACEABLE"
+><I
+>connection-option</I
+></TT
+>...] [<TT
+CLASS="REPLACEABLE"
+><I
+>option</I
+></TT
+>...]       [       <TT
+CLASS="OPTION"
+>--schema</TT
+> | <TT
+CLASS="OPTION"
+>-S</TT
+> 
+     <TT
+CLASS="REPLACEABLE"
+><I
+>schema</I
+></TT
+>
+    ]
+   ...        [       <TT
+CLASS="OPTION"
+>--table</TT
+> | <TT
+CLASS="OPTION"
+>-t</TT
+> 
+     <TT
+CLASS="REPLACEABLE"
+><I
+>table</I
+></TT
+>
+    ]
+   ...        [       <TT
+CLASS="OPTION"
+>--index</TT
+> | <TT
+CLASS="OPTION"
+>-i</TT
+> 
+     <TT
+CLASS="REPLACEABLE"
+><I
+>index</I
+></TT
+>
+    ]
+   ...  [<TT
+CLASS="REPLACEABLE"
+><I
+>dbname</I
+></TT
+>]</P
+><P
+><TT
+CLASS="COMMAND"
+>reindexdb</TT
+> [<TT
+CLASS="REPLACEABLE"
+><I
+>connection-option</I
+></TT
+>...] [<TT
+CLASS="REPLACEABLE"
+><I
+>option</I
+></TT
+>...]  <TT
+CLASS="OPTION"
+>--all</TT
+> | <TT
+CLASS="OPTION"
+>-a</TT
+> </P
+><P
+><TT
+CLASS="COMMAND"
+>reindexdb</TT
+> [<TT
+CLASS="REPLACEABLE"
+><I
+>connection-option</I
+></TT
+>...] [<TT
+CLASS="REPLACEABLE"
+><I
+>option</I
+></TT
+>...]  <TT
+CLASS="OPTION"
+>--system</TT
+> | <TT
+CLASS="OPTION"
+>-s</TT
+>  [<TT
+CLASS="REPLACEABLE"
+><I
+>dbname</I
+></TT
+>]</P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN100735"
+></A
+><H2
+>描述</H2
+><P
+>   <SPAN
+CLASS="APPLICATION"
+>reindexdb</SPAN
+>是用于重建一个<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>数据库中索引的工具。
+  </P
+><P
+>   <SPAN
+CLASS="APPLICATION"
+>reindexdb</SPAN
+>是 SQL 命令<A
+HREF="sql-reindex.html"
+>REINDEX</A
+>的一个包装器。在通过这个工具和其他方法访问服务器来重索引数据库之间没有实质性的区别。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN100743"
+></A
+><H2
+>选项</H2
+><P
+>    <SPAN
+CLASS="APPLICATION"
+>reindexdb</SPAN
+>接受下列命令行参数：
+
+    <P
+></P
+></P><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="OPTION"
+>-a</TT
+><BR><TT
+CLASS="OPTION"
+>--all</TT
+></DT
+><DD
+><P
+>        重索引所有数据库。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>[<SPAN
+CLASS="OPTIONAL"
+>-d</SPAN
+>] <TT
+CLASS="REPLACEABLE"
+><I
+>dbname</I
+></TT
+></TT
+><BR><TT
+CLASS="OPTION"
+>[<SPAN
+CLASS="OPTIONAL"
+>--dbname=</SPAN
+>]<TT
+CLASS="REPLACEABLE"
+><I
+>dbname</I
+></TT
+></TT
+></DT
+><DD
+><P
+>        指定要被重索引的数据库名。如果这没有被指定并且没有使用<TT
+CLASS="OPTION"
+>-a</TT
+>（或<TT
+CLASS="OPTION"
+>--all</TT
+>），数据库名可以从环境变量<TT
+CLASS="ENVAR"
+>PGDATABASE</TT
+>中被读出。如果环境变量也没被设置，为该连接指定的用户名将被用作数据库名。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-e</TT
+><BR><TT
+CLASS="OPTION"
+>--echo</TT
+></DT
+><DD
+><P
+>        回显<SPAN
+CLASS="APPLICATION"
+>reindexdb</SPAN
+>生成并发送到服务器的命令。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-i <TT
+CLASS="REPLACEABLE"
+><I
+>index</I
+></TT
+></TT
+><BR><TT
+CLASS="OPTION"
+>--index=<TT
+CLASS="REPLACEABLE"
+><I
+>index</I
+></TT
+></TT
+></DT
+><DD
+><P
+>        只是重建<TT
+CLASS="REPLACEABLE"
+><I
+>index</I
+></TT
+>。可以通过写多个<TT
+CLASS="OPTION"
+>-i</TT
+>开关来重建多个索引。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-q</TT
+><BR><TT
+CLASS="OPTION"
+>--quiet</TT
+></DT
+><DD
+><P
+>        不显示进度消息。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-s</TT
+><BR><TT
+CLASS="OPTION"
+>--system</TT
+></DT
+><DD
+><P
+>        索引数据库的系统目录。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-S <TT
+CLASS="REPLACEABLE"
+><I
+>schema</I
+></TT
+></TT
+><BR><TT
+CLASS="OPTION"
+>--schema=<TT
+CLASS="REPLACEABLE"
+><I
+>schema</I
+></TT
+></TT
+></DT
+><DD
+><P
+>        只对<TT
+CLASS="REPLACEABLE"
+><I
+>schema</I
+></TT
+>重建索引。
+        通过写多个<TT
+CLASS="OPTION"
+>-S</TT
+>开关可以指定多个要重建索引的模式。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-t <TT
+CLASS="REPLACEABLE"
+><I
+>table</I
+></TT
+></TT
+><BR><TT
+CLASS="OPTION"
+>--table=<TT
+CLASS="REPLACEABLE"
+><I
+>table</I
+></TT
+></TT
+></DT
+><DD
+><P
+>        只索引<TT
+CLASS="REPLACEABLE"
+><I
+>table</I
+></TT
+>。可以通过写多个<TT
+CLASS="OPTION"
+>-t</TT
+>开关来重索引多个表。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-v</TT
+><BR><TT
+CLASS="OPTION"
+>--verbose</TT
+></DT
+><DD
+><P
+>       在处理时打印详细信息。
+      </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-V</TT
+><BR><TT
+CLASS="OPTION"
+>--version</TT
+></DT
+><DD
+><P
+>       打印<SPAN
+CLASS="APPLICATION"
+>reindexdb</SPAN
+>版本并退出。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-?</TT
+><BR><TT
+CLASS="OPTION"
+>--help</TT
+></DT
+><DD
+><P
+>      显示有关<SPAN
+CLASS="APPLICATION"
+>reindexdb</SPAN
+>命令行参数的帮助并退出。
+      </P
+></DD
+></DL
+></DIV
+><P>
+
+   </P
+><P
+>    <SPAN
+CLASS="APPLICATION"
+>reindexdb</SPAN
+>也接受下列命令行参数用于连接参数：
+
+    <P
+></P
+></P><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="OPTION"
+>-h <TT
+CLASS="REPLACEABLE"
+><I
+>host</I
+></TT
+></TT
+><BR><TT
+CLASS="OPTION"
+>--host=<TT
+CLASS="REPLACEABLE"
+><I
+>host</I
+></TT
+></TT
+></DT
+><DD
+><P
+>        指定运行服务器的机器的主机名。如果该值以一个斜线开始，它被用作 Unix 域套接字的目录。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-p <TT
+CLASS="REPLACEABLE"
+><I
+>port</I
+></TT
+></TT
+><BR><TT
+CLASS="OPTION"
+>--port=<TT
+CLASS="REPLACEABLE"
+><I
+>port</I
+></TT
+></TT
+></DT
+><DD
+><P
+>        指定服务器正在监听连接的 TCP 端口或本地 Unix 域套接字文件扩展。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-U <TT
+CLASS="REPLACEABLE"
+><I
+>username</I
+></TT
+></TT
+><BR><TT
+CLASS="OPTION"
+>--username=<TT
+CLASS="REPLACEABLE"
+><I
+>username</I
+></TT
+></TT
+></DT
+><DD
+><P
+>        要作为哪个用户连接。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-w</TT
+><BR><TT
+CLASS="OPTION"
+>--no-password</TT
+></DT
+><DD
+><P
+>        从不发出一个口令提示。如果服务器要求口令认证并且没有其他方式提供口令（例如一个<TT
+CLASS="FILENAME"
+>.pgpass</TT
+>文件），那儿连接尝试将失败。这个选项对于批处理任务和脚本有用，因为在其中没有一个用户来输入口令。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-W</TT
+><BR><TT
+CLASS="OPTION"
+>--password</TT
+></DT
+><DD
+><P
+>        强制<SPAN
+CLASS="APPLICATION"
+>reindexdb</SPAN
+>在连接到一个数据库之前提示要求一个口令。
+       </P
+><P
+>        这个选项不是必不可少的，因为如果服务器要求口令认证，<SPAN
+CLASS="APPLICATION"
+>reindexdb</SPAN
+>将自动提示要求一个口令。但是，<SPAN
+CLASS="APPLICATION"
+>reindexdb</SPAN
+>将浪费一次连接尝试来发现服务器想要一个口令。在某些情况下值得用<TT
+CLASS="OPTION"
+>-W</TT
+>来避免额外的连接尝试。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>--maintenance-db=<TT
+CLASS="REPLACEABLE"
+><I
+>dbname</I
+></TT
+></TT
+></DT
+><DD
+><P
+>         指定要连接到来发现哪些其他数据库应该被重索引的数据库名。如果没有指定，将使用<TT
+CLASS="LITERAL"
+>postgres</TT
+>数据库。而如果它也不存在，将使用<TT
+CLASS="LITERAL"
+>template1</TT
+>。
+       </P
+></DD
+></DL
+></DIV
+><P>
+   </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN100905"
+></A
+><H2
+>环境</H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="ENVAR"
+>PGDATABASE</TT
+><BR><TT
+CLASS="ENVAR"
+>PGHOST</TT
+><BR><TT
+CLASS="ENVAR"
+>PGPORT</TT
+><BR><TT
+CLASS="ENVAR"
+>PGUSER</TT
+></DT
+><DD
+><P
+>      默认连接参数
+     </P
+></DD
+></DL
+></DIV
+><P
+>   和大部分其他<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>工具相似，这个工具也使用<SPAN
+CLASS="APPLICATION"
+>libpq</SPAN
+>（见<A
+HREF="libpq-envars.html"
+>第 32.14 &#33410;</A
+>）支持的环境变量。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN100923"
+></A
+><H2
+>诊断</H2
+><P
+>   在有困难时，可以在<A
+HREF="sql-reindex.html"
+>REINDEX</A
+>和<A
+HREF="app-psql.html"
+><SPAN
+CLASS="APPLICATION"
+>psql</SPAN
+></A
+>中找潜在问题和错误消息的讨论。数据库服务器必须运行在目标主机上。同样，任何<SPAN
+CLASS="APPLICATION"
+>libpq</SPAN
+>前端库使用的默认连接设置和环境变量都将适用于此。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN100929"
+></A
+><H2
+>注解</H2
+><P
+>   <SPAN
+CLASS="APPLICATION"
+>reindexdb</SPAN
+>可能需要多次连接到<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>服务器，每一次都会询问一个口令。在这种情况下使用一个<TT
+CLASS="FILENAME"
+>~/.pgpass</TT
+>文件会更方便。详见<A
+HREF="libpq-pgpass.html"
+>第 32.15 &#33410;</A
+>。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN100936"
+></A
+><H2
+>例子</H2
+><P
+>    要重索引数据库<TT
+CLASS="LITERAL"
+>test</TT
+>：
+</P><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>$ </SAMP
+><KBD
+CLASS="USERINPUT"
+>reindexdb test</KBD
+></PRE
+><P>
+   </P
+><P
+>    要重索引名为<TT
+CLASS="LITERAL"
+>abcd</TT
+>的数据库中的表<TT
+CLASS="LITERAL"
+>foo</TT
+>和索引<TT
+CLASS="LITERAL"
+>bar</TT
+>：
+</P><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>$ </SAMP
+><KBD
+CLASS="USERINPUT"
+>reindexdb --table foo --index bar abcd</KBD
+></PRE
+><P></P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN100950"
+></A
+><H2
+>参见</H2
+><A
+HREF="sql-reindex.html"
+>REINDEX</A
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="app-psql.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="app-vacuumdb.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><SPAN
+CLASS="APPLICATION"
+>psql</SPAN
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="reference-client.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><SPAN
+CLASS="APPLICATION"
+>vacuumdb</SPAN
+></TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

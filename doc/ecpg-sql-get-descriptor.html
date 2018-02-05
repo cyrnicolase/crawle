@@ -1,0 +1,438 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>GET DESCRIPTOR</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="嵌入式 SQL 命令"
+HREF="ecpg-sql-commands.html"><LINK
+REL="PREVIOUS"
+TITLE="EXECUTE IMMEDIATE"
+HREF="ecpg-sql-execute-immediate.html"><LINK
+REL="NEXT"
+TITLE="OPEN"
+HREF="ecpg-sql-open.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="REFENTRY"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/ecpg.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="EXECUTE IMMEDIATE"
+HREF="ecpg-sql-execute-immediate.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="ecpg-sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="OPEN"
+HREF="ecpg-sql-open.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="ECPG-SQL-GET-DESCRIPTOR"
+></A
+>GET DESCRIPTOR</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN52427"
+></A
+><H2
+>&#21517;&#31216;</H2
+>GET DESCRIPTOR&nbsp;--&nbsp;从一个 SQL 描述符区域得到信息</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN52430"
+></A
+><H2
+>&#22823;&#32434;</H2
+><PRE
+CLASS="SYNOPSIS"
+>GET DESCRIPTOR <TT
+CLASS="REPLACEABLE"
+><I
+>descriptor_name</I
+></TT
+> <TT
+CLASS="REPLACEABLE"
+><I
+>:cvariable</I
+></TT
+> = <TT
+CLASS="REPLACEABLE"
+><I
+>descriptor_header_item</I
+></TT
+> [, ... ]
+GET DESCRIPTOR <TT
+CLASS="REPLACEABLE"
+><I
+>descriptor_name</I
+></TT
+> VALUE <TT
+CLASS="REPLACEABLE"
+><I
+>column_number</I
+></TT
+> <TT
+CLASS="REPLACEABLE"
+><I
+>:cvariable</I
+></TT
+> = <TT
+CLASS="REPLACEABLE"
+><I
+>descriptor_item</I
+></TT
+> [, ... ]</PRE
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN52439"
+></A
+><H2
+>描述</H2
+><P
+>     <TT
+CLASS="COMMAND"
+>GET DESCRIPTOR</TT
+>从一个 SQL 描述符区域检索关于一个查询结果集的信息并且把它存储在主变量中。在使用这个命令把信息传输到主语言变量之前，一个描述符区域通常是用<TT
+CLASS="COMMAND"
+>FETCH</TT
+>或<TT
+CLASS="COMMAND"
+>SELECT</TT
+>填充的。
+    </P
+><P
+>     这个命令有两种形式：第一种形式检索描述符的<SPAN
+CLASS="QUOTE"
+>"头部"</SPAN
+>项，它适用于全面地查看结果集。一种例子是行计数。第二种形式要求列号作为附加参数，它检索有关一个特定列的信息。其例子是查看列名和实际列值。
+    </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN52447"
+></A
+><H2
+>参数</H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>descriptor_name</I
+></TT
+></DT
+><DD
+><P
+>        一个描述符名称。
+       </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>descriptor_header_item</I
+></TT
+></DT
+><DD
+><P
+>        一个标识要检索哪一个头部信息项的记号。当前只支持用于得到结果集中列数的<TT
+CLASS="LITERAL"
+>COUNT</TT
+>。
+       </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>column_number</I
+></TT
+></DT
+><DD
+><P
+>        要检索其信息的列号。计数从 1 开始。
+       </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>descriptor_item</I
+></TT
+></DT
+><DD
+><P
+>        一个标识要检索哪一个有关一列信息的项的记号。被支持的项可见<A
+HREF="ecpg-descriptors.html#ECPG-NAMED-DESCRIPTORS"
+>第 34.7.1 &#33410;</A
+>。
+       </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>cvariable</I
+></TT
+></DT
+><DD
+><P
+>        接收从描述符区域检索到的数据的主变量。
+       </P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN52477"
+></A
+><H2
+>例子</H2
+><P
+>     检索一个结果集中列数的例子：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>EXEC SQL GET DESCRIPTOR d :d_count = COUNT;</PRE
+><P>
+    </P
+><P
+>     检索第一列中数据长度的例子：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>EXEC SQL GET DESCRIPTOR d VALUE 1 :d_returned_octet_length = RETURNED_OCTET_LENGTH;</PRE
+><P>
+    </P
+><P
+>     把第二列的数据体检索成一个字符串的例子：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>EXEC SQL GET DESCRIPTOR d VALUE 2 :d_data = DATA;</PRE
+><P>
+    </P
+><P
+>     这里是执行<TT
+CLASS="LITERAL"
+>SELECT current_database();</TT
+>并且显示列数、列数据长度和列数据的完整过程的例子：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>int
+main(void)
+{
+EXEC SQL BEGIN DECLARE SECTION;
+    int  d_count;
+    char d_data[1024];
+    int  d_returned_octet_length;
+EXEC SQL END DECLARE SECTION;
+
+    EXEC SQL CONNECT TO testdb AS con1 USER testuser;
+    EXEC SQL ALLOCATE DESCRIPTOR d;
+
+    /* 描述、打开一个游标，并且分配一个描述符给该游标  */
+    EXEC SQL DECLARE cur CURSOR FOR SELECT current_database();
+    EXEC SQL OPEN cur;
+    EXEC SQL FETCH NEXT FROM cur INTO SQL DESCRIPTOR d;
+
+    /* 得到全部列的数量 */
+    EXEC SQL GET DESCRIPTOR d :d_count = COUNT;
+    printf("d_count                 = %d\n", d_count);
+
+    /* 得到一个返回列的长度 */
+    EXEC SQL GET DESCRIPTOR d VALUE 1 :d_returned_octet_length = RETURNED_OCTET_LENGTH;
+    printf("d_returned_octet_length = %d\n", d_returned_octet_length);
+
+    /* 将返回的列取出成一个字符串 */
+    EXEC SQL GET DESCRIPTOR d VALUE 1 :d_data = DATA;
+    printf("d_data                  = %s\n", d_data);
+
+    /* 关闭 */
+    EXEC SQL CLOSE cur;
+    EXEC SQL COMMIT;
+
+    EXEC SQL DEALLOCATE DESCRIPTOR d;
+    EXEC SQL DISCONNECT ALL;
+
+    return 0;
+}</PRE
+><P>
+     当该例子被执行时，结果看起来是：
+</P><PRE
+CLASS="SCREEN"
+>d_count                 = 1
+d_returned_octet_length = 6
+d_data                  = testdb</PRE
+><P>
+    </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN52489"
+></A
+><H2
+>兼容性</H2
+><P
+>     SQL 标准中说明了<TT
+CLASS="COMMAND"
+>GET DESCRIPTOR</TT
+>。
+    </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN52493"
+></A
+><H2
+>参见</H2
+><A
+HREF="ecpg-sql-allocate-descriptor.html"
+>ALLOCATE DESCRIPTOR</A
+>, <A
+HREF="ecpg-sql-set-descriptor.html"
+>SET DESCRIPTOR</A
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="ecpg-sql-execute-immediate.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="ecpg-sql-open.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>EXECUTE IMMEDIATE</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="ecpg-sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>OPEN</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

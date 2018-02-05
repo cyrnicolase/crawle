@@ -1,0 +1,572 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>ALTER AGGREGATE</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="SQL 命令"
+HREF="sql-commands.html"><LINK
+REL="PREVIOUS"
+TITLE="ABORT"
+HREF="sql-abort.html"><LINK
+REL="NEXT"
+TITLE="ALTER COLLATION"
+HREF="sql-altercollation.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="REFENTRY"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/ref/alter_aggregate.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="ABORT"
+HREF="sql-abort.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="ALTER COLLATION"
+HREF="sql-altercollation.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="SQL-ALTERAGGREGATE"
+></A
+>ALTER AGGREGATE</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN71949"
+></A
+><H2
+>&#21517;&#31216;</H2
+>ALTER AGGREGATE&nbsp;--&nbsp;更改一个聚集函数的定义</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN71952"
+></A
+><H2
+>&#22823;&#32434;</H2
+><PRE
+CLASS="SYNOPSIS"
+>ALTER AGGREGATE <TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+> ( <TT
+CLASS="REPLACEABLE"
+><I
+>aggregate_signature</I
+></TT
+> ) RENAME TO <TT
+CLASS="REPLACEABLE"
+><I
+>new_name</I
+></TT
+>
+ALTER AGGREGATE <TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+> ( <TT
+CLASS="REPLACEABLE"
+><I
+>aggregate_signature</I
+></TT
+> )
+                OWNER TO { <TT
+CLASS="REPLACEABLE"
+><I
+>new_owner</I
+></TT
+> | CURRENT_USER | SESSION_USER }
+ALTER AGGREGATE <TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+> ( <TT
+CLASS="REPLACEABLE"
+><I
+>aggregate_signature</I
+></TT
+> ) SET SCHEMA <TT
+CLASS="REPLACEABLE"
+><I
+>new_schema</I
+></TT
+>
+
+<SPAN
+CLASS="phrase"
+><SPAN
+CLASS="PHRASE"
+>其中 <TT
+CLASS="REPLACEABLE"
+><I
+>aggregate_signature</I
+></TT
+> 是：</SPAN
+></SPAN
+>
+
+* |
+[ <TT
+CLASS="REPLACEABLE"
+><I
+>argmode</I
+></TT
+> ] [ <TT
+CLASS="REPLACEABLE"
+><I
+>argname</I
+></TT
+> ] <TT
+CLASS="REPLACEABLE"
+><I
+>argtype</I
+></TT
+> [ , ... ] |
+[ [ <TT
+CLASS="REPLACEABLE"
+><I
+>argmode</I
+></TT
+> ] [ <TT
+CLASS="REPLACEABLE"
+><I
+>argname</I
+></TT
+> ] <TT
+CLASS="REPLACEABLE"
+><I
+>argtype</I
+></TT
+> [ , ... ] ] ORDER BY [ <TT
+CLASS="REPLACEABLE"
+><I
+>argmode</I
+></TT
+> ] [ <TT
+CLASS="REPLACEABLE"
+><I
+>argname</I
+></TT
+> ] <TT
+CLASS="REPLACEABLE"
+><I
+>argtype</I
+></TT
+> [ , ... ]</PRE
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN71974"
+></A
+><H2
+>描述</H2
+><P
+>   <TT
+CLASS="COMMAND"
+>ALTER AGGREGATE</TT
+>更改一个聚集函数的定义。
+  </P
+><P
+>   要使用<TT
+CLASS="COMMAND"
+>ALTER AGGREGATE</TT
+>，你必须拥有该聚集函数。
+   要更改一个聚集函数的模式，你还必须具有新模式上的
+   <TT
+CLASS="LITERAL"
+>CREATE</TT
+>特权。要修改拥有者，你还必须是新拥有角色
+   的一个直接或者间接成员，并且那个角色必须在聚集函数的模式上拥有
+   <TT
+CLASS="LITERAL"
+>CREATE</TT
+>特权（这些限制强制要求拥有者不能通过丢弃并重建该聚集函数来做任何你不能做的事情。不过，一个超级用户可以更改任何聚集函数的所有权）。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN71982"
+></A
+><H2
+>参数</H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+></DT
+><DD
+><P
+>      一个现有聚集函数的名称（可以是模式限定的）。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>argmode</I
+></TT
+></DT
+><DD
+><P
+>      一个参数的模式：<TT
+CLASS="LITERAL"
+>IN</TT
+>或<TT
+CLASS="LITERAL"
+>VARIADIC</TT
+>。
+      如果省略，默认为<TT
+CLASS="LITERAL"
+>IN</TT
+>。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>argname</I
+></TT
+></DT
+><DD
+><P
+>      一个参数的名称。注意<TT
+CLASS="COMMAND"
+>ALTER AGGREGATE</TT
+>
+      并不真正关心参数名称，因为决定聚集函数的身份时只需要参数的数据类型。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>argtype</I
+></TT
+></DT
+><DD
+><P
+>      聚集函数要在其上操作的输入数据类型。要引用一个零参数聚集函数，在参数
+      说明列表的位置写上<TT
+CLASS="LITERAL"
+>*</TT
+>。要引用一个有序集聚集函数，在直接参数
+      说明和聚集参数说明之间写上<TT
+CLASS="LITERAL"
+>ORDER BY</TT
+>。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>new_name</I
+></TT
+></DT
+><DD
+><P
+>      聚集函数的新名称。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>new_owner</I
+></TT
+></DT
+><DD
+><P
+>      聚集函数的新拥有者。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>new_schema</I
+></TT
+></DT
+><DD
+><P
+>      聚集函数的新模式。
+     </P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN72026"
+></A
+><H2
+>注解</H2
+><P
+>    引用有序集聚集的推荐语法是在直接参数说明和聚集参数说明之间写上
+    <TT
+CLASS="LITERAL"
+>ORDER BY</TT
+>，这和<A
+HREF="sql-createaggregate.html"
+>CREATE AGGREGATE</A
+>
+    中的风格相同。不过，省略<TT
+CLASS="LITERAL"
+>ORDER BY</TT
+>并且只把直接和
+    聚集参数说明放到一个单一列表中也是可以的。在这种简写形式中，如果
+    在直接和聚集参数列表中都使用了<TT
+CLASS="LITERAL"
+>VARIADIC "any"</TT
+>，只用
+    写一次<TT
+CLASS="LITERAL"
+>VARIADIC "any"</TT
+>。
+   </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN72034"
+></A
+><H2
+>示例</H2
+><P
+>   要把用于类型<TT
+CLASS="TYPE"
+>integer</TT
+>的聚集函数
+   <TT
+CLASS="LITERAL"
+>myavg</TT
+>重命名为<TT
+CLASS="LITERAL"
+>my_average</TT
+>：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>ALTER AGGREGATE myavg(integer) RENAME TO my_average;</PRE
+><P>
+  </P
+><P
+>   要把用于类型<TT
+CLASS="TYPE"
+>integer</TT
+>的聚集函数
+   <TT
+CLASS="LITERAL"
+>myavg</TT
+>的拥有者改为<TT
+CLASS="LITERAL"
+>joe</TT
+>：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>ALTER AGGREGATE myavg(integer) OWNER TO joe;</PRE
+><P>
+  </P
+><P
+>   把带有<TT
+CLASS="TYPE"
+>float8</TT
+>类型直接参数和<TT
+CLASS="TYPE"
+>integer</TT
+>
+   类型聚集参数的有序集聚集<TT
+CLASS="LITERAL"
+>mypercentile</TT
+> 移动到
+   模式<TT
+CLASS="LITERAL"
+>myschema</TT
+>中：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>ALTER AGGREGATE mypercentile(float8 ORDER BY integer) SET SCHEMA myschema;</PRE
+><P>
+   这也能行：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>ALTER AGGREGATE mypercentile(float8, integer) SET SCHEMA myschema;</PRE
+><P>
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN72053"
+></A
+><H2
+>兼容性</H2
+><P
+>   在 SQL 标准中没有<TT
+CLASS="COMMAND"
+>ALTER AGGREGATE</TT
+>语句。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN72057"
+></A
+><H2
+>另见</H2
+><A
+HREF="sql-createaggregate.html"
+>CREATE AGGREGATE</A
+>, <A
+HREF="sql-dropaggregate.html"
+>DROP AGGREGATE</A
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-abort.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="sql-altercollation.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>ABORT</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>ALTER COLLATION</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

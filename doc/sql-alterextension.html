@@ -1,0 +1,919 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>ALTER EXTENSION</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="SQL 命令"
+HREF="sql-commands.html"><LINK
+REL="PREVIOUS"
+TITLE="ALTER EVENT TRIGGER"
+HREF="sql-altereventtrigger.html"><LINK
+REL="NEXT"
+TITLE="ALTER FOREIGN DATA WRAPPER"
+HREF="sql-alterforeigndatawrapper.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="REFENTRY"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/ref/alter_extension.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="ALTER EVENT TRIGGER"
+HREF="sql-altereventtrigger.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="ALTER FOREIGN DATA WRAPPER"
+HREF="sql-alterforeigndatawrapper.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="SQL-ALTEREXTENSION"
+></A
+>ALTER EXTENSION</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN72667"
+></A
+><H2
+>&#21517;&#31216;</H2
+>ALTER EXTENSION&nbsp;--&nbsp;   更改一个扩展的定义
+  </DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN72670"
+></A
+><H2
+>&#22823;&#32434;</H2
+><PRE
+CLASS="SYNOPSIS"
+>ALTER EXTENSION <TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+> UPDATE [ TO <TT
+CLASS="REPLACEABLE"
+><I
+>new_version</I
+></TT
+> ]
+ALTER EXTENSION <TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+> SET SCHEMA <TT
+CLASS="REPLACEABLE"
+><I
+>new_schema</I
+></TT
+>
+ALTER EXTENSION <TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+> ADD <TT
+CLASS="REPLACEABLE"
+><I
+>member_object</I
+></TT
+>
+ALTER EXTENSION <TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+> DROP <TT
+CLASS="REPLACEABLE"
+><I
+>member_object</I
+></TT
+>
+
+<SPAN
+CLASS="phrase"
+><SPAN
+CLASS="PHRASE"
+>其中 <TT
+CLASS="REPLACEABLE"
+><I
+>member_object</I
+></TT
+> 是：</SPAN
+></SPAN
+>
+
+  AGGREGATE <TT
+CLASS="REPLACEABLE"
+><I
+>aggregate_name</I
+></TT
+> ( <TT
+CLASS="REPLACEABLE"
+><I
+>aggregate_signature</I
+></TT
+> ) |
+  CAST (<TT
+CLASS="REPLACEABLE"
+><I
+>source_type</I
+></TT
+> AS <TT
+CLASS="REPLACEABLE"
+><I
+>target_type</I
+></TT
+>) |
+  COLLATION <TT
+CLASS="REPLACEABLE"
+><I
+>object_name</I
+></TT
+> |
+  CONVERSION <TT
+CLASS="REPLACEABLE"
+><I
+>object_name</I
+></TT
+> |
+  DOMAIN <TT
+CLASS="REPLACEABLE"
+><I
+>object_name</I
+></TT
+> |
+  EVENT TRIGGER <TT
+CLASS="REPLACEABLE"
+><I
+>object_name</I
+></TT
+> |
+  FOREIGN DATA WRAPPER <TT
+CLASS="REPLACEABLE"
+><I
+>object_name</I
+></TT
+> |
+  FOREIGN TABLE <TT
+CLASS="REPLACEABLE"
+><I
+>object_name</I
+></TT
+> |
+  FUNCTION <TT
+CLASS="REPLACEABLE"
+><I
+>function_name</I
+></TT
+> ( [ [ <TT
+CLASS="REPLACEABLE"
+><I
+>argmode</I
+></TT
+> ] [ <TT
+CLASS="REPLACEABLE"
+><I
+>argname</I
+></TT
+> ] <TT
+CLASS="REPLACEABLE"
+><I
+>argtype</I
+></TT
+> [, ...] ] ) |
+  MATERIALIZED VIEW <TT
+CLASS="REPLACEABLE"
+><I
+>object_name</I
+></TT
+> |
+  OPERATOR <TT
+CLASS="REPLACEABLE"
+><I
+>operator_name</I
+></TT
+> (<TT
+CLASS="REPLACEABLE"
+><I
+>left_type</I
+></TT
+>, <TT
+CLASS="REPLACEABLE"
+><I
+>right_type</I
+></TT
+>) |
+  OPERATOR CLASS <TT
+CLASS="REPLACEABLE"
+><I
+>object_name</I
+></TT
+> USING <TT
+CLASS="REPLACEABLE"
+><I
+>index_method</I
+></TT
+> |
+  OPERATOR FAMILY <TT
+CLASS="REPLACEABLE"
+><I
+>object_name</I
+></TT
+> USING <TT
+CLASS="REPLACEABLE"
+><I
+>index_method</I
+></TT
+> |
+  [ PROCEDURAL ] LANGUAGE <TT
+CLASS="REPLACEABLE"
+><I
+>object_name</I
+></TT
+> |
+  SCHEMA <TT
+CLASS="REPLACEABLE"
+><I
+>object_name</I
+></TT
+> |
+  SEQUENCE <TT
+CLASS="REPLACEABLE"
+><I
+>object_name</I
+></TT
+> |
+  SERVER <TT
+CLASS="REPLACEABLE"
+><I
+>object_name</I
+></TT
+> |
+  TABLE <TT
+CLASS="REPLACEABLE"
+><I
+>object_name</I
+></TT
+> |
+  TEXT SEARCH CONFIGURATION <TT
+CLASS="REPLACEABLE"
+><I
+>object_name</I
+></TT
+> |
+  TEXT SEARCH DICTIONARY <TT
+CLASS="REPLACEABLE"
+><I
+>object_name</I
+></TT
+> |
+  TEXT SEARCH PARSER <TT
+CLASS="REPLACEABLE"
+><I
+>object_name</I
+></TT
+> |
+  TEXT SEARCH TEMPLATE <TT
+CLASS="REPLACEABLE"
+><I
+>object_name</I
+></TT
+> |
+  TRANSFORM FOR <TT
+CLASS="REPLACEABLE"
+><I
+>type_name</I
+></TT
+> LANGUAGE <TT
+CLASS="REPLACEABLE"
+><I
+>lang_name</I
+></TT
+> |
+  TYPE <TT
+CLASS="REPLACEABLE"
+><I
+>object_name</I
+></TT
+> |
+  VIEW <TT
+CLASS="REPLACEABLE"
+><I
+>object_name</I
+></TT
+>
+
+<SPAN
+CLASS="phrase"
+><SPAN
+CLASS="PHRASE"
+>并且 <TT
+CLASS="REPLACEABLE"
+><I
+>aggregate_signature</I
+></TT
+> 是：</SPAN
+></SPAN
+>
+
+* |
+[ <TT
+CLASS="REPLACEABLE"
+><I
+>argmode</I
+></TT
+> ] [ <TT
+CLASS="REPLACEABLE"
+><I
+>argname</I
+></TT
+> ] <TT
+CLASS="REPLACEABLE"
+><I
+>argtype</I
+></TT
+> [ , ... ] |
+[ [ <TT
+CLASS="REPLACEABLE"
+><I
+>argmode</I
+></TT
+> ] [ <TT
+CLASS="REPLACEABLE"
+><I
+>argname</I
+></TT
+> ] <TT
+CLASS="REPLACEABLE"
+><I
+>argtype</I
+></TT
+> [ , ... ] ] ORDER BY [ <TT
+CLASS="REPLACEABLE"
+><I
+>argmode</I
+></TT
+> ] [ <TT
+CLASS="REPLACEABLE"
+><I
+>argname</I
+></TT
+> ] <TT
+CLASS="REPLACEABLE"
+><I
+>argtype</I
+></TT
+> [ , ... ]</PRE
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN72728"
+></A
+><H2
+>描述</H2
+><P
+>   <TT
+CLASS="COMMAND"
+>ALTER EXTENSION</TT
+>更改一个已安装扩展的定义。
+   有几种子形式：
+
+   <P
+></P
+></P><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="LITERAL"
+>UPDATE</TT
+></DT
+><DD
+><P
+>      这种形式把该扩展更新到一个新版本。该扩展必须提供一个适当的更新
+      脚本（或者一系列脚本）来把当前已安装的版本修改成所要求的版本。
+     </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>SET SCHEMA</TT
+></DT
+><DD
+><P
+>      这种形式把该扩展的对象移动到另一个模式中。要使这个命令成功，该扩展
+      必须是<I
+CLASS="FIRSTTERM"
+>可重定位的</I
+>。
+     </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>ADD <TT
+CLASS="REPLACEABLE"
+><I
+>member_object</I
+></TT
+></TT
+></DT
+><DD
+><P
+>      这种形式把一个现有的对象加入到该扩展中。这主要对扩展更新脚本有用。
+      该对象后续将被当作该扩展的一个成员。尤其是该对象只有通过删除扩展
+      才能删除。
+     </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>DROP <TT
+CLASS="REPLACEABLE"
+><I
+>member_object</I
+></TT
+></TT
+></DT
+><DD
+><P
+>      这种形式从该扩展移除一个成员对象。这主要对扩展更新脚本有用。只有
+      撤销该对象与其扩展之间的关联后才能删除该对象。
+     </P
+></DD
+></DL
+></DIV
+><P>
+
+   关于这些操作详见<A
+HREF="extend-extensions.html"
+>第 36.15 &#33410;</A
+>。
+  </P
+><P
+>   要使用<TT
+CLASS="COMMAND"
+>ALTER EXTENSION</TT
+>，你必须拥有该扩展。
+   <TT
+CLASS="LITERAL"
+>ADD</TT
+>/<TT
+CLASS="LITERAL"
+>DROP</TT
+>形式还要求被增加/删除对象的所有权。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN72761"
+></A
+><H2
+>参数</H2
+><P
+>   <P
+></P
+></P><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+></DT
+><DD
+><P
+>       一个已安装扩展的名称。
+      </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>new_version</I
+></TT
+></DT
+><DD
+><P
+>       想要得到的该扩展的新版本。这可以写成一个标识符或者一个字符串。如果没有指定，
+       <TT
+CLASS="COMMAND"
+>ALTER EXTENSION UPDATE</TT
+>会尝试更新到该扩展的控制文件中的
+       默认版本。
+      </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>new_schema</I
+></TT
+></DT
+><DD
+><P
+>       该扩展的新模式。
+      </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>object_name</I
+></TT
+><BR><TT
+CLASS="REPLACEABLE"
+><I
+>aggregate_name</I
+></TT
+><BR><TT
+CLASS="REPLACEABLE"
+><I
+>function_name</I
+></TT
+><BR><TT
+CLASS="REPLACEABLE"
+><I
+>operator_name</I
+></TT
+></DT
+><DD
+><P
+>       要从该扩展增加或者移除的对象的名称。表、聚集、域、外部表、函数、
+       操作符、操作符类、操作符族、序列、文本搜索对象、类型和视图的名称
+       可以被模式限定。
+      </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>source_type</I
+></TT
+></DT
+><DD
+><P
+>       该转换的源数据类型的名称。
+      </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>target_type</I
+></TT
+></DT
+><DD
+><P
+>       该转换的目标数据类型的名称。
+      </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>argmode</I
+></TT
+></DT
+><DD
+><P
+>       一个函数或聚集参数的模式：<TT
+CLASS="LITERAL"
+>IN</TT
+>、<TT
+CLASS="LITERAL"
+>OUT</TT
+>、
+       <TT
+CLASS="LITERAL"
+>INOUT</TT
+>或者<TT
+CLASS="LITERAL"
+>VARIADIC</TT
+>。如果被忽略，默认值是
+       <TT
+CLASS="LITERAL"
+>IN</TT
+>。注意，<TT
+CLASS="COMMAND"
+>ALTER EXTENSION</TT
+>
+       并不真正关心<TT
+CLASS="LITERAL"
+>OUT</TT
+>参数，因为决定该函数的身份时只需要输入
+       参数。因此列出<TT
+CLASS="LITERAL"
+>IN</TT
+>、<TT
+CLASS="LITERAL"
+>INOUT</TT
+>和
+       <TT
+CLASS="LITERAL"
+>VARIADIC</TT
+>参数足矣。
+      </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>argname</I
+></TT
+></DT
+><DD
+><P
+>       一个函数或者聚集参数的名称。注意，
+       <TT
+CLASS="COMMAND"
+>ALTER EXTENSION</TT
+>并不真正关心参数名称，因为
+       决定该函数的身份时只需要参数的数据类型。
+      </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>argtype</I
+></TT
+></DT
+><DD
+><P
+>       一个函数或聚集参数的数据类型。
+      </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>left_type</I
+></TT
+><BR><TT
+CLASS="REPLACEABLE"
+><I
+>right_type</I
+></TT
+></DT
+><DD
+><P
+>       该操作符参数的数据类型（可以用模式限定）。对一个前缀或后缀操作符的缺失的
+       参数可以写<TT
+CLASS="LITERAL"
+>NONE</TT
+>。
+      </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>PROCEDURAL</TT
+></DT
+><DD
+><P
+>       这是一个噪声词。
+      </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>type_name</I
+></TT
+></DT
+><DD
+><P
+>       该转换的数据类型的名称。
+      </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>lang_name</I
+></TT
+></DT
+><DD
+><P
+>       该转换的语言的名称。
+      </P
+></DD
+></DL
+></DIV
+><P>
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN72851"
+></A
+><H2
+>示例</H2
+><P
+>   把<TT
+CLASS="LITERAL"
+>hstore</TT
+>扩展更新到版本 2.0：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>ALTER EXTENSION hstore UPDATE TO '2.0';</PRE
+><P>
+  </P
+><P
+>   把<TT
+CLASS="LITERAL"
+>hstore</TT
+>扩展的模式更改到<TT
+CLASS="LITERAL"
+>utils</TT
+>：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>ALTER EXTENSION hstore SET SCHEMA utils;</PRE
+><P>
+  </P
+><P
+>   要向<TT
+CLASS="LITERAL"
+>hstore</TT
+>扩展增加一个现有函数：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>ALTER EXTENSION hstore ADD FUNCTION populate_record(anyelement, hstore);</PRE
+><P></P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN72863"
+></A
+><H2
+>兼容性</H2
+><P
+>   <TT
+CLASS="COMMAND"
+>ALTER EXTENSION</TT
+>是一个<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>
+   扩展。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="SQL-ALTEREXTENSION-SEE-ALSO"
+></A
+><H2
+>另见</H2
+><A
+HREF="sql-createextension.html"
+>CREATE EXTENSION</A
+>, <A
+HREF="sql-dropextension.html"
+>DROP EXTENSION</A
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-altereventtrigger.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="sql-alterforeigndatawrapper.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>ALTER EVENT TRIGGER</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>ALTER FOREIGN DATA WRAPPER</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

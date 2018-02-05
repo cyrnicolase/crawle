@@ -1,0 +1,897 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>CREATE CAST</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="SQL 命令"
+HREF="sql-commands.html"><LINK
+REL="PREVIOUS"
+TITLE="CREATE AGGREGATE"
+HREF="sql-createaggregate.html"><LINK
+REL="NEXT"
+TITLE="CREATE COLLATION"
+HREF="sql-createcollation.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="REFENTRY"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/ref/create_cast.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="CREATE AGGREGATE"
+HREF="sql-createaggregate.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="CREATE COLLATION"
+HREF="sql-createcollation.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="SQL-CREATECAST"
+></A
+>CREATE CAST</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN78225"
+></A
+><H2
+>&#21517;&#31216;</H2
+>CREATE CAST&nbsp;--&nbsp;定义一种新的造型</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN78228"
+></A
+><H2
+>&#22823;&#32434;</H2
+><PRE
+CLASS="SYNOPSIS"
+>CREATE CAST (<TT
+CLASS="REPLACEABLE"
+><I
+>source_type</I
+></TT
+> AS <TT
+CLASS="REPLACEABLE"
+><I
+>target_type</I
+></TT
+>)
+    WITH FUNCTION <TT
+CLASS="REPLACEABLE"
+><I
+>function_name</I
+></TT
+> (<TT
+CLASS="REPLACEABLE"
+><I
+>argument_type</I
+></TT
+> [, ...])
+    [ AS ASSIGNMENT | AS IMPLICIT ]
+
+CREATE CAST (<TT
+CLASS="REPLACEABLE"
+><I
+>source_type</I
+></TT
+> AS <TT
+CLASS="REPLACEABLE"
+><I
+>target_type</I
+></TT
+>)
+    WITHOUT FUNCTION
+    [ AS ASSIGNMENT | AS IMPLICIT ]
+
+CREATE CAST (<TT
+CLASS="REPLACEABLE"
+><I
+>source_type</I
+></TT
+> AS <TT
+CLASS="REPLACEABLE"
+><I
+>target_type</I
+></TT
+>)
+    WITH INOUT
+    [ AS ASSIGNMENT | AS IMPLICIT ]</PRE
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="SQL-CREATECAST-DESCRIPTION"
+></A
+><H2
+>描述</H2
+><P
+>   <TT
+CLASS="COMMAND"
+>CREATE CAST</TT
+>定义一种新的造型。
+   一种造型指定如何在两种数据类型之间执行转换。例如，
+</P><PRE
+CLASS="PROGRAMLISTING"
+>SELECT CAST(42 AS float8);</PRE
+><P>
+   通过调用一个之前指定的函数（这种情况中是
+   <TT
+CLASS="LITERAL"
+>float8(int4)</TT
+>）把整型常量 42 转换成类型
+   <TT
+CLASS="TYPE"
+>float8</TT
+>（如果没有定义合适的造型，
+   该转换会失败）。
+  </P
+><P
+>   两种类型可以是<I
+CLASS="FIRSTTERM"
+>二进制可强制</I
+>，这表示该转换
+   可以被<SPAN
+CLASS="QUOTE"
+>"免费"</SPAN
+>执行而不用调用任何函数。这要求相应的
+   值使用同样的内部表示。例如，类型<TT
+CLASS="TYPE"
+>text</TT
+>和
+   <TT
+CLASS="TYPE"
+>varchar</TT
+>在双向都是二进制可强制的。二进制可强制性并
+   不必是一种对称关系。例如，在当前实现中从<TT
+CLASS="TYPE"
+>xml</TT
+>到
+   <TT
+CLASS="TYPE"
+>text</TT
+>的造型可以被免费执行，但是反向则需要一个函数来
+   执行至少一次语法检查（两种在双向都二进制值兼容的类型也被称作二进
+   制兼容）。
+  </P
+><P
+>   通过使用<TT
+CLASS="LITERAL"
+>WITH INOUT</TT
+>语法，你可以把一种造型定义
+   成<I
+CLASS="FIRSTTERM"
+>I/O 转换造型</I
+>。一种 I/O 转换造型执行时，会调用源
+   数据类型的输出函数，并且把结果字符串传递给目标数据类型的输入函数。
+   在很多常见情况中，这种特性避免了为转换单独定义一个造型函数。一种
+   I/O 转换造型表现得和一个常规的基于函数的造型相同，只是实现不同而已。
+  </P
+><P
+>   默认情况下，只有一次显式造型请求才会调用造型，
+   形式是<TT
+CLASS="LITERAL"
+>CAST(<TT
+CLASS="REPLACEABLE"
+><I
+>x</I
+></TT
+> AS
+   <TT
+CLASS="REPLACEABLE"
+><I
+>typename</I
+></TT
+>)</TT
+> or
+   <TT
+CLASS="REPLACEABLE"
+><I
+>x</I
+></TT
+><TT
+CLASS="LITERAL"
+>::</TT
+><TT
+CLASS="REPLACEABLE"
+><I
+>typename</I
+></TT
+>。
+  </P
+><P
+>   如果造型被标记为<TT
+CLASS="LITERAL"
+>AS ASSIGNMENT</TT
+>，那么在为一个目标数据
+   类型的列赋值时会隐式地调用它。例如，假设<TT
+CLASS="LITERAL"
+>foo.f1</TT
+>是
+   一个类型<TT
+CLASS="TYPE"
+>text</TT
+>的列，那么如果从类型<TT
+CLASS="TYPE"
+>integer</TT
+>
+   到类型<TT
+CLASS="TYPE"
+>text</TT
+>的造型被标记为<TT
+CLASS="LITERAL"
+>AS ASSIGNMENT</TT
+>，
+   则：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>INSERT INTO foo (f1) VALUES (42);</PRE
+><P>
+   将被允许，否则不会允许（我们通常使用<I
+CLASS="FIRSTTERM"
+>赋值造型</I
+>
+   来描述此类造型）。
+  </P
+><P
+>   如果造型被标记为<TT
+CLASS="LITERAL"
+>AS IMPLICIT</TT
+>，那么可以在任何上下文
+   中隐式地调用它，无论是赋值还是在一个表达式内部（我们通常用术语
+   <I
+CLASS="FIRSTTERM"
+>隐式造型</I
+>来描述这类造型）。例如，考虑这个
+   查询：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>SELECT 2 + 4.0;</PRE
+><P>
+   解析器初始会把常量分别标记为类型<TT
+CLASS="TYPE"
+>integer</TT
+>和
+   <TT
+CLASS="TYPE"
+>numeric</TT
+>。在系统目录中没有<TT
+CLASS="TYPE"
+>integer</TT
+>
+   <TT
+CLASS="LITERAL"
+>+</TT
+> <TT
+CLASS="TYPE"
+>numeric</TT
+>操作符，但是有一个
+   <TT
+CLASS="TYPE"
+>numeric</TT
+> <TT
+CLASS="LITERAL"
+>+</TT
+> <TT
+CLASS="TYPE"
+>numeric</TT
+>操作符。
+   因此，如果有一种可用的从<TT
+CLASS="TYPE"
+>integer</TT
+>到
+   <TT
+CLASS="TYPE"
+>numeric</TT
+>的造型且被标记为<TT
+CLASS="LITERAL"
+>AS IMPLICIT</TT
+> &mdash;
+   实际上确实有 &mdash; 该查询将会成功。解析器将应用该隐式造型
+   并且解决该查询，就好像它被写成：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>SELECT CAST ( 2 AS numeric ) + 4.0;</PRE
+><P>
+  </P
+><P
+>   现在，系统目录也提供一种从<TT
+CLASS="TYPE"
+>numeric</TT
+>到<TT
+CLASS="TYPE"
+>integer</TT
+>
+   的造型。如果这种造型被标记为<TT
+CLASS="LITERAL"
+>AS IMPLICIT</TT
+> &mdash;
+   实际上并没有 &mdash; 那么解析器将面临选择：是用前面介绍的过程，
+   还是把<TT
+CLASS="TYPE"
+>numeric</TT
+>常量造型成<TT
+CLASS="TYPE"
+>integer</TT
+>并且应用
+   <TT
+CLASS="TYPE"
+>integer</TT
+> <TT
+CLASS="LITERAL"
+>+</TT
+> <TT
+CLASS="TYPE"
+>integer</TT
+>操作符。由于
+   缺少哪种选择更好的知识，解析器会放弃并且说明查询有歧义。我们能
+   告诉解析器把一个混合了<TT
+CLASS="TYPE"
+>numeric</TT
+>和<TT
+CLASS="TYPE"
+>integer</TT
+>的
+   表达式解析成<TT
+CLASS="TYPE"
+>numeric</TT
+>更好的方法就是只让这两种造型中的
+   一个是隐式的，没有有关于此的内建知识。
+  </P
+><P
+>   对标记造型为隐式持保守态度是明智的。过多的隐式造型路径可能导致
+   <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>以令人吃惊的方式解
+   释命令，或者由于有多种可能解释而根本无法解析命令。一种好的经验
+   是让一种造型只对于同一种一般类型分类中的类型间的信息保持转换隐式
+   可调用。例如，从<TT
+CLASS="TYPE"
+>int2</TT
+>到<TT
+CLASS="TYPE"
+>int4</TT
+>的造型
+   可以被合理地标记为隐式，但是从<TT
+CLASS="TYPE"
+>float8</TT
+>到
+   <TT
+CLASS="TYPE"
+>int4</TT
+>的造型可能应该只能在赋值时使用。跨类型分类
+   的造型（如<TT
+CLASS="TYPE"
+>text</TT
+>到<TT
+CLASS="TYPE"
+>int4</TT
+>）最好只被用于显式使用。
+  </P
+><DIV
+CLASS="NOTE"
+><BLOCKQUOTE
+CLASS="NOTE"
+><P
+><B
+>&#27880;&#24847;: </B
+>    有时为了可用性或者标准兼容的原因，有必要提供在一个类型集合之间
+    的多种隐式造型，这会导致上述不可避免的歧义。解析器还有一招基于
+    <I
+CLASS="FIRSTTERM"
+>类型分类</I
+>和<I
+CLASS="FIRSTTERM"
+>优先类型</I
+>的后手，它能帮助
+    提供这类情况下预期的行为。详见
+    <A
+HREF="sql-createtype.html"
+>CREATE TYPE</A
+>。
+   </P
+></BLOCKQUOTE
+></DIV
+><P
+>   要创建一种造型，你必须拥有源数据类型和目标数据类型并且具有在其他类型上
+   的<TT
+CLASS="LITERAL"
+>USAGE</TT
+>特权。要创建一种二进制可强制造型，你必须是一
+   个超级用户（这种限制是因为错误的二进制可强制造型转换很容易让服务器崩溃）。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN78314"
+></A
+><H2
+>参数</H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>source_type</I
+></TT
+></DT
+><DD
+><P
+>       该造型的源数据类型的名称。
+      </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>target_type</I
+></TT
+></DT
+><DD
+><P
+>       该造型的目标数据类型的名称。
+      </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>function_name</I
+></TT
+>(<TT
+CLASS="REPLACEABLE"
+><I
+>argument_type</I
+></TT
+> [, ...])</DT
+><DD
+><P
+>       被用于执行该造型的函数。函数名称可以用模式限定。如果没有被限定，
+       将在模式搜索路径中查找该函数。函数的结果数据类型必须是该造型的
+       目标数据类型。它的参数讨论如下。
+      </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>WITHOUT FUNCTION</TT
+></DT
+><DD
+><P
+>       指示源类型可以二进制强制到目标类型，因此执行该造型不需要函数。
+      </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>WITH INOUT</TT
+></DT
+><DD
+><P
+>       指示该造型是一种 I/O 转换造型，执行需要调用源数据类型的输出函数，
+       并且把结果字符串传递给目标数据类型的输入函数。
+      </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>AS ASSIGNMENT</TT
+></DT
+><DD
+><P
+>       指示该造型可以在赋值的情况下被隐式调用。
+      </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>AS IMPLICIT</TT
+></DT
+><DD
+><P
+>       指示该造型可以在任何上下文中被隐式调用。
+      </P
+></DD
+></DL
+></DIV
+><P
+>   造型实现函数可以具有 1 到 3 个参数。第一个参数类型必须等于源类型或者
+   能从源类型二进制强制得到。第二个参数（如果存在）必须是类型
+   <TT
+CLASS="TYPE"
+>integer</TT
+>，它接收与目标类型相关联的类型修饰符，如果没有类型
+   修饰符，它会收到<TT
+CLASS="LITERAL"
+>-1</TT
+>。第三个参数（如果存在）必须是类型
+   <TT
+CLASS="TYPE"
+>boolean</TT
+>，如果该造型是一种显式造型，它会收到
+   <TT
+CLASS="LITERAL"
+>true</TT
+>，否则会收到<TT
+CLASS="LITERAL"
+>false</TT
+>（奇怪地是，SQL 标准在
+   某些情况中对显式和隐式造型要求不同的行为。这个参数被提供给必须实现这
+   类造型的函数。不推荐在设计自己的数据类型时用它）。
+  </P
+><P
+>   一个造型函数的返回类型必须等于目标类型或者能二进制强制到目标类型。
+  </P
+><P
+>   Ordinarily a cast must have different source and target data types.
+   However, it is allowed to declare a cast with identical source and
+   target types if it has a cast implementation function with more than one
+   argument.  This is used to represent type-specific length coercion
+   functions in the system catalogs.  The named function is used to
+   coerce a value of the type to the type modifier value given by its
+   second argument.
+  </P
+><P
+>   When a cast has different source and
+   target types and a function that takes more than one argument, it
+   supports converting from one type to another and applying a length
+   coercion in a single step.  When no such entry is available, coercion
+   to a type that uses a type modifier involves two cast steps, one to
+   convert between data types and a second to apply the modifier.
+  </P
+><P
+>   A cast to or from a domain type currently has no effect.  Casting
+   to or from a domain uses the casts associated with its underlying type.
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="SQL-CREATECAST-NOTES"
+></A
+><H2
+>注解</H2
+><P
+>   使用<A
+HREF="sql-dropcast.html"
+>DROP CAST</A
+>移除用户定义的造型。
+  </P
+><P
+>   记住如果你想要能够双向转换类型，你需要在两个方向上都
+   显式声明造型。
+  </P
+><P
+>   通常没有必要创建用户定义类型和标准字符串类型（<TT
+CLASS="TYPE"
+>text</TT
+>、
+   <TT
+CLASS="TYPE"
+>varchar</TT
+>和<TT
+CLASS="TYPE"
+>char(<TT
+CLASS="REPLACEABLE"
+><I
+>n</I
+></TT
+>)</TT
+>，
+   以及被定义在字符串分类中的用户定义类型）之间的造型。
+   <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>会为它们提供自动的 I/O 转换造型。
+   到字符串类型的自动造型被当做赋值造型，而字符串类型作为源的自动
+   造型只能是显式的。通过声明你自己的造型来替换自动造型可以覆盖这
+   种行为，但是这样做的唯一原因是你想让该转换比标准的设置更容易被
+   调用。另一种可能的原因是你想让该转换的行为与该类型的 I/O 函数不
+   同，但这种原因足够令人感到意外，你应该考虑再三它是不是个好主意
+   （确实有少量内建类型对转换具有不同的行为，绝大部分是因为 SQL 
+   标准的要求）。
+  </P
+><P
+>   虽然不必要，推荐你继续遵循这种在目标数据类型后面命名造型
+   实现函数的习惯。很多用户习惯于能够使用一种函数风格的记法来造型
+   数据类型，即<TT
+CLASS="REPLACEABLE"
+><I
+>typename</I
+></TT
+>(<TT
+CLASS="REPLACEABLE"
+><I
+>x</I
+></TT
+>)。
+   这种记法正好是对造型实现函数的调用，这里它没有被作为造型特殊对待。
+   如果你的转换函数没有被指定支持这种习惯，那么你的用户会觉得意外。
+   由于<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>允许用不同的参数类型重载同一个
+   函数名，因此存在多个从不同类型到同一目标类型的同名转换函数并不困难。
+  </P
+><DIV
+CLASS="NOTE"
+><BLOCKQUOTE
+CLASS="NOTE"
+><P
+><B
+>&#27880;&#24847;: </B
+>    实际上前一段过于简化了：有两种情况中一个函数调用结构在没有被匹配到
+    一个实际函数时将被当作一次造型请求。如果函数调用
+    <TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+>(<TT
+CLASS="REPLACEABLE"
+><I
+>x</I
+></TT
+>)没有正好匹配任何现有函数，
+    但<TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+>是一种数据类型的名称并且
+    <TT
+CLASS="STRUCTNAME"
+>pg_cast</TT
+>提供了一种从<TT
+CLASS="REPLACEABLE"
+><I
+>x</I
+></TT
+>的类型到这种
+    类型的二进制可强制造型，那么该调用将被翻译为一次二进制可强制造型。
+    通过这种例外，二进制可强制造型能够以函数语法调用，即便没有该函数。
+    同样的，如果没有<TT
+CLASS="STRUCTNAME"
+>pg_cast</TT
+>项，但是该造型是要造型到一种
+    字符串类型或者是要从一种字符串类型造型，调用将被翻译成一次 I/O 转换
+    造型。这种例外允许以函数语法调用 I/O 转换造型。
+   </P
+></BLOCKQUOTE
+></DIV
+><DIV
+CLASS="NOTE"
+><BLOCKQUOTE
+CLASS="NOTE"
+><P
+><B
+>&#27880;&#24847;: </B
+>    还有一种例外中的例外：从组合类型到字符串类型的 I/O 转换造型不能使用
+    函数语法调用，而必须被写成显式造型语法（<TT
+CLASS="LITERAL"
+>CAST</TT
+>或者
+    <TT
+CLASS="LITERAL"
+>::</TT
+>记号）。增加这种例外是因为在引入了自动提供的 I/O 转换
+    造型之后，在想要引用一个函数或者列时太容易意外地调用这种造型。
+   </P
+></BLOCKQUOTE
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="SQL-CREATECAST-EXAMPLES"
+></A
+><H2
+>示例</H2
+><P
+>   要使用函数<TT
+CLASS="LITERAL"
+>int4(bigint)</TT
+>创建一种从类型
+   <TT
+CLASS="TYPE"
+>bigint</TT
+>到类型<TT
+CLASS="TYPE"
+>int4</TT
+>的赋值造型：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>CREATE CAST (bigint AS int4) WITH FUNCTION int4(bigint) AS ASSIGNMENT;</PRE
+><P>
+   （在系统中这种造型已经被预定义）。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="SQL-CREATECAST-COMPAT"
+></A
+><H2
+>兼容性</H2
+><P
+>   <TT
+CLASS="COMMAND"
+>CREATE CAST</TT
+>命令符合
+   <ACRONYM
+CLASS="ACRONYM"
+>SQL</ACRONYM
+>标准，不过 SQL 没有为二进制可强制
+   类型或者实现函数的额外参数做好准备。
+   <TT
+CLASS="LITERAL"
+>AS IMPLICIT</TT
+>也是一种
+   <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>扩展。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="SQL-CREATECAST-SEEALSO"
+></A
+><H2
+>另见</H2
+><P
+>   <A
+HREF="sql-createfunction.html"
+>CREATE FUNCTION</A
+>,
+   <A
+HREF="sql-createtype.html"
+>CREATE TYPE</A
+>,
+   <A
+HREF="sql-dropcast.html"
+>DROP CAST</A
+>
+  </P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-createaggregate.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="sql-createcollation.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>CREATE AGGREGATE</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>CREATE COLLATION</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

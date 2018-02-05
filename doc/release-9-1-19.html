@@ -1,0 +1,866 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>版本 9.1.19</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="版本说明"
+HREF="release.html"><LINK
+REL="PREVIOUS"
+TITLE="版本 9.1.20"
+HREF="release-9-1-20.html"><LINK
+REL="NEXT"
+TITLE="版本 9.1.18"
+HREF="release-9-1-18.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/release-9.1.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="版本 9.1.20"
+HREF="release-9-1-20.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="release.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#38468;&#24405; E. 版本说明</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="版本 9.1.18"
+HREF="release-9-1-18.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="RELEASE-9-1-19"
+>E.55. 版本 9.1.19</A
+></H1
+><DIV
+CLASS="NOTE"
+><BLOCKQUOTE
+CLASS="NOTE"
+><P
+><B
+>发布日期: </B
+>2015-10-08</P
+></BLOCKQUOTE
+></DIV
+><P
+>   这个版本包含自9.1.18以来的各种修复。关于9.1主版本的新特性信息，请查看
+   <A
+HREF="release-9-1.html"
+>第 E.74 &#33410;</A
+>。
+  </P
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN144279"
+>E.55.1. 迁移到版本9.1.19</A
+></H2
+><P
+>    运行9.1.X的用户不需要转储/恢复。
+   </P
+><P
+>    不过，如果您是从一个早于9.0.16的版本升级而来，请查看
+    <A
+HREF="release-9-0-16.html"
+>第 E.82 &#33410;</A
+>。
+   </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN144284"
+>E.55.2. 修改列表</A
+></H2
+><P
+></P
+><UL
+><LI
+><P
+>      修复<TT
+CLASS="FILENAME"
+>contrib/pgcrypto</TT
+>，检测和报告过短的
+      <CODE
+CLASS="FUNCTION"
+>crypt()</CODE
+>盐 (Josh Kupershmidt)
+     </P
+><P
+>      某些无效的salt参数破坏了服务器或公开了几个字节的服务器内存。
+      我们没有排除在公开字节中安排机密信息存在的攻击的可行性，但似乎不大可能。 (CVE-2015-5288)
+     </P
+></LI
+><LI
+><P
+>      在属于外部子事务的门户（光标）失败后修复子事务清理 (Tom Lane, Michael Paquier)
+     </P
+><P
+>      在外部子事务游标中执行的函数可能会引用在内部子事务中创建的关系导致断言失败或崩溃。
+     </P
+></LI
+><LI
+><P
+>      将关系插入关系缓存<SPAN
+CLASS="QUOTE"
+>"init文件"</SPAN
+>中
+      (Tom Lane)
+     </P
+><P
+>      在最近次要版本的修补程序中的监督会导致从init文件中省略
+      <TT
+CLASS="STRUCTNAME"
+> pg_trigger_tgrelid_tgname_index </TT
+>。后续会话检测到这一点，
+      然后认为init文件被破坏，并且默认忽略它，导致会话启动时间显着降低。
+      除了修复错误之外，还要安装一些防护装置，以使任何类似的未来错误都会更加明显。
+     </P
+></LI
+><LI
+><P
+>      当将许多元组插入到SPI查询结果中时，避免使用O(N^2)行为 (Neil Conway)
+     </P
+></LI
+><LI
+><P
+>      当有许多未读通知时，改进<TT
+CLASS="COMMAND"
+>LISTEN</TT
+>启动时间 (Matt Newell)
+     </P
+></LI
+><LI
+><P
+>      向后打补丁，9.3版本时每个资源所有者锁缓存的增加
+      (Jeff Janes)
+     </P
+><P
+>      当<SPAN
+CLASS="APPLICATION"
+>pg_dump</SPAN
+>尝试转储大量表时，这显着提高了性能。
+     </P
+></LI
+><LI
+><P
+>      默认情况下禁用SSL重新协商 (Michael Paquier, Andres Freund)
+     </P
+><P
+>      虽然使用SSL重新协商理论上是一个好主意，但我们在实践中看到了太多的错误，
+      包括底层的OpenSSL库和我们的使用。重新协商将在9.5及以后完全删除。
+      在较旧的分支中，只需将<TT
+CLASS="VARNAME"
+>ssl_renegotiation_limit</TT
+>的默认值更改为零（禁用）。
+     </P
+></LI
+><LI
+><P
+>      降低<TT
+CLASS="LITERAL"
+>*_freeze_max_age</TT
+>参数的最小值
+      (Andres Freund)
+     </P
+><P
+>      这主要是为了使相关行为的测试较少耗时，
+      但是对于具有有限磁盘空间的安装也可能是有价值的。
+     </P
+></LI
+><LI
+><P
+>      限制<TT
+CLASS="VARNAME"
+>wal_buffers</TT
+>的最大值为2GB，以避免服务器崩溃 (Josh Berkus)
+     </P
+></LI
+><LI
+><P
+>      修复<TT
+CLASS="TYPE"
+>numeric</TT
+>值的乘法中罕见的内部溢出
+      (Dean Rasheed)
+     </P
+></LI
+><LI
+><P
+>      防止难以达到的堆栈溢出，包括记录类型、范围类型、<TT
+CLASS="TYPE"
+>json</TT
+>、
+      <TT
+CLASS="TYPE"
+>jsonb</TT
+>、<TT
+CLASS="TYPE"
+>tsquery</TT
+>、<TT
+CLASS="TYPE"
+>ltxtquery</TT
+>和<TT
+CLASS="TYPE"
+>query_int</TT
+> (Noah Misch)
+     </P
+></LI
+><LI
+><P
+>      修复日期时间输入中<TT
+CLASS="LITERAL"
+>DOW</TT
+>和<TT
+CLASS="LITERAL"
+>DOY</TT
+>的处理
+      (Greg Stark)
+     </P
+><P
+>      这些令牌并不意味着在datetime值中使用，但以前它们导致不透明的内部错误消息而不是
+      <SPAN
+CLASS="QUOTE"
+>"无效输入语法"</SPAN
+>。
+     </P
+></LI
+><LI
+><P
+>      向正则表达式匹配中添加更多查询取消检查 (Tom Lane)
+     </P
+></LI
+><LI
+><P
+>      向正则表达式添加递归深度保护，<TT
+CLASS="LITERAL"
+>SIMILAR
+      TO</TT
+>和<TT
+CLASS="LITERAL"
+>LIKE</TT
+>匹配 (Tom Lane)
+     </P
+><P
+>      合适的搜索模式和低堆栈深度限制可能会导致堆栈超载崩溃。
+     </P
+></LI
+><LI
+><P
+>      修复正则表达式执行中潜在的无限循环 (Tom Lane)
+     </P
+><P
+>      一个搜索模式可以表面上匹配零长度字符串，但是实际上因为反向引用并不匹配，
+      会导致一个无限循环。
+     </P
+></LI
+><LI
+><P
+>      修复正则表达式编译中的低内存故障
+      (Andreas Seltenreich)
+     </P
+></LI
+><LI
+><P
+>      修复在正则表达式执行期间低概率的内存泄漏
+      (Tom Lane)
+     </P
+></LI
+><LI
+><P
+>      修复在事务中止期间锁清除中罕见的低内存故障
+      (Tom Lane)
+     </P
+></LI
+><LI
+><P
+>      修复在使用小的<TT
+CLASS="VARNAME"
+>work_mem</TT
+>设置的tuplestores时，
+      <SPAN
+CLASS="QUOTE"
+>"排序期间意外的内存不足情况"</SPAN
+>错误 (Tom
+      Lane)
+     </P
+></LI
+><LI
+><P
+>      修复<CODE
+CLASS="FUNCTION"
+>qsort</CODE
+>中非常低可能性的堆栈溢出 (Tom Lane)
+     </P
+></LI
+><LI
+><P
+>      修复<SPAN
+CLASS="QUOTE"
+>"无效内存分配请求大小"</SPAN
+>与大<TT
+CLASS="VARNAME"
+>work_mem</TT
+>
+      设置的哈希连接失败 (Tomas Vondra, Tom Lane)
+     </P
+></LI
+><LI
+><P
+>      修复各种计划错误 (Tom Lane)
+     </P
+><P
+>      这些错误会导致不正确的查询计划会给出错误的答案，或者启用断言的构建中的断言失败，
+      或者奇怪的计划错误，比如<SPAN
+CLASS="QUOTE"
+>"无法为给定的查询设计查询计划"</SPAN
+>、
+      <SPAN
+CLASS="QUOTE"
+>"找不到要排序的路径项"</SPAN
+>、<SPAN
+CLASS="QUOTE"
+>"计划不应该参考子计划的变量"</SPAN
+>
+      或<SPAN
+CLASS="QUOTE"
+>"无法将所有NestLoopParams分配给计划节点"</SPAN
+>。
+      感谢Andreas Seltenreich和Piotr Stefaniak的模糊测试，揭露了这些问题。
+     </P
+></LI
+><LI
+><P
+>      在所有支持的分支中使用模糊路径开销规则 (Tom Lane)
+     </P
+><P
+>      当替代计划选择具有效果相同的估计成本时，此更改旨在避免平台特定的行为。
+     </P
+></LI
+><LI
+><P
+>      确保在postmaster启动时备用升级触发器文件被删除 (Michael Paquier, Fujii Masao)
+     </P
+><P
+>      如果这些文件出现在用于初始化一个新的备用服务器的数据库备份中，
+      则可以防止不必要的升级。
+     </P
+></LI
+><LI
+><P
+>      在postmaster关闭期间，确保移除每套接字锁文件并且在我们移除
+      <TT
+CLASS="FILENAME"
+>postmaster.pid</TT
+>文件之前关闭监听套接字 (Tom Lane)
+     </P
+><P
+>      如果外部脚本尝试在<TT
+CLASS="LITERAL"
+>pg_ctl stop</TT
+>返回时立即启动新的postmaster，
+      则可以避免竞争条件失败。
+     </P
+></LI
+><LI
+><P
+>      修复崩溃恢复期间主进程对启动进程崩溃的处理 (Tom Lane)
+     </P
+><P
+>      如果，在崩溃恢复循环期间，启动进程还未恢复数据库一致性就崩溃了，
+      我们会尝试加载一个新的启动进程，这通常会再次崩溃，导致无限循环。
+     </P
+></LI
+><LI
+><P
+>      当我们尝试发出信号并且自动清理工作者已经不在时，请勿打印<TT
+CLASS="LITERAL"
+>WARNING</TT
+>，
+      并减少此类信号的日志冗长度 (Tom Lane)
+     </P
+></LI
+><LI
+><P
+>      如果服务器时钟向后大量移动，防止自动清理加载进程睡眠过长 (&Aacute;lvaro Herrera)
+     </P
+></LI
+><LI
+><P
+>      确保GIN索引未完成插入列表的清理可以通过取消请求中断 (Jeff Janes)
+     </P
+></LI
+><LI
+><P
+>      允许重新使用GIN索引中的全零页面 (Heikki Linnakangas)
+     </P
+><P
+>      这样的页面可能会在崩溃后遗留下来。
+     </P
+></LI
+><LI
+><P
+>      修复了一个在subtrans/multixact截断中导致关于<SPAN
+CLASS="QUOTE"
+>"明显回绕"</SPAN
+>
+      的其他无害警告的一个接一个的错误
+      (Thomas Munro)
+     </P
+></LI
+><LI
+><P
+>      修复<SPAN
+CLASS="APPLICATION"
+>PL/pgSQL</SPAN
+>的错误内容信息中<TT
+CLASS="COMMAND"
+>CONTINUE</TT
+>和
+      <TT
+CLASS="COMMAND"
+>MOVE</TT
+>语句类型的错误报告
+      (Pavel Stehule, Tom Lane)
+     </P
+></LI
+><LI
+><P
+>      修复<SPAN
+CLASS="APPLICATION"
+>PL/Perl</SPAN
+>以正确处理非<ACRONYM
+CLASS="ACRONYM"
+>ASCII</ACRONYM
+>错误消息文本 (Alex Hunsaker)
+     </P
+></LI
+><LI
+><P
+>      修复当返回一个<TT
+CLASS="TYPE"
+>record</TT
+>结果的字符串表示时，
+      <SPAN
+CLASS="APPLICATION"
+>PL/Python</SPAN
+>的崩溃 (Tom Lane)
+     </P
+></LI
+><LI
+><P
+>      修复<SPAN
+CLASS="APPLICATION"
+>PL/Tcl</SPAN
+>中忽略了检查<CODE
+CLASS="FUNCTION"
+>malloc()</CODE
+>调用失败的某些地方
+      (Michael Paquier, &Aacute;lvaro Herrera)
+     </P
+></LI
+><LI
+><P
+>      在<TT
+CLASS="FILENAME"
+>contrib/isn</TT
+>中，修复以979开头的ISBN-13编号的输出 (Fabien Coelho)
+     </P
+><P
+>      以979（但不是9790）开头的EAN被认为是ISBN，但是它们必须以新的13位格式打印，
+      而不是10位格式。
+     </P
+></LI
+><LI
+><P
+>      改进<SPAN
+CLASS="APPLICATION"
+>libpq</SPAN
+>对内存不足条件的处理
+      (Michael Paquier, Heikki Linnakangas)
+     </P
+></LI
+><LI
+><P
+>      修复<SPAN
+CLASS="APPLICATION"
+>ecpg</SPAN
+>中内存泄露和缺少内存不足检查 (Michael Paquier)
+     </P
+></LI
+><LI
+><P
+>      修复<SPAN
+CLASS="APPLICATION"
+>psql</SPAN
+>的数字输出区域感知格式的代码 (Tom Lane)
+     </P
+><P
+>      <TT
+CLASS="LITERAL"
+>\pset numericlocale on</TT
+>调用的格式化代码对于一些不常见的情况
+      （例如具有指数而不是小数点的数字）做错了事情。它也可以从<TT
+CLASS="TYPE"
+>money</TT
+>
+      数据类型中转移已经本地化的输出。
+     </P
+></LI
+><LI
+><P
+>      当没有当前连接时，在<SPAN
+CLASS="APPLICATION"
+>psql</SPAN
+>的<TT
+CLASS="COMMAND"
+>\c</TT
+>命令中防止崩溃 (Noah Misch)
+     </P
+></LI
+><LI
+><P
+>      修正在<SPAN
+CLASS="APPLICATION"
+>pg_dump</SPAN
+>的目录输出格式中默认的<SPAN
+CLASS="APPLICATION"
+>zlib</SPAN
+>
+      压缩级别的选择 (Andrew Dunstan)
+     </P
+></LI
+><LI
+><P
+>      确保在<SPAN
+CLASS="APPLICATION"
+>pg_dump</SPAN
+>中使用<ACRONYM
+CLASS="ACRONYM"
+>tar</ACRONYM
+>
+      格式输出创建的临时文件不是世界可读的 (Michael
+      Paquier)
+     </P
+></LI
+><LI
+><P
+>      修复<SPAN
+CLASS="APPLICATION"
+>pg_dump</SPAN
+>和<SPAN
+CLASS="APPLICATION"
+>pg_upgrade</SPAN
+>以支持
+      <TT
+CLASS="LITERAL"
+>postgres</TT
+>或<TT
+CLASS="LITERAL"
+>template1</TT
+>数据库在非缺省表空间中的情况
+      (Marti Raudsepp, Bruce Momjian)
+     </P
+></LI
+><LI
+><P
+>      修复<SPAN
+CLASS="APPLICATION"
+>pg_dump</SPAN
+>在从过旧的服务器转储而获得特定的权限类型时，
+      正确地处理对象权限 (Tom Lane)
+     </P
+><P
+>      当从7.3之前的服务器转储函数或过程语言时，<SPAN
+CLASS="APPLICATION"
+>pg_dump</SPAN
+>
+      将产生撤销所有者的授予权限然后赋予所有权限给<TT
+CLASS="LITERAL"
+>PUBLIC</TT
+>的
+      <TT
+CLASS="COMMAND"
+>GRANT</TT
+>/<TT
+CLASS="COMMAND"
+>REVOKE</TT
+>命令。因为权限仅包括<TT
+CLASS="LITERAL"
+>USAGE</TT
+>
+      和<TT
+CLASS="LITERAL"
+>EXECUTE</TT
+>，所以这不是一个安全问题，但是，对于旧系统的行为来说，
+      这当然是一个令人惊讶的表现。修复它在这些情况下单独保留默认权限状态。
+     </P
+></LI
+><LI
+><P
+>      修复<SPAN
+CLASS="APPLICATION"
+>pg_dump</SPAN
+>以转储shell类型 (Tom Lane)
+     </P
+><P
+>      Shell类型(也就是还未完全定义的类型)对于很多方面是没有用的，
+      但是<SPAN
+CLASS="APPLICATION"
+>pg_dump</SPAN
+>应该转储它们。
+     </P
+></LI
+><LI
+><P
+>      修复<SPAN
+CLASS="APPLICATION"
+>pg_dump</SPAN
+>和其他客户端程序中的各种小内存泄漏 (Michael Paquier)
+     </P
+></LI
+><LI
+><P
+>      修复PPC硬件的spinlock汇编代码与<ACRONYM
+CLASS="ACRONYM"
+>AIX</ACRONYM
+>的本地汇编程序兼容 (Tom Lane)
+     </P
+><P
+>      如果<SPAN
+CLASS="APPLICATION"
+>gcc</SPAN
+>被配置为使用本机汇编程序，这种情况正在变得越来越普遍，
+      那么使用<SPAN
+CLASS="APPLICATION"
+>gcc</SPAN
+>构建就不起作用。
+     </P
+></LI
+><LI
+><P
+>      在<ACRONYM
+CLASS="ACRONYM"
+>AIX</ACRONYM
+>上，测试<TT
+CLASS="LITERAL"
+>-qlonglong</TT
+>编译器选项而不仅仅假设它是安全的
+       (Noah Misch)
+     </P
+></LI
+><LI
+><P
+>      在<ACRONYM
+CLASS="ACRONYM"
+>AIX</ACRONYM
+>上，使用<TT
+CLASS="LITERAL"
+>-Wl,-brtllib</TT
+>连接选项以允许在运行时解决符号
+      (Noah Misch)
+     </P
+><P
+>      Perl在5.8.0及以后的版本中依赖于此能力。
+     </P
+></LI
+><LI
+><P
+>      由于编译器错误，在使用32位<SPAN
+CLASS="APPLICATION"
+>xlc</SPAN
+>编译时，
+      避免使用内联函数 (Noah Misch)
+     </P
+></LI
+><LI
+><P
+>      在需要时为<CODE
+CLASS="FUNCTION"
+>sched_yield()</CODE
+>使用<TT
+CLASS="FILENAME"
+>librt</TT
+>，
+      在某些Solaris版本上是这样的 (Oskari Saarenmaa)
+     </P
+></LI
+><LI
+><P
+>      修复Windows <TT
+CLASS="FILENAME"
+>install.bat</TT
+>脚本以处理包含空格的目标路径名 (Heikki Linnakangas)
+     </P
+></LI
+><LI
+><P
+>      让<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>版本号的数值形式
+      (例如<TT
+CLASS="LITERAL"
+>90405</TT
+>)对扩展Makefiles可用，
+      作为一个名为<TT
+CLASS="VARNAME"
+>VERSION_NUM</TT
+>的变量 (Michael Paquier)
+     </P
+></LI
+><LI
+><P
+>      更新时区数据文件到<SPAN
+CLASS="APPLICATION"
+>tzdata</SPAN
+>版本2015g，
+      因为DST规律在开曼群岛、斐济、摩尔多瓦、摩洛哥、诺福克岛、北朝鲜、
+      土耳其和乌拉圭发生了改变。加拿大北洛矶山脉有一个新的时区名
+      <TT
+CLASS="LITERAL"
+>America/Fort_Nelson</TT
+>。
+     </P
+></LI
+></UL
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="release-9-1-20.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="release-9-1-18.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>版本 9.1.20</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="release.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>版本 9.1.18</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

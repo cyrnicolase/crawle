@@ -1,0 +1,674 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>扩展的构建基础设施</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="扩展 SQL"
+HREF="extend.html"><LINK
+REL="PREVIOUS"
+TITLE="打包相关对象到一个扩展中"
+HREF="extend-extensions.html"><LINK
+REL="NEXT"
+TITLE="触发器"
+HREF="triggers.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/extend.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="打包相关对象到一个扩展中"
+HREF="extend-extensions.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="extend.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#31456; 36. 扩展 <ACRONYM
+CLASS="ACRONYM"
+>SQL</ACRONYM
+></TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="触发器"
+HREF="triggers.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="EXTEND-PGXS"
+>36.16. 扩展的构建基础设施</A
+></H1
+><P
+>    如果你正在考虑发布你的<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>扩展模块，为它们建立一个可移植的构建系统实在是相当困难。因此<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>安装为扩展提供了一种被称为<ACRONYM
+CLASS="ACRONYM"
+>PGXS</ACRONYM
+>构建基础设施，因此简单的扩展模块能够在一个已经安装的服务器上简单地编译。<ACRONYM
+CLASS="ACRONYM"
+>PGXS</ACRONYM
+>主要是为了包括 C 代码的扩展而设计，不过它也能用于纯 SQL 的扩展。注意<ACRONYM
+CLASS="ACRONYM"
+>PGXS</ACRONYM
+>并不想成为一种用于构建任何与<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>交互的软件的通用构建系统框架。它只是简单地把简单服务器扩展模块的公共构建规则自动化。对于更复杂的包，你可能需要编写你自己的构建系统。
+   </P
+><P
+>    要把<ACRONYM
+CLASS="ACRONYM"
+>PGXS</ACRONYM
+>基础设施用于你的扩展，你必须编写一个简单的 makefile。在这个 makefile 中，你需要设置一些变量并且把它们包括在全局的<ACRONYM
+CLASS="ACRONYM"
+>PGXS</ACRONYM
+> makefile 中。这里有一个例子，它构建一个名为<TT
+CLASS="LITERAL"
+>isbn_issn</TT
+>的扩展模块，其中包括一个含有 C 代码的共享库、一个扩展控制文件、一个 SQL 脚本以及一个文档文件：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>MODULES = isbn_issn
+EXTENSION = isbn_issn
+DATA = isbn_issn--1.0.sql
+DOCS = README.isbn_issn
+
+PG_CONFIG = pg_config
+PGXS := $(shell $(PG_CONFIG) --pgxs)
+include $(PGXS)</PRE
+><P>
+    最后三行应该总是相同的。在这个文件的前面部分，你要对变量赋值或者增加自定义的<SPAN
+CLASS="APPLICATION"
+>make</SPAN
+>规则。
+   </P
+><P
+>    设置这三个变量之一来指定要构建什么：
+
+    <P
+></P
+></P><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="VARNAME"
+>MODULES</TT
+></DT
+><DD
+><P
+>        要从源文件构建的具有相同词干的共享库对象的列表（不要在这个列表中包括库后缀）
+       </P
+></DD
+><DT
+><TT
+CLASS="VARNAME"
+>MODULE_big</TT
+></DT
+><DD
+><P
+>        一个要从多个源文件中构建的共享库（在<TT
+CLASS="VARNAME"
+>OBJS</TT
+>中列出对象文件）
+       </P
+></DD
+><DT
+><TT
+CLASS="VARNAME"
+>PROGRAM</TT
+></DT
+><DD
+><P
+>        一个要构建的可执行程序（在<TT
+CLASS="VARNAME"
+>OBJS</TT
+>中列出对象文件）
+       </P
+></DD
+></DL
+></DIV
+><P>
+
+    还可以设置下列变量：
+
+    <P
+></P
+></P><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="VARNAME"
+>EXTENSION</TT
+></DT
+><DD
+><P
+>        扩展名称；你必须为每一个名称提供一个<TT
+CLASS="LITERAL"
+><TT
+CLASS="REPLACEABLE"
+><I
+>extension</I
+></TT
+>.control</TT
+>文件，它将被安装到<TT
+CLASS="LITERAL"
+><TT
+CLASS="REPLACEABLE"
+><I
+>prefix</I
+></TT
+>/share/extension</TT
+>中
+       </P
+></DD
+><DT
+><TT
+CLASS="VARNAME"
+>MODULEDIR</TT
+></DT
+><DD
+><P
+>        subdirectory of <TT
+CLASS="LITERAL"
+><TT
+CLASS="REPLACEABLE"
+><I
+>prefix</I
+></TT
+>/share</TT
+>的子目录，DATA 和 DOCS 文件会被安装到其中（如果没有设置，设置了<TT
+CLASS="VARNAME"
+>EXTENSION</TT
+>时默认为<TT
+CLASS="LITERAL"
+>extension</TT
+>，没有设置<TT
+CLASS="VARNAME"
+>EXTENSION</TT
+>时默认为<TT
+CLASS="LITERAL"
+>contrib</TT
+>）
+       </P
+></DD
+><DT
+><TT
+CLASS="VARNAME"
+>DATA</TT
+></DT
+><DD
+><P
+>        要安装到<TT
+CLASS="LITERAL"
+><TT
+CLASS="REPLACEABLE"
+><I
+>prefix</I
+></TT
+>/share/$MODULEDIR</TT
+>中的随机文件
+       </P
+></DD
+><DT
+><TT
+CLASS="VARNAME"
+>DATA_built</TT
+></DT
+><DD
+><P
+>        要安装到<TT
+CLASS="LITERAL"
+><TT
+CLASS="REPLACEABLE"
+><I
+>prefix</I
+></TT
+>/share/$MODULEDIR</TT
+>中的随机文件，它们需要先被构建
+       </P
+></DD
+><DT
+><TT
+CLASS="VARNAME"
+>DATA_TSEARCH</TT
+></DT
+><DD
+><P
+>        要安装到<TT
+CLASS="LITERAL"
+><TT
+CLASS="REPLACEABLE"
+><I
+>prefix</I
+></TT
+>/share/tsearch_data</TT
+>中的随机文件
+       </P
+></DD
+><DT
+><TT
+CLASS="VARNAME"
+>DOCS</TT
+></DT
+><DD
+><P
+>        要安装到<TT
+CLASS="LITERAL"
+><TT
+CLASS="REPLACEABLE"
+><I
+>prefix</I
+></TT
+>/doc/$MODULEDIR</TT
+>中的随机文件
+       </P
+></DD
+><DT
+><TT
+CLASS="VARNAME"
+>SCRIPTS</TT
+></DT
+><DD
+><P
+>        要安装到<TT
+CLASS="LITERAL"
+><TT
+CLASS="REPLACEABLE"
+><I
+>prefix</I
+></TT
+>/bin</TT
+>中的脚本文件（非二进制）
+       </P
+></DD
+><DT
+><TT
+CLASS="VARNAME"
+>SCRIPTS_built</TT
+></DT
+><DD
+><P
+>        要安装到<TT
+CLASS="LITERAL"
+><TT
+CLASS="REPLACEABLE"
+><I
+>prefix</I
+></TT
+>/bin</TT
+>中的脚本文件（非二进制），它们需要先被构建
+       </P
+></DD
+><DT
+><TT
+CLASS="VARNAME"
+>REGRESS</TT
+></DT
+><DD
+><P
+>        回归测试案例（不带后缀）的列表，见下文
+       </P
+></DD
+><DT
+><TT
+CLASS="VARNAME"
+>REGRESS_OPTS</TT
+></DT
+><DD
+><P
+>        要传递给<SPAN
+CLASS="APPLICATION"
+>pg_regress</SPAN
+>的附加开关
+       </P
+></DD
+><DT
+><TT
+CLASS="VARNAME"
+>EXTRA_CLEAN</TT
+></DT
+><DD
+><P
+>        要在<TT
+CLASS="LITERAL"
+>make clean</TT
+>中移除的额外文件
+       </P
+></DD
+><DT
+><TT
+CLASS="VARNAME"
+>PG_CPPFLAGS</TT
+></DT
+><DD
+><P
+>        将被加到<TT
+CLASS="VARNAME"
+>CPPFLAGS</TT
+>
+       </P
+></DD
+><DT
+><TT
+CLASS="VARNAME"
+>PG_LIBS</TT
+></DT
+><DD
+><P
+>        将被加到<TT
+CLASS="VARNAME"
+>PROGRAM</TT
+>链接行
+       </P
+></DD
+><DT
+><TT
+CLASS="VARNAME"
+>SHLIB_LINK</TT
+></DT
+><DD
+><P
+>        将被加到<TT
+CLASS="VARNAME"
+>MODULE_big</TT
+>链接行
+       </P
+></DD
+><DT
+><TT
+CLASS="VARNAME"
+>PG_CONFIG</TT
+></DT
+><DD
+><P
+>        要在其中构建的<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>安装的<SPAN
+CLASS="APPLICATION"
+>pg_config</SPAN
+>程序的路径（通常只用在你的<TT
+CLASS="VARNAME"
+>PATH</TT
+>中的第一个<TT
+CLASS="LITERAL"
+>pg_config</TT
+>）
+       </P
+></DD
+></DL
+></DIV
+><P>
+   </P
+><P
+>    把这个 makefile 作为<TT
+CLASS="LITERAL"
+>Makefile</TT
+>放在保存你扩展的目录中。然后你可以执行<TT
+CLASS="LITERAL"
+>make</TT
+>进行编译，并且接着<TT
+CLASS="LITERAL"
+>make install</TT
+>来安装你的模块。默认情况下，该模块会为在你的<TT
+CLASS="VARNAME"
+>PATH</TT
+>中找到的第一个<TT
+CLASS="COMMAND"
+>pg_config</TT
+>程序所对应的<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>安装编译和安装。你可以通过在 makefile 中或者<TT
+CLASS="LITERAL"
+>make</TT
+>命令行中设置<TT
+CLASS="VARNAME"
+>PG_CONFIG</TT
+>指向另一个<TT
+CLASS="COMMAND"
+>pg_config</TT
+>程序来使用一个不同的安装。
+   </P
+><P
+>    如果你想保持编译目录独立，你也可以在你的扩展所属的源代码树之外的目录中运行
+    <TT
+CLASS="LITERAL"
+>make</TT
+>。 这个过程也被称为一个
+    <I
+CLASS="FIRSTTERM"
+>VPATH</I
+>
+    编译。下面是做法：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>mkdir build_dir
+cd build_dir
+make -f /path/to/extension/source/tree/Makefile
+make -f /path/to/extension/source/tree/Makefile install</PRE
+><P>
+   </P
+><P
+>    此外，你可以以对核心代码所作的方式一样为 VPATH 设置一个目录。一种方式是使用核心脚本
+    <TT
+CLASS="FILENAME"
+>config/prep_buildtree</TT
+>。一旦这样做，你可以这样设置
+    <TT
+CLASS="LITERAL"
+>make</TT
+>变量<TT
+CLASS="VARNAME"
+>VPATH</TT
+>：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>make VPATH=/path/to/extension/source/tree
+make VPATH=/path/to/extension/source/tree install</PRE
+><P>
+    这个过程可以在很多种目录布局下工作。
+   </P
+><P
+>    列举在<TT
+CLASS="VARNAME"
+>REGRESS</TT
+>变量中的脚本会被用来对你的扩展进行回归测试，回归测试可以在做完<TT
+CLASS="LITERAL"
+>make install</TT
+>之后用<TT
+CLASS="LITERAL"
+>make installcheck</TT
+>调用。要让这能够工作，你必须已经有一个运行着的<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>服务器。列举在<TT
+CLASS="VARNAME"
+>REGRESS</TT
+>中的脚本文件必须在你扩展目录的名为<TT
+CLASS="LITERAL"
+>sql/</TT
+>的子目录中出现。这些文件必须带有扩展<TT
+CLASS="LITERAL"
+>.sql</TT
+>，但扩展不能被包括在 makefile 的<TT
+CLASS="VARNAME"
+>REGRESS</TT
+>列表中。对每一个测试还应该在名为<TT
+CLASS="LITERAL"
+>expected/</TT
+>的子目录中有一个包含预期输出的文件，它具有和脚本文件相同的词干并带有扩展<TT
+CLASS="LITERAL"
+>.out</TT
+>。<TT
+CLASS="LITERAL"
+>make installcheck</TT
+>会用<SPAN
+CLASS="APPLICATION"
+>psql</SPAN
+>执行每一个测试脚本，并且将得到结果输出与相应的预期输出比较。任何区别都将以<TT
+CLASS="COMMAND"
+>diff -c</TT
+>格式写入到文件<TT
+CLASS="LITERAL"
+>regression.diffs</TT
+>中。注意尝试运行一个不带预期文件的测试将被报告为<SPAN
+CLASS="QUOTE"
+>"故障"</SPAN
+>，因此确保你拥有所有的预期文件。
+   </P
+><DIV
+CLASS="TIP"
+><BLOCKQUOTE
+CLASS="TIP"
+><P
+><B
+>&#25552;&#31034;: </B
+>     创建预期文件最简单的方法是创建空文件，然后做一次测试运行（这当然将报告区别）。检查在<TT
+CLASS="LITERAL"
+>results/</TT
+>目录中找到的实际结果文件，如果它们符合你的预期则把它们复制到<TT
+CLASS="LITERAL"
+>expected/</TT
+>中。
+    </P
+></BLOCKQUOTE
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="extend-extensions.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="triggers.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>打包相关对象到一个扩展中</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="extend.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>触发器</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

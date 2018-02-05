@@ -1,0 +1,405 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>DROP FUNCTION</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="SQL 命令"
+HREF="sql-commands.html"><LINK
+REL="PREVIOUS"
+TITLE="DROP FOREIGN TABLE"
+HREF="sql-dropforeigntable.html"><LINK
+REL="NEXT"
+TITLE="DROP GROUP"
+HREF="sql-dropgroup.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="REFENTRY"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/ref/drop_function.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="DROP FOREIGN TABLE"
+HREF="sql-dropforeigntable.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="DROP GROUP"
+HREF="sql-dropgroup.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="SQL-DROPFUNCTION"
+></A
+>DROP FUNCTION</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN85599"
+></A
+><H2
+>&#21517;&#31216;</H2
+>DROP FUNCTION&nbsp;--&nbsp;移除一个函数</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN85602"
+></A
+><H2
+>&#22823;&#32434;</H2
+><PRE
+CLASS="SYNOPSIS"
+>DROP FUNCTION [ IF EXISTS ] <TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+> ( [ [ <TT
+CLASS="REPLACEABLE"
+><I
+>argmode</I
+></TT
+> ] [ <TT
+CLASS="REPLACEABLE"
+><I
+>argname</I
+></TT
+> ] <TT
+CLASS="REPLACEABLE"
+><I
+>argtype</I
+></TT
+> [, ...] ] )
+    [ CASCADE | RESTRICT ]</PRE
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN85608"
+></A
+><H2
+>描述</H2
+><P
+>   <TT
+CLASS="COMMAND"
+>DROP FUNCTION</TT
+>移除一个已有函数
+   的定义。要执行这个命令用户必须是该函数的拥有者。该函数的参数
+   类型必须被指定，因为多个不同的函数可能会具有相同的函数名和不
+   同的参数列表。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN85612"
+></A
+><H2
+>参数</H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="LITERAL"
+>IF EXISTS</TT
+></DT
+><DD
+><P
+>      如果该函数不存在则不要抛出一个错误，而是发出一个提示。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+></DT
+><DD
+><P
+>      一个现有函数的名称（可以是模式限定的）。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>argmode</I
+></TT
+></DT
+><DD
+><P
+>      一个参数的模式：<TT
+CLASS="LITERAL"
+>IN</TT
+>、<TT
+CLASS="LITERAL"
+>OUT</TT
+>、
+      <TT
+CLASS="LITERAL"
+>INOUT</TT
+>或者<TT
+CLASS="LITERAL"
+>VARIADIC</TT
+>。如果被忽略，
+      则默认为<TT
+CLASS="LITERAL"
+>IN</TT
+>。注意
+      <TT
+CLASS="COMMAND"
+>DROP FUNCTION</TT
+>并不真正关心
+      <TT
+CLASS="LITERAL"
+>OUT</TT
+>参数，因为决定函数的身份时只需要输入参数。
+      因此列出<TT
+CLASS="LITERAL"
+>IN</TT
+>、<TT
+CLASS="LITERAL"
+>INOUT</TT
+>和
+      <TT
+CLASS="LITERAL"
+>VARIADIC</TT
+>参数足以。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>argname</I
+></TT
+></DT
+><DD
+><P
+>      一个参数的名称。注意
+      <TT
+CLASS="COMMAND"
+>DROP FUNCTION</TT
+>并不真正关心
+      参数名称，因为决定函数的身份时只需要参数的数据类型。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>argtype</I
+></TT
+></DT
+><DD
+><P
+>      如果函数有参数，这是函数参数的数据类型（可以是模式限定的）。
+     </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>CASCADE</TT
+></DT
+><DD
+><P
+>      自动删除依赖于该函数的对象（例如操作符和触发器），然后删除所有
+      依赖于那些对象的对象（见<A
+HREF="ddl-depend.html"
+>第 5.13 &#33410;</A
+>）。
+     </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>RESTRICT</TT
+></DT
+><DD
+><P
+>      如果有任何对象依赖于该函数，则拒绝删除它。这是默认值。
+     </P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="SQL-DROPFUNCTION-EXAMPLES"
+></A
+><H2
+>示例</H2
+><P
+>   这个命令移除平方根函数：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>DROP FUNCTION sqrt(integer);</PRE
+><P></P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="SQL-DROPFUNCTION-COMPATIBILITY"
+></A
+><H2
+>兼容性</H2
+><P
+>   SQL 标准中定义了一个
+   <TT
+CLASS="COMMAND"
+>DROP FUNCTION</TT
+>语句，
+   但是它与这个命令不兼容。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN85670"
+></A
+><H2
+>另见</H2
+><A
+HREF="sql-createfunction.html"
+>CREATE FUNCTION</A
+>, <A
+HREF="sql-alterfunction.html"
+>ALTER FUNCTION</A
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-dropforeigntable.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="sql-dropgroup.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>DROP FOREIGN TABLE</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>DROP GROUP</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

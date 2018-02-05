@@ -1,0 +1,346 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>系统列</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="数据定义"
+HREF="ddl.html"><LINK
+REL="PREVIOUS"
+TITLE="约束"
+HREF="ddl-constraints.html"><LINK
+REL="NEXT"
+TITLE="修改表"
+HREF="ddl-alter.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/ddl.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="约束"
+HREF="ddl-constraints.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="ddl.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#31456; 5. 数据定义</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="修改表"
+HREF="ddl-alter.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="DDL-SYSTEM-COLUMNS"
+>5.4. 系统列</A
+></H1
+><P
+>   每一个表都拥有一些由系统隐式定义的<I
+CLASS="FIRSTTERM"
+>系统列</I
+>。因此，这些列的名字不能像用户定义的列一样使用（注意这种限制与名称是否为关键词没有关系，即便用引号限定一个名称也无法绕过这种限制）。 事实上用户不需要关心这些列，只需要知道它们存在即可。
+  </P
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="STRUCTFIELD"
+>oid</TT
+></DT
+><DD
+><P
+>      
+      一行的对象标识符（对象ID）。该列只有在表使用<TT
+CLASS="LITERAL"
+>WITH OIDS</TT
+>创建时或者<A
+HREF="runtime-config-compatible.html#GUC-DEFAULT-WITH-OIDS"
+>default_with_oids</A
+>配置变量被设置时才存在。该列的类型为<TT
+CLASS="TYPE"
+>oid</TT
+>（与列名一致），该类型详见<A
+HREF="datatype-oid.html"
+>第 8.18 &#33410;</A
+>。
+     </P
+></DD
+><DT
+><TT
+CLASS="STRUCTFIELD"
+>tableoid</TT
+></DT
+><DD
+><P
+>      包含这一行的表的OID。该列是特别为从继承层次（见<A
+HREF="ddl-inherit.html"
+>第 5.9 &#33410;</A
+>）中选择的查询而准备，因为如果没有它将很难知道一行来自于哪个表。<TT
+CLASS="STRUCTFIELD"
+>tableoid</TT
+>可以与<TT
+CLASS="STRUCTNAME"
+>pg_class</TT
+>的<TT
+CLASS="STRUCTFIELD"
+>oid</TT
+>列进行连接来获得表的名称。
+     </P
+></DD
+><DT
+><TT
+CLASS="STRUCTFIELD"
+>xmin</TT
+></DT
+><DD
+><P
+>      插入该行版本的事务身份（事务ID）。一个行版本是一个行的一个特别版本，对一个逻辑行的每一次更新都将创建一个新的行版本。
+     </P
+></DD
+><DT
+><TT
+CLASS="STRUCTFIELD"
+>cmin</TT
+></DT
+><DD
+><P
+>      插入事务中的命令标识符（从0开始）。
+     </P
+></DD
+><DT
+><TT
+CLASS="STRUCTFIELD"
+>xmax</TT
+></DT
+><DD
+><P
+>      删除事务的身份（事务ID），对于未删除的行版本为0。对于一个可见的行版本，该列值也可能为非零。这通常表示删除事务还没有提交，或者一个删除尝试被回滚。
+     </P
+></DD
+><DT
+><TT
+CLASS="STRUCTFIELD"
+>cmax</TT
+></DT
+><DD
+><P
+>      删除事务中的命令标识符，或者为0。
+     </P
+></DD
+><DT
+><TT
+CLASS="STRUCTFIELD"
+>ctid</TT
+></DT
+><DD
+><P
+>      行版本在其表中的物理位置。注意尽管<TT
+CLASS="STRUCTFIELD"
+>ctid</TT
+>可以被用来非常快速地定位行版本，但是一个行的<TT
+CLASS="STRUCTFIELD"
+>ctid</TT
+>会在被更新或者被<TT
+CLASS="COMMAND"
+>VACUUM FULL</TT
+>移动时改变。因此，<TT
+CLASS="STRUCTFIELD"
+>ctid</TT
+>不能作为一个长期行标识符。OID或者最好是一个用户定义的序列号才应该被用来标识逻辑行。
+     </P
+></DD
+></DL
+></DIV
+><P
+>    OID是32位量，它从一个服务于整个集簇的计数器分配而来。在一个大型的或者历时长久的数据库中，该计数器有可能会出现绕回。因此，不要总是假设OID是唯一的，除非你采取了措施来保证。如果需要在一个表中标识行，推荐使用一个序列生成器。然而，OID也可以被使用，但是是要采取一些额外的预防措施：
+
+    <P
+></P
+></P><UL
+><LI
+><P
+>       如果要将OID用来标识行，应该在OID列上创建一个唯一约束。当这样一个唯一约束（或唯一索引）存在时，系统会注意不生成匹配现有行的OID（当然，这只有在表的航数目少于2<SUP
+>32</SUP
+>（40亿）时才成立。并且在实践中表的尺寸最好远比这个值小，否则将会牺牲性能）。
+      </P
+></LI
+><LI
+><P
+>       绝不要认为OID在表之间也是唯一的，使用<TT
+CLASS="STRUCTFIELD"
+>tableoid</TT
+>和行OID的组合来作为数据库范围内的标识符。
+      </P
+></LI
+><LI
+><P
+>       当然，问题中的表都必须是用<TT
+CLASS="LITERAL"
+>WITH OIDS</TT
+>创建。在<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+> 8.1中，<TT
+CLASS="LITERAL"
+>WITHOUT OIDS</TT
+>是默认形式。
+      </P
+></LI
+></UL
+><P>
+   </P
+><P
+>    事务标识符也是32位量。在一个历时长久的数据库中事务ID同样会绕回。但如果采取适当的维护过程，这不会是一个致命的问题，详见<A
+HREF="maintenance.html"
+>第 24 &#31456;</A
+>。但是，长期（超过10亿个事务）依赖事务ID的唯一性是不明智的。
+   </P
+><P
+>    命令标识符也是32位量。这对一个事务中包含的<ACRONYM
+CLASS="ACRONYM"
+>SQL</ACRONYM
+>命令设置了一个硬极限：
+    2<SUP
+>32</SUP
+>（40亿）。在实践中，该限制并不是问题 &mdash; 注意该限制只是针对<ACRONYM
+CLASS="ACRONYM"
+>SQL</ACRONYM
+>命令的数目而不是被处理的行数。同样，只有真正
+    修改了数据库内容的命令才会消耗一个命令标识符。
+   </P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="ddl-constraints.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="ddl-alter.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>约束</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="ddl.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>修改表</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

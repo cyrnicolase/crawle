@@ -1,0 +1,510 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>CREATE TRANSFORM</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="SQL 命令"
+HREF="sql-commands.html"><LINK
+REL="PREVIOUS"
+TITLE="CREATE TEXT SEARCH TEMPLATE"
+HREF="sql-createtstemplate.html"><LINK
+REL="NEXT"
+TITLE="CREATE TRIGGER"
+HREF="sql-createtrigger.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="REFENTRY"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/ref/create_transform.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="CREATE TEXT SEARCH TEMPLATE"
+HREF="sql-createtstemplate.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="CREATE TRIGGER"
+HREF="sql-createtrigger.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="SQL-CREATETRANSFORM"
+></A
+>CREATE TRANSFORM</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN83181"
+></A
+><H2
+>&#21517;&#31216;</H2
+>CREATE TRANSFORM&nbsp;--&nbsp;定义一个新的转换</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN83184"
+></A
+><H2
+>&#22823;&#32434;</H2
+><PRE
+CLASS="SYNOPSIS"
+>CREATE [ OR REPLACE ] TRANSFORM FOR <TT
+CLASS="REPLACEABLE"
+><I
+>type_name</I
+></TT
+> LANGUAGE <TT
+CLASS="REPLACEABLE"
+><I
+>lang_name</I
+></TT
+> (
+    FROM SQL WITH FUNCTION <TT
+CLASS="REPLACEABLE"
+><I
+>from_sql_function_name</I
+></TT
+> (<TT
+CLASS="REPLACEABLE"
+><I
+>argument_type</I
+></TT
+> [, ...]),
+    TO SQL WITH FUNCTION <TT
+CLASS="REPLACEABLE"
+><I
+>to_sql_function_name</I
+></TT
+> (<TT
+CLASS="REPLACEABLE"
+><I
+>argument_type</I
+></TT
+> [, ...])
+);</PRE
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="SQL-CREATETRANSFORM-DESCRIPTION"
+></A
+><H2
+>简介</H2
+><P
+>   <TT
+CLASS="COMMAND"
+>CREATE TRANSFORM</TT
+>定义一种新的转换。
+   <TT
+CLASS="COMMAND"
+>CREATE OR REPLACE TRANSFORM</TT
+>将
+   创建一种新的转换或者替换现有的定义。
+  </P
+><P
+>   一种转换指定了如何把一种数据类型适配到一种过程语言。例如，在用
+   PL/Python 编写一个使用<TT
+CLASS="TYPE"
+>hstore</TT
+>类型的函数时，PL/Python
+   没有关于如何在 Python 环境中表示<TT
+CLASS="TYPE"
+>hstore</TT
+>值的先验知识。
+   语言的实现通常默认会使用文本表示，但是在一些时候这很不方便，例如
+   有时可能用一个联合数组或者列表更合适。
+  </P
+><P
+>   一种转换指定了两个函数：
+   <P
+></P
+></P><UL
+><LI
+><P
+>      一个<SPAN
+CLASS="QUOTE"
+>"from SQL"</SPAN
+>函数负责将类型从 SQL 环境转换到语言。
+      这个函数将在该语言编写的一个函数的参数上调用。
+     </P
+></LI
+><LI
+><P
+>      一个<SPAN
+CLASS="QUOTE"
+>"to SQL"</SPAN
+>函数负责将类型从语言转换到 SQL 环境。这
+      个函数将在该语言编写的一个函数的返回值上调用。
+     </P
+></LI
+></UL
+><P>
+   没有必要同时提供这些函数。如果有一种没有被指定，将在必要时使用与语言相
+   关的默认行为（为了完全阻止在一个方向上发生转换，你也可以写一个总是报错
+   的转换函数）。
+  </P
+><P
+>   要创建一种转换，你必须拥有该类型并且具有该类型上的
+   <TT
+CLASS="LITERAL"
+>USAGE</TT
+>特权，拥有该语言上的
+   <TT
+CLASS="LITERAL"
+>USAGE</TT
+>特权，并且拥有 from-SQL 和 to-SQL 函数（如果
+   指定了）及其上的<TT
+CLASS="LITERAL"
+>EXECUTE</TT
+>特权。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN83212"
+></A
+><H2
+>参数</H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>type_name</I
+></TT
+></DT
+><DD
+><P
+>       该转换的数据类型的名称。
+      </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>lang_name</I
+></TT
+></DT
+><DD
+><P
+>       该转换的语言的名称。
+      </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>from_sql_function_name</I
+></TT
+>(<TT
+CLASS="REPLACEABLE"
+><I
+>argument_type</I
+></TT
+> [, ...])</DT
+><DD
+><P
+>       将该类型从 SQL 环境转换到该语言的函数名。它必须接受一个
+       <TT
+CLASS="TYPE"
+>internal</TT
+>类型的参数并且返回类型<TT
+CLASS="TYPE"
+>internal</TT
+>。
+       实参将是该转换所适用的类型，并且该函数也应该被写成认为它是那种类型（
+       但是不允许声明一个返回<TT
+CLASS="TYPE"
+>internal</TT
+>但没有至少一个
+       <TT
+CLASS="TYPE"
+>internal</TT
+>类型参数的 SQL 层函数）。实际的返回值将与
+       语言的实现相关。
+      </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>to_sql_function_name</I
+></TT
+>(<TT
+CLASS="REPLACEABLE"
+><I
+>argument_type</I
+></TT
+> [, ...])</DT
+><DD
+><P
+>       将该类型从语言转换到 SQL 环境的函数名。它必须接受一个
+       <TT
+CLASS="TYPE"
+>internal</TT
+>类型的参数并且返回该转换所适用的类型。实参值
+       将与语言的实现相关。
+      </P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="SQL-CREATETRANSFORM-NOTES"
+></A
+><H2
+>注解</H2
+><P
+>   使用<A
+HREF="sql-droptransform.html"
+>DROP TRANSFORM</A
+>移除转换。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="SQL-CREATETRANSFORM-EXAMPLES"
+></A
+><H2
+>示例</H2
+><P
+>   要为类型<TT
+CLASS="TYPE"
+>hstore</TT
+>和语言
+   <TT
+CLASS="LITERAL"
+>plpythonu</TT
+>创建一种转换，先搞定该类型和语言：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>CREATE TYPE hstore ...;
+
+CREATE LANGUAGE plpythonu ...;</PRE
+><P>
+   然后创建需要的函数：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>CREATE FUNCTION hstore_to_plpython(val internal) RETURNS internal
+LANGUAGE C STRICT IMMUTABLE
+AS ...;
+
+CREATE FUNCTION plpython_to_hstore(val internal) RETURNS hstore
+LANGUAGE C STRICT IMMUTABLE
+AS ...;</PRE
+><P>
+   最后创建转换把它们连接起来：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>CREATE TRANSFORM FOR hstore LANGUAGE plpythonu (
+    FROM SQL WITH FUNCTION hstore_to_plpython(internal),
+    TO SQL WITH FUNCTION plpython_to_hstore(internal)
+);</PRE
+><P>
+   实际上，这些命令将被包裹在扩展中。
+  </P
+><P
+>   <TT
+CLASS="FILENAME"
+>contrib</TT
+>小节包含了一些提供转换的扩展，
+   它们可以作为实际的例子。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="SQL-CREATETRANSFORM-COMPAT"
+></A
+><H2
+>兼容性</H2
+><P
+>   这种形式的<TT
+CLASS="COMMAND"
+>CREATE TRANSFORM</TT
+>是一种
+   <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>扩展。在
+   <ACRONYM
+CLASS="ACRONYM"
+>SQL</ACRONYM
+>标准中有一个<TT
+CLASS="COMMAND"
+>CREATE
+   TRANSFORM</TT
+>命令，但是它是用于把数据类型适配到
+   客户端语言。该用法不受
+   <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>支持。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="SQL-CREATETRANSFORM-SEEALSO"
+></A
+><H2
+>另见</H2
+><P
+>   <A
+HREF="sql-createfunction.html"
+>CREATE FUNCTION</A
+>,
+   <A
+HREF="sql-createlanguage.html"
+>CREATE LANGUAGE</A
+>,
+   <A
+HREF="sql-createtype.html"
+>CREATE TYPE</A
+>,
+   <A
+HREF="sql-droptransform.html"
+>DROP TRANSFORM</A
+>
+  </P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-createtstemplate.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="sql-createtrigger.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>CREATE TEXT SEARCH TEMPLATE</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>CREATE TRIGGER</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

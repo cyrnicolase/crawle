@@ -1,0 +1,360 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>内存管理</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="服务器编程接口"
+HREF="spi.html"><LINK
+REL="PREVIOUS"
+TITLE="SPI_getnspname"
+HREF="spi-spi-getnspname.html"><LINK
+REL="NEXT"
+TITLE="SPI_palloc"
+HREF="spi-spi-palloc.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/spi.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="SPI_getnspname"
+HREF="spi-spi-getnspname.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="spi.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#31456; 45. 服务器编程接口</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="SPI_palloc"
+HREF="spi-spi-palloc.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="SPI-MEMORY"
+>45.3. 内存管理</A
+></H1
+><DIV
+CLASS="TOC"
+><DL
+><DT
+><B
+>&#30446;&#24405;</B
+></DT
+><DT
+><A
+HREF="spi-spi-palloc.html"
+>SPI_palloc</A
+>&nbsp;--&nbsp;在上层执行器上下文中分配内存</DT
+><DT
+><A
+HREF="spi-realloc.html"
+>SPI_repalloc</A
+>&nbsp;--&nbsp;在上层执行器上下文中重分配内存</DT
+><DT
+><A
+HREF="spi-spi-pfree.html"
+>SPI_pfree</A
+>&nbsp;--&nbsp;在上层执行器上下文中释放内存</DT
+><DT
+><A
+HREF="spi-spi-copytuple.html"
+>SPI_copytuple</A
+>&nbsp;--&nbsp;在上层执行器上下文中创建一行的拷贝</DT
+><DT
+><A
+HREF="spi-spi-returntuple.html"
+>SPI_returntuple</A
+>&nbsp;--&nbsp;准备把一个元组返回为一个 Datum</DT
+><DT
+><A
+HREF="spi-spi-modifytuple.html"
+>SPI_modifytuple</A
+>&nbsp;--&nbsp;通过替换一个给定行的选定域来创建一行</DT
+><DT
+><A
+HREF="spi-spi-freetuple.html"
+>SPI_freetuple</A
+>&nbsp;--&nbsp;释放一个在上层执行器上下文中分配的行</DT
+><DT
+><A
+HREF="spi-spi-freetupletable.html"
+>SPI_freetuptable</A
+>&nbsp;--&nbsp;释放一个由<CODE
+CLASS="FUNCTION"
+>SPI_execute</CODE
+>
+  或者类似函数创建的行集合</DT
+><DT
+><A
+HREF="spi-spi-freeplan.html"
+>SPI_freeplan</A
+>&nbsp;--&nbsp;释放一个之前保存的预备语句</DT
+></DL
+></DIV
+><P
+>    
+   <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>
+   在<I
+CLASS="FIRSTTERM"
+>内存上下文</I
+>中分配内存，内存上下文为管理
+   在多个不同位置、具有不同生存时间需要的分配提供了一种便捷的方法。
+   销毁一个上下文会释放所有在其中分配的内存。因此不必跟踪单个对象来
+   避免内存泄露，而是只需要管理数量相对较少的上下文即可。
+   <CODE
+CLASS="FUNCTION"
+>palloc</CODE
+>和相关的函数可以从<SPAN
+CLASS="QUOTE"
+>"当前"</SPAN
+>
+   上下文中分配内存。
+  </P
+><P
+>   <CODE
+CLASS="FUNCTION"
+>SPI_connect</CODE
+>创建一个新的内存上下文并且让它
+   成为当前上下文。<CODE
+CLASS="FUNCTION"
+>SPI_finish</CODE
+>恢复之前的当前上下
+   文并且销毁由<CODE
+CLASS="FUNCTION"
+>SPI_connect</CODE
+>创建的内存上下文。
+   这些动作确保在你的过程中的内存分配在过程退出时被回收，从而避免内存
+   泄露。
+  </P
+><P
+>   不过，如果你的过程需要返回一个在已分配内存中的对象（例如一个
+   传引用数据类型的值），你不能使用<CODE
+CLASS="FUNCTION"
+>palloc</CODE
+>
+   分配内存，或者说至少不能在连接到 SPI 时这样做。如果你试着这样
+   做，该对象会被<CODE
+CLASS="FUNCTION"
+>SPI_finish</CODE
+>接触分配，那么
+   你的过程将无法可靠地工作。要解决这个问题，应使用
+   <CODE
+CLASS="FUNCTION"
+>SPI_palloc</CODE
+>来为要返回的对象分配内存。
+   <CODE
+CLASS="FUNCTION"
+>SPI_palloc</CODE
+>会在
+   <SPAN
+CLASS="QUOTE"
+>"上层执行器上下文"</SPAN
+>中分配内存，也就是当
+   <CODE
+CLASS="FUNCTION"
+>SPI_connect</CODE
+>被调用时的当前内存上下文，
+   它才是从你的过程中返回的值最适合的上下文。
+  </P
+><P
+>   如果在过程还没有连接到 SPI 时调用<CODE
+CLASS="FUNCTION"
+>SPI_palloc</CODE
+>，
+   那么它的效用就和普通的<CODE
+CLASS="FUNCTION"
+>palloc</CODE
+>相同。在一个
+   过程连接到 SPI 管理器之前，当前的内存上下文就是上层的执行器上下
+   文，所以所有由该过程通过<CODE
+CLASS="FUNCTION"
+>palloc</CODE
+>或者 SPI 
+   功能函数分配的内存都在这个上下文中。
+  </P
+><P
+>   当<CODE
+CLASS="FUNCTION"
+>SPI_connect</CODE
+>被调用时，这个过程的私有
+   上下文（由<CODE
+CLASS="FUNCTION"
+>SPI_connect</CODE
+>）会被作为当前上
+   下文。所有用<CODE
+CLASS="FUNCTION"
+>palloc</CODE
+>、
+   <CODE
+CLASS="FUNCTION"
+>repalloc</CODE
+>或者 SPI 功能函数（除了
+   <CODE
+CLASS="FUNCTION"
+>SPI_copytuple</CODE
+>、
+   <CODE
+CLASS="FUNCTION"
+>SPI_returntuple</CODE
+>、
+   <CODE
+CLASS="FUNCTION"
+>SPI_modifytuple</CODE
+>和
+   <CODE
+CLASS="FUNCTION"
+>SPI_palloc</CODE
+>）分配的内存都在这个上下文中。
+   当一个过程从 SPI 管理器断开连接时（通过
+   <CODE
+CLASS="FUNCTION"
+>SPI_finish</CODE
+>），当前上下文被恢复到上层的
+   执行器上下文，并且在该过程的内存上下文中分配的内存都会被释放，
+   之后再不能被使用。
+  </P
+><P
+>   这一节中描述的所有函数都可以在已连接和未连接的过程中使用。在
+   一个未连接的过程中，它们的行为和底层的普通服务器函数（
+   <CODE
+CLASS="FUNCTION"
+>palloc</CODE
+>等）相同。
+  </P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="spi-spi-getnspname.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="spi-spi-palloc.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>SPI_getnspname</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="spi.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>SPI_palloc</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

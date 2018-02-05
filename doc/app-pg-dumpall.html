@@ -1,0 +1,1105 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>pg_dumpall</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="PostgreSQL 客户端应用"
+HREF="reference-client.html"><LINK
+REL="PREVIOUS"
+TITLE="pg_dump"
+HREF="app-pgdump.html"><LINK
+REL="NEXT"
+TITLE="pg_isready"
+HREF="app-pg-isready.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="REFENTRY"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/ref/pg_dumpall.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="pg_dump"
+HREF="app-pgdump.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="reference-client.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="pg_isready"
+HREF="app-pg-isready.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="APP-PG-DUMPALL"
+></A
+><SPAN
+CLASS="APPLICATION"
+>pg_dumpall</SPAN
+></H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN96583"
+></A
+><H2
+>&#21517;&#31216;</H2
+>pg_dumpall&nbsp;--&nbsp;将一个<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>数据库集簇抽取到一个脚本文件中</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN96587"
+></A
+><H2
+>&#22823;&#32434;</H2
+><P
+><TT
+CLASS="COMMAND"
+>pg_dumpall</TT
+> [<TT
+CLASS="REPLACEABLE"
+><I
+>connection-option</I
+></TT
+>...] [<TT
+CLASS="REPLACEABLE"
+><I
+>option</I
+></TT
+>...]</P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="APP-PG-DUMPALL-DESCRIPTION"
+></A
+><H2
+>描述</H2
+><P
+>   <SPAN
+CLASS="APPLICATION"
+>pg_dumpall</SPAN
+>工具可以一个集簇中所有的<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>数据库写出到（<SPAN
+CLASS="QUOTE"
+>"转储"</SPAN
+>）一个脚本文件。该脚本文件包含可以用作<A
+HREF="app-psql.html"
+><SPAN
+CLASS="APPLICATION"
+>psql</SPAN
+></A
+>的输入<ACRONYM
+CLASS="ACRONYM"
+>SQL</ACRONYM
+>命令来恢复数据库。它会对集簇中的每个数据库调用<A
+HREF="app-pgdump.html"
+>pg_dump</A
+>来完成该工作。<SPAN
+CLASS="APPLICATION"
+>pg_dumpall</SPAN
+>还转储对所有数据库公用的全局对象（<A
+HREF="app-pgdump.html"
+>pg_dump</A
+>不保存这些对象）。 目前这包括适数据库用户和组、表空间以及适合所有数据库的访问权限等属性。
+  </P
+><P
+>   因为<SPAN
+CLASS="APPLICATION"
+>pg_dumpall</SPAN
+>从所有数据库中读取表，所以你很可能需要以一个数据库超级用户的身份连接以便生成完整的转储。同样，你也需要超级用户特权执行保存下来的脚本，这样才能增加用户和组以及创建数据库。
+  </P
+><P
+>   SQL 脚本将被写出到标准输出。使用 [-f|file] 选项或者 shell 操作符可以把它重定向到一个文件。
+  </P
+><P
+>  <SPAN
+CLASS="APPLICATION"
+>pg_dumpall</SPAN
+>需要多次连接到<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>服务器（每个数据库一次）。如果你使用口令认证，可能每次都会要求口令。这种情况下使用一个<TT
+CLASS="FILENAME"
+>~/.pgpass</TT
+>会比较方便。详见<A
+HREF="libpq-pgpass.html"
+>第 32.15 &#33410;</A
+>。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN96613"
+></A
+><H2
+>选项</H2
+><P
+>    下列命令行选项用于控制输出的内容和格式。
+
+    <P
+></P
+></P><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="OPTION"
+>-a</TT
+><BR><TT
+CLASS="OPTION"
+>--data-only</TT
+></DT
+><DD
+><P
+>        只转储数据，不转储模式（数据定义）。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-c</TT
+><BR><TT
+CLASS="OPTION"
+>--clean</TT
+></DT
+><DD
+><P
+>        包括在重建数据库之前清除（移除）它们的 SQL 命令。角色和表空间的<TT
+CLASS="COMMAND"
+>DROP</TT
+>命令也会被加入进来。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-f <TT
+CLASS="REPLACEABLE"
+><I
+>filename</I
+></TT
+></TT
+><BR><TT
+CLASS="OPTION"
+>--file=<TT
+CLASS="REPLACEABLE"
+><I
+>filename</I
+></TT
+></TT
+></DT
+><DD
+><P
+>        将输出发送到指定的文件中。如果省略，将使用标准输出。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-g</TT
+><BR><TT
+CLASS="OPTION"
+>--globals-only</TT
+></DT
+><DD
+><P
+>        只转储全局对象（角色和表空间），而不转储数据库。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-o</TT
+><BR><TT
+CLASS="OPTION"
+>--oids</TT
+></DT
+><DD
+><P
+>        将对象标识符（<ACRONYM
+CLASS="ACRONYM"
+>OID</ACRONYM
+>）转储为数据的一部分。如果你的应用以某种方式引用<ACRONYM
+CLASS="ACRONYM"
+>OID</ACRONYM
+>列（例如在外键约束中），请使用这个选项。否则不应该使用这个选项。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-O</TT
+><BR><TT
+CLASS="OPTION"
+>--no-owner</TT
+></DT
+><DD
+><P
+>        不输出用于设置对象所有权以符合原始数据库的命令。默认情况下，<SPAN
+CLASS="APPLICATION"
+>pg_dumpall</SPAN
+>发出<TT
+CLASS="COMMAND"
+>ALTER OWNER</TT
+>或<TT
+CLASS="COMMAND"
+>SET SESSION AUTHORIZATION</TT
+>语句来设置被创建的模式元素的所有权。除非脚本是由一个超级用户（或者是拥有脚本中所有对象的同一个用户）所运行，这些语句在脚本运行时会失败。要使得一个脚本能被任意用户恢复，但又不想给予该用户所有对象的所有权，可以指定<TT
+CLASS="OPTION"
+>-O</TT
+>。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-r</TT
+><BR><TT
+CLASS="OPTION"
+>--roles-only</TT
+></DT
+><DD
+><P
+>        只转储角色，不转储数据库和表空间。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-s</TT
+><BR><TT
+CLASS="OPTION"
+>--schema-only</TT
+></DT
+><DD
+><P
+>        只转储对象定义（模式），不转储数据。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-S <TT
+CLASS="REPLACEABLE"
+><I
+>username</I
+></TT
+></TT
+><BR><TT
+CLASS="OPTION"
+>--superuser=<TT
+CLASS="REPLACEABLE"
+><I
+>username</I
+></TT
+></TT
+></DT
+><DD
+><P
+>        指定要在禁用触发器时使用的超级用户的用户名。只有使用<TT
+CLASS="OPTION"
+>--disable-triggers</TT
+>时，这个选项才相关（通常，最好省去这个选项，而作为超级用户来启动结果脚本来取而代之）。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-t</TT
+><BR><TT
+CLASS="OPTION"
+>--tablespaces-only</TT
+></DT
+><DD
+><P
+>        只转储表空间，不转储数据库和角色。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-v</TT
+><BR><TT
+CLASS="OPTION"
+>--verbose</TT
+></DT
+><DD
+><P
+>        指定细节模式。这将导致<SPAN
+CLASS="APPLICATION"
+>pg_dumpall</SPAN
+>向标准错误输出详细的对象注释以及转储文件的开始/停止时间，还有进度消息。它也会启用<SPAN
+CLASS="APPLICATION"
+>pg_dump</SPAN
+>中的细节输出。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-V</TT
+><BR><TT
+CLASS="OPTION"
+>--version</TT
+></DT
+><DD
+><P
+>       打印<SPAN
+CLASS="APPLICATION"
+>pg_dumpall</SPAN
+>版本并退出。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-x</TT
+><BR><TT
+CLASS="OPTION"
+>--no-privileges</TT
+><BR><TT
+CLASS="OPTION"
+>--no-acl</TT
+></DT
+><DD
+><P
+>        防止转储访问特权（授予/收回命令）。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>--binary-upgrade</TT
+></DT
+><DD
+><P
+>        这个选项用于就地升级功能。我们不推荐也不支持把它用于其他目的。这个选项在未来的发行中可能被改变而不做通知。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>--column-inserts</TT
+><BR><TT
+CLASS="OPTION"
+>--attribute-inserts</TT
+></DT
+><DD
+><P
+>        将数据转储为带有显式列名的<TT
+CLASS="COMMAND"
+>INSERT</TT
+>命令（<TT
+CLASS="LITERAL"
+>INSERT INTO <TT
+CLASS="REPLACEABLE"
+><I
+>table</I
+></TT
+>(<TT
+CLASS="REPLACEABLE"
+><I
+>column</I
+></TT
+>, ...) VALUES ...</TT
+>）。这将使得恢复过程非常慢，这主要用于使转储能够被载入到非<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>数据库中。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>--disable-dollar-quoting</TT
+></DT
+><DD
+><P
+>        这个选项禁止在函数体中使用美元符号引用，并且强制它们使用 SQL 标准字符串语法被引用。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>--disable-triggers</TT
+></DT
+><DD
+><P
+>        只有在创建一个只转储数据的转储时，这个选项才相关。它指示<SPAN
+CLASS="APPLICATION"
+>pg_dumpall</SPAN
+>包括在数据被重新载入时能够临时禁用目标表上的触发器的命令。如果你在表上有引用完整性检查或其他触发器，并且你在数据重新载入期间不想调用它们，请使用这个选项。
+       </P
+><P
+>        当前，为<TT
+CLASS="OPTION"
+>--disable-triggers</TT
+>发出的命令必须作为超级用户来执行。因此，你还应当使用<TT
+CLASS="OPTION"
+>-S</TT
+>指定一个超级用户名，或者宁可作为一个超级用户启动结果脚本。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>--if-exists</TT
+></DT
+><DD
+><P
+>        时间条件性命令（即增加一个<TT
+CLASS="LITERAL"
+>IF EXISTS</TT
+>子句）来清除数据库和其他对象。
+        只有同时指定了<TT
+CLASS="OPTION"
+>--clean</TT
+>时，这个选项才可用。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>--inserts</TT
+></DT
+><DD
+><P
+>        将数据转储为<TT
+CLASS="COMMAND"
+>INSERT</TT
+>命令（而不是<TT
+CLASS="COMMAND"
+>COPY</TT
+>）。这将使得恢复非常慢，这主要用于使转储能够被载入到非<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>数据库中。注意如果你已经重新安排了列序，该恢复可能会一起失败。<TT
+CLASS="OPTION"
+>--column-inserts</TT
+>选项对于列序改变是安全的，但是会更慢。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>--lock-wait-timeout=<TT
+CLASS="REPLACEABLE"
+><I
+>timeout</I
+></TT
+></TT
+></DT
+><DD
+><P
+>        在转储的开始从不等待共享表锁的获得。而是在指定的<TT
+CLASS="REPLACEABLE"
+><I
+>timeout</I
+></TT
+>内不能锁定一个表时失败。超时时长可以用<TT
+CLASS="COMMAND"
+>SET statement_timeout</TT
+>接受的任何格式指定（允许的值根据你从其转出的服务器版本变化，但是从 7.3 以来的所有版本都接受一个整数表示的毫秒数。如果从 7.3 以前的服务器转出，这个选项会被忽略。）。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>--no-security-labels</TT
+></DT
+><DD
+><P
+>        不转储安全标签。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>--no-tablespaces</TT
+></DT
+><DD
+><P
+>        不要输出选择表空间的命令。通过这个选项，在恢复期间所有的对象都会被创建在任何作为默认的表空间中。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>--no-unlogged-table-data</TT
+></DT
+><DD
+><P
+>        不转储非日志记录表的内容。这个选项对于表定义（模式）是否被转储没有影响，它只会限制转储表数据。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>--quote-all-identifiers</TT
+></DT
+><DD
+><P
+>        强制引用所有标识符。在从一个与<SPAN
+CLASS="APPLICATION"
+>pg_dumpall</SPAN
+>主版本不同的<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>服务器转储数据库时或者要将输出载入到一个不同主版本的服务器时，推荐使用这个选项。默认情况下，<SPAN
+CLASS="APPLICATION"
+>pg_dumpall</SPAN
+>只会对为其主版本中保留词的标识符加上引号。在与其他版本的具有不同保留词集合的服务器交互时，这有时会导致兼容性问题。使用<TT
+CLASS="OPTION"
+>--quote-all-identifiers</TT
+>可以阻止这类问题，但是代价是转储脚本会更加难读。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>--use-set-session-authorization</TT
+></DT
+><DD
+><P
+>        输出 SQL-标准的<TT
+CLASS="COMMAND"
+>SET SESSION AUTHORIZATION</TT
+>命令取代<TT
+CLASS="COMMAND"
+>ALTER OWNER</TT
+>命令来确定对象的所有关系。这让该转储更加兼容标准，但是取决于该转储中对象的历史，该转储可能无法正常恢复。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-?</TT
+><BR><TT
+CLASS="OPTION"
+>--help</TT
+></DT
+><DD
+><P
+>       显示有关<SPAN
+CLASS="APPLICATION"
+>pg_dumpall</SPAN
+>命令行参数的帮助并退出。
+       </P
+></DD
+></DL
+></DIV
+><P>
+   </P
+><P
+>   下列命令行选项控制数据库连接参数。
+
+   <P
+></P
+></P><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="OPTION"
+>-d <TT
+CLASS="REPLACEABLE"
+><I
+>connstr</I
+></TT
+></TT
+><BR><TT
+CLASS="OPTION"
+>--dbname=<TT
+CLASS="REPLACEABLE"
+><I
+>connstr</I
+></TT
+></TT
+></DT
+><DD
+><P
+>        以一个连接字符串的形式，指定用来连接到服务器的参数。详见<A
+HREF="libpq-connect.html#LIBPQ-CONNSTRING"
+>第 32.1.1 &#33410;</A
+>。
+       </P
+><P
+>        这个选项被称为<TT
+CLASS="LITERAL"
+>--dbname</TT
+>是为了和其他客户端应用一致，但是因为<SPAN
+CLASS="APPLICATION"
+>pg_dumpall</SPAN
+>需要连接多个数据库，连接字符串中的数据库名将被忽略。使用<TT
+CLASS="LITERAL"
+>-l</TT
+>选项指定一个数据库，该数据库被用来转储全局对象并且发现需要转储哪些其他数据库。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-h <TT
+CLASS="REPLACEABLE"
+><I
+>host</I
+></TT
+></TT
+><BR><TT
+CLASS="OPTION"
+>--host=<TT
+CLASS="REPLACEABLE"
+><I
+>host</I
+></TT
+></TT
+></DT
+><DD
+><P
+>        指定服务器正在运行的机器的主机名。如果该值开始于一个斜线，它被用作一个 Unix 域套接字的目录。默认是从<TT
+CLASS="ENVAR"
+>PGHOST</TT
+>环境变量中取得（如果被设置），否则将尝试一次 Unix 域套接字连接。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-l <TT
+CLASS="REPLACEABLE"
+><I
+>dbname</I
+></TT
+></TT
+><BR><TT
+CLASS="OPTION"
+>--database=<TT
+CLASS="REPLACEABLE"
+><I
+>dbname</I
+></TT
+></TT
+></DT
+><DD
+><P
+>         指定要连接到哪个数据库转储全局对象以及发现要转储哪些其他数据库。如果没有指定，将会使用<TT
+CLASS="LITERAL"
+>postgres</TT
+>数据库，如果<TT
+CLASS="LITERAL"
+>postgres</TT
+>不存在，就使用 <TT
+CLASS="LITERAL"
+>template1</TT
+>。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-p <TT
+CLASS="REPLACEABLE"
+><I
+>port</I
+></TT
+></TT
+><BR><TT
+CLASS="OPTION"
+>--port=<TT
+CLASS="REPLACEABLE"
+><I
+>port</I
+></TT
+></TT
+></DT
+><DD
+><P
+>        指定服务器正在监听连接的 TCP 端口或本地 Unix 域套接字文件扩展名。默认是放在<TT
+CLASS="ENVAR"
+>PGPORT</TT
+>环境变量中（如果被设置），否则使用编译在程序中的默认值。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-U <TT
+CLASS="REPLACEABLE"
+><I
+>username</I
+></TT
+></TT
+><BR><TT
+CLASS="OPTION"
+>--username=<TT
+CLASS="REPLACEABLE"
+><I
+>username</I
+></TT
+></TT
+></DT
+><DD
+><P
+>        要作为哪个用户连接。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-w</TT
+><BR><TT
+CLASS="OPTION"
+>--no-password</TT
+></DT
+><DD
+><P
+>        从不发出一个口令提示。如果服务器要求口令认证并且没有其他方式提供口令（例如一个<TT
+CLASS="FILENAME"
+>.pgpass</TT
+>文件），那儿连接尝试将失败。这个选项对于批处理任务和脚本有用，因为在其中没有一个用户来输入口令。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-W</TT
+><BR><TT
+CLASS="OPTION"
+>--password</TT
+></DT
+><DD
+><P
+>        强制<SPAN
+CLASS="APPLICATION"
+>pg_dumpall</SPAN
+>在连接到一个数据库之前提示要求一个口令。
+       </P
+><P
+>        这个选项从来不是必须的，因为如果服务器要求口令认证，<SPAN
+CLASS="APPLICATION"
+>pg_dumpall</SPAN
+>将自动提示要求一个口令。但是，<SPAN
+CLASS="APPLICATION"
+>pg_dumpall</SPAN
+>将浪费一次连接尝试来发现服务器想要一个口令。在某些情况下，值得键入<TT
+CLASS="OPTION"
+>-W</TT
+>来避免额外的连接尝试。
+       </P
+><P
+>        注意对每个要被转储的数据库，口令提示都会再次出现。通常，最好设置一个<TT
+CLASS="FILENAME"
+>~/.pgpass</TT
+>文件来减少手工口令输入。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>--role=<TT
+CLASS="REPLACEABLE"
+><I
+>rolename</I
+></TT
+></TT
+></DT
+><DD
+><P
+>        指定一个用来创建该转储的角色名。这个选项导致<SPAN
+CLASS="APPLICATION"
+>pg_dump</SPAN
+>在连接到数据库后发出一个<TT
+CLASS="COMMAND"
+>SET ROLE</TT
+> <TT
+CLASS="REPLACEABLE"
+><I
+>rolename</I
+></TT
+>命令。当已认证用户（由<TT
+CLASS="OPTION"
+>-U</TT
+>指定）缺少<SPAN
+CLASS="APPLICATION"
+>pg_dump</SPAN
+>所需的特权但是能够切换到一个具有所需权利的角色时，这个选项很有用。一些安装有针对直接作为超级用户登录的策略，使用这个选项可以让转储在不违反该策略的前提下完成。
+       </P
+></DD
+></DL
+></DIV
+><P>
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN96909"
+></A
+><H2
+>环境</H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="ENVAR"
+>PGHOST</TT
+><BR><TT
+CLASS="ENVAR"
+>PGOPTIONS</TT
+><BR><TT
+CLASS="ENVAR"
+>PGPORT</TT
+><BR><TT
+CLASS="ENVAR"
+>PGUSER</TT
+></DT
+><DD
+><P
+>      默认连接参数
+     </P
+></DD
+></DL
+></DIV
+><P
+>   和大部分其他<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>工具相似，这个工具也使用<SPAN
+CLASS="APPLICATION"
+>libpq</SPAN
+>（见<A
+HREF="libpq-envars.html"
+>第 32.14 &#33410;</A
+>）支持的环境变量。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN96927"
+></A
+><H2
+>注解</H2
+><P
+>   因为<SPAN
+CLASS="APPLICATION"
+>pg_dumpall</SPAN
+>在内部调用<SPAN
+CLASS="APPLICATION"
+>pg_dump</SPAN
+>，所以， 一些诊断消息可以参考<SPAN
+CLASS="APPLICATION"
+>pg_dump</SPAN
+>。
+  </P
+><P
+>   一旦恢复，建议在每个数据库上运行<TT
+CLASS="COMMAND"
+>ANALYZE</TT
+>，这样优化器就可以得到有用的统计信息。你也可以运行<TT
+CLASS="COMMAND"
+>vacuumdb -a -z</TT
+>来分析所有数据库。
+  </P
+><P
+>   <SPAN
+CLASS="APPLICATION"
+>pg_dumpall</SPAN
+>要求所有需要的表空间目录在进行恢复之前就必须存在；否则，数据库创建就会由于在非默认位置创建数据库而失败。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="APP-PG-DUMPALL-EX"
+></A
+><H2
+>例子</H2
+><P
+>   要转储所有数据库：
+
+</P><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>$</SAMP
+> <KBD
+CLASS="USERINPUT"
+>pg_dumpall &gt; db.out</KBD
+></PRE
+><P>
+  </P
+><P
+>   要从这个文件重新载入数据库，你可以使用：
+</P><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>$</SAMP
+> <KBD
+CLASS="USERINPUT"
+>psql -f db.out postgres</KBD
+></PRE
+><P>
+   （这里你连接哪一个数据库并不重要，因为由<SPAN
+CLASS="APPLICATION"
+>pg_dumpall</SPAN
+>创建的脚本将包含合适的命令来创建和连接到被保存的数据库）。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN96949"
+></A
+><H2
+>参见</H2
+><P
+>    可能的错误情况请查看<A
+HREF="app-pgdump.html"
+>pg_dump</A
+>。
+  </P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="app-pgdump.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="app-pg-isready.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>pg_dump</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="reference-client.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><SPAN
+CLASS="APPLICATION"
+>pg_isready</SPAN
+></TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

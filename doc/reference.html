@@ -1,0 +1,1396 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>参考</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="PREVIOUS"
+TITLE="复制进度追踪"
+HREF="replication-origins.html"><LINK
+REL="NEXT"
+TITLE="SQL 命令"
+HREF="sql-commands.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="PART"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/reference.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="复制进度追踪"
+HREF="replication-origins.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="SQL 命令"
+HREF="sql-commands.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="PART"
+><A
+NAME="REFERENCE"
+></A
+><DIV
+CLASS="TITLEPAGE"
+><H1
+CLASS="TITLE"
+>VI. 参考</H1
+><DIV
+CLASS="PARTINTRO"
+><A
+NAME="AEN71879"
+></A
+><P
+>   这份参考中的条目意欲提供关于相应主题的权威、完整和正式的总结。关于使用<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>的更多信息（以叙述、教程或例子的形式）可以在本书的其他部分找到。见每个参考页面上列出的交叉引用。
+  </P
+><P
+>   这些参考条目也在传统<SPAN
+CLASS="QUOTE"
+>"man"</SPAN
+>页面中可用。
+  </P
+></DIV
+><DIV
+CLASS="TOC"
+><DL
+><DT
+><B
+>&#30446;&#24405;</B
+></DT
+><DT
+>I. <A
+HREF="sql-commands.html"
+>SQL 命令</A
+></DT
+><DD
+><DL
+><DT
+><A
+HREF="sql-abort.html"
+>ABORT</A
+>&nbsp;--&nbsp;中止当前事务</DT
+><DT
+><A
+HREF="sql-alteraggregate.html"
+>ALTER AGGREGATE</A
+>&nbsp;--&nbsp;更改一个聚集函数的定义</DT
+><DT
+><A
+HREF="sql-altercollation.html"
+>ALTER COLLATION</A
+>&nbsp;--&nbsp;更改一个排序规则的定义</DT
+><DT
+><A
+HREF="sql-alterconversion.html"
+>ALTER CONVERSION</A
+>&nbsp;--&nbsp;改变一个转换的定义</DT
+><DT
+><A
+HREF="sql-alterdatabase.html"
+>ALTER DATABASE</A
+>&nbsp;--&nbsp;更改一个数据库</DT
+><DT
+><A
+HREF="sql-alterdefaultprivileges.html"
+>ALTER DEFAULT PRIVILEGES</A
+>&nbsp;--&nbsp;定义默认访问特权</DT
+><DT
+><A
+HREF="sql-alterdomain.html"
+>ALTER DOMAIN</A
+>&nbsp;--&nbsp;   更改一个域的定义
+  </DT
+><DT
+><A
+HREF="sql-altereventtrigger.html"
+>ALTER EVENT TRIGGER</A
+>&nbsp;--&nbsp;更改一个事件触发器的定义</DT
+><DT
+><A
+HREF="sql-alterextension.html"
+>ALTER EXTENSION</A
+>&nbsp;--&nbsp;   更改一个扩展的定义
+  </DT
+><DT
+><A
+HREF="sql-alterforeigndatawrapper.html"
+>ALTER FOREIGN DATA WRAPPER</A
+>&nbsp;--&nbsp;更改一个外部数据包装器的定义</DT
+><DT
+><A
+HREF="sql-alterforeigntable.html"
+>ALTER FOREIGN TABLE</A
+>&nbsp;--&nbsp;更改一个外部表的定义</DT
+><DT
+><A
+HREF="sql-alterfunction.html"
+>ALTER FUNCTION</A
+>&nbsp;--&nbsp;更改一个函数的定义</DT
+><DT
+><A
+HREF="sql-altergroup.html"
+>ALTER GROUP</A
+>&nbsp;--&nbsp;更改角色名称或者成员关系</DT
+><DT
+><A
+HREF="sql-alterindex.html"
+>ALTER INDEX</A
+>&nbsp;--&nbsp;更改一个索引的定义</DT
+><DT
+><A
+HREF="sql-alterlanguage.html"
+>ALTER LANGUAGE</A
+>&nbsp;--&nbsp;更改一种过程语言的定义</DT
+><DT
+><A
+HREF="sql-alterlargeobject.html"
+>ALTER LARGE OBJECT</A
+>&nbsp;--&nbsp;更改一个大对象的定义</DT
+><DT
+><A
+HREF="sql-altermaterializedview.html"
+>ALTER MATERIALIZED VIEW</A
+>&nbsp;--&nbsp;更改一个物化视图的定义</DT
+><DT
+><A
+HREF="sql-alteroperator.html"
+>ALTER OPERATOR</A
+>&nbsp;--&nbsp;更改一个操作符的定义</DT
+><DT
+><A
+HREF="sql-alteropclass.html"
+>ALTER OPERATOR CLASS</A
+>&nbsp;--&nbsp;更改一个操作符类的定义</DT
+><DT
+><A
+HREF="sql-alteropfamily.html"
+>ALTER OPERATOR FAMILY</A
+>&nbsp;--&nbsp;更改一个操作符族的定义</DT
+><DT
+><A
+HREF="sql-alterpolicy.html"
+>ALTER POLICY</A
+>&nbsp;--&nbsp;更改一条行级安全性策略的定义</DT
+><DT
+><A
+HREF="sql-alterrole.html"
+>ALTER ROLE</A
+>&nbsp;--&nbsp;更改一个数据库角色</DT
+><DT
+><A
+HREF="sql-alterrule.html"
+>ALTER RULE</A
+>&nbsp;--&nbsp;更改一个规则定义</DT
+><DT
+><A
+HREF="sql-alterschema.html"
+>ALTER SCHEMA</A
+>&nbsp;--&nbsp;更改一个模式的定义</DT
+><DT
+><A
+HREF="sql-altersequence.html"
+>ALTER SEQUENCE</A
+>&nbsp;--&nbsp;   更改一个序列发生器的定义
+  </DT
+><DT
+><A
+HREF="sql-alterserver.html"
+>ALTER SERVER</A
+>&nbsp;--&nbsp;更改一个外部服务器的定义</DT
+><DT
+><A
+HREF="sql-altersystem.html"
+>ALTER SYSTEM</A
+>&nbsp;--&nbsp;更改一个服务器配置参数</DT
+><DT
+><A
+HREF="sql-altertable.html"
+>ALTER TABLE</A
+>&nbsp;--&nbsp;更改一个表的定义</DT
+><DT
+><A
+HREF="sql-altertablespace.html"
+>ALTER TABLESPACE</A
+>&nbsp;--&nbsp;更改一个表空间的定义</DT
+><DT
+><A
+HREF="sql-altertsconfig.html"
+>ALTER TEXT SEARCH CONFIGURATION</A
+>&nbsp;--&nbsp;更改一个文本搜索配置的定义</DT
+><DT
+><A
+HREF="sql-altertsdictionary.html"
+>ALTER TEXT SEARCH DICTIONARY</A
+>&nbsp;--&nbsp;更改一个文本搜索字典的定义</DT
+><DT
+><A
+HREF="sql-altertsparser.html"
+>ALTER TEXT SEARCH PARSER</A
+>&nbsp;--&nbsp;更改一个文本搜索解析器的定义</DT
+><DT
+><A
+HREF="sql-altertstemplate.html"
+>ALTER TEXT SEARCH TEMPLATE</A
+>&nbsp;--&nbsp;更改一个文本搜索模板的定义</DT
+><DT
+><A
+HREF="sql-altertrigger.html"
+>ALTER TRIGGER</A
+>&nbsp;--&nbsp;更改一个触发器的定义</DT
+><DT
+><A
+HREF="sql-altertype.html"
+>ALTER TYPE</A
+>&nbsp;--&nbsp;   更改一个类型的定义
+  </DT
+><DT
+><A
+HREF="sql-alteruser.html"
+>ALTER USER</A
+>&nbsp;--&nbsp;更改一个数据库角色</DT
+><DT
+><A
+HREF="sql-alterusermapping.html"
+>ALTER USER MAPPING</A
+>&nbsp;--&nbsp;更改一个用户映射的定义</DT
+><DT
+><A
+HREF="sql-alterview.html"
+>ALTER VIEW</A
+>&nbsp;--&nbsp;更改一个视图的定义</DT
+><DT
+><A
+HREF="sql-analyze.html"
+>ANALYZE</A
+>&nbsp;--&nbsp;收集有关一个数据库的统计信息</DT
+><DT
+><A
+HREF="sql-begin.html"
+>BEGIN</A
+>&nbsp;--&nbsp;开始一个事务块</DT
+><DT
+><A
+HREF="sql-checkpoint.html"
+>CHECKPOINT</A
+>&nbsp;--&nbsp;强制一个事务日志检查点</DT
+><DT
+><A
+HREF="sql-close.html"
+>CLOSE</A
+>&nbsp;--&nbsp;关闭一个游标</DT
+><DT
+><A
+HREF="sql-cluster.html"
+>CLUSTER</A
+>&nbsp;--&nbsp;根据一个索引聚簇一个表</DT
+><DT
+><A
+HREF="sql-comment.html"
+>COMMENT</A
+>&nbsp;--&nbsp;定义或者更改一个对象的注释</DT
+><DT
+><A
+HREF="sql-commit.html"
+>COMMIT</A
+>&nbsp;--&nbsp;提交当前事务</DT
+><DT
+><A
+HREF="sql-commit-prepared.html"
+>COMMIT PREPARED</A
+>&nbsp;--&nbsp;提交一个早前为两阶段提交预备的事务</DT
+><DT
+><A
+HREF="sql-copy.html"
+>COPY</A
+>&nbsp;--&nbsp;在一个文件和一个表之间复制数据</DT
+><DT
+><A
+HREF="sql-create-access-method.html"
+>CREATE ACCESS METHOD</A
+>&nbsp;--&nbsp;定义一种新的访问方法</DT
+><DT
+><A
+HREF="sql-createaggregate.html"
+>CREATE AGGREGATE</A
+>&nbsp;--&nbsp;定义一个新的聚集函数</DT
+><DT
+><A
+HREF="sql-createcast.html"
+>CREATE CAST</A
+>&nbsp;--&nbsp;定义一种新的造型</DT
+><DT
+><A
+HREF="sql-createcollation.html"
+>CREATE COLLATION</A
+>&nbsp;--&nbsp;定义一种新排序规则</DT
+><DT
+><A
+HREF="sql-createconversion.html"
+>CREATE CONVERSION</A
+>&nbsp;--&nbsp;定义一种新的编码转换</DT
+><DT
+><A
+HREF="sql-createdatabase.html"
+>CREATE DATABASE</A
+>&nbsp;--&nbsp;创建一个新数据库</DT
+><DT
+><A
+HREF="sql-createdomain.html"
+>CREATE DOMAIN</A
+>&nbsp;--&nbsp;定义一个新的域</DT
+><DT
+><A
+HREF="sql-createeventtrigger.html"
+>CREATE EVENT TRIGGER</A
+>&nbsp;--&nbsp;定义一个新的事件触发器</DT
+><DT
+><A
+HREF="sql-createextension.html"
+>CREATE EXTENSION</A
+>&nbsp;--&nbsp;安装一个扩展</DT
+><DT
+><A
+HREF="sql-createforeigndatawrapper.html"
+>CREATE FOREIGN DATA WRAPPER</A
+>&nbsp;--&nbsp;定义一个新的外部数据包装器</DT
+><DT
+><A
+HREF="sql-createforeigntable.html"
+>CREATE FOREIGN TABLE</A
+>&nbsp;--&nbsp;定义一个新的外部表</DT
+><DT
+><A
+HREF="sql-createfunction.html"
+>CREATE FUNCTION</A
+>&nbsp;--&nbsp;定义一个新函数</DT
+><DT
+><A
+HREF="sql-creategroup.html"
+>CREATE GROUP</A
+>&nbsp;--&nbsp;定义一个新的数据库角色</DT
+><DT
+><A
+HREF="sql-createindex.html"
+>CREATE INDEX</A
+>&nbsp;--&nbsp;定义一个新索引</DT
+><DT
+><A
+HREF="sql-createlanguage.html"
+>CREATE LANGUAGE</A
+>&nbsp;--&nbsp;定义一种新的过程语言</DT
+><DT
+><A
+HREF="sql-creatematerializedview.html"
+>CREATE MATERIALIZED VIEW</A
+>&nbsp;--&nbsp;定义一个新的物化视图</DT
+><DT
+><A
+HREF="sql-createoperator.html"
+>CREATE OPERATOR</A
+>&nbsp;--&nbsp;定义一个新的操作符</DT
+><DT
+><A
+HREF="sql-createopclass.html"
+>CREATE OPERATOR CLASS</A
+>&nbsp;--&nbsp;定义一个新的操作符类</DT
+><DT
+><A
+HREF="sql-createopfamily.html"
+>CREATE OPERATOR FAMILY</A
+>&nbsp;--&nbsp;定义一个新的操作符族</DT
+><DT
+><A
+HREF="sql-createpolicy.html"
+>CREATE POLICY</A
+>&nbsp;--&nbsp;为一个表定义一条新的行级安全性策略</DT
+><DT
+><A
+HREF="sql-createrole.html"
+>CREATE ROLE</A
+>&nbsp;--&nbsp;定义一个新的数据库角色</DT
+><DT
+><A
+HREF="sql-createrule.html"
+>CREATE RULE</A
+>&nbsp;--&nbsp;定义一条新的重写规则</DT
+><DT
+><A
+HREF="sql-createschema.html"
+>CREATE SCHEMA</A
+>&nbsp;--&nbsp;定义一个新模式</DT
+><DT
+><A
+HREF="sql-createsequence.html"
+>CREATE SEQUENCE</A
+>&nbsp;--&nbsp;定义一个新的序列发生器</DT
+><DT
+><A
+HREF="sql-createserver.html"
+>CREATE SERVER</A
+>&nbsp;--&nbsp;定义一个新的外部服务器</DT
+><DT
+><A
+HREF="sql-createtable.html"
+>CREATE TABLE</A
+>&nbsp;--&nbsp;定义一个新表</DT
+><DT
+><A
+HREF="sql-createtableas.html"
+>CREATE TABLE AS</A
+>&nbsp;--&nbsp;从一个查询的结果创建一个新表</DT
+><DT
+><A
+HREF="sql-createtablespace.html"
+>CREATE TABLESPACE</A
+>&nbsp;--&nbsp;定义一个新的表空间</DT
+><DT
+><A
+HREF="sql-createtsconfig.html"
+>CREATE TEXT SEARCH CONFIGURATION</A
+>&nbsp;--&nbsp;定义一个新的文本搜索配置</DT
+><DT
+><A
+HREF="sql-createtsdictionary.html"
+>CREATE TEXT SEARCH DICTIONARY</A
+>&nbsp;--&nbsp;定义一个新的文本搜索字典</DT
+><DT
+><A
+HREF="sql-createtsparser.html"
+>CREATE TEXT SEARCH PARSER</A
+>&nbsp;--&nbsp;定义一个新的文本搜索解析器</DT
+><DT
+><A
+HREF="sql-createtstemplate.html"
+>CREATE TEXT SEARCH TEMPLATE</A
+>&nbsp;--&nbsp;定义一种新的文本搜索模板</DT
+><DT
+><A
+HREF="sql-createtransform.html"
+>CREATE TRANSFORM</A
+>&nbsp;--&nbsp;定义一个新的转换</DT
+><DT
+><A
+HREF="sql-createtrigger.html"
+>CREATE TRIGGER</A
+>&nbsp;--&nbsp;定义一个新触发器</DT
+><DT
+><A
+HREF="sql-createtype.html"
+>CREATE TYPE</A
+>&nbsp;--&nbsp;定义一种新的数据类型</DT
+><DT
+><A
+HREF="sql-createuser.html"
+>CREATE USER</A
+>&nbsp;--&nbsp;定义一个新的数据库角色</DT
+><DT
+><A
+HREF="sql-createusermapping.html"
+>CREATE USER MAPPING</A
+>&nbsp;--&nbsp;定义一个用户到一个外部服务器的新映射</DT
+><DT
+><A
+HREF="sql-createview.html"
+>CREATE VIEW</A
+>&nbsp;--&nbsp;定义一个新视图</DT
+><DT
+><A
+HREF="sql-deallocate.html"
+>DEALLOCATE</A
+>&nbsp;--&nbsp;释放一个预备语句</DT
+><DT
+><A
+HREF="sql-declare.html"
+>DECLARE</A
+>&nbsp;--&nbsp;定义一个游标</DT
+><DT
+><A
+HREF="sql-delete.html"
+>DELETE</A
+>&nbsp;--&nbsp;删除一个表的行</DT
+><DT
+><A
+HREF="sql-discard.html"
+>DISCARD</A
+>&nbsp;--&nbsp;抛弃会话状态</DT
+><DT
+><A
+HREF="sql-do.html"
+>DO</A
+>&nbsp;--&nbsp;执行一个匿名代码块</DT
+><DT
+><A
+HREF="sql-drop-access-method.html"
+>DROP ACCESS METHOD</A
+>&nbsp;--&nbsp;移除一种访问方法</DT
+><DT
+><A
+HREF="sql-dropaggregate.html"
+>DROP AGGREGATE</A
+>&nbsp;--&nbsp;移除一个聚集函数</DT
+><DT
+><A
+HREF="sql-dropcast.html"
+>DROP CAST</A
+>&nbsp;--&nbsp;移除一个造型</DT
+><DT
+><A
+HREF="sql-dropcollation.html"
+>DROP COLLATION</A
+>&nbsp;--&nbsp;移除一个排序规则</DT
+><DT
+><A
+HREF="sql-dropconversion.html"
+>DROP CONVERSION</A
+>&nbsp;--&nbsp;移除一个转换</DT
+><DT
+><A
+HREF="sql-dropdatabase.html"
+>DROP DATABASE</A
+>&nbsp;--&nbsp;移除一个数据库</DT
+><DT
+><A
+HREF="sql-dropdomain.html"
+>DROP DOMAIN</A
+>&nbsp;--&nbsp;移除一个域</DT
+><DT
+><A
+HREF="sql-dropeventtrigger.html"
+>DROP EVENT TRIGGER</A
+>&nbsp;--&nbsp;移除一个事件触发器</DT
+><DT
+><A
+HREF="sql-dropextension.html"
+>DROP EXTENSION</A
+>&nbsp;--&nbsp;移除一个扩展</DT
+><DT
+><A
+HREF="sql-dropforeigndatawrapper.html"
+>DROP FOREIGN DATA WRAPPER</A
+>&nbsp;--&nbsp;移除一个外部数据包装器</DT
+><DT
+><A
+HREF="sql-dropforeigntable.html"
+>DROP FOREIGN TABLE</A
+>&nbsp;--&nbsp;移除一个外部表</DT
+><DT
+><A
+HREF="sql-dropfunction.html"
+>DROP FUNCTION</A
+>&nbsp;--&nbsp;移除一个函数</DT
+><DT
+><A
+HREF="sql-dropgroup.html"
+>DROP GROUP</A
+>&nbsp;--&nbsp;移除一个数据库角色</DT
+><DT
+><A
+HREF="sql-dropindex.html"
+>DROP INDEX</A
+>&nbsp;--&nbsp;移除一个索引</DT
+><DT
+><A
+HREF="sql-droplanguage.html"
+>DROP LANGUAGE</A
+>&nbsp;--&nbsp;移除一个过程语言</DT
+><DT
+><A
+HREF="sql-dropmaterializedview.html"
+>DROP MATERIALIZED VIEW</A
+>&nbsp;--&nbsp;移除一个物化视图</DT
+><DT
+><A
+HREF="sql-dropoperator.html"
+>DROP OPERATOR</A
+>&nbsp;--&nbsp;移除一个操作符</DT
+><DT
+><A
+HREF="sql-dropopclass.html"
+>DROP OPERATOR CLASS</A
+>&nbsp;--&nbsp;移除一个操作符类</DT
+><DT
+><A
+HREF="sql-dropopfamily.html"
+>DROP OPERATOR FAMILY</A
+>&nbsp;--&nbsp;移除一个操作符族</DT
+><DT
+><A
+HREF="sql-drop-owned.html"
+>DROP OWNED</A
+>&nbsp;--&nbsp;移除一个数据库角色拥有的数据库对象</DT
+><DT
+><A
+HREF="sql-droppolicy.html"
+>DROP POLICY</A
+>&nbsp;--&nbsp;从一个表移除一条行级安全性策略</DT
+><DT
+><A
+HREF="sql-droprole.html"
+>DROP ROLE</A
+>&nbsp;--&nbsp;移除一个数据库角色</DT
+><DT
+><A
+HREF="sql-droprule.html"
+>DROP RULE</A
+>&nbsp;--&nbsp;移除一个重写规则</DT
+><DT
+><A
+HREF="sql-dropschema.html"
+>DROP SCHEMA</A
+>&nbsp;--&nbsp;移除一个模式</DT
+><DT
+><A
+HREF="sql-dropsequence.html"
+>DROP SEQUENCE</A
+>&nbsp;--&nbsp;移除一个序列</DT
+><DT
+><A
+HREF="sql-dropserver.html"
+>DROP SERVER</A
+>&nbsp;--&nbsp;移除一个外部服务器描述符</DT
+><DT
+><A
+HREF="sql-droptable.html"
+>DROP TABLE</A
+>&nbsp;--&nbsp;移除一个表</DT
+><DT
+><A
+HREF="sql-droptablespace.html"
+>DROP TABLESPACE</A
+>&nbsp;--&nbsp;移除一个表空间</DT
+><DT
+><A
+HREF="sql-droptsconfig.html"
+>DROP TEXT SEARCH CONFIGURATION</A
+>&nbsp;--&nbsp;移除一个文本搜索配置</DT
+><DT
+><A
+HREF="sql-droptsdictionary.html"
+>DROP TEXT SEARCH DICTIONARY</A
+>&nbsp;--&nbsp;移除一个文本搜索字典</DT
+><DT
+><A
+HREF="sql-droptsparser.html"
+>DROP TEXT SEARCH PARSER</A
+>&nbsp;--&nbsp;移除一个文本搜索解析器</DT
+><DT
+><A
+HREF="sql-droptstemplate.html"
+>DROP TEXT SEARCH TEMPLATE</A
+>&nbsp;--&nbsp;移除一个文本搜索模板</DT
+><DT
+><A
+HREF="sql-droptransform.html"
+>DROP TRANSFORM</A
+>&nbsp;--&nbsp;移除转换</DT
+><DT
+><A
+HREF="sql-droptrigger.html"
+>DROP TRIGGER</A
+>&nbsp;--&nbsp;移除一个触发器</DT
+><DT
+><A
+HREF="sql-droptype.html"
+>DROP TYPE</A
+>&nbsp;--&nbsp;移除一个数据类型</DT
+><DT
+><A
+HREF="sql-dropuser.html"
+>DROP USER</A
+>&nbsp;--&nbsp;移除一个数据库角色</DT
+><DT
+><A
+HREF="sql-dropusermapping.html"
+>DROP USER MAPPING</A
+>&nbsp;--&nbsp;移除一个用于外部服务器的用户映射</DT
+><DT
+><A
+HREF="sql-dropview.html"
+>DROP VIEW</A
+>&nbsp;--&nbsp;移除一个视图</DT
+><DT
+><A
+HREF="sql-end.html"
+>END</A
+>&nbsp;--&nbsp;提交当前事务</DT
+><DT
+><A
+HREF="sql-execute.html"
+>EXECUTE</A
+>&nbsp;--&nbsp;执行一个预备语句</DT
+><DT
+><A
+HREF="sql-explain.html"
+>EXPLAIN</A
+>&nbsp;--&nbsp;显示一个语句的执行计划</DT
+><DT
+><A
+HREF="sql-fetch.html"
+>FETCH</A
+>&nbsp;--&nbsp;使用游标从查询中检索行</DT
+><DT
+><A
+HREF="sql-grant.html"
+>GRANT</A
+>&nbsp;--&nbsp;定义访问特权</DT
+><DT
+><A
+HREF="sql-importforeignschema.html"
+>IMPORT FOREIGN SCHEMA</A
+>&nbsp;--&nbsp;从一个外部服务器导入表定义</DT
+><DT
+><A
+HREF="sql-insert.html"
+>INSERT</A
+>&nbsp;--&nbsp;在一个表中创建新行</DT
+><DT
+><A
+HREF="sql-listen.html"
+>LISTEN</A
+>&nbsp;--&nbsp;监听一个通知</DT
+><DT
+><A
+HREF="sql-load.html"
+>LOAD</A
+>&nbsp;--&nbsp;载入一个共享库文件</DT
+><DT
+><A
+HREF="sql-lock.html"
+>LOCK</A
+>&nbsp;--&nbsp;锁定一个表</DT
+><DT
+><A
+HREF="sql-move.html"
+>MOVE</A
+>&nbsp;--&nbsp;定位一个游标</DT
+><DT
+><A
+HREF="sql-notify.html"
+>NOTIFY</A
+>&nbsp;--&nbsp;生成一个通知</DT
+><DT
+><A
+HREF="sql-prepare.html"
+>PREPARE</A
+>&nbsp;--&nbsp;为执行准备一个语句</DT
+><DT
+><A
+HREF="sql-prepare-transaction.html"
+>PREPARE TRANSACTION</A
+>&nbsp;--&nbsp;为两阶段提交准备当前事务</DT
+><DT
+><A
+HREF="sql-reassign-owned.html"
+>REASSIGN OWNED</A
+>&nbsp;--&nbsp;更改一个数据库角色拥有的数据库对象的拥有关系</DT
+><DT
+><A
+HREF="sql-refreshmaterializedview.html"
+>REFRESH MATERIALIZED VIEW</A
+>&nbsp;--&nbsp;替换一个物化视图的内容</DT
+><DT
+><A
+HREF="sql-reindex.html"
+>REINDEX</A
+>&nbsp;--&nbsp;重建索引</DT
+><DT
+><A
+HREF="sql-release-savepoint.html"
+>RELEASE SAVEPOINT</A
+>&nbsp;--&nbsp;销毁一个之前定义的保存点</DT
+><DT
+><A
+HREF="sql-reset.html"
+>RESET</A
+>&nbsp;--&nbsp;把一个运行时参数的值恢复到默认值</DT
+><DT
+><A
+HREF="sql-revoke.html"
+>REVOKE</A
+>&nbsp;--&nbsp;移除访问特权</DT
+><DT
+><A
+HREF="sql-rollback.html"
+>ROLLBACK</A
+>&nbsp;--&nbsp;中止当前事务</DT
+><DT
+><A
+HREF="sql-rollback-prepared.html"
+>ROLLBACK PREPARED</A
+>&nbsp;--&nbsp;取消一个之前为两阶段提交准备好的事务</DT
+><DT
+><A
+HREF="sql-rollback-to.html"
+>ROLLBACK TO SAVEPOINT</A
+>&nbsp;--&nbsp;回滚到一个保存点</DT
+><DT
+><A
+HREF="sql-savepoint.html"
+>SAVEPOINT</A
+>&nbsp;--&nbsp;在当前事务中定义一个新的保存点</DT
+><DT
+><A
+HREF="sql-security-label.html"
+>SECURITY LABEL</A
+>&nbsp;--&nbsp;定义或更改应用到一个对象的安全标签</DT
+><DT
+><A
+HREF="sql-select.html"
+>SELECT</A
+>&nbsp;--&nbsp;从一个表或视图检索行</DT
+><DT
+><A
+HREF="sql-selectinto.html"
+>SELECT INTO</A
+>&nbsp;--&nbsp;从一个查询的结果定义一个新表</DT
+><DT
+><A
+HREF="sql-set.html"
+>SET</A
+>&nbsp;--&nbsp;更改一个运行时参数</DT
+><DT
+><A
+HREF="sql-set-constraints.html"
+>SET CONSTRAINTS</A
+>&nbsp;--&nbsp;为当前事务设置约束检查时机</DT
+><DT
+><A
+HREF="sql-set-role.html"
+>SET ROLE</A
+>&nbsp;--&nbsp;设置当前会话的当前用户标识符</DT
+><DT
+><A
+HREF="sql-set-session-authorization.html"
+>SET SESSION AUTHORIZATION</A
+>&nbsp;--&nbsp;设置当前会话的会话用户标识符和当前用户标识符</DT
+><DT
+><A
+HREF="sql-set-transaction.html"
+>SET TRANSACTION</A
+>&nbsp;--&nbsp;设置当前事务的特性</DT
+><DT
+><A
+HREF="sql-show.html"
+>SHOW</A
+>&nbsp;--&nbsp;显示一个运行时参数的值</DT
+><DT
+><A
+HREF="sql-start-transaction.html"
+>START TRANSACTION</A
+>&nbsp;--&nbsp;开始一个事务块</DT
+><DT
+><A
+HREF="sql-truncate.html"
+>TRUNCATE</A
+>&nbsp;--&nbsp;清空一个表或者一组表</DT
+><DT
+><A
+HREF="sql-unlisten.html"
+>UNLISTEN</A
+>&nbsp;--&nbsp;停止监听一个通知</DT
+><DT
+><A
+HREF="sql-update.html"
+>UPDATE</A
+>&nbsp;--&nbsp;更新一个表的行</DT
+><DT
+><A
+HREF="sql-vacuum.html"
+>VACUUM</A
+>&nbsp;--&nbsp;垃圾收集并根据需要分析一个数据库</DT
+><DT
+><A
+HREF="sql-values.html"
+>VALUES</A
+>&nbsp;--&nbsp;计算一个行集合</DT
+></DL
+></DD
+><DT
+>II. <A
+HREF="reference-client.html"
+>PostgreSQL 客户端应用</A
+></DT
+><DD
+><DL
+><DT
+><A
+HREF="app-clusterdb.html"
+><SPAN
+CLASS="APPLICATION"
+>clusterdb</SPAN
+></A
+>&nbsp;--&nbsp;聚簇一个<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>数据库</DT
+><DT
+><A
+HREF="app-createdb.html"
+><SPAN
+CLASS="APPLICATION"
+>createdb</SPAN
+></A
+>&nbsp;--&nbsp;创建一个新的<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>数据库</DT
+><DT
+><A
+HREF="app-createlang.html"
+><SPAN
+CLASS="APPLICATION"
+>createlang</SPAN
+></A
+>&nbsp;--&nbsp;安装一种<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>过程语言</DT
+><DT
+><A
+HREF="app-createuser.html"
+><SPAN
+CLASS="APPLICATION"
+>createuser</SPAN
+></A
+>&nbsp;--&nbsp;定义一个新的<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>用户账户</DT
+><DT
+><A
+HREF="app-dropdb.html"
+><SPAN
+CLASS="APPLICATION"
+>dropdb</SPAN
+></A
+>&nbsp;--&nbsp;移除一个<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>数据库</DT
+><DT
+><A
+HREF="app-droplang.html"
+><SPAN
+CLASS="APPLICATION"
+>droplang</SPAN
+></A
+>&nbsp;--&nbsp;移除一种<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>过程语言</DT
+><DT
+><A
+HREF="app-dropuser.html"
+><SPAN
+CLASS="APPLICATION"
+>dropuser</SPAN
+></A
+>&nbsp;--&nbsp;移除一个<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>用户账户</DT
+><DT
+><A
+HREF="app-ecpg.html"
+><SPAN
+CLASS="APPLICATION"
+>ecpg</SPAN
+></A
+>&nbsp;--&nbsp;嵌入式 SQL C 预处理器</DT
+><DT
+><A
+HREF="app-pgbasebackup.html"
+>pg_basebackup</A
+>&nbsp;--&nbsp;获得一个<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>集簇的一个基础备份</DT
+><DT
+><A
+HREF="pgbench.html"
+><SPAN
+CLASS="APPLICATION"
+>pgbench</SPAN
+></A
+>&nbsp;--&nbsp;在<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>上运行一个基准测试</DT
+><DT
+><A
+HREF="app-pgconfig.html"
+>pg_config</A
+>&nbsp;--&nbsp;获取已安装的<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>的信息</DT
+><DT
+><A
+HREF="app-pgdump.html"
+>pg_dump</A
+>&nbsp;--&nbsp;   把<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>数据库抽取为一个脚本文件或其他归档文件
+  </DT
+><DT
+><A
+HREF="app-pg-dumpall.html"
+><SPAN
+CLASS="APPLICATION"
+>pg_dumpall</SPAN
+></A
+>&nbsp;--&nbsp;将一个<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>数据库集簇抽取到一个脚本文件中</DT
+><DT
+><A
+HREF="app-pg-isready.html"
+><SPAN
+CLASS="APPLICATION"
+>pg_isready</SPAN
+></A
+>&nbsp;--&nbsp;检查一个<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>服务器的连接状态</DT
+><DT
+><A
+HREF="app-pgreceivexlog.html"
+>pg_receivexlog</A
+>&nbsp;--&nbsp;以流的方式从一个<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>服务器得到事务日志</DT
+><DT
+><A
+HREF="app-pgrecvlogical.html"
+><SPAN
+CLASS="APPLICATION"
+>pg_recvlogical</SPAN
+></A
+>&nbsp;--&nbsp;控制 <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+> 逻辑解码流</DT
+><DT
+><A
+HREF="app-pgrestore.html"
+>pg_restore</A
+>&nbsp;--&nbsp;   从一个由<SPAN
+CLASS="APPLICATION"
+>pg_dump</SPAN
+>创建的归档文件恢复一个<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>数据库
+  </DT
+><DT
+><A
+HREF="app-psql.html"
+><SPAN
+CLASS="APPLICATION"
+>psql</SPAN
+></A
+>&nbsp;--&nbsp;      <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>的交互式终端
+    </DT
+><DT
+><A
+HREF="app-reindexdb.html"
+><SPAN
+CLASS="APPLICATION"
+>reindexdb</SPAN
+></A
+>&nbsp;--&nbsp;重索引一个<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>数据库</DT
+><DT
+><A
+HREF="app-vacuumdb.html"
+><SPAN
+CLASS="APPLICATION"
+>vacuumdb</SPAN
+></A
+>&nbsp;--&nbsp;对一个<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>数据库进行垃圾收集和分析</DT
+></DL
+></DD
+><DT
+>III. <A
+HREF="reference-server.html"
+>PostgreSQL 服务器应用</A
+></DT
+><DD
+><DL
+><DT
+><A
+HREF="app-initdb.html"
+>initdb</A
+>&nbsp;--&nbsp;创建一个新的<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>数据库集簇</DT
+><DT
+><A
+HREF="pgarchivecleanup.html"
+><SPAN
+CLASS="APPLICATION"
+>pg_archivecleanup</SPAN
+></A
+>&nbsp;--&nbsp;清理<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+> WAL 归档文件</DT
+><DT
+><A
+HREF="app-pgcontroldata.html"
+><SPAN
+CLASS="APPLICATION"
+>pg_controldata</SPAN
+></A
+>&nbsp;--&nbsp;显示一个<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>数据库集簇的控制信息</DT
+><DT
+><A
+HREF="app-pg-ctl.html"
+><SPAN
+CLASS="APPLICATION"
+>pg_ctl</SPAN
+></A
+>&nbsp;--&nbsp;初始化、启动、停止或控制一个<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>服务器</DT
+><DT
+><A
+HREF="app-pgresetxlog.html"
+><SPAN
+CLASS="APPLICATION"
+>pg_resetxlog</SPAN
+></A
+>&nbsp;--&nbsp;重置一个<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>数据库集簇的预写式日志以及其他控制信息</DT
+><DT
+><A
+HREF="app-pgrewind.html"
+><SPAN
+CLASS="APPLICATION"
+>pg_rewind</SPAN
+></A
+>&nbsp;--&nbsp;把一个<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>数据目录与另一个从它复制出来的数据目录同步</DT
+><DT
+><A
+HREF="pgtestfsync.html"
+><SPAN
+CLASS="APPLICATION"
+>pg_test_fsync</SPAN
+></A
+>&nbsp;--&nbsp;为<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>判断最快的 <TT
+CLASS="VARNAME"
+>wal_sync_method</TT
+></DT
+><DT
+><A
+HREF="pgtesttiming.html"
+><SPAN
+CLASS="APPLICATION"
+>pg_test_timing</SPAN
+></A
+>&nbsp;--&nbsp;度量计时开销</DT
+><DT
+><A
+HREF="pgupgrade.html"
+><SPAN
+CLASS="APPLICATION"
+>pg_upgrade</SPAN
+></A
+>&nbsp;--&nbsp;升级<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>服务器实例</DT
+><DT
+><A
+HREF="pgxlogdump.html"
+><SPAN
+CLASS="APPLICATION"
+>pg_xlogdump</SPAN
+></A
+>&nbsp;--&nbsp;以人类可读的形式显示一个<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>
+  数据库集簇的预写式日志</DT
+><DT
+><A
+HREF="app-postgres.html"
+><SPAN
+CLASS="APPLICATION"
+>postgres</SPAN
+></A
+>&nbsp;--&nbsp;<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>数据库服务器</DT
+><DT
+><A
+HREF="app-postmaster.html"
+><SPAN
+CLASS="APPLICATION"
+>postmaster</SPAN
+></A
+>&nbsp;--&nbsp;<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>数据库服务器</DT
+></DL
+></DD
+></DL
+></DIV
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="replication-origins.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>复制进度追踪</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+>&nbsp;</TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>SQL 命令</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

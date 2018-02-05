@@ -1,0 +1,219 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>平台支持</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="  从源代码安装"
+HREF="installation.html"><LINK
+REL="PREVIOUS"
+TITLE="安装后设置"
+HREF="install-post.html"><LINK
+REL="NEXT"
+TITLE="平台相关的说明"
+HREF="installation-platform-notes.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/installation.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="安装后设置"
+HREF="install-post.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="installation.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#31456; 16. 从源代码安装</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="平台相关的说明"
+HREF="installation-platform-notes.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="SUPPORTED-PLATFORMS"
+>16.6. 平台支持</A
+></H1
+><P
+>   如果代码包含规定要工作在一个平台（即一种 CPU 架构和操作系统的结合）上并且它最近已经被验证能在该平台上编译并通过其回归测试，<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>开发社区才会认为该平台是被支持的。目前，大部分平台兼容性的测试都是由<A
+HREF="http://buildfarm.postgresql.org/"
+TARGET="_top"
+>PostgreSQL 编译农场</A
+>的测试机器自动完成的。如果你对在一个并没有出现在编译农场中的平台上运行<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>感兴趣，但是代码确实能够工作或者能被修改得工作，我们强烈鼓励你建立一个编译农场成员机器，这样进一步的兼容性可以被确认。
+  </P
+><P
+>   通常，<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>被期望能在这些 CPU 架构上工作：x86、 x86_64、IA64、PowerPC、PowerPC 64、S/390、S/390x、Sparc、Sparc 64、ARM、MIPS、MIPSEL、M68K和PA-RISC。存在对 M32R  和 VAX 的代码支持，但是这些架构上并没有近期测试的报告。通常也可以在一个为支持的 CPU 类型上通过使用<TT
+CLASS="OPTION"
+>--disable-spinlocks</TT
+>配置来进行编译，但是性能将会比较差。
+  </P
+><P
+>   <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>被期望能在这些操作系统上工作： Linux（所有最近的发布）、Windows（Win2000 SP4及以上）、
+   FreeBSD、OpenBSD、NetBSD、OS X、AIX、HP/UX、Solaris 和 UnixWare。其他类 Unix 系统可能也可以工作，但是目前没有被测试。在大部分情况下，一个给定操作系统所支持的所有 CPU 架构都能工作。查找下文的<A
+HREF="installation-platform-notes.html"
+>第 16.7 &#33410;</A
+>来看是否有与你的操作系统相关的信息，特别是使用一个老的系统时更应该这样做。
+  </P
+><P
+>   如果你在一个平台上有安装问题，并且该平台根据最近的编译农场结果已经可以被支持，请将问题报告给<CODE
+CLASS="EMAIL"
+>&#60;<A
+HREF="mailto:pgsql-bugs@postgresql.org"
+>pgsql-bugs@postgresql.org</A
+>&#62;</CODE
+>。如果你有兴趣将<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>移植到一个新的平台，<CODE
+CLASS="EMAIL"
+>&#60;<A
+HREF="mailto:pgsql-hackers@postgresql.org"
+>pgsql-hackers@postgresql.org</A
+>&#62;</CODE
+>是一个合适的讨论它的地方。
+  </P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="install-post.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="installation-platform-notes.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>安装后设置</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="installation.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>平台相关的说明</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

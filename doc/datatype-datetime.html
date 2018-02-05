@@ -1,0 +1,2733 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>日期/时间类型</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="数据类型"
+HREF="datatype.html"><LINK
+REL="PREVIOUS"
+TITLE="二进制数据类型"
+HREF="datatype-binary.html"><LINK
+REL="NEXT"
+TITLE="布尔类型"
+HREF="datatype-boolean.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/datatype.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="二进制数据类型"
+HREF="datatype-binary.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="datatype.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#31456; 8. 数据类型</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="布尔类型"
+HREF="datatype-boolean.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="DATATYPE-DATETIME"
+>8.5. 日期/时间类型</A
+></H1
+><P
+>    <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>支持<ACRONYM
+CLASS="ACRONYM"
+>SQL</ACRONYM
+>中所有的日期和时间类型，如<A
+HREF="datatype-datetime.html#DATATYPE-DATETIME-TABLE"
+>&#34920; 8-9</A
+>所示。这些数据类型上可用的操作如<A
+HREF="functions-datetime.html"
+>第 9.9 &#33410;</A
+>所述。日期根据公历来计算，即使对于该历法被引入之前的年份也一样（见<A
+HREF="datetime-units-history.html"
+>第 B.4 &#33410;</A
+>）。
+   </P
+><DIV
+CLASS="TABLE"
+><A
+NAME="DATATYPE-DATETIME-TABLE"
+></A
+><P
+><B
+>&#34920; 8-9. 日期/时间类型</B
+></P
+><TABLE
+BORDER="1"
+CLASS="CALSTABLE"
+><COL><COL><COL><COL><COL><COL><THEAD
+><TR
+><TH
+>名字</TH
+><TH
+>存储尺寸</TH
+><TH
+>描述</TH
+><TH
+>最小值</TH
+><TH
+>最大值</TH
+><TH
+>解析度</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+><TT
+CLASS="TYPE"
+>timestamp [ (<TT
+CLASS="REPLACEABLE"
+><I
+>p</I
+></TT
+>) ] [ without time zone ]</TT
+></TD
+><TD
+>8字节</TD
+><TD
+>包括日期和时间（无时区）</TD
+><TD
+>4713 BC</TD
+><TD
+>294276 AD</TD
+><TD
+>1微秒 / 14位</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="TYPE"
+>timestamp [ (<TT
+CLASS="REPLACEABLE"
+><I
+>p</I
+></TT
+>) ] with time zone</TT
+></TD
+><TD
+>8字节</TD
+><TD
+>包括日期和时间，有时区</TD
+><TD
+>4713 BC</TD
+><TD
+>294276 AD</TD
+><TD
+>1微秒 / 14位</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="TYPE"
+>date</TT
+></TD
+><TD
+>4字节</TD
+><TD
+>日期（没有一天中的时间）</TD
+><TD
+>4713 BC</TD
+><TD
+>5874897 AD</TD
+><TD
+>1日</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="TYPE"
+>time [ (<TT
+CLASS="REPLACEABLE"
+><I
+>p</I
+></TT
+>) ] [ without time zone ]</TT
+></TD
+><TD
+>8字节</TD
+><TD
+>一天中的时间（无日期）</TD
+><TD
+>00:00:00</TD
+><TD
+>24:00:00</TD
+><TD
+>1微秒 / 14位</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="TYPE"
+>time [ (<TT
+CLASS="REPLACEABLE"
+><I
+>p</I
+></TT
+>) ] with time zone</TT
+></TD
+><TD
+>12字节</TD
+><TD
+>仅仅是一天中的时间，带有时区</TD
+><TD
+>00:00:00+1459</TD
+><TD
+>24:00:00-1459</TD
+><TD
+>1微秒 / 14位</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="TYPE"
+>interval [ <TT
+CLASS="REPLACEABLE"
+><I
+>fields</I
+></TT
+> ] [ (<TT
+CLASS="REPLACEABLE"
+><I
+>p</I
+></TT
+>) ]</TT
+></TD
+><TD
+>16字节</TD
+><TD
+>时间间隔</TD
+><TD
+>-178000000年</TD
+><TD
+>178000000年</TD
+><TD
+>1微秒 / 14位</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+><DIV
+CLASS="NOTE"
+><BLOCKQUOTE
+CLASS="NOTE"
+><P
+><B
+>&#27880;&#24847;: </B
+>     SQL要求只写<TT
+CLASS="TYPE"
+>timestamp</TT
+>等效于<TT
+CLASS="TYPE"
+>timestamp without time zone</TT
+>，并且<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>鼓励这种行为。<TT
+CLASS="TYPE"
+>timestamptz</TT
+>被接受为<TT
+CLASS="TYPE"
+>timestamp with time zone</TT
+>的一种简写，这是一种<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>的扩展。
+    </P
+></BLOCKQUOTE
+></DIV
+><P
+>    <TT
+CLASS="TYPE"
+>time</TT
+>、<TT
+CLASS="TYPE"
+>timestamp</TT
+>和<TT
+CLASS="TYPE"
+>interval</TT
+>接受一个可选的精度值 <TT
+CLASS="REPLACEABLE"
+><I
+>p</I
+></TT
+>，这个精度值声明在秒域中小数点之后保留的位数。缺省情况下，在精度上没有明确的边界，<TT
+CLASS="REPLACEABLE"
+><I
+>p</I
+></TT
+>允许的范围对<TT
+CLASS="TYPE"
+>timestamp</TT
+>和<TT
+CLASS="TYPE"
+>interval</TT
+>类型是从 0 到 6。
+   </P
+><DIV
+CLASS="NOTE"
+><BLOCKQUOTE
+CLASS="NOTE"
+><P
+><B
+>&#27880;&#24847;: </B
+>    当<TT
+CLASS="TYPE"
+>timestamp</TT
+>值被存储为八字节整数（目前是默认情况）时，在整个值的范围上微秒精度是可用的。当<TT
+CLASS="TYPE"
+>timestamp</TT
+>值被存储为双精度浮点数（一个已被启用的编译时选项）时，那么精度的有效限制会小于 6。<TT
+CLASS="TYPE"
+>timestamp</TT
+>值是以 2000-01-01 午夜之前或之后以来的秒数存储的。当<TT
+CLASS="TYPE"
+>timestamp</TT
+>值被用浮点数实现时，在2000-01-01前后几年的日期可以达到微秒的精度，但是对于远一些的日子，精度会下降。注意使用浮点日期时间允许显示比上文所述更大范围的<TT
+CLASS="TYPE"
+>timestamp</TT
+>值：从 4713 BC 到 5874897 AD。
+   </P
+><P
+>    同一个编译时选项也决定了<TT
+CLASS="TYPE"
+>time</TT
+>和<TT
+CLASS="TYPE"
+>interval</TT
+>值被存储为浮点数或八字节整数。在浮点数的情况中，当间隔的尺寸增长时，大<TT
+CLASS="TYPE"
+>interval</TT
+>值在精度上会下降。
+   </P
+></BLOCKQUOTE
+></DIV
+><P
+>    对于<TT
+CLASS="TYPE"
+>time</TT
+>类型，如果使用了八字节的整数存储，允许的<TT
+CLASS="REPLACEABLE"
+><I
+>p</I
+></TT
+>的范围是从 0 到 6，如果使用的是浮点数存储，那么这个范围是 0 到 10。
+   </P
+><P
+>    <TT
+CLASS="TYPE"
+>interval</TT
+>类型有一个附加选项，它可以通过写下面之一的短语来限制存储的fields的集合：
+</P><PRE
+CLASS="LITERALLAYOUT"
+>YEAR
+MONTH
+DAY
+HOUR
+MINUTE
+SECOND
+YEAR TO MONTH
+DAY TO HOUR
+DAY TO MINUTE
+DAY TO SECOND
+HOUR TO MINUTE
+HOUR TO SECOND
+MINUTE TO SECOND</PRE
+><P>
+    注意如果<TT
+CLASS="REPLACEABLE"
+><I
+>fields</I
+></TT
+>和<TT
+CLASS="REPLACEABLE"
+><I
+>p</I
+></TT
+>被指定，<TT
+CLASS="REPLACEABLE"
+><I
+>fields</I
+></TT
+>必须包括<TT
+CLASS="LITERAL"
+>SECOND</TT
+>，因为精度只应用于秒。
+   </P
+><P
+>    类型<TT
+CLASS="TYPE"
+>time with time zone</TT
+>是 SQL 标准定义的，但是该定义显示出了一些会影响可用性的性质。在大多数情况下， <TT
+CLASS="TYPE"
+>date</TT
+>、<TT
+CLASS="TYPE"
+>time</TT
+>、<TT
+CLASS="TYPE"
+>timestamp without time zone</TT
+>和<TT
+CLASS="TYPE"
+>timestamp with time zone</TT
+>的组合就应该能提供任何应用所需的全范围的日期/时间功能。
+   </P
+><P
+>    类型<TT
+CLASS="TYPE"
+>abstime</TT
+>和<TT
+CLASS="TYPE"
+>reltime</TT
+>是低精度类型，它们被用于系统内部。 我们不鼓励你在应用里面使用这些类型，这些内部类型可能会在未来的版本里消失。
+   </P
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="DATATYPE-DATETIME-INPUT"
+>8.5.1. 日期/时间输入</A
+></H2
+><P
+>     日期和时间的输入可以接受几乎任何合理的格式，包括 ISO 8601、<ACRONYM
+CLASS="ACRONYM"
+>SQL</ACRONYM
+>-兼容的、传统<SPAN
+CLASS="PRODUCTNAME"
+>POSTGRES</SPAN
+>的和其他的形式。 对于一些格式，日期输入里的日、月和年的顺序会让人混淆， 并且支持指定所预期的这些域的顺序。把<A
+HREF="runtime-config-client.html#GUC-DATESTYLE"
+>DateStyle</A
+>参数设置为<TT
+CLASS="LITERAL"
+>MDY</TT
+>，就是选择“月－日－年”的解释，设置为<TT
+CLASS="LITERAL"
+>DMY</TT
+>就是 “日－月－年”，而<TT
+CLASS="LITERAL"
+>YMD</TT
+>是 “年－月－日”。
+    </P
+><P
+>     <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>在处理日期/时间输入上比<ACRONYM
+CLASS="ACRONYM"
+>SQL</ACRONYM
+>标准要求的更灵活。 参阅<A
+HREF="datetime-appendix.html"
+>&#38468;&#24405; B</A
+>获取关于日期/时间输入的准确的分析规则和可识别文本域，包括月份、星期几和时区。
+    </P
+><P
+>     请记住任何日期或者时间的文字输入需要由单引号包围，就象一个文本字符串一样。参考<A
+HREF="sql-syntax-lexical.html#SQL-SYNTAX-CONSTANTS-GENERIC"
+>第 4.1.2.7 &#33410;</A
+>获取更多信息。<ACRONYM
+CLASS="ACRONYM"
+>SQL</ACRONYM
+>要求下面的语法
+</P><PRE
+CLASS="SYNOPSIS"
+><TT
+CLASS="REPLACEABLE"
+><I
+>type</I
+></TT
+> [ (<TT
+CLASS="REPLACEABLE"
+><I
+>p</I
+></TT
+>) ] '<TT
+CLASS="REPLACEABLE"
+><I
+>value</I
+></TT
+>'</PRE
+><P>
+     其中<TT
+CLASS="REPLACEABLE"
+><I
+>p</I
+></TT
+>是一个可选的精度声明，它给出了在秒域中的小数位数目。精度可以被指定给<TT
+CLASS="TYPE"
+>time</TT
+>、<TT
+CLASS="TYPE"
+>timestamp</TT
+>和<TT
+CLASS="TYPE"
+>interval</TT
+>类型。这允许前文所述的值。如果在一个常数声明中没有指定任何精度，它将默认取文字值的精度。
+    </P
+><DIV
+CLASS="SECT3"
+><H3
+CLASS="SECT3"
+><A
+NAME="AEN5998"
+>8.5.1.1. 日期</A
+></H3
+><P
+>     <A
+HREF="datatype-datetime.html#DATATYPE-DATETIME-DATE-TABLE"
+>&#34920; 8-10</A
+>显示了<TT
+CLASS="TYPE"
+>date</TT
+>类型可能的输入方式。
+    </P
+><DIV
+CLASS="TABLE"
+><A
+NAME="DATATYPE-DATETIME-DATE-TABLE"
+></A
+><P
+><B
+>&#34920; 8-10. 日期输入</B
+></P
+><TABLE
+BORDER="1"
+CLASS="CALSTABLE"
+><COL><COL><THEAD
+><TR
+><TH
+>例子</TH
+><TH
+>描述</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+>1999-01-08</TD
+><TD
+>ISO 8601; 任何模式下的1月8日
+         （推荐格式）</TD
+></TR
+><TR
+><TD
+>January 8, 1999</TD
+><TD
+>在任何<TT
+CLASS="VARNAME"
+>datestyle</TT
+>输入模式下都无歧义</TD
+></TR
+><TR
+><TD
+>1/8/1999</TD
+><TD
+><TT
+CLASS="LITERAL"
+>MDY</TT
+>模式中的1月8日；<TT
+CLASS="LITERAL"
+>DMY</TT
+>模式中的8月1日</TD
+></TR
+><TR
+><TD
+>1/18/1999</TD
+><TD
+><TT
+CLASS="LITERAL"
+>MDY</TT
+>模式中的1月18日；在其他模式中被拒绝</TD
+></TR
+><TR
+><TD
+>01/02/03</TD
+><TD
+><TT
+CLASS="LITERAL"
+>MDY</TT
+>模式中的2003年1月2日；
+          <TT
+CLASS="LITERAL"
+>DMY</TT
+>模式中的2003年2月1日；
+          <TT
+CLASS="LITERAL"
+>YMD</TT
+>模式中的2001年2月3日
+         </TD
+></TR
+><TR
+><TD
+>1999-Jan-08</TD
+><TD
+>任何模式下的1月8日</TD
+></TR
+><TR
+><TD
+>Jan-08-1999</TD
+><TD
+>任何模式下的1月8日</TD
+></TR
+><TR
+><TD
+>08-Jan-1999</TD
+><TD
+>任何模式下的1月8日</TD
+></TR
+><TR
+><TD
+>99-Jan-08</TD
+><TD
+><TT
+CLASS="LITERAL"
+>YMD</TT
+>模式中的1月8日，否则错误</TD
+></TR
+><TR
+><TD
+>08-Jan-99</TD
+><TD
+>1月8日，除了在<TT
+CLASS="LITERAL"
+>YMD</TT
+>模式中错误</TD
+></TR
+><TR
+><TD
+>Jan-08-99</TD
+><TD
+>1月8日，除了在<TT
+CLASS="LITERAL"
+>YMD</TT
+>模式中错误</TD
+></TR
+><TR
+><TD
+>19990108</TD
+><TD
+>ISO 8601; 任何模式中的1999年1月8日</TD
+></TR
+><TR
+><TD
+>990108</TD
+><TD
+>ISO 8601; 任何模式中的1999年1月8日</TD
+></TR
+><TR
+><TD
+>1999.008</TD
+><TD
+>年和一年中的日子</TD
+></TR
+><TR
+><TD
+>J2451187</TD
+><TD
+>儒略日期</TD
+></TR
+><TR
+><TD
+>January 8, 99 BC</TD
+><TD
+>公元前99年</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+></DIV
+><DIV
+CLASS="SECT3"
+><H3
+CLASS="SECT3"
+><A
+NAME="AEN6071"
+>8.5.1.2. 时间</A
+></H3
+><P
+>      当日时间类型是<TT
+CLASS="TYPE"
+>time [ (<TT
+CLASS="REPLACEABLE"
+><I
+>p</I
+></TT
+>) ] without time zone</TT
+>和<TT
+CLASS="TYPE"
+>time [ (<TT
+CLASS="REPLACEABLE"
+><I
+>p</I
+></TT
+>) ] with time zone</TT
+>。 只写<TT
+CLASS="TYPE"
+>time</TT
+>等效于<TT
+CLASS="TYPE"
+>time without time zone</TT
+>。
+     </P
+><P
+>      这些类型的有效输入由当日时间后面跟着可选的时区组成（参阅<A
+HREF="datatype-datetime.html#DATATYPE-DATETIME-TIME-TABLE"
+>&#34920; 8-11</A
+>和<A
+HREF="datatype-datetime.html#DATATYPE-TIMEZONE-TABLE"
+>&#34920; 8-12</A
+>）。 如果在<TT
+CLASS="TYPE"
+>time without time zone</TT
+>的输入中指定了时区，那么它会被无声地忽略。你也可以指定一个日期但是它会被忽略，除非你使用了一个涉及到夏令时规则的时区，例如<TT
+CLASS="LITERAL"
+>America/New_York</TT
+>。在这种情况下，为了判断是应用了标准时间还是夏令时时间，要求指定该日期。适当的时区偏移被记录在<TT
+CLASS="TYPE"
+>time with time zone</TT
+>值中。
+     </P
+><DIV
+CLASS="TABLE"
+><A
+NAME="DATATYPE-DATETIME-TIME-TABLE"
+></A
+><P
+><B
+>&#34920; 8-11. 时间输入</B
+></P
+><TABLE
+BORDER="1"
+CLASS="CALSTABLE"
+><COL><COL><THEAD
+><TR
+><TH
+>例子</TH
+><TH
+>描述</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>04:05:06.789</TT
+></TD
+><TD
+>ISO 8601</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>04:05:06</TT
+></TD
+><TD
+>ISO 8601</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>04:05</TT
+></TD
+><TD
+>ISO 8601</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>040506</TT
+></TD
+><TD
+>ISO 8601</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>04:05 AM</TT
+></TD
+><TD
+>和04:05一样，AM并不影响值</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>04:05 PM</TT
+></TD
+><TD
+>和16:05一样，输入的小时必须为 &lt;= 12</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>04:05:06.789-8</TT
+></TD
+><TD
+>ISO 8601</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>04:05:06-08:00</TT
+></TD
+><TD
+>ISO 8601</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>04:05-08:00</TT
+></TD
+><TD
+>ISO 8601</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>040506-08</TT
+></TD
+><TD
+>ISO 8601</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>04:05:06 PST</TT
+></TD
+><TD
+>缩写指定的时区</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>2003-04-12 04:05:06 America/New_York</TT
+></TD
+><TD
+>全名指定的时区</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+><DIV
+CLASS="TABLE"
+><A
+NAME="DATATYPE-TIMEZONE-TABLE"
+></A
+><P
+><B
+>&#34920; 8-12. 时区输入</B
+></P
+><TABLE
+BORDER="1"
+CLASS="CALSTABLE"
+><COL><COL><THEAD
+><TR
+><TH
+>例子</TH
+><TH
+>描述</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>PST</TT
+></TD
+><TD
+>缩写（太平洋标准时间）</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>America/New_York</TT
+></TD
+><TD
+>完整时区名</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>PST8PDT</TT
+></TD
+><TD
+>POSIX风格的时区声明</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>-8:00</TT
+></TD
+><TD
+>PST的ISO-8601偏移</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>-800</TT
+></TD
+><TD
+>PST的ISO-8601偏移</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>-8</TT
+></TD
+><TD
+>PST的ISO-8601偏移</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>zulu</TT
+></TD
+><TD
+>UTC的军方缩写</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>z</TT
+></TD
+><TD
+><TT
+CLASS="LITERAL"
+>zulu</TT
+>的短形式</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+><P
+>     参考<A
+HREF="datatype-datetime.html#DATATYPE-TIMEZONES"
+>第 8.5.3 &#33410;</A
+>可以了解如何指定时区。
+    </P
+></DIV
+><DIV
+CLASS="SECT3"
+><H3
+CLASS="SECT3"
+><A
+NAME="AEN6191"
+>8.5.1.3. 时间戳</A
+></H3
+><P
+>      时间戳类型的有效输入由一个日期和时间的串接组成，后面跟着一个可选的时区，一个可选的<TT
+CLASS="LITERAL"
+>AD</TT
+>或者<TT
+CLASS="LITERAL"
+>BC</TT
+>（另外，<TT
+CLASS="LITERAL"
+>AD</TT
+>/<TT
+CLASS="LITERAL"
+>BC</TT
+>可以出现在时区前面，但这个顺序并非最佳）。 因此：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>1999-01-08 04:05:06</PRE
+><P>
+      和：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>1999-01-08 04:05:06 -8:00</PRE
+><P>
+
+      都是有效的值，它遵循<ACRONYM
+CLASS="ACRONYM"
+>ISO</ACRONYM
+> 8601 标准。另外，使用广泛的格式：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>January 8 04:05:06 1999 PST</PRE
+><P>
+      也被支持。
+     </P
+><P
+>      <ACRONYM
+CLASS="ACRONYM"
+>SQL</ACRONYM
+>标准通过<SPAN
+CLASS="QUOTE"
+>"+"</SPAN
+>或者<SPAN
+CLASS="QUOTE"
+>"-"</SPAN
+>符号的存在以及时间后面的时区偏移来区分<TT
+CLASS="TYPE"
+>timestamp without time zone</TT
+>和<TT
+CLASS="TYPE"
+>timestamp with time zone</TT
+>文字。因此，根据标准，
+
+      </P><PRE
+CLASS="PROGRAMLISTING"
+>TIMESTAMP '2004-10-19 10:23:54'</PRE
+><P>
+
+      是一个<TT
+CLASS="TYPE"
+>timestamp without time zone</TT
+>， 而
+
+      </P><PRE
+CLASS="PROGRAMLISTING"
+>TIMESTAMP '2004-10-19 10:23:54+02'</PRE
+><P>
+
+      是一个<TT
+CLASS="TYPE"
+>timestamp with time zone</TT
+>。<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>从来不会在确定文字串的类型之前检查其内容，因此会把上面两个都看做是 <TT
+CLASS="TYPE"
+>timestamp without time zone</TT
+>。因此要保证把上面的文字当作<TT
+CLASS="TYPE"
+>timestamp with time zone</TT
+>看待， 就要给它正确的显式类型：
+
+      </P><PRE
+CLASS="PROGRAMLISTING"
+>TIMESTAMP WITH TIME ZONE '2004-10-19 10:23:54+02'</PRE
+><P>
+
+      如果一个文字已被确定是<TT
+CLASS="TYPE"
+>timestamp without time zone</TT
+>，<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>将不声不响忽略任何其中指出的时区。 即，结果值是从输入值的日期/时间域衍生出来的，并且没有就时区进行调整。
+     </P
+><P
+>      对于<TT
+CLASS="TYPE"
+>timestamp with time zone</TT
+>，内部存储的值总是 UTC （全球统一时间，以前也叫格林威治时间<ACRONYM
+CLASS="ACRONYM"
+>GMT</ACRONYM
+>）。如果一个输入值有明确的时区声明， 那么它将用该时区合适的偏移量转换成 UTC。如果在输入串里没有时区声明， 那么它就被假设是在系统的<A
+HREF="runtime-config-client.html#GUC-TIMEZONE"
+>TimeZone</A
+>参数里的那个时区，然后使用这个 <TT
+CLASS="VARNAME"
+>timezone</TT
+>时区的偏移转换成 UTC。
+     </P
+><P
+>      如果一个<TT
+CLASS="TYPE"
+>timestamp with time zone</TT
+>值被输出，那么它总是从 UTC 转换成当前的<TT
+CLASS="VARNAME"
+>timezone</TT
+>时区，并且显示为该时区的本地时间。要看其它时区的时间，要么修改<TT
+CLASS="VARNAME"
+>timezone</TT
+>，要么使用<TT
+CLASS="LITERAL"
+>AT TIME ZONE</TT
+>构造（参阅<A
+HREF="functions-datetime.html#FUNCTIONS-DATETIME-ZONECONVERT"
+>第 9.9.3 &#33410;</A
+>）。
+     </P
+><P
+>      在<TT
+CLASS="TYPE"
+>timestamp without time zone</TT
+>和<TT
+CLASS="TYPE"
+>timestamp with time zone</TT
+>之间的转换通常假设<TT
+CLASS="TYPE"
+>timestamp without time zone</TT
+>值应该以<TT
+CLASS="VARNAME"
+>timezone</TT
+>本地时间的形式接受或者写出。为该转换指定一个不同的可以用<TT
+CLASS="LITERAL"
+>AT TIME ZONE</TT
+>。
+     </P
+></DIV
+><DIV
+CLASS="SECT3"
+><H3
+CLASS="SECT3"
+><A
+NAME="AEN6241"
+>8.5.1.4. 特殊值</A
+></H3
+><P
+>      为了方便，<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>支持一些特殊日期/时间输入值，如<A
+HREF="datatype-datetime.html#DATATYPE-DATETIME-SPECIAL-TABLE"
+>&#34920; 8-13</A
+>所示。这些值中<TT
+CLASS="LITERAL"
+>infinity</TT
+>和<TT
+CLASS="LITERAL"
+>-infinity</TT
+>被在系统内部以特殊方式表示并且将被原封不动地显示。但是其他的仅仅只是概念上的速写，当被读到的时候会被转换为正常的日期/时间值（特殊地，<TT
+CLASS="LITERAL"
+>now</TT
+>及相关串在被读到时立刻被转换到一个指定的时间值）。在作为常量在SQL命令中使用时，所有这些值需要被包括在单引号内。
+     </P
+><DIV
+CLASS="TABLE"
+><A
+NAME="DATATYPE-DATETIME-SPECIAL-TABLE"
+></A
+><P
+><B
+>&#34920; 8-13. 特殊日期/时间输入</B
+></P
+><TABLE
+BORDER="1"
+CLASS="CALSTABLE"
+><COL><COL><COL><THEAD
+><TR
+><TH
+>输入串</TH
+><TH
+>合法类型</TH
+><TH
+>描述</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>epoch</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>date</TT
+>, <TT
+CLASS="TYPE"
+>timestamp</TT
+></TD
+><TD
+>1970-01-01 00:00:00+00（Unix系统时间0）</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>infinity</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>date</TT
+>, <TT
+CLASS="TYPE"
+>timestamp</TT
+></TD
+><TD
+>比任何其他时间戳都晚</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>-infinity</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>date</TT
+>, <TT
+CLASS="TYPE"
+>timestamp</TT
+></TD
+><TD
+>比任何其他时间戳都早</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>now</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>date</TT
+>, <TT
+CLASS="TYPE"
+>time</TT
+>, <TT
+CLASS="TYPE"
+>timestamp</TT
+></TD
+><TD
+>当前事务的开始时间</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>today</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>date</TT
+>, <TT
+CLASS="TYPE"
+>timestamp</TT
+></TD
+><TD
+>当日午夜</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>tomorrow</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>date</TT
+>, <TT
+CLASS="TYPE"
+>timestamp</TT
+></TD
+><TD
+>明日午夜</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>yesterday</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>date</TT
+>, <TT
+CLASS="TYPE"
+>timestamp</TT
+></TD
+><TD
+>昨日午夜</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>allballs</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>time</TT
+></TD
+><TD
+>00:00:00.00 UTC</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+><P
+>      下列<ACRONYM
+CLASS="ACRONYM"
+>SQL</ACRONYM
+>-兼容的函数可以被用来为相应的数据类型获得当前时间值：
+      <TT
+CLASS="LITERAL"
+>CURRENT_DATE</TT
+>、<TT
+CLASS="LITERAL"
+>CURRENT_TIME</TT
+>、
+      <TT
+CLASS="LITERAL"
+>CURRENT_TIMESTAMP</TT
+>、<TT
+CLASS="LITERAL"
+>LOCALTIME</TT
+>、
+      <TT
+CLASS="LITERAL"
+>LOCALTIMESTAMP</TT
+>。后四种接受一个可选的亚秒精度声明（参见<A
+HREF="functions-datetime.html#FUNCTIONS-DATETIME-CURRENT"
+>第 9.9.4 &#33410;</A
+>）。注意这些是SQL函数并且在数据输入串中<SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>不</I
+></SPAN
+>被识别。
+     </P
+></DIV
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="DATATYPE-DATETIME-OUTPUT"
+>8.5.2. 日期/时间输出</A
+></H2
+><P
+>     时间/日期类型的输出格式可以设成四种风格之一： ISO 8601、<ACRONYM
+CLASS="ACRONYM"
+>SQL</ACRONYM
+>（Ingres）、传统的<SPAN
+CLASS="PRODUCTNAME"
+>POSTGRES</SPAN
+>（Unix的<SPAN
+CLASS="APPLICATION"
+>date</SPAN
+>格式）或 German 。缺省是<ACRONYM
+CLASS="ACRONYM"
+>ISO</ACRONYM
+>格式（<ACRONYM
+CLASS="ACRONYM"
+>ISO</ACRONYM
+>标准要求使用 ISO 8601 格式。<ACRONYM
+CLASS="ACRONYM"
+>ISO</ACRONYM
+>输出格式的名字是历史偶然）。<A
+HREF="datatype-datetime.html#DATATYPE-DATETIME-OUTPUT-TABLE"
+>&#34920; 8-14</A
+>显示了每种输出风格的例子。<TT
+CLASS="TYPE"
+>date</TT
+>和<TT
+CLASS="TYPE"
+>time</TT
+>类型的 输出通常只有日期或时间部分和例子中一致。不过，<SPAN
+CLASS="PRODUCTNAME"
+>POSTGRES</SPAN
+>风格输出的是<ACRONYM
+CLASS="ACRONYM"
+>ISO</ACRONYM
+>格式的只有日期的值。
+    </P
+><DIV
+CLASS="TABLE"
+><A
+NAME="DATATYPE-DATETIME-OUTPUT-TABLE"
+></A
+><P
+><B
+>&#34920; 8-14. 日期/时间输出风格</B
+></P
+><TABLE
+BORDER="1"
+CLASS="CALSTABLE"
+><COL><COL><COL><THEAD
+><TR
+><TH
+>风格声明</TH
+><TH
+>描述</TH
+><TH
+>例子</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>ISO</TT
+></TD
+><TD
+>ISO 8601, SQL标准</TD
+><TD
+><TT
+CLASS="LITERAL"
+>1997-12-17 07:37:16-08</TT
+></TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>SQL</TT
+></TD
+><TD
+>传统风格</TD
+><TD
+><TT
+CLASS="LITERAL"
+>12/17/1997 07:37:16.00 PST</TT
+></TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>Postgres</TT
+></TD
+><TD
+>原始风格</TD
+><TD
+><TT
+CLASS="LITERAL"
+>Wed Dec 17 07:37:16 1997 PST</TT
+></TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>German</TT
+></TD
+><TD
+>地区风格</TD
+><TD
+><TT
+CLASS="LITERAL"
+>17.12.1997 07:37:16.00 PST</TT
+></TD
+></TR
+></TBODY
+></TABLE
+></DIV
+><DIV
+CLASS="NOTE"
+><BLOCKQUOTE
+CLASS="NOTE"
+><P
+><B
+>&#27880;&#24847;: </B
+>      ISO 8601指定使用大写字母<TT
+CLASS="LITERAL"
+>T</TT
+>来分隔日期和时间。<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>在输入上接受这种格式，但是在输出时它采用一个空格而不是<TT
+CLASS="LITERAL"
+>T</TT
+>，如上所示。和一些其他数据库系统一样，这是为了可读性以及与RFC 3339的一致性。
+     </P
+></BLOCKQUOTE
+></DIV
+><P
+>     <ACRONYM
+CLASS="ACRONYM"
+>SQL</ACRONYM
+>和POSTGRES风格中，如果DMY域顺序被指定，“日”将出现在“月”之前，否则“月”出现在“日”之前（有关该设置如何影响输入值的解释，请参考<A
+HREF="datatype-datetime.html#DATATYPE-DATETIME-INPUT"
+>第 8.5.1 &#33410;</A
+>）。<A
+HREF="datatype-datetime.html#DATATYPE-DATETIME-OUTPUT2-TABLE"
+>&#34920; 8-15</A
+>给出了例子。
+    </P
+><DIV
+CLASS="TABLE"
+><A
+NAME="DATATYPE-DATETIME-OUTPUT2-TABLE"
+></A
+><P
+><B
+>&#34920; 8-15. 日期顺序习惯</B
+></P
+><TABLE
+BORDER="1"
+CLASS="CALSTABLE"
+><COL><COL><COL><THEAD
+><TR
+><TH
+><TT
+CLASS="VARNAME"
+>datestyle</TT
+>设置</TH
+><TH
+>输入顺序</TH
+><TH
+>例子输出</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>SQL, DMY</TT
+></TD
+><TD
+><TT
+CLASS="REPLACEABLE"
+><I
+>日</I
+></TT
+>/<TT
+CLASS="REPLACEABLE"
+><I
+>月</I
+></TT
+>/<TT
+CLASS="REPLACEABLE"
+><I
+>年</I
+></TT
+></TD
+><TD
+><TT
+CLASS="LITERAL"
+>17/12/1997 15:37:16.00 CET</TT
+></TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>SQL, MDY</TT
+></TD
+><TD
+><TT
+CLASS="REPLACEABLE"
+><I
+>月</I
+></TT
+>/<TT
+CLASS="REPLACEABLE"
+><I
+>日</I
+></TT
+>/<TT
+CLASS="REPLACEABLE"
+><I
+>年</I
+></TT
+></TD
+><TD
+><TT
+CLASS="LITERAL"
+>12/17/1997 07:37:16.00 PST</TT
+></TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>Postgres, DMY</TT
+></TD
+><TD
+><TT
+CLASS="REPLACEABLE"
+><I
+>日</I
+></TT
+>/<TT
+CLASS="REPLACEABLE"
+><I
+>月</I
+></TT
+>/<TT
+CLASS="REPLACEABLE"
+><I
+>年</I
+></TT
+></TD
+><TD
+><TT
+CLASS="LITERAL"
+>Wed 17 Dec 07:37:16 1997 PST</TT
+></TD
+></TR
+></TBODY
+></TABLE
+></DIV
+><P
+>     日期/时间风格可以由用户使用<TT
+CLASS="COMMAND"
+>SET datestyle</TT
+>命令选取，在<TT
+CLASS="FILENAME"
+>postgresql.conf</TT
+>配置文件里的参数<A
+HREF="runtime-config-client.html#GUC-DATESTYLE"
+>DateStyle</A
+>设置或者在服务器或客户端的<TT
+CLASS="ENVAR"
+>PGDATESTYLE</TT
+>环境变量里设置。
+    </P
+><P
+>     格式化函数<CODE
+CLASS="FUNCTION"
+>to_char</CODE
+>（见<A
+HREF="functions-formatting.html"
+>第 9.8 &#33410;</A
+>）也可以作为一个更灵活的方式来格式化日期/时间输出。
+    </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="DATATYPE-TIMEZONES"
+>8.5.3. 时区</A
+></H2
+><P
+>    时区和时区习惯不仅仅受地球几何形状的影响，还受到政治决定的影响。 到了19世纪，全球的时区变得稍微标准化了些，但是还是易于遭受随意的修改，部分是因为夏时制规
+    则。<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>使用广泛使用的 IANA (Olson) 时区数据库来得到有关历史时区规则的信息。对于未来的时间，我们假设关于一个给定时区的最新已知
+    规则将会一直持续到无穷远的未来。
+   </P
+><P
+>     <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>努力在典型使用中与<ACRONYM
+CLASS="ACRONYM"
+>SQL</ACRONYM
+>标准的定义相兼容。但<ACRONYM
+CLASS="ACRONYM"
+>SQL</ACRONYM
+>标准在日期和时间类型和功能上有一些奇怪的混淆。两个显而易见的问题是：
+
+     <P
+></P
+></P><UL
+><LI
+><P
+>        尽管<TT
+CLASS="TYPE"
+>date</TT
+>类型与时区没有联系，而<TT
+CLASS="TYPE"
+>time</TT
+>类型却可以有。 然而，现实世界的时区只有在与时间和日期都关联时才有意义， 因为偏移（时差）可能因为实行类似夏时制这样的制度而在一年里有所变化。
+       </P
+></LI
+><LI
+><P
+>        缺省的时区会指定一个到<ACRONYM
+CLASS="ACRONYM"
+>UTC</ACRONYM
+>的数字常量偏移（时差）。因此，当跨<ACRONYM
+CLASS="ACRONYM"
+>DST</ACRONYM
+>边界做日期/时间算术时， 我们根本不可能适应于夏时制时间。
+       </P
+></LI
+></UL
+><P>
+    </P
+><P
+>     为了克服这些困难，我们建议在使用时区的时候，使用那些同时包含日期和时间的日期/时间类型。我们<SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>不</I
+></SPAN
+>建议使用类型 <TT
+CLASS="TYPE"
+>time with time zone</TT
+> （尽管<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>出于遗留应用以及与<ACRONYM
+CLASS="ACRONYM"
+>SQL</ACRONYM
+>标准兼容性的考虑支持这个类型）。 <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>假设你用于任何类型的本地时区都只包含日期或时间。
+    </P
+><P
+>     在系统内部，所有时区相关的日期和时间都用<ACRONYM
+CLASS="ACRONYM"
+>UTC</ACRONYM
+>存储。它们在被显示给客户端之前会被转换成由<A
+HREF="runtime-config-client.html#GUC-TIMEZONE"
+>TimeZone</A
+>配置参数指定的本地时间。
+    </P
+><P
+>     <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>允许你使用三种不同形式指定时区：
+     <P
+></P
+></P><UL
+><LI
+><P
+>        一个完整的时区名字，例如<TT
+CLASS="LITERAL"
+>America/New_York</TT
+>。能被识别的时区名字被列在<TT
+CLASS="LITERAL"
+>pg_timezone_names</TT
+>视图中（参见<A
+HREF="view-pg-timezone-names.html"
+>第 50.80 &#33410;</A
+>）。<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>用广泛使用的 IANA 时区数据来实现该目的，因此相同的时区名字也可以在很多其他软件中被识别。
+       </P
+></LI
+><LI
+><P
+>        一个时区缩写，例如<TT
+CLASS="LITERAL"
+>PST</TT
+>。这样一种声明仅仅定义了到UTC的一个特定偏移，而不像完整时区名那样指出整套夏令时转换日期规则。能被识别的缩写被列在<TT
+CLASS="LITERAL"
+>pg_timezone_abbrevs</TT
+>视图中（参见<A
+HREF="view-pg-timezone-abbrevs.html"
+>第 50.79 &#33410;</A
+>）。你不能将配置参数<A
+HREF="runtime-config-client.html#GUC-TIMEZONE"
+>TimeZone</A
+>或<A
+HREF="runtime-config-logging.html#GUC-LOG-TIMEZONE"
+>log_timezone</A
+>设置成一个时区缩写，但是你可以在日期/时间输入值和<TT
+CLASS="LITERAL"
+>AT TIME ZONE</TT
+>操作符中使用时区缩写。
+       </P
+></LI
+><LI
+><P
+>        除了时区名和缩写，<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>将接受POSIX-风格的
+        时区声明，形式为<TT
+CLASS="REPLACEABLE"
+><I
+>STD</I
+></TT
+><TT
+CLASS="REPLACEABLE"
+><I
+>offset</I
+></TT
+>或
+        <TT
+CLASS="REPLACEABLE"
+><I
+>STD</I
+></TT
+><TT
+CLASS="REPLACEABLE"
+><I
+>offset</I
+></TT
+><TT
+CLASS="REPLACEABLE"
+><I
+>DST</I
+></TT
+>，
+        其中<TT
+CLASS="REPLACEABLE"
+><I
+>STD</I
+></TT
+>是一个区域缩写、<TT
+CLASS="REPLACEABLE"
+><I
+>offset</I
+></TT
+>是从UTC西
+        起的以小时计的数字偏移量、<TT
+CLASS="REPLACEABLE"
+><I
+>DST</I
+></TT
+>是一个可选的夏令时区域缩
+        写（被假定为给定偏移量提前一小时）。例如，如果<TT
+CLASS="LITERAL"
+>EST5EDT</TT
+>还不是一
+        个被识别的区域名，它可以被接受并且可能和美国东海岸时间的功效相同。在这种语法中，
+        一个时区缩写可以是一个字母的字符串或者由尖括号（<TT
+CLASS="LITERAL"
+>&lt;&gt;</TT
+>）包围
+        的任意字符串。当一个夏令时区域缩写出现时，会假定根据 IANA 时区数据库的
+        <TT
+CLASS="FILENAME"
+>posixrules</TT
+>条目中使用的同一个夏令时转换规则使用它。
+        在一个标准的<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>安装中，
+        <TT
+CLASS="FILENAME"
+>posixrules</TT
+>和<TT
+CLASS="LITERAL"
+>US/Eastern</TT
+>相同，
+        因此POSIX-风格的时区声明遵循美国的夏令时规则。如果需要，你可以通过替换
+        <TT
+CLASS="FILENAME"
+>posixrules</TT
+>文件来调整这种行为。
+       </P
+></LI
+></UL
+><P>
+
+     简而言之，在缩写和全称之间是有不同的：缩写表示从UTC开始的一个特定偏移量，
+     而很多全称表示一个本地夏令时规则并且因此具有两种可能的UTC偏移量。例如，
+     <TT
+CLASS="LITERAL"
+>2014-06-04 12:00 America/New_York</TT
+>表示纽约本地时间的中午，
+     这个特殊的日期是东部夏令时间（UTC-4）。因此<TT
+CLASS="LITERAL"
+>2014-06-04 12:00 EDT</TT
+>
+     指定的是同一个时间点。但是<TT
+CLASS="LITERAL"
+>2014-06-04 12:00 EST</TT
+>指定东部标准时间的
+     中午（UTC-5），不管在那个日期夏令时是否生效。
+    </P
+><P
+>     更要命的是，某些行政区已经使用相同的时区缩写在不同的时间表示不同的 UTC 偏移量。例如，
+     在莫斯科<TT
+CLASS="LITERAL"
+>MSK</TT
+>在某些年份表示 UTC+3 而在另一些年份表示 UTC+4。 <SPAN
+CLASS="APPLICATION"
+>PostgreSQL</SPAN
+> 会根据在指定的日期它们到底表示什么（或者最近表示什么）
+     来解释这种缩写。但是，正如上面的<TT
+CLASS="LITERAL"
+>EST</TT
+>例子所示，这并不是必须和那一天的本地
+     标准时间相同。
+    </P
+><P
+>     你应该注意到POSIX-风格的时区特性可能导致伪造的输入被接受，因为它没有对区域缩写合理性的检查。例如<TT
+CLASS="LITERAL"
+>SET TIMEZONE TO FOOBAR0</TT
+>将会正常工作，让系统实际使用一个相当奇怪的UTC缩写。另一个需要记住的问题是在POSIX时区名中，正值的偏移量被用于格林威治<SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>以西</I
+></SPAN
+>的位置。在其他情况下，<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>将遵循 ISO-8601 惯例，认为正值的时区偏移量是格林威治<SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>以东</I
+></SPAN
+>。
+    </P
+><P
+>     在所有情况下，时区名及其缩写都是大小写不敏感的（这是对<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+> 8.2之前版本的一个修改，在这些版本中某些环境下时区名是大小写敏感的而在另外一些环境中却是大小写不敏感的）。
+    </P
+><P
+>     时区名和缩写都不是硬写在服务器中的，它们是从存储在安装目录下的<TT
+CLASS="FILENAME"
+>.../share/timezone/</TT
+>和<TT
+CLASS="FILENAME"
+>.../share/timezonesets/</TT
+>子目录中获取的（参见<A
+HREF="datetime-config-files.html"
+>第 B.3 &#33410;</A
+>）。
+    </P
+><P
+>     <A
+HREF="runtime-config-client.html#GUC-TIMEZONE"
+>TimeZone</A
+>配置参数可以在文件<TT
+CLASS="FILENAME"
+>postgresql.conf</TT
+>中被设置，或者使用<A
+HREF="runtime-config.html"
+>第 19 &#31456;</A
+>中描述的任何一种标准方法设置。同时也有一些特殊的方法来设置它：
+
+     <P
+></P
+></P><UL
+><LI
+><P
+>        <ACRONYM
+CLASS="ACRONYM"
+>SQL</ACRONYM
+>命令<TT
+CLASS="COMMAND"
+>SET TIME ZONE</TT
+>为会话设置时区。它是<TT
+CLASS="COMMAND"
+>SET TIMEZONE TO</TT
+>的另一种拼写，它更加符合SQL的语法。
+       </P
+></LI
+><LI
+><P
+>        <SPAN
+CLASS="APPLICATION"
+>libpq</SPAN
+>客户端使用<TT
+CLASS="ENVAR"
+>PGTZ</TT
+>环境变量来通过连接发送一个<TT
+CLASS="COMMAND"
+>SET TIME ZONE</TT
+>命令给服务器。
+       </P
+></LI
+></UL
+><P>
+    </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="DATATYPE-INTERVAL-INPUT"
+>8.5.4. 间隔输入</A
+></H2
+><P
+>      <TT
+CLASS="TYPE"
+>interval</TT
+>值可以使用下列语法书写：
+
+</P><PRE
+CLASS="SYNOPSIS"
+>[<SPAN
+CLASS="OPTIONAL"
+>@</SPAN
+>] <TT
+CLASS="REPLACEABLE"
+><I
+>quantity</I
+></TT
+> <TT
+CLASS="REPLACEABLE"
+><I
+>unit</I
+></TT
+> [<SPAN
+CLASS="OPTIONAL"
+><TT
+CLASS="REPLACEABLE"
+><I
+>quantity</I
+></TT
+> <TT
+CLASS="REPLACEABLE"
+><I
+>unit</I
+></TT
+>...</SPAN
+>] [<SPAN
+CLASS="OPTIONAL"
+><TT
+CLASS="REPLACEABLE"
+><I
+>direction</I
+></TT
+></SPAN
+>]</PRE
+><P>
+
+     其中<TT
+CLASS="REPLACEABLE"
+><I
+>quantity</I
+></TT
+>是一个数字（很可能是有符号的）；
+     <TT
+CLASS="REPLACEABLE"
+><I
+>unit</I
+></TT
+>是<TT
+CLASS="LITERAL"
+>毫秒</TT
+>、
+     <TT
+CLASS="LITERAL"
+>millisecond</TT
+>、<TT
+CLASS="LITERAL"
+>second</TT
+>、
+     <TT
+CLASS="LITERAL"
+>minute</TT
+>、<TT
+CLASS="LITERAL"
+>hour</TT
+>、<TT
+CLASS="LITERAL"
+>day</TT
+>、
+     <TT
+CLASS="LITERAL"
+>week</TT
+>、<TT
+CLASS="LITERAL"
+>month</TT
+>、<TT
+CLASS="LITERAL"
+>year</TT
+>、
+     <TT
+CLASS="LITERAL"
+>decade</TT
+>、<TT
+CLASS="LITERAL"
+>century</TT
+>、<TT
+CLASS="LITERAL"
+>millennium</TT
+>
+     或者缩写或者这些单位的复数；
+     <TT
+CLASS="REPLACEABLE"
+><I
+>direction</I
+></TT
+>可以是<TT
+CLASS="LITERAL"
+>ago</TT
+>或者为空。At符号（<TT
+CLASS="LITERAL"
+>@</TT
+>）是一个可选的噪声。不同单位的数量通过合适的符号计数被隐式地添加。<TT
+CLASS="LITERAL"
+>ago</TT
+>对所有域求反。如果<A
+HREF="runtime-config-client.html#GUC-INTERVALSTYLE"
+>IntervalStyle</A
+>被设置为<TT
+CLASS="LITERAL"
+>postgres_verbose</TT
+>，该语法也被用于间隔输出。
+    </P
+><P
+>     日、小时、分钟和秒的数量可以不适用显式的单位标记指定。例如，<TT
+CLASS="LITERAL"
+>'1 12:59:10'</TT
+>被读作<TT
+CLASS="LITERAL"
+>'1 day 12 hours 59 min 10 sec'</TT
+>。同样，一个年和月的组合可以使用一个横线指定，例如<TT
+CLASS="LITERAL"
+>'200-10'</TT
+>被读作<TT
+CLASS="LITERAL"
+>'200年10个月'</TT
+>（这些较短的形式事实上是<ACRONYM
+CLASS="ACRONYM"
+>SQL</ACRONYM
+>标准唯一许可的形式，并且在<TT
+CLASS="VARNAME"
+>IntervalStyle</TT
+>被设置为<TT
+CLASS="LITERAL"
+>sql_standard</TT
+>时用于输出）。
+    </P
+><P
+>     间隔值也可以被写成 ISO 8601 时间间隔，使用该标准4.4.3.2小节的<SPAN
+CLASS="QUOTE"
+>"带标志符的格式"</SPAN
+>或者4.4.3.3小节的<SPAN
+CLASS="QUOTE"
+>"替代格式"</SPAN
+>。带标志符的格式看起来像这样：
+</P><PRE
+CLASS="SYNOPSIS"
+>P <TT
+CLASS="REPLACEABLE"
+><I
+>quantity</I
+></TT
+> <TT
+CLASS="REPLACEABLE"
+><I
+>unit</I
+></TT
+> [<SPAN
+CLASS="OPTIONAL"
+> <TT
+CLASS="REPLACEABLE"
+><I
+>quantity</I
+></TT
+> <TT
+CLASS="REPLACEABLE"
+><I
+>unit</I
+></TT
+> ...</SPAN
+>] [<SPAN
+CLASS="OPTIONAL"
+> T [<SPAN
+CLASS="OPTIONAL"
+> <TT
+CLASS="REPLACEABLE"
+><I
+>quantity</I
+></TT
+> <TT
+CLASS="REPLACEABLE"
+><I
+>unit</I
+></TT
+> ...</SPAN
+>]</SPAN
+>]</PRE
+><P>
+      该串必须以一个<TT
+CLASS="LITERAL"
+>P</TT
+>开始，并且可以包括一个引入当日时间单位的<TT
+CLASS="LITERAL"
+>T</TT
+>。可用的单位缩写在<A
+HREF="datatype-datetime.html#DATATYPE-INTERVAL-ISO8601-UNITS"
+>&#34920; 8-16</A
+>中给出。单位可以被忽略，并且可以以任何顺序指定，但是小于一天的单位必须出现在<TT
+CLASS="LITERAL"
+>T</TT
+>之后。特别地，<TT
+CLASS="LITERAL"
+>M</TT
+>的含义取决于它出现在<TT
+CLASS="LITERAL"
+>T</TT
+>之前还是之后。
+     </P
+><DIV
+CLASS="TABLE"
+><A
+NAME="DATATYPE-INTERVAL-ISO8601-UNITS"
+></A
+><P
+><B
+>&#34920; 8-16. ISO 8601 间隔单位缩写</B
+></P
+><TABLE
+BORDER="1"
+CLASS="CALSTABLE"
+><COL><COL><THEAD
+><TR
+><TH
+>缩写</TH
+><TH
+>含义</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+>Y</TD
+><TD
+>年</TD
+></TR
+><TR
+><TD
+>M</TD
+><TD
+>月（在日期部分中）</TD
+></TR
+><TR
+><TD
+>W</TD
+><TD
+>周</TD
+></TR
+><TR
+><TD
+>D</TD
+><TD
+>日</TD
+></TR
+><TR
+><TD
+>H</TD
+><TD
+>小时</TD
+></TR
+><TR
+><TD
+>M</TD
+><TD
+>分钟 (在时间部分中）</TD
+></TR
+><TR
+><TD
+>S</TD
+><TD
+>秒</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+><P
+>      如果使用替代格式：
+</P><PRE
+CLASS="SYNOPSIS"
+>P [<SPAN
+CLASS="OPTIONAL"
+> <TT
+CLASS="REPLACEABLE"
+><I
+>years</I
+></TT
+>-<TT
+CLASS="REPLACEABLE"
+><I
+>months</I
+></TT
+>-<TT
+CLASS="REPLACEABLE"
+><I
+>days</I
+></TT
+> </SPAN
+>] [<SPAN
+CLASS="OPTIONAL"
+> T <TT
+CLASS="REPLACEABLE"
+><I
+>hours</I
+></TT
+>:<TT
+CLASS="REPLACEABLE"
+><I
+>minutes</I
+></TT
+>:<TT
+CLASS="REPLACEABLE"
+><I
+>seconds</I
+></TT
+> </SPAN
+>]</PRE
+><P>
+      串必须以<TT
+CLASS="LITERAL"
+>P</TT
+>开始，并且一个<TT
+CLASS="LITERAL"
+>T</TT
+>分隔间隔的日期和时间部分。其值按照类似于 ISO 8601日期的数字给出。
+    </P
+><P
+>     在用一个<TT
+CLASS="REPLACEABLE"
+><I
+>域</I
+></TT
+>声明书写一个间隔常量时，或者为一个用<TT
+CLASS="REPLACEABLE"
+><I
+>域</I
+></TT
+>声明定义的间隔列赋予一个串时，对于为标记的量的解释依赖于<TT
+CLASS="REPLACEABLE"
+><I
+>域</I
+></TT
+>。例如<TT
+CLASS="LITERAL"
+>INTERVAL '1' YEAR</TT
+>被解读成1年，而<TT
+CLASS="LITERAL"
+>INTERVAL '1'</TT
+>表示1秒。同样，<TT
+CLASS="REPLACEABLE"
+><I
+>域</I
+></TT
+>声明允许的最后一个有效域<SPAN
+CLASS="QUOTE"
+>"右边"</SPAN
+>的域值会被无声地丢弃掉。例如书写<TT
+CLASS="LITERAL"
+>INTERVAL '1 day 2:03:04' HOUR TO MINUTE</TT
+>将会导致丢弃秒域，而不是日域。
+    </P
+><P
+>     根据<ACRONYM
+CLASS="ACRONYM"
+>SQL</ACRONYM
+>标准，一个间隔值的所有域都必须由相同的符号，这样一个领头的负号将会应用到所有域；例如在间隔文字<TT
+CLASS="LITERAL"
+>'-1 2:03:04'</TT
+>中的负号会被应用于日、小时、分钟和秒部分。<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>允许域具有不同的符号，并且在习惯上认为以文本表示的每个域具有独立的符号，因此在这个例子中小时、分钟和秒部分被认为是正值。如果<TT
+CLASS="VARNAME"
+>IntervalStyle</TT
+>被设置为<TT
+CLASS="LITERAL"
+>sql_standard</TT
+>，则一个领头的符号将被认为是应用于所有域（但是仅当没有额外符号出现）。否则将使用传统的<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>解释。为了避免混淆，我们推荐在任何域为负值时为每一个域都附加一个显式的符号。
+    </P
+><P
+>     内部的<TT
+CLASS="TYPE"
+>interval</TT
+>值被存储为月、日和秒。这是因为一个月中的天数是变化的，并且在涉及到夏令时调整时一天可以有23或25小时。月和日域是整数，而秒域可以存储分数。因为间隔通常都是从常数字符串或<TT
+CLASS="TYPE"
+>timestamp</TT
+>减法创建而来，这种存储方法在大部分情况都工作良好。函数<CODE
+CLASS="FUNCTION"
+>justify_days</CODE
+>和<CODE
+CLASS="FUNCTION"
+>justify_hours</CODE
+>可用于调整超过其常见范围的日数和小时数。
+    </P
+><P
+>     在冗长的输入格式中，以及在更紧凑输入格式的某些域中，域值可以有分数部分；例如<TT
+CLASS="LITERAL"
+>'1.5 week'</TT
+>或<TT
+CLASS="LITERAL"
+>'01:02:03.45'</TT
+>。这样的输入被转换为合适的月数、日数和秒数用于存储。当这样会导致月和日中的分数时，分数被加到低序域中，使用的转换因子是1月=30日和1日=24小时。例如，<TT
+CLASS="LITERAL"
+>'1.5 month'</TT
+>会变成1月和15日。只有秒总是在输出时被显示为分数。
+    </P
+><P
+>     <A
+HREF="datatype-datetime.html#DATATYPE-INTERVAL-INPUT-EXAMPLES"
+>&#34920; 8-17</A
+>展示了一些有效<TT
+CLASS="TYPE"
+>interval</TT
+>输入的例子。
+    </P
+><DIV
+CLASS="TABLE"
+><A
+NAME="DATATYPE-INTERVAL-INPUT-EXAMPLES"
+></A
+><P
+><B
+>&#34920; 8-17. 间隔输入</B
+></P
+><TABLE
+BORDER="1"
+CLASS="CALSTABLE"
+><COL><COL><THEAD
+><TR
+><TH
+>例子</TH
+><TH
+>描述</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+>1-2</TD
+><TD
+>SQL标准格式：1年2个月</TD
+></TR
+><TR
+><TD
+>3 4:05:06</TD
+><TD
+>SQL标准格式：3日4小时5分钟6秒</TD
+></TR
+><TR
+><TD
+>1 year 2 months 3 days 4 hours 5 minutes 6 seconds</TD
+><TD
+>传统Postgres格式：1年2个月3日4小时5分钟6秒钟</TD
+></TR
+><TR
+><TD
+>P1Y2M3DT4H5M6S</TD
+><TD
+><SPAN
+CLASS="QUOTE"
+>"带标志符的"</SPAN
+>ISO 8601 格式：含义同上</TD
+></TR
+><TR
+><TD
+>P0001-02-03T04:05:06</TD
+><TD
+>ISO 8601 的<SPAN
+CLASS="QUOTE"
+>"替代格式"</SPAN
+>：含义同上</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="DATATYPE-INTERVAL-OUTPUT"
+>8.5.5. 间隔输出</A
+></H2
+><P
+>     间隔类型的输出格式可以被设置为四种风格之一：<TT
+CLASS="LITERAL"
+>sql_standard</TT
+>、<TT
+CLASS="LITERAL"
+>postgres</TT
+>、<TT
+CLASS="LITERAL"
+>postgres_verbose</TT
+>或<TT
+CLASS="LITERAL"
+>iso_8601</TT
+>，设置方法使用<TT
+CLASS="LITERAL"
+>SET intervalstyle</TT
+>命令。默认值为<TT
+CLASS="LITERAL"
+>postgres</TT
+>格式。<A
+HREF="datatype-datetime.html#INTERVAL-STYLE-OUTPUT-TABLE"
+>&#34920; 8-18</A
+>展示了每种输出风格的例子。
+    </P
+><P
+>     如果间隔值符合SQL标准的限制（仅年-月或仅日-时间，没有正负值部分的混合），<TT
+CLASS="LITERAL"
+>sql_standard</TT
+>风格为间隔文字串产生符合SQL标准规范的输出。否则输出将看起来像一个标准的年-月文字串跟着一个日-时间文字串，并且带有显式添加的符号以区分混合符号的间隔。
+    </P
+><P
+>     当<A
+HREF="runtime-config-client.html#GUC-DATESTYLE"
+>DateStyle</A
+>参数被设置为<TT
+CLASS="LITERAL"
+>ISO</TT
+>时，<TT
+CLASS="LITERAL"
+>postgres</TT
+>风格的输出匹配<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+> 8.4版本以前的输出。
+    </P
+><P
+>     当<TT
+CLASS="VARNAME"
+>DateStyle</TT
+>参数被设置为非<TT
+CLASS="LITERAL"
+>ISO</TT
+>输出时，<TT
+CLASS="LITERAL"
+>postgres_verbose</TT
+>风格的输出匹配<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+> 8.4版本以前的输出。
+    </P
+><P
+>     <TT
+CLASS="LITERAL"
+>iso_8601</TT
+>风格的输出匹配在ISO 8601标准的4.4.3.2小节中描述的<SPAN
+CLASS="QUOTE"
+>"带标志符的格式"</SPAN
+>。
+    </P
+><DIV
+CLASS="TABLE"
+><A
+NAME="INTERVAL-STYLE-OUTPUT-TABLE"
+></A
+><P
+><B
+>&#34920; 8-18. 间隔输出风格例子</B
+></P
+><TABLE
+BORDER="1"
+CLASS="CALSTABLE"
+><COL><COL><COL><COL><THEAD
+><TR
+><TH
+>风格声明</TH
+><TH
+>年-月间隔</TH
+><TH
+>日-时间间隔</TH
+><TH
+>混合间隔</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>sql_standard</TT
+></TD
+><TD
+>1-2</TD
+><TD
+>3 4:05:06</TD
+><TD
+>-1-2 +3 -4:05:06</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>postgres</TT
+></TD
+><TD
+>1 year 2 mons</TD
+><TD
+>3 days 04:05:06</TD
+><TD
+>-1 year -2 mons +3 days -04:05:06</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>postgres_verbose</TT
+></TD
+><TD
+>@ 1 year 2 mons</TD
+><TD
+>@ 3 days 4 hours 5 mins 6 secs</TD
+><TD
+>@ 1 year 2 mons -3 days 4 hours 5 mins 6 secs ago</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>iso_8601</TT
+></TD
+><TD
+>P1Y2M</TD
+><TD
+>P3DT4H5M6S</TD
+><TD
+>P-1Y-2M3DT-4H-5M-6S</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="datatype-binary.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="datatype-boolean.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>二进制数据类型</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="datatype.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>布尔类型</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

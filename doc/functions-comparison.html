@@ -1,0 +1,1041 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>比较操作符</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="函数和操作符"
+HREF="functions.html"><LINK
+REL="PREVIOUS"
+TITLE="逻辑操作符"
+HREF="functions-logical.html"><LINK
+REL="NEXT"
+TITLE="数学函数和操作符"
+HREF="functions-math.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/func.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="逻辑操作符"
+HREF="functions-logical.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="functions.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#31456; 9. 函数和操作符</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="数学函数和操作符"
+HREF="functions-math.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="FUNCTIONS-COMPARISON"
+>9.2. 比较操作符</A
+></H1
+><P
+>    常见的比较操作符都可用，如<A
+HREF="functions-comparison.html#FUNCTIONS-COMPARISON-OP-TABLE"
+>&#34920; 9-1</A
+>所示。
+   </P
+><DIV
+CLASS="TABLE"
+><A
+NAME="FUNCTIONS-COMPARISON-OP-TABLE"
+></A
+><P
+><B
+>&#34920; 9-1. 比较操作符</B
+></P
+><TABLE
+BORDER="1"
+CLASS="CALSTABLE"
+><COL><COL><THEAD
+><TR
+><TH
+>操作符</TH
+><TH
+>描述</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+> <TT
+CLASS="LITERAL"
+>&lt;</TT
+> </TD
+><TD
+>小于</TD
+></TR
+><TR
+><TD
+> <TT
+CLASS="LITERAL"
+>&gt;</TT
+> </TD
+><TD
+>大于</TD
+></TR
+><TR
+><TD
+> <TT
+CLASS="LITERAL"
+>&lt;=</TT
+> </TD
+><TD
+>小于等于</TD
+></TR
+><TR
+><TD
+> <TT
+CLASS="LITERAL"
+>&gt;=</TT
+> </TD
+><TD
+>大于等于</TD
+></TR
+><TR
+><TD
+> <TT
+CLASS="LITERAL"
+>=</TT
+> </TD
+><TD
+>等于</TD
+></TR
+><TR
+><TD
+> <TT
+CLASS="LITERAL"
+>&lt;&gt;</TT
+> or <TT
+CLASS="LITERAL"
+>!=</TT
+> </TD
+><TD
+>不等于</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+><DIV
+CLASS="NOTE"
+><BLOCKQUOTE
+CLASS="NOTE"
+><P
+><B
+>&#27880;&#24847;: </B
+>     <TT
+CLASS="LITERAL"
+>!=</TT
+>操作符在分析器阶段被转换成<TT
+CLASS="LITERAL"
+>&lt;&gt;</TT
+>。不能把<TT
+CLASS="LITERAL"
+>!=</TT
+>和<TT
+CLASS="LITERAL"
+>&lt;&gt;</TT
+>操作符实现为做不同的事。
+    </P
+></BLOCKQUOTE
+></DIV
+><P
+>    比较操作符可以用于所有可以比较的数据类型。所有比较操作符都是双目操作符，它们返回<TT
+CLASS="TYPE"
+>boolean</TT
+>类型；类似于<TT
+CLASS="LITERAL"
+>1 &lt; 2 &lt; 3</TT
+>的表达式是非法的（因为没有<TT
+CLASS="LITERAL"
+>&lt;</TT
+>操作符可以比较一个布尔值和<TT
+CLASS="LITERAL"
+>3</TT
+>）。
+   </P
+><P
+>    如<A
+HREF="functions-comparison.html#FUNCTIONS-COMPARISON-PRED-TABLE"
+>&#34920; 9-2</A
+>所示，也有一些比较谓词。
+    它们的行为和操作符很像，但是具有 SQL 标准所要求的特殊语法。
+   </P
+><DIV
+CLASS="TABLE"
+><A
+NAME="FUNCTIONS-COMPARISON-PRED-TABLE"
+></A
+><P
+><B
+>&#34920; 9-2. 比较谓词</B
+></P
+><TABLE
+BORDER="1"
+CLASS="CALSTABLE"
+><COL><COL><THEAD
+><TR
+><TH
+>谓词</TH
+><TH
+>描述</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+> <TT
+CLASS="REPLACEABLE"
+><I
+>a</I
+></TT
+> <TT
+CLASS="LITERAL"
+>BETWEEN</TT
+> <TT
+CLASS="REPLACEABLE"
+><I
+>x</I
+></TT
+> <TT
+CLASS="LITERAL"
+>AND</TT
+> <TT
+CLASS="REPLACEABLE"
+><I
+>y</I
+></TT
+> </TD
+><TD
+>在x和y之间</TD
+></TR
+><TR
+><TD
+> <TT
+CLASS="REPLACEABLE"
+><I
+>a</I
+></TT
+> <TT
+CLASS="LITERAL"
+>NOT BETWEEN</TT
+> <TT
+CLASS="REPLACEABLE"
+><I
+>x</I
+></TT
+> <TT
+CLASS="LITERAL"
+>AND</TT
+> <TT
+CLASS="REPLACEABLE"
+><I
+>y</I
+></TT
+> </TD
+><TD
+>不在x和y之间</TD
+></TR
+><TR
+><TD
+> <TT
+CLASS="REPLACEABLE"
+><I
+>a</I
+></TT
+> <TT
+CLASS="LITERAL"
+>BETWEEN SYMMETRIC</TT
+> <TT
+CLASS="REPLACEABLE"
+><I
+>x</I
+></TT
+> <TT
+CLASS="LITERAL"
+>AND</TT
+> <TT
+CLASS="REPLACEABLE"
+><I
+>y</I
+></TT
+> </TD
+><TD
+>在对比较值排序后位于x和y之间</TD
+></TR
+><TR
+><TD
+> <TT
+CLASS="REPLACEABLE"
+><I
+>a</I
+></TT
+> <TT
+CLASS="LITERAL"
+>NOT BETWEEN SYMMETRIC</TT
+> <TT
+CLASS="REPLACEABLE"
+><I
+>x</I
+></TT
+> <TT
+CLASS="LITERAL"
+>AND</TT
+> <TT
+CLASS="REPLACEABLE"
+><I
+>y</I
+></TT
+> </TD
+><TD
+>在对比较值排序后不位于x和y之间</TD
+></TR
+><TR
+><TD
+> <TT
+CLASS="REPLACEABLE"
+><I
+>a</I
+></TT
+> <TT
+CLASS="LITERAL"
+>IS DISTINCT FROM</TT
+> <TT
+CLASS="REPLACEABLE"
+><I
+>b</I
+></TT
+> </TD
+><TD
+>不等于，空值被当做一个普通值</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="REPLACEABLE"
+><I
+>a</I
+></TT
+> <TT
+CLASS="LITERAL"
+>IS NOT DISTINCT FROM</TT
+> <TT
+CLASS="REPLACEABLE"
+><I
+>b</I
+></TT
+></TD
+><TD
+>等于，空值被当做一个普通值</TD
+></TR
+><TR
+><TD
+> <TT
+CLASS="REPLACEABLE"
+><I
+>expression</I
+></TT
+> <TT
+CLASS="LITERAL"
+>IS NULL</TT
+> </TD
+><TD
+>是空值</TD
+></TR
+><TR
+><TD
+> <TT
+CLASS="REPLACEABLE"
+><I
+>expression</I
+></TT
+> <TT
+CLASS="LITERAL"
+>IS NOT NULL</TT
+> </TD
+><TD
+>不是空值</TD
+></TR
+><TR
+><TD
+> <TT
+CLASS="REPLACEABLE"
+><I
+>expression</I
+></TT
+> <TT
+CLASS="LITERAL"
+>ISNULL</TT
+> </TD
+><TD
+>是空值（非标准语法）</TD
+></TR
+><TR
+><TD
+> <TT
+CLASS="REPLACEABLE"
+><I
+>expression</I
+></TT
+> <TT
+CLASS="LITERAL"
+>NOTNULL</TT
+> </TD
+><TD
+>不是空值（非标准语法）</TD
+></TR
+><TR
+><TD
+> <TT
+CLASS="REPLACEABLE"
+><I
+>boolean_expression</I
+></TT
+> <TT
+CLASS="LITERAL"
+>IS TRUE</TT
+> </TD
+><TD
+>为真</TD
+></TR
+><TR
+><TD
+> <TT
+CLASS="REPLACEABLE"
+><I
+>boolean_expression</I
+></TT
+> <TT
+CLASS="LITERAL"
+>IS NOT TRUE</TT
+> </TD
+><TD
+>为假或未知</TD
+></TR
+><TR
+><TD
+> <TT
+CLASS="REPLACEABLE"
+><I
+>boolean_expression</I
+></TT
+> <TT
+CLASS="LITERAL"
+>IS FALSE</TT
+> </TD
+><TD
+>为假</TD
+></TR
+><TR
+><TD
+> <TT
+CLASS="REPLACEABLE"
+><I
+>boolean_expression</I
+></TT
+> <TT
+CLASS="LITERAL"
+>IS NOT FALSE</TT
+> </TD
+><TD
+>为真或者未知</TD
+></TR
+><TR
+><TD
+> <TT
+CLASS="REPLACEABLE"
+><I
+>boolean_expression</I
+></TT
+> <TT
+CLASS="LITERAL"
+>IS UNKNOWN</TT
+> </TD
+><TD
+>值为未知</TD
+></TR
+><TR
+><TD
+> <TT
+CLASS="REPLACEABLE"
+><I
+>boolean_expression</I
+></TT
+> <TT
+CLASS="LITERAL"
+>IS NOT UNKNOWN</TT
+> </TD
+><TD
+>为真或者为假</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+><P
+>    
+    除了比较操作符以外，特殊的<TT
+CLASS="TOKEN"
+>BETWEEN</TT
+>结构也可以使用：
+</P><PRE
+CLASS="SYNOPSIS"
+><TT
+CLASS="REPLACEABLE"
+><I
+>a</I
+></TT
+> BETWEEN <TT
+CLASS="REPLACEABLE"
+><I
+>x</I
+></TT
+> AND <TT
+CLASS="REPLACEABLE"
+><I
+>y</I
+></TT
+></PRE
+><P>
+    等效于
+</P><PRE
+CLASS="SYNOPSIS"
+><TT
+CLASS="REPLACEABLE"
+><I
+>a</I
+></TT
+> &gt;= <TT
+CLASS="REPLACEABLE"
+><I
+>x</I
+></TT
+> AND <TT
+CLASS="REPLACEABLE"
+><I
+>a</I
+></TT
+> &lt;= <TT
+CLASS="REPLACEABLE"
+><I
+>y</I
+></TT
+></PRE
+><P>
+    注意<TT
+CLASS="TOKEN"
+>BETWEEN</TT
+>认为终点值是包含在范围内的。
+    <TT
+CLASS="LITERAL"
+>NOT BETWEEN</TT
+>可以做相反比较：
+</P><PRE
+CLASS="SYNOPSIS"
+><TT
+CLASS="REPLACEABLE"
+><I
+>a</I
+></TT
+> NOT BETWEEN <TT
+CLASS="REPLACEABLE"
+><I
+>x</I
+></TT
+> AND <TT
+CLASS="REPLACEABLE"
+><I
+>y</I
+></TT
+></PRE
+><P>
+    等效于
+</P><PRE
+CLASS="SYNOPSIS"
+><TT
+CLASS="REPLACEABLE"
+><I
+>a</I
+></TT
+> &lt; <TT
+CLASS="REPLACEABLE"
+><I
+>x</I
+></TT
+> OR <TT
+CLASS="REPLACEABLE"
+><I
+>a</I
+></TT
+> &gt; <TT
+CLASS="REPLACEABLE"
+><I
+>y</I
+></TT
+></PRE
+><P>
+    
+    <TT
+CLASS="LITERAL"
+>BETWEEN SYMMETRIC</TT
+>和<TT
+CLASS="LITERAL"
+>BETWEEN</TT
+>相同，不过<TT
+CLASS="LITERAL"
+>BETWEEN SYMMETRIC</TT
+>不要求<TT
+CLASS="LITERAL"
+>AND</TT
+>左边的参数小于或等于右边的参数。如果左参数不是小于等于右参数，这两个参数会自动被交换，这样总是会应用一个非空范围。
+   </P
+><P
+>    
+    
+    当有一个输入为空时，普通的比较操作符会得到空（表示<SPAN
+CLASS="QUOTE"
+>"未知"</SPAN
+>），
+    而不是真或假。例如，<TT
+CLASS="LITERAL"
+>7 = NULL</TT
+>得到空，<TT
+CLASS="LITERAL"
+>7 &lt;&gt; NULL</TT
+>
+    也一样。如果这种行为不合适，可以使用
+    <TT
+CLASS="LITERAL"
+>IS [<SPAN
+CLASS="OPTIONAL"
+> NOT </SPAN
+>] DISTINCT FROM</TT
+>谓词：
+</P><PRE
+CLASS="SYNOPSIS"
+><TT
+CLASS="REPLACEABLE"
+><I
+>a</I
+></TT
+> IS DISTINCT FROM <TT
+CLASS="REPLACEABLE"
+><I
+>b</I
+></TT
+>
+<TT
+CLASS="REPLACEABLE"
+><I
+>a</I
+></TT
+> IS NOT DISTINCT FROM <TT
+CLASS="REPLACEABLE"
+><I
+>b</I
+></TT
+></PRE
+><P>
+    对于非空输入，<TT
+CLASS="LITERAL"
+>IS DISTINCT FROM</TT
+>和<TT
+CLASS="LITERAL"
+>&lt;&gt;</TT
+>
+    操作符一样。不过，如果两个输入都为空，它会返回假。而如果只有一个输入为空，
+    它会返回真。类似地，<TT
+CLASS="LITERAL"
+>IS NOT DISTINCT FROM</TT
+>
+    对于非空输入的行为与<TT
+CLASS="LITERAL"
+>=</TT
+>相同，但是当两个输入都为空时它返回真，
+    并且当只有一个输入为空时返回假。因此，
+    这些谓词实际上把空值当作一种普通数据值而不是<SPAN
+CLASS="QUOTE"
+>"unknown"</SPAN
+>。
+   </P
+><P
+>    
+    
+    
+    
+    要检查一个值是否为空，使用下面的结构：
+</P><PRE
+CLASS="SYNOPSIS"
+><TT
+CLASS="REPLACEABLE"
+><I
+>expression</I
+></TT
+> IS NULL
+<TT
+CLASS="REPLACEABLE"
+><I
+>expression</I
+></TT
+> IS NOT NULL</PRE
+><P>
+    或者等效，但并不标准的结构：
+</P><PRE
+CLASS="SYNOPSIS"
+><TT
+CLASS="REPLACEABLE"
+><I
+>expression</I
+></TT
+> ISNULL
+<TT
+CLASS="REPLACEABLE"
+><I
+>expression</I
+></TT
+> NOTNULL</PRE
+><P>
+    
+   </P
+><P
+>    <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>不要</I
+></SPAN
+>写<TT
+CLASS="LITERAL"
+><TT
+CLASS="REPLACEABLE"
+><I
+>expression</I
+></TT
+> = NULL</TT
+>，因为<TT
+CLASS="LITERAL"
+>NULL</TT
+>是不<SPAN
+CLASS="QUOTE"
+>"等于"</SPAN
+><TT
+CLASS="LITERAL"
+>NULL</TT
+>的（控制代表一个未知的值，因此我们无法知道两个未知的数值是否相等）。这种行为符合 SQL 标准。
+   </P
+><DIV
+CLASS="TIP"
+><BLOCKQUOTE
+CLASS="TIP"
+><P
+><B
+>&#25552;&#31034;: </B
+>    有些应用可能要求表达式<TT
+CLASS="LITERAL"
+><TT
+CLASS="REPLACEABLE"
+><I
+>expression</I
+></TT
+> = NULL</TT
+>在<TT
+CLASS="REPLACEABLE"
+><I
+>expression</I
+></TT
+>得出空值时返回真。我们强烈建议这样的应用修改成遵循 SQL 标准。但是，如果这样修改不可能完成，那么我们可以使用配置变量<A
+HREF="runtime-config-compatible.html#GUC-TRANSFORM-NULL-EQUALS"
+>transform_null_equals</A
+>。如果打开它，<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>将把<TT
+CLASS="LITERAL"
+>x = NULL</TT
+>子句转换成<TT
+CLASS="LITERAL"
+>x IS NULL</TT
+>。
+   </P
+></BLOCKQUOTE
+></DIV
+><P
+>   </P
+><P
+>    
+    
+    
+    
+    
+    
+    布尔值也可以使用下列结构进行测试：
+</P><PRE
+CLASS="SYNOPSIS"
+><TT
+CLASS="REPLACEABLE"
+><I
+>boolean_expression</I
+></TT
+> IS TRUE
+<TT
+CLASS="REPLACEABLE"
+><I
+>boolean_expression</I
+></TT
+> IS NOT TRUE
+<TT
+CLASS="REPLACEABLE"
+><I
+>boolean_expression</I
+></TT
+> IS FALSE
+<TT
+CLASS="REPLACEABLE"
+><I
+>boolean_expression</I
+></TT
+> IS NOT FALSE
+<TT
+CLASS="REPLACEABLE"
+><I
+>boolean_expression</I
+></TT
+> IS UNKNOWN
+<TT
+CLASS="REPLACEABLE"
+><I
+>boolean_expression</I
+></TT
+> IS NOT UNKNOWN</PRE
+><P>
+    这些结构将总是返回真或假，从来不返回空值，即使操作数是空也如此。空值输入被当做逻辑值<SPAN
+CLASS="QUOTE"
+>"未知"</SPAN
+>。 请注意实际上<TT
+CLASS="LITERAL"
+>IS UNKNOWN</TT
+>和<TT
+CLASS="LITERAL"
+>IS NOT UNKNOWN</TT
+>分别与<TT
+CLASS="LITERAL"
+>IS NULL</TT
+>和<TT
+CLASS="LITERAL"
+>IS NOT NULL</TT
+>相同， 只是输入表达式必须是布尔类型。
+   </P
+><P
+>    如<A
+HREF="functions-comparison.html#FUNCTIONS-COMPARISON-FUNC-TABLE"
+>&#34920; 9-3</A
+>中所示，
+    也有一些比较相关的函数可用。
+   </P
+><DIV
+CLASS="TABLE"
+><A
+NAME="FUNCTIONS-COMPARISON-FUNC-TABLE"
+></A
+><P
+><B
+>&#34920; 9-3. 比较函数</B
+></P
+><TABLE
+BORDER="1"
+CLASS="CALSTABLE"
+><COL><COL><COL><COL><THEAD
+><TR
+><TH
+>函数</TH
+><TH
+>描述</TH
+><TH
+>示例</TH
+><TH
+>示例结果</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+>         
+         <TT
+CLASS="LITERAL"
+>num_nonnulls(VARIADIC "any")</TT
+>
+       </TD
+><TD
+>返回非空参数的数量</TD
+><TD
+><TT
+CLASS="LITERAL"
+>num_nonnulls(1, NULL, 2)</TT
+></TD
+><TD
+><TT
+CLASS="LITERAL"
+>2</TT
+></TD
+></TR
+><TR
+><TD
+>         
+         <TT
+CLASS="LITERAL"
+>num_nulls(VARIADIC "any")</TT
+>
+       </TD
+><TD
+>返回空参数的数量</TD
+><TD
+><TT
+CLASS="LITERAL"
+>num_nulls(1, NULL, 2)</TT
+></TD
+><TD
+><TT
+CLASS="LITERAL"
+>1</TT
+></TD
+></TR
+></TBODY
+></TABLE
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="functions-logical.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="functions-math.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>逻辑操作符</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="functions.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>数学函数和操作符</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

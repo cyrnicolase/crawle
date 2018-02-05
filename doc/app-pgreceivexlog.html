@@ -1,0 +1,786 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>pg_receivexlog</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="PostgreSQL 客户端应用"
+HREF="reference-client.html"><LINK
+REL="PREVIOUS"
+TITLE="pg_isready"
+HREF="app-pg-isready.html"><LINK
+REL="NEXT"
+TITLE="pg_recvlogical"
+HREF="app-pgrecvlogical.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="REFENTRY"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/ref/pg_receivexlog.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="pg_isready"
+HREF="app-pg-isready.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="reference-client.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="pg_recvlogical"
+HREF="app-pgrecvlogical.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="APP-PGRECEIVEXLOG"
+></A
+>pg_receivexlog</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN97110"
+></A
+><H2
+>&#21517;&#31216;</H2
+>pg_receivexlog&nbsp;--&nbsp;以流的方式从一个<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>服务器得到事务日志</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN97114"
+></A
+><H2
+>&#22823;&#32434;</H2
+><P
+><TT
+CLASS="COMMAND"
+>pg_receivexlog</TT
+> [<TT
+CLASS="REPLACEABLE"
+><I
+>option</I
+></TT
+>...]</P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN97119"
+></A
+><H2
+>   描述
+  </H2
+><P
+>   <SPAN
+CLASS="APPLICATION"
+>pg_receivexlog</SPAN
+>被用来从一个运行着的<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>集簇以流的方式得到事务日志。事务日志会被使用流复制协议以流的方式传送，并且被写入到文件的一个本地目录。这个目录可以被用作归档位置来做一次使用时间点恢复的恢复（见<A
+HREF="continuous-archiving.html"
+>第 25.3 &#33410;</A
+>）。
+  </P
+><P
+>   当事务日志在服务器上被产生时，<SPAN
+CLASS="APPLICATION"
+>pg_receivexlog</SPAN
+>实时以流的方式传输事务日志，并且不像<A
+HREF="runtime-config-wal.html#GUC-ARCHIVE-COMMAND"
+>archive_command</A
+>那样等待段完成。由于这个原因，在使用<SPAN
+CLASS="APPLICATION"
+>pg_receivexlog</SPAN
+>时不必设置<A
+HREF="runtime-config-wal.html#GUC-ARCHIVE-TIMEOUT"
+>archive_timeout</A
+>。
+  </P
+><P
+>   与 PostgreSQL 后备服务器上的 WAL 接收进程不同，
+   <SPAN
+CLASS="APPLICATION"
+>pg_receivexlog</SPAN
+>默认只在一个 WAL 文件被关闭时
+   才刷入 WAL 数据。要实时刷入 WAL 数据，必须指定选项
+   <TT
+CLASS="OPTION"
+>--synchronous</TT
+>。
+  </P
+><P
+>   事务日志在一个常规<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>连接上被以流式传送，并且使用复制协议。连接必须由一个超级用户或一个具有<TT
+CLASS="LITERAL"
+>REPLICATION</TT
+>权限（见<A
+HREF="role-attributes.html"
+>第 21.2 &#33410;</A
+>）的用户建立，并且<TT
+CLASS="FILENAME"
+>pg_hba.conf</TT
+>必须允许复制连接。服务器也必须被配置一个足够高的<A
+HREF="runtime-config-replication.html#GUC-MAX-WAL-SENDERS"
+>max_wal_senders</A
+>来至少留出一个可用会话给流。
+  </P
+><P
+>   如果该连接丢失，或者它一开始就由于一个非致命错误而没有被建立，<SPAN
+CLASS="APPLICATION"
+>pg_receivexlog</SPAN
+>将无限期地重试连接并且尽可能重新建立流。为了避免这种行为，使用<TT
+CLASS="LITERAL"
+>-n</TT
+>参数。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN97142"
+></A
+><H2
+>选项</H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="OPTION"
+>-D <TT
+CLASS="REPLACEABLE"
+><I
+>directory</I
+></TT
+></TT
+><BR><TT
+CLASS="OPTION"
+>--directory=<TT
+CLASS="REPLACEABLE"
+><I
+>directory</I
+></TT
+></TT
+></DT
+><DD
+><P
+>        要把输出写到哪个目录。
+       </P
+><P
+>        这个参数是必需的。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>--if-not-exists</TT
+></DT
+><DD
+><P
+>        当指定<TT
+CLASS="OPTION"
+>--create-slot</TT
+>并且具有指定名称
+        的槽已经存在时不要抛出错误。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-n</TT
+><BR><TT
+CLASS="OPTION"
+>--no-loop</TT
+></DT
+><DD
+><P
+>        不要在连接错误上循环。相反，碰到一个错误时立刻退出。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-s <TT
+CLASS="REPLACEABLE"
+><I
+>interval</I
+></TT
+></TT
+><BR><TT
+CLASS="OPTION"
+>--status-interval=<TT
+CLASS="REPLACEABLE"
+><I
+>interval</I
+></TT
+></TT
+></DT
+><DD
+><P
+>        指定发送回服务器的状态包之间的秒数。这允许我们更容易地监控服务器的进度。
+        一个零值完全禁用这种周期性的状态更新，不过当服务器需要时还是会有一个更新
+        会被发送来避免超时导致的断开连接。默认值是 10 秒。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-S <TT
+CLASS="REPLACEABLE"
+><I
+>slotname</I
+></TT
+></TT
+><BR><TT
+CLASS="OPTION"
+>--slot=<TT
+CLASS="REPLACEABLE"
+><I
+>slotname</I
+></TT
+></TT
+></DT
+><DD
+><P
+>         要求<SPAN
+CLASS="APPLICATION"
+>pg_receivexlog</SPAN
+>使用一个已有的复制槽（见
+         <A
+HREF="warm-standby.html#STREAMING-REPLICATION-SLOTS"
+>第 26.2.6 &#33410;</A
+>）。在使用这个选项时，
+         <SPAN
+CLASS="APPLICATION"
+>pg_receivexlog</SPAN
+>将会报告给服务器一个刷写位置，指示每一个
+         段是何时被同步到磁盘的，这样服务器可以在不需要该段时移除它。
+        </P
+><P
+>         当<SPAN
+CLASS="APPLICATION"
+>pg_receivexlog</SPAN
+>的复制客户端在服务器
+         上被配置为一个同步后备时，那么使用一个复制槽将会向服务器报告刷写
+         位置，但只在一个 WAL 文件被关闭时报告。因此，该配置将导致主服务
+         器上的事务等待很长的时间并且无法令人满意地工作。要让这种配置工作
+         正确，还必须制定选项<TT
+CLASS="LITERAL"
+>--synchronous</TT
+>（见下文）。
+        </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>--synchronous</TT
+></DT
+><DD
+><P
+>        在 WAL 数据被收到后立即刷入到磁盘。还要在刷写后立即向服务器回送
+        一个状态包（不考虑<TT
+CLASS="LITERAL"
+>--status-interval</TT
+>）。
+       </P
+><P
+>        如果<SPAN
+CLASS="APPLICATION"
+>pg_receivexlog</SPAN
+>的复制客户端在服务器
+        上被配置为一个同步后备，应该指定这个选项来确保向服务器发送及时的反馈。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-v</TT
+><BR><TT
+CLASS="OPTION"
+>--verbose</TT
+></DT
+><DD
+><P
+>        启用冗长模式。
+       </P
+></DD
+></DL
+></DIV
+><P
+>    下列命令行选项控制数据库连接参数。
+
+    <P
+></P
+></P><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="OPTION"
+>-d <TT
+CLASS="REPLACEABLE"
+><I
+>connstr</I
+></TT
+></TT
+><BR><TT
+CLASS="OPTION"
+>--dbname=<TT
+CLASS="REPLACEABLE"
+><I
+>connstr</I
+></TT
+></TT
+></DT
+><DD
+><P
+>        指定用于连接到服务器的参数为一个连接字符串。详见<A
+HREF="libpq-connect.html#LIBPQ-CONNSTRING"
+>第 32.1.1 &#33410;</A
+>。
+       </P
+><P
+>        为了和其他客户端应用一致，该选项被称为<TT
+CLASS="LITERAL"
+>--dbname</TT
+>。但是因为<SPAN
+CLASS="APPLICATION"
+>pg_receivexlog</SPAN
+>并不连接到集簇中的任何特定数据库，连接字符串中的数据库名将被忽略。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-h <TT
+CLASS="REPLACEABLE"
+><I
+>host</I
+></TT
+></TT
+><BR><TT
+CLASS="OPTION"
+>--host=<TT
+CLASS="REPLACEABLE"
+><I
+>host</I
+></TT
+></TT
+></DT
+><DD
+><P
+>        指定运行服务器的机器的主机名。如果该值以一个斜线开始，它被用作 Unix 域套接字的目录。默认值取自<TT
+CLASS="ENVAR"
+>PGHOST</TT
+>环境变量（如果设置），否则会尝试一个 Unix 域套接字连接。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-p <TT
+CLASS="REPLACEABLE"
+><I
+>port</I
+></TT
+></TT
+><BR><TT
+CLASS="OPTION"
+>--port=<TT
+CLASS="REPLACEABLE"
+><I
+>port</I
+></TT
+></TT
+></DT
+><DD
+><P
+>        指定服务器正在监听连接的 TCP 端口或本地 Unix 域套接字文件扩展。默认用<TT
+CLASS="ENVAR"
+>PGPORT</TT
+>环境变量中的值（如果设置），或者一个编译在程序中的默认值。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-U <TT
+CLASS="REPLACEABLE"
+><I
+>username</I
+></TT
+></TT
+><BR><TT
+CLASS="OPTION"
+>--username=<TT
+CLASS="REPLACEABLE"
+><I
+>username</I
+></TT
+></TT
+></DT
+><DD
+><P
+>        要作为哪个用户连接。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-w</TT
+><BR><TT
+CLASS="OPTION"
+>--no-password</TT
+></DT
+><DD
+><P
+>        从不发出一个口令提示。如果服务器要求口令认证并且没有其他方式提供口令（例如一个<TT
+CLASS="FILENAME"
+>.pgpass</TT
+>文件），那儿连接尝试将失败。这个选项对于批处理任务和脚本有用，因为在其中没有一个用户来输入口令。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-W</TT
+><BR><TT
+CLASS="OPTION"
+>--password</TT
+></DT
+><DD
+><P
+>        强制<SPAN
+CLASS="APPLICATION"
+>pg_receivexlog</SPAN
+>在连接到一个数据库之前提示要求一个口令。
+       </P
+><P
+>        这个选项不是必不可少的，因为如果服务器要求口令认证，<SPAN
+CLASS="APPLICATION"
+>pg_receivexlog</SPAN
+>将自动提示要求一个口令。但是，<SPAN
+CLASS="APPLICATION"
+>pg_receivexlog</SPAN
+>将浪费一次连接尝试来发现服务器想要一个口令。在某些情况下值得用<TT
+CLASS="OPTION"
+>-W</TT
+>来避免额外的连接尝试。
+       </P
+></DD
+></DL
+></DIV
+><P>
+   </P
+><P
+>    为了控制物理复制槽，<SPAN
+CLASS="APPLICATION"
+>pg_receivexlog</SPAN
+>
+    可以执行下列两种动作之一：
+
+    <P
+></P
+></P><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="OPTION"
+>--create-slot</TT
+></DT
+><DD
+><P
+>        用<TT
+CLASS="OPTION"
+>--slot</TT
+>中指定的名称创建一个新的物理复制槽，
+        然后退出。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>--drop-slot</TT
+></DT
+><DD
+><P
+>        删除<TT
+CLASS="OPTION"
+>--slot</TT
+>中指定的复制槽，然后退出。
+       </P
+></DD
+></DL
+></DIV
+><P>
+   </P
+><P
+>    其他选项也可用：
+
+    <P
+></P
+></P><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="OPTION"
+>-V</TT
+><BR><TT
+CLASS="OPTION"
+>--version</TT
+></DT
+><DD
+><P
+>       打印<SPAN
+CLASS="APPLICATION"
+>pg_receivexlog</SPAN
+>版本并退出。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-?</TT
+><BR><TT
+CLASS="OPTION"
+>--help</TT
+></DT
+><DD
+><P
+>       显示有关<SPAN
+CLASS="APPLICATION"
+>pg_receivexlog</SPAN
+>命令行参数的帮助并退出。
+       </P
+></DD
+></DL
+></DIV
+><P>
+   </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN97304"
+></A
+><H2
+>环境</H2
+><P
+>   和大部分其他<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>工具相似，这个工具也使用<SPAN
+CLASS="APPLICATION"
+>libpq</SPAN
+>（见<A
+HREF="libpq-envars.html"
+>第 32.14 &#33410;</A
+>）支持的环境变量。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN97310"
+></A
+><H2
+>注解</H2
+><P
+>   在使用<SPAN
+CLASS="APPLICATION"
+>pg_receivexlog</SPAN
+>替代
+   <A
+HREF="runtime-config-wal.html#GUC-ARCHIVE-COMMAND"
+>archive_command</A
+>作为主要的 WAL 备份方法时，
+   强烈建议使用复制槽。否则，服务器可能会在事务日志文件被备份好之前重用
+   或者移除它们，因为没有任何信息（不管是来自
+   <A
+HREF="runtime-config-wal.html#GUC-ARCHIVE-COMMAND"
+>archive_command</A
+>或是复制槽）能够指示 WAL 流已
+   经被归档到什么程度。不过要注意，如果接收者没有持续地取走 WAL 数据，
+   一个复制槽将会填满服务器的磁盘空间。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN97316"
+></A
+><H2
+>例子</H2
+><P
+>   要从位于<TT
+CLASS="LITERAL"
+>mydbserver</TT
+>的服务器流式传送事务日志并且将它存储在本地目录<TT
+CLASS="FILENAME"
+>/usr/local/pgsql/archive</TT
+>：
+</P><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>$</SAMP
+> <KBD
+CLASS="USERINPUT"
+>pg_receivexlog -h mydbserver -D /usr/local/pgsql/archive</KBD
+></PRE
+><P></P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN97324"
+></A
+><H2
+>参见</H2
+><A
+HREF="app-pgbasebackup.html"
+>pg_basebackup</A
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="app-pg-isready.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="app-pgrecvlogical.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><SPAN
+CLASS="APPLICATION"
+>pg_isready</SPAN
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="reference-client.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><SPAN
+CLASS="APPLICATION"
+>pg_recvlogical</SPAN
+></TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

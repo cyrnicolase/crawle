@@ -1,0 +1,307 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>一行一行地检索查询结果</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="libpq - C 库"
+HREF="libpq.html"><LINK
+REL="PREVIOUS"
+TITLE="异步命令处理"
+HREF="libpq-async.html"><LINK
+REL="NEXT"
+TITLE="取消进行中的查询"
+HREF="libpq-cancel.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/libpq.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="异步命令处理"
+HREF="libpq-async.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="libpq.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#31456; 32. <SPAN
+CLASS="APPLICATION"
+>libpq</SPAN
+> - C 库</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="取消进行中的查询"
+HREF="libpq-cancel.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="LIBPQ-SINGLE-ROW-MODE"
+>32.5. 一行一行地检索查询结果</A
+></H1
+><P
+>   通常，<SPAN
+CLASS="APPLICATION"
+>libpq</SPAN
+>会收集一个 SQL 命令的整个结果并且把它作为单个<TT
+CLASS="STRUCTNAME"
+>PGresult</TT
+>返回给应用。这对于返回大量行的命令是行不通的。对于这类情况，应用可以使用<CODE
+CLASS="FUNCTION"
+>PQsendQuery</CODE
+>和<CODE
+CLASS="FUNCTION"
+>PQgetResult</CODE
+>的<I
+CLASS="FIRSTTERM"
+>单行模式</I
+>。在这种模式中，结果行以一次一行的方式被返回给应用。
+  </P
+><P
+>   要进入到单行模式，在一次成功的<CODE
+CLASS="FUNCTION"
+>PQsendQuery</CODE
+>（或者其他兄弟函数）调用后立即调用<CODE
+CLASS="FUNCTION"
+>PQsetSingleRowMode</CODE
+>。这种模式选择只对当前正在执行的查询有效。然后反复调用<CODE
+CLASS="FUNCTION"
+>PQgetResult</CODE
+>，直到它返回空，如<A
+HREF="libpq-async.html"
+>第 32.4 &#33410;</A
+>中所示。如果该查询返回行，它们会作为单个的<TT
+CLASS="STRUCTNAME"
+>PGresult</TT
+>对象返回，它们看起来都像普通的查询结果，只不过其状态代码是<TT
+CLASS="LITERAL"
+>PGRES_SINGLE_TUPLE</TT
+>而非<TT
+CLASS="LITERAL"
+>PGRES_TUPLES_OK</TT
+>。在最后一行之后或者紧接着该查询返回零行之后，一个状态为<TT
+CLASS="LITERAL"
+>PGRES_TUPLES_OK</TT
+>的零行对象会被返回，这就是代表不会有更多行的信号（但是注意仍然有必要继续调用<CODE
+CLASS="FUNCTION"
+>PQgetResult</CODE
+>直到它返回空）。所有这些<TT
+CLASS="STRUCTNAME"
+>PGresult</TT
+>对象将包含相同的行描述数据（列名、类型等等），这些数据和通常一个查询的<TT
+CLASS="STRUCTNAME"
+>PGresult</TT
+>对象的相同。每一个对象都应该按常规用<CODE
+CLASS="FUNCTION"
+>PQclear</CODE
+>释放。
+  </P
+><P
+>   <P
+></P
+></P><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><A
+NAME="LIBPQ-PQSETSINGLEROWMODE"
+></A
+><CODE
+CLASS="FUNCTION"
+>PQsetSingleRowMode</CODE
+>
+      </DT
+><DD
+><P
+>       为当前正在执行的查询选择单行模式。
+
+</P><PRE
+CLASS="SYNOPSIS"
+>int PQsetSingleRowMode(PGconn *conn);</PRE
+><P>
+      </P
+><P
+>       这个函数只能在调用<CODE
+CLASS="FUNCTION"
+>PQsendQuery</CODE
+>或一个其兄弟函数之后立刻调用，并且要在任何连接上的其他操作之前调用，例如<CODE
+CLASS="FUNCTION"
+>PQconsumeInput</CODE
+>或<CODE
+CLASS="FUNCTION"
+>PQgetResult</CODE
+>。如果在正确的时间被调用，该函数会为当前查询激活单行模式并且返回 1。否则模式会保持不变并且该函数返回 0。在任何情况下，当前查询结束之后模式都会恢复到正常。
+      </P
+></DD
+></DL
+></DIV
+><P>
+  </P
+><DIV
+CLASS="CAUTION"
+><P
+></P
+><TABLE
+CLASS="CAUTION"
+BORDER="1"
+WIDTH="100%"
+><TR
+><TD
+ALIGN="CENTER"
+><B
+>&#23567;&#24515;</B
+></TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+><P
+>    在处理一个查询时，服务器可能返回一些行并且接着遇到一个错误导致查询被中断。通常，<SPAN
+CLASS="APPLICATION"
+>libpq</SPAN
+>会丢弃掉这样的行并且至报告错误。但是在单行模式中，那些行（错误之前返回的行）已经被返回给应用。因此，应用将看到一些<TT
+CLASS="LITERAL"
+>PGRES_SINGLE_TUPLE</TT
+> <TT
+CLASS="STRUCTNAME"
+>PGresult</TT
+>对象并且然后看到一个<TT
+CLASS="LITERAL"
+>PGRES_FATAL_ERROR</TT
+>对象。为了得到正确的事务行为，如果查询最终失败，应用必须被设计为丢弃或者撤销使用之前处理的行完成的事情。
+   </P
+></TD
+></TR
+></TABLE
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="libpq-async.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="libpq-cancel.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>异步命令处理</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="libpq.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>取消进行中的查询</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

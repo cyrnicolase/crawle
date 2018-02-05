@@ -1,0 +1,1009 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>COMMENT</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="SQL 命令"
+HREF="sql-commands.html"><LINK
+REL="PREVIOUS"
+TITLE="CLUSTER"
+HREF="sql-cluster.html"><LINK
+REL="NEXT"
+TITLE="COMMIT"
+HREF="sql-commit.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="REFENTRY"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/ref/comment.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="CLUSTER"
+HREF="sql-cluster.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="COMMIT"
+HREF="sql-commit.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="SQL-COMMENT"
+></A
+>COMMENT</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN76943"
+></A
+><H2
+>&#21517;&#31216;</H2
+>COMMENT&nbsp;--&nbsp;定义或者更改一个对象的注释</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN76946"
+></A
+><H2
+>&#22823;&#32434;</H2
+><PRE
+CLASS="SYNOPSIS"
+>COMMENT ON
+{
+  ACCESS METHOD <TT
+CLASS="REPLACEABLE"
+><I
+>object_name</I
+></TT
+> |
+  AGGREGATE <TT
+CLASS="REPLACEABLE"
+><I
+>aggregate_name</I
+></TT
+> ( <TT
+CLASS="REPLACEABLE"
+><I
+>aggregate_signature</I
+></TT
+> ) |
+  CAST (<TT
+CLASS="REPLACEABLE"
+><I
+>source_type</I
+></TT
+> AS <TT
+CLASS="REPLACEABLE"
+><I
+>target_type</I
+></TT
+>) |
+  COLLATION <TT
+CLASS="REPLACEABLE"
+><I
+>object_name</I
+></TT
+> |
+  COLUMN <TT
+CLASS="REPLACEABLE"
+><I
+>relation_name</I
+></TT
+>.<TT
+CLASS="REPLACEABLE"
+><I
+>column_name</I
+></TT
+> |
+  CONSTRAINT <TT
+CLASS="REPLACEABLE"
+><I
+>constraint_name</I
+></TT
+> ON <TT
+CLASS="REPLACEABLE"
+><I
+>table_name</I
+></TT
+> |
+  CONSTRAINT <TT
+CLASS="REPLACEABLE"
+><I
+>constraint_name</I
+></TT
+> ON DOMAIN <TT
+CLASS="REPLACEABLE"
+><I
+>domain_name</I
+></TT
+> |
+  CONVERSION <TT
+CLASS="REPLACEABLE"
+><I
+>object_name</I
+></TT
+> |
+  DATABASE <TT
+CLASS="REPLACEABLE"
+><I
+>object_name</I
+></TT
+> |
+  DOMAIN <TT
+CLASS="REPLACEABLE"
+><I
+>object_name</I
+></TT
+> |
+  EXTENSION <TT
+CLASS="REPLACEABLE"
+><I
+>object_name</I
+></TT
+> |
+  EVENT TRIGGER <TT
+CLASS="REPLACEABLE"
+><I
+>object_name</I
+></TT
+> |
+  FOREIGN DATA WRAPPER <TT
+CLASS="REPLACEABLE"
+><I
+>object_name</I
+></TT
+> |
+  FOREIGN TABLE <TT
+CLASS="REPLACEABLE"
+><I
+>object_name</I
+></TT
+> |
+  FUNCTION <TT
+CLASS="REPLACEABLE"
+><I
+>function_name</I
+></TT
+> ( [ [ <TT
+CLASS="REPLACEABLE"
+><I
+>argmode</I
+></TT
+> ] [ <TT
+CLASS="REPLACEABLE"
+><I
+>argname</I
+></TT
+> ] <TT
+CLASS="REPLACEABLE"
+><I
+>argtype</I
+></TT
+> [, ...] ] ) |
+  INDEX <TT
+CLASS="REPLACEABLE"
+><I
+>object_name</I
+></TT
+> |
+  LARGE OBJECT <TT
+CLASS="REPLACEABLE"
+><I
+>large_object_oid</I
+></TT
+> |
+  MATERIALIZED VIEW <TT
+CLASS="REPLACEABLE"
+><I
+>object_name</I
+></TT
+> |
+  OPERATOR <TT
+CLASS="REPLACEABLE"
+><I
+>operator_name</I
+></TT
+> (<TT
+CLASS="REPLACEABLE"
+><I
+>left_type</I
+></TT
+>, <TT
+CLASS="REPLACEABLE"
+><I
+>right_type</I
+></TT
+>) |
+  OPERATOR CLASS <TT
+CLASS="REPLACEABLE"
+><I
+>object_name</I
+></TT
+> USING <TT
+CLASS="REPLACEABLE"
+><I
+>index_method</I
+></TT
+> |
+  OPERATOR FAMILY <TT
+CLASS="REPLACEABLE"
+><I
+>object_name</I
+></TT
+> USING <TT
+CLASS="REPLACEABLE"
+><I
+>index_method</I
+></TT
+> |
+  POLICY <TT
+CLASS="REPLACEABLE"
+><I
+>policy_name</I
+></TT
+> ON <TT
+CLASS="REPLACEABLE"
+><I
+>table_name</I
+></TT
+> |
+  [ PROCEDURAL ] LANGUAGE <TT
+CLASS="REPLACEABLE"
+><I
+>object_name</I
+></TT
+> |
+  ROLE <TT
+CLASS="REPLACEABLE"
+><I
+>object_name</I
+></TT
+> |
+  RULE <TT
+CLASS="REPLACEABLE"
+><I
+>rule_name</I
+></TT
+> ON <TT
+CLASS="REPLACEABLE"
+><I
+>table_name</I
+></TT
+> |
+  SCHEMA <TT
+CLASS="REPLACEABLE"
+><I
+>object_name</I
+></TT
+> |
+  SEQUENCE <TT
+CLASS="REPLACEABLE"
+><I
+>object_name</I
+></TT
+> |
+  SERVER <TT
+CLASS="REPLACEABLE"
+><I
+>object_name</I
+></TT
+> |
+  TABLE <TT
+CLASS="REPLACEABLE"
+><I
+>object_name</I
+></TT
+> |
+  TABLESPACE <TT
+CLASS="REPLACEABLE"
+><I
+>object_name</I
+></TT
+> |
+  TEXT SEARCH CONFIGURATION <TT
+CLASS="REPLACEABLE"
+><I
+>object_name</I
+></TT
+> |
+  TEXT SEARCH DICTIONARY <TT
+CLASS="REPLACEABLE"
+><I
+>object_name</I
+></TT
+> |
+  TEXT SEARCH PARSER <TT
+CLASS="REPLACEABLE"
+><I
+>object_name</I
+></TT
+> |
+  TEXT SEARCH TEMPLATE <TT
+CLASS="REPLACEABLE"
+><I
+>object_name</I
+></TT
+> |
+  TRANSFORM FOR <TT
+CLASS="REPLACEABLE"
+><I
+>type_name</I
+></TT
+> LANGUAGE <TT
+CLASS="REPLACEABLE"
+><I
+>lang_name</I
+></TT
+> |
+  TRIGGER <TT
+CLASS="REPLACEABLE"
+><I
+>trigger_name</I
+></TT
+> ON <TT
+CLASS="REPLACEABLE"
+><I
+>table_name</I
+></TT
+> |
+  TYPE <TT
+CLASS="REPLACEABLE"
+><I
+>object_name</I
+></TT
+> |
+  VIEW <TT
+CLASS="REPLACEABLE"
+><I
+>object_name</I
+></TT
+>
+} IS '<TT
+CLASS="REPLACEABLE"
+><I
+>text</I
+></TT
+>'
+
+<SPAN
+CLASS="phrase"
+><SPAN
+CLASS="PHRASE"
+>其中 <TT
+CLASS="REPLACEABLE"
+><I
+>aggregate_signature</I
+></TT
+> 是：</SPAN
+></SPAN
+>
+
+* |
+[ <TT
+CLASS="REPLACEABLE"
+><I
+>argmode</I
+></TT
+> ] [ <TT
+CLASS="REPLACEABLE"
+><I
+>argname</I
+></TT
+> ] <TT
+CLASS="REPLACEABLE"
+><I
+>argtype</I
+></TT
+> [ , ... ] |
+[ [ <TT
+CLASS="REPLACEABLE"
+><I
+>argmode</I
+></TT
+> ] [ <TT
+CLASS="REPLACEABLE"
+><I
+>argname</I
+></TT
+> ] <TT
+CLASS="REPLACEABLE"
+><I
+>argtype</I
+></TT
+> [ , ... ] ] ORDER BY [ <TT
+CLASS="REPLACEABLE"
+><I
+>argmode</I
+></TT
+> ] [ <TT
+CLASS="REPLACEABLE"
+><I
+>argname</I
+></TT
+> ] <TT
+CLASS="REPLACEABLE"
+><I
+>argtype</I
+></TT
+> [ , ... ]</PRE
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN77014"
+></A
+><H2
+>描述</H2
+><P
+>   <TT
+CLASS="COMMAND"
+>COMMENT</TT
+>存储关于一个数据库对象的注释。
+  </P
+><P
+>   对每一个对象只保存一个注释字符串，因此为了修改一段注释，对同一个对象
+   发出一个新的<TT
+CLASS="COMMAND"
+>COMMENT</TT
+>命令。要移除一段注释，可在文
+   本字符串的位置上写上<TT
+CLASS="LITERAL"
+>NULL</TT
+>。当对象被删除时，其注释
+   也会被自动删除。
+  </P
+><P
+>   对大部分类型的对象，只有对象的拥有者可以设置注释。角色没有拥有者，因此
+   <TT
+CLASS="LITERAL"
+>COMMENT ON ROLE</TT
+>的规则是你必须作为一个超级用户来对一个
+   超级用户角色设置注释，或者具有<TT
+CLASS="LITERAL"
+>CREATEROLE</TT
+>特权来对非超级用
+   户角色设置注释。同样的，访问方法也没有拥有者，你必须作为一个超级用户来
+   对一个访问方法设置注释。当然，一个超级用户可以对任何东西设置注释。
+  </P
+><P
+>    使用<SPAN
+CLASS="APPLICATION"
+>psql</SPAN
+>的<TT
+CLASS="COMMAND"
+>\d</TT
+>
+    命令家族可以查看注释。其他检索注释的用户接口可以构建在
+    <SPAN
+CLASS="APPLICATION"
+>psql</SPAN
+>使用的内建函数之上，即
+    <CODE
+CLASS="FUNCTION"
+>obj_description</CODE
+>、<CODE
+CLASS="FUNCTION"
+>col_description</CODE
+>
+    以及<CODE
+CLASS="FUNCTION"
+>shobj_description</CODE
+>
+    （见<A
+HREF="functions-info.html#FUNCTIONS-INFO-COMMENT-TABLE"
+>&#34920; 9-67</A
+>）。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN77032"
+></A
+><H2
+>参数</H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>object_name</I
+></TT
+><BR><TT
+CLASS="REPLACEABLE"
+><I
+>relation_name</I
+></TT
+>.<TT
+CLASS="REPLACEABLE"
+><I
+>column_name</I
+></TT
+><BR><TT
+CLASS="REPLACEABLE"
+><I
+>aggregate_name</I
+></TT
+><BR><TT
+CLASS="REPLACEABLE"
+><I
+>constraint_name</I
+></TT
+><BR><TT
+CLASS="REPLACEABLE"
+><I
+>function_name</I
+></TT
+><BR><TT
+CLASS="REPLACEABLE"
+><I
+>operator_name</I
+></TT
+><BR><TT
+CLASS="REPLACEABLE"
+><I
+>policy_name</I
+></TT
+><BR><TT
+CLASS="REPLACEABLE"
+><I
+>rule_name</I
+></TT
+><BR><TT
+CLASS="REPLACEABLE"
+><I
+>trigger_name</I
+></TT
+></DT
+><DD
+><P
+>      要被注释的对象的名称。表、聚集、排序方式、转换、域、外部表、函数、
+      索引、操作符、操作符类、操作符族、序列、文本搜索对象、类型和视图
+      的名称可以被模式限定。在注释一列时，
+      <TT
+CLASS="REPLACEABLE"
+><I
+>relation_name</I
+></TT
+>必须
+      引用一个表、视图、组合类型或者外部表。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>table_name</I
+></TT
+><BR><TT
+CLASS="REPLACEABLE"
+><I
+>domain_name</I
+></TT
+></DT
+><DD
+><P
+>      当在一个约束、触发器、规则或者策略上创建一段注释时，这些参数指定在其上定义
+      该对象的表或域的名称。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>source_type</I
+></TT
+></DT
+><DD
+><P
+>       造型的源数据类型的名称。
+      </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>target_type</I
+></TT
+></DT
+><DD
+><P
+>       造型的目标数据类型的名称。
+      </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>argmode</I
+></TT
+></DT
+><DD
+><P
+>      一个函数或者聚集的参数的模式：<TT
+CLASS="LITERAL"
+>IN</TT
+>、
+      <TT
+CLASS="LITERAL"
+>OUT</TT
+>、<TT
+CLASS="LITERAL"
+>INOUT</TT
+>或者<TT
+CLASS="LITERAL"
+>VARIADIC</TT
+>。
+      如果被省略，默认值是<TT
+CLASS="LITERAL"
+>IN</TT
+>。注意
+      <TT
+CLASS="COMMAND"
+>COMMENT</TT
+>并不真正关心
+      <TT
+CLASS="LITERAL"
+>OUT</TT
+>参数，因为决定函数的身份只需要输入参数。因此
+      列出<TT
+CLASS="LITERAL"
+>IN</TT
+>、<TT
+CLASS="LITERAL"
+>INOUT</TT
+>和<TT
+CLASS="LITERAL"
+>VARIADIC</TT
+>
+      参数就足够了。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>argname</I
+></TT
+></DT
+><DD
+><P
+>      一个函数或者聚集参数的名称。注意
+      <TT
+CLASS="COMMAND"
+>COMMENT</TT
+>并不真正关心参数名称，
+      因为决定函数的身份只需要参数数据类型。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>argtype</I
+></TT
+></DT
+><DD
+><P
+>      一个函数或者聚集参数的数据类型。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>large_object_oid</I
+></TT
+></DT
+><DD
+><P
+>      大对象的 OID。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>left_type</I
+></TT
+><BR><TT
+CLASS="REPLACEABLE"
+><I
+>right_type</I
+></TT
+></DT
+><DD
+><P
+>      操作符的参数的数据类型（可以是模式限定的）。对一个前缀后后缀操作符
+      的缺失参数可以写<TT
+CLASS="LITERAL"
+>NONE</TT
+>。
+     </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>PROCEDURAL</TT
+></DT
+><DD
+><P
+>       这是一个噪声词。
+      </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>type_name</I
+></TT
+></DT
+><DD
+><P
+>       该转换的数据类型的名称。
+      </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>lang_name</I
+></TT
+></DT
+><DD
+><P
+>       该转换的语言的名称。
+      </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>text</I
+></TT
+></DT
+><DD
+><P
+>      写成一个字符串的新注释。如果要删除注释，写成<TT
+CLASS="LITERAL"
+>NULL</TT
+>。
+     </P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN77135"
+></A
+><H2
+>注解</H2
+><P
+>   当前对查看注释没有安全机制：任何连接到一个数据库的用户能够看到
+   该数据库中所有对象的注释。对于数据库、角色、表空间这类共享对象，
+   注释被全局存储，因此连接到集簇中任何数据库的任何用户可以看到共
+   享对象的所有注释。因此，不要在注释中放置有安全性风险的信息。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN77138"
+></A
+><H2
+>示例</H2
+><P
+>   为表<TT
+CLASS="LITERAL"
+>mytable</TT
+>附加一段注释：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>COMMENT ON TABLE mytable IS 'This is my table.';</PRE
+><P>
+
+   移除它：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>COMMENT ON TABLE mytable IS NULL;</PRE
+><P>
+  </P
+><P
+>   更多的一些例子：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>COMMENT ON ACCESS METHOD rtree IS 'R-Tree access method';
+COMMENT ON AGGREGATE my_aggregate (double precision) IS 'Computes sample variance';
+COMMENT ON CAST (text AS int4) IS 'Allow casts from text to int4';
+COMMENT ON COLLATION "fr_CA" IS 'Canadian French';
+COMMENT ON COLUMN my_table.my_column IS 'Employee ID number';
+COMMENT ON CONVERSION my_conv IS 'Conversion to UTF8';
+COMMENT ON CONSTRAINT bar_col_cons ON bar IS 'Constrains column col';
+COMMENT ON CONSTRAINT dom_col_constr ON DOMAIN dom IS 'Constrains col of domain';
+COMMENT ON DATABASE my_database IS 'Development Database';
+COMMENT ON DOMAIN my_domain IS 'Email Address Domain';
+COMMENT ON EXTENSION hstore IS 'implements the hstore data type';
+COMMENT ON FOREIGN DATA WRAPPER mywrapper IS 'my foreign data wrapper';
+COMMENT ON FOREIGN TABLE my_foreign_table IS 'Employee Information in other database';
+COMMENT ON FUNCTION my_function (timestamp) IS 'Returns Roman Numeral';
+COMMENT ON INDEX my_index IS 'Enforces uniqueness on employee ID';
+COMMENT ON LANGUAGE plpython IS 'Python support for stored procedures';
+COMMENT ON LARGE OBJECT 346344 IS 'Planning document';
+COMMENT ON MATERIALIZED VIEW my_matview IS 'Summary of order history';
+COMMENT ON OPERATOR ^ (text, text) IS 'Performs intersection of two texts';
+COMMENT ON OPERATOR - (NONE, integer) IS 'Unary minus';
+COMMENT ON OPERATOR CLASS int4ops USING btree IS '4 byte integer operators for btrees';
+COMMENT ON OPERATOR FAMILY integer_ops USING btree IS 'all integer operators for btrees';
+COMMENT ON POLICY my_policy ON mytable IS 'Filter rows by users';
+COMMENT ON ROLE my_role IS 'Administration group for finance tables';
+COMMENT ON RULE my_rule ON my_table IS 'Logs updates of employee records';
+COMMENT ON SCHEMA my_schema IS 'Departmental data';
+COMMENT ON SEQUENCE my_sequence IS 'Used to generate primary keys';
+COMMENT ON SERVER myserver IS 'my foreign server';
+COMMENT ON TABLE my_schema.my_table IS 'Employee Information';
+COMMENT ON TABLESPACE my_tablespace IS 'Tablespace for indexes';
+COMMENT ON TEXT SEARCH CONFIGURATION my_config IS 'Special word filtering';
+COMMENT ON TEXT SEARCH DICTIONARY swedish IS 'Snowball stemmer for Swedish language';
+COMMENT ON TEXT SEARCH PARSER my_parser IS 'Splits text into words';
+COMMENT ON TEXT SEARCH TEMPLATE snowball IS 'Snowball stemmer';
+COMMENT ON TRANSFORM FOR hstore LANGUAGE plpythonu IS 'Transform between hstore and Python dict';
+COMMENT ON TRIGGER my_trigger ON my_table IS 'Used for RI';
+COMMENT ON TYPE complex IS 'Complex number data type';
+COMMENT ON VIEW my_view IS 'View of departmental costs';</PRE
+><P></P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN77146"
+></A
+><H2
+>兼容性</H2
+><P
+>   SQL 标准中没有<TT
+CLASS="COMMAND"
+>COMMENT</TT
+>命令。
+  </P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-cluster.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="sql-commit.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>CLUSTER</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>COMMIT</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

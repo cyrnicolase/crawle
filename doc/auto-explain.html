@@ -1,0 +1,520 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>auto_explain</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="额外提供的模块"
+HREF="contrib.html"><LINK
+REL="PREVIOUS"
+TITLE="auth_delay"
+HREF="auth-delay.html"><LINK
+REL="NEXT"
+TITLE="bloom"
+HREF="bloom.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/auto-explain.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="auth_delay"
+HREF="auth-delay.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="contrib.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#38468;&#24405; F. 额外提供的模块</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="bloom"
+HREF="bloom.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="AUTO-EXPLAIN"
+>F.3. auto_explain</A
+></H1
+><P
+>  <TT
+CLASS="FILENAME"
+>auto_explain</TT
+>模块提供了一种方式来自动记录慢速语句的执行计划，而不需
+  要手工运行<A
+HREF="sql-explain.html"
+>EXPLAIN</A
+>。这在大型应用中追踪未被优化的查询时有用。
+ </P
+><P
+>  该模块没有提供 SQL 可访问的函数。要使用它，简单地将它载入服务器。你可以把它载入到一个单独的
+  会话：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>LOAD 'auto_explain';</PRE
+><P>
+
+  （你必须作为超级用户来这样做）。更典型的用法是通过在<TT
+CLASS="FILENAME"
+>postgresql.conf</TT
+>的<A
+HREF="runtime-config-client.html#GUC-SESSION-PRELOAD-LIBRARIES"
+>session_preload_libraries</A
+>或<A
+HREF="runtime-config-client.html#GUC-SHARED-PRELOAD-LIBRARIES"
+>shared_preload_libraries</A
+>参数中包括<TT
+CLASS="LITERAL"
+>auto_explain</TT
+>将它预先
+  载入到某些或者所有会话中。然后你就可以追踪那些出乎意料地慢的查询，而不管它们何时发生。当然为
+  此会付出一些额外的负荷作为代价。
+ </P
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN174530"
+>F.3.1. 配置参数</A
+></H2
+><P
+>  有几个配置参数用来控制<TT
+CLASS="FILENAME"
+>auto_explain</TT
+>的行为。注意默认行为是什么也不做，因此如果你想要任何结果就必须至少设置<TT
+CLASS="VARNAME"
+>auto_explain.log_min_duration</TT
+>。
+ </P
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="VARNAME"
+>auto_explain.log_min_duration</TT
+> (<TT
+CLASS="TYPE"
+>integer</TT
+>)
+    </DT
+><DD
+><P
+>      <TT
+CLASS="VARNAME"
+>auto_explain.log_min_duration</TT
+>是最小语句执行时间（以毫秒计），这将导致语句的计划被记录。设置这个参数为零将记录所有计划。负一（默认值）禁用记录计划。例如，如果你将它设置为<TT
+CLASS="LITERAL"
+>250ms</TT
+>，则所有运行时间等于或超过 250ms 的语句将被记录。只有超级用户能够改变这个设置。
+     </P
+></DD
+><DT
+><TT
+CLASS="VARNAME"
+>auto_explain.log_analyze</TT
+> (<TT
+CLASS="TYPE"
+>boolean</TT
+>)
+    </DT
+><DD
+><P
+>      当一个执行计划被记录时，<TT
+CLASS="VARNAME"
+>auto_explain.log_analyze</TT
+>导致<TT
+CLASS="COMMAND"
+>EXPLAIN ANALYZE</TT
+>输出（而不仅仅是<TT
+CLASS="COMMAND"
+>EXPLAIN</TT
+>输出）被打印。默认情况下这个参数是关闭的。只有超级用户能够改变这个设置。
+     </P
+><DIV
+CLASS="NOTE"
+><BLOCKQUOTE
+CLASS="NOTE"
+><P
+><B
+>&#27880;&#24847;: </B
+>       当这个参数为打开时，对所有被执行的语句将引起对每个计划节点的计时，不管它们是否运行得足够长以至于被记录。这可能对性能有极度负面的影响。
+      </P
+></BLOCKQUOTE
+></DIV
+></DD
+><DT
+><TT
+CLASS="VARNAME"
+>auto_explain.log_buffers</TT
+> (<TT
+CLASS="TYPE"
+>boolean</TT
+>)
+     </DT
+><DD
+><P
+>      当一个执行计划被记录时，<TT
+CLASS="VARNAME"
+>auto_explain.log_buffers</TT
+>控制是否打印
+      缓冲区使用统计信息；它等效于<TT
+CLASS="COMMAND"
+>EXPLAIN</TT
+>的<TT
+CLASS="LITERAL"
+>BUFFERS</TT
+>选项。除非
+      <TT
+CLASS="VARNAME"
+>auto_explain.log_analyze</TT
+>参数被设置，否则这个参数没有效果。这个参数默
+      认情况下是关闭的。只有超级用户能够改变这个设置。
+     </P
+></DD
+><DT
+><TT
+CLASS="VARNAME"
+>auto_explain.log_timing</TT
+> (<TT
+CLASS="TYPE"
+>boolean</TT
+>)
+     </DT
+><DD
+><P
+>      当一个执行计划被记录时，<TT
+CLASS="VARNAME"
+>auto_explain.log_timing</TT
+>控制是否打印每
+      个结点上的计时信息；它等效于<TT
+CLASS="COMMAND"
+>EXPLAIN</TT
+>的<TT
+CLASS="LITERAL"
+>TIMING</TT
+>选项。重复读取
+      系统锁的开销在某些系统上可能会显著地拖慢查询，因此当只需要实际行计数而非确切时间时，关闭
+      这个参数将会很有帮助。只有当<TT
+CLASS="VARNAME"
+>auto_explain.log_analyze</TT
+>也被启用
+      时这个参数才有效。这个参数默认情况下是打开的。只有超级用户能够改变这个设置。
+     </P
+></DD
+><DT
+><TT
+CLASS="VARNAME"
+>auto_explain.log_triggers</TT
+> (<TT
+CLASS="TYPE"
+>boolean</TT
+>)
+     </DT
+><DD
+><P
+>      当一个执行计划被记录时，<TT
+CLASS="VARNAME"
+>auto_explain.log_triggers</TT
+>会导致触发
+      器执行统计信息被包括在内。只有当<TT
+CLASS="VARNAME"
+>auto_explain.log_analyze</TT
+>也被
+      启用时这个参数才有效。这个参数默认情况下是关闭的。只有超级用户能够改变这个设置。
+     </P
+></DD
+><DT
+><TT
+CLASS="VARNAME"
+>auto_explain.log_verbose</TT
+> (<TT
+CLASS="TYPE"
+>boolean</TT
+>)
+     </DT
+><DD
+><P
+>      当一个执行计划被记录时，<TT
+CLASS="VARNAME"
+>auto_explain.log_verbose</TT
+>控制是否打印很长的详细信息；它等效于<TT
+CLASS="COMMAND"
+>EXPLAIN</TT
+>的<TT
+CLASS="LITERAL"
+>VERBOSE</TT
+>选项。这个参数默认情况下是关闭的。只有超级用户能够改变这个设置。
+     </P
+></DD
+><DT
+><TT
+CLASS="VARNAME"
+>auto_explain.log_format</TT
+> (<TT
+CLASS="TYPE"
+>enum</TT
+>)
+     </DT
+><DD
+><P
+>      <TT
+CLASS="VARNAME"
+>auto_explain.log_format</TT
+>选择要使用的<TT
+CLASS="COMMAND"
+>EXPLAIN</TT
+>输出格式。允许的值是<TT
+CLASS="LITERAL"
+>text</TT
+>、<TT
+CLASS="LITERAL"
+>xml</TT
+>、<TT
+CLASS="LITERAL"
+>json</TT
+>和<TT
+CLASS="LITERAL"
+>yaml</TT
+>。默认是文本形式。只有超级用户能够改变这个设置。
+     </P
+></DD
+><DT
+><TT
+CLASS="VARNAME"
+>auto_explain.log_nested_statements</TT
+> (<TT
+CLASS="TYPE"
+>boolean</TT
+>)
+     </DT
+><DD
+><P
+>      <TT
+CLASS="VARNAME"
+>auto_explain.log_nested_statements</TT
+>导致嵌套语句（在一个函数内执行的语句）会被考虑在记录范围之内。当它被关闭时，只有顶层查询计划被记录。这个参数默认情况下是关闭的。只有超级用户能够改变这个设置。
+     </P
+></DD
+><DT
+><TT
+CLASS="VARNAME"
+>auto_explain.sample_rate</TT
+> (<TT
+CLASS="TYPE"
+>real</TT
+>)
+     </DT
+><DD
+><P
+>      <TT
+CLASS="VARNAME"
+>auto_explain.sample_rate</TT
+>会让 auto_explain 
+      只解释每个会话中的一部分语句。默认值为 1，表示解释所有的查询。在嵌套
+      语句的情况下，要么所有语句都被解释，要么一个也不被解释。只有超级用户
+      能够更改这个设置。
+     </P
+></DD
+></DL
+></DIV
+><P
+>   在普通用法中，这些参数都在<TT
+CLASS="FILENAME"
+>postgresql.conf</TT
+>中设置，不过超级用户可以在他们自己的会话中随时修改这些参数。典型的用法可能是：
+  </P
+><PRE
+CLASS="PROGRAMLISTING"
+># postgresql.conf
+session_preload_libraries = 'auto_explain'
+
+auto_explain.log_min_duration = '3s'</PRE
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN174648"
+>F.3.2. 例子</A
+></H2
+><PRE
+CLASS="PROGRAMLISTING"
+>postgres=# LOAD 'auto_explain';
+postgres=# SET auto_explain.log_min_duration = 0;
+postgres=# SET auto_explain.log_analyze = true;
+postgres=# SELECT count(*)
+           FROM pg_class, pg_index
+           WHERE oid = indrelid AND indisunique;</PRE
+><P
+>   这可能会产生这样的日志输出：
+  </P
+><PRE
+CLASS="SCREEN"
+>LOG:  duration: 3.651 ms  plan:
+  Query Text: SELECT count(*)
+              FROM pg_class, pg_index
+              WHERE oid = indrelid AND indisunique;
+  Aggregate  (cost=16.79..16.80 rows=1 width=0) (actual time=3.626..3.627 rows=1 loops=1)
+    -&#62;  Hash Join  (cost=4.17..16.55 rows=92 width=0) (actual time=3.349..3.594 rows=92 loops=1)
+          Hash Cond: (pg_class.oid = pg_index.indrelid)
+          -&#62;  Seq Scan on pg_class  (cost=0.00..9.55 rows=255 width=4) (actual time=0.016..0.140 rows=255 loops=1)
+          -&#62;  Hash  (cost=3.02..3.02 rows=92 width=4) (actual time=3.238..3.238 rows=92 loops=1)
+                Buckets: 1024  Batches: 1  Memory Usage: 4kB
+                -&#62;  Seq Scan on pg_index  (cost=0.00..3.02 rows=92 width=4) (actual time=0.008..3.187 rows=92 loops=1)
+                      Filter: indisunique</PRE
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN174653"
+>F.3.3. 作者</A
+></H2
+><P
+>   Takahiro Itagaki <CODE
+CLASS="EMAIL"
+>&#60;<A
+HREF="mailto:itagaki.takahiro@oss.ntt.co.jp"
+>itagaki.takahiro@oss.ntt.co.jp</A
+>&#62;</CODE
+>
+  </P
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="auth-delay.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="bloom.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>auth_delay</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="contrib.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>bloom</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

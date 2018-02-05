@@ -1,0 +1,488 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>ALTER FOREIGN DATA WRAPPER</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="SQL 命令"
+HREF="sql-commands.html"><LINK
+REL="PREVIOUS"
+TITLE="ALTER EXTENSION"
+HREF="sql-alterextension.html"><LINK
+REL="NEXT"
+TITLE="ALTER FOREIGN TABLE"
+HREF="sql-alterforeigntable.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="REFENTRY"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/ref/alter_foreign_data_wrapper.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="ALTER EXTENSION"
+HREF="sql-alterextension.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="ALTER FOREIGN TABLE"
+HREF="sql-alterforeigntable.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="SQL-ALTERFOREIGNDATAWRAPPER"
+></A
+>ALTER FOREIGN DATA WRAPPER</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN72882"
+></A
+><H2
+>&#21517;&#31216;</H2
+>ALTER FOREIGN DATA WRAPPER&nbsp;--&nbsp;更改一个外部数据包装器的定义</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN72885"
+></A
+><H2
+>&#22823;&#32434;</H2
+><PRE
+CLASS="SYNOPSIS"
+>ALTER FOREIGN DATA WRAPPER <TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+>
+    [ HANDLER <TT
+CLASS="REPLACEABLE"
+><I
+>handler_function</I
+></TT
+> | NO HANDLER ]
+    [ VALIDATOR <TT
+CLASS="REPLACEABLE"
+><I
+>validator_function</I
+></TT
+> | NO VALIDATOR ]
+    [ OPTIONS ( [ ADD | SET | DROP ] <TT
+CLASS="REPLACEABLE"
+><I
+>option</I
+></TT
+> ['<TT
+CLASS="REPLACEABLE"
+><I
+>value</I
+></TT
+>'] [, ... ]) ]
+ALTER FOREIGN DATA WRAPPER <TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+> OWNER TO { <TT
+CLASS="REPLACEABLE"
+><I
+>new_owner</I
+></TT
+> | CURRENT_USER | SESSION_USER }
+ALTER FOREIGN DATA WRAPPER <TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+> RENAME TO <TT
+CLASS="REPLACEABLE"
+><I
+>new_name</I
+></TT
+></PRE
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN72896"
+></A
+><H2
+>描述</H2
+><P
+>   <TT
+CLASS="COMMAND"
+>ALTER FOREIGN DATA WRAPPER</TT
+>更改一个
+   外部数据包装器的定义。该命令的第一种形式用于更改外部数据包装器的
+   支持函数或者一般选项（至少要求一个子句）。第二种形式更改外部数据包
+   装器的拥有者。
+  </P
+><P
+>   只有超级用户能修改外部数据包装器。此外，只有超级用户能够拥有外部数
+   据包装器。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN72901"
+></A
+><H2
+>参数</H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+></DT
+><DD
+><P
+>      一个已有的外部数据包装器的名称。
+     </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>HANDLER <TT
+CLASS="REPLACEABLE"
+><I
+>handler_function</I
+></TT
+></TT
+></DT
+><DD
+><P
+>      为外部数据包装器指定一个新的处理器函数。
+     </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>NO HANDLER</TT
+></DT
+><DD
+><P
+>      用于指定该外部数据包装器不再具有一个处理器函数。
+     </P
+><P
+>      注意使用没有处理器的外部数据包装器的外部表不能被访问。
+     </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>VALIDATOR <TT
+CLASS="REPLACEABLE"
+><I
+>validator_function</I
+></TT
+></TT
+></DT
+><DD
+><P
+>      为外部数据包装器指定一个新的验证器函数。
+     </P
+><P
+>      注意，新的验证器可能会认为该外部数据包装器或者依赖于它的独立服务器
+      的已有选项、用户映射、外部表无效。<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>
+      不会做这种检查。在使用修改过的外部数据包装器之前确认这些选项正确是
+      用户的责任。不过，在这个<TT
+CLASS="COMMAND"
+>ALTER FOREIGN DATA
+      WRAPPER</TT
+>命令中指定的选项将会被使用新的验证器检查。
+     </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>NO VALIDATOR</TT
+></DT
+><DD
+><P
+>      用于指定该外部数据包装器不再拥有一个验证器函数。
+     </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>OPTIONS ( [ ADD | SET | DROP ] <TT
+CLASS="REPLACEABLE"
+><I
+>option</I
+></TT
+> ['<TT
+CLASS="REPLACEABLE"
+><I
+>value</I
+></TT
+>'] [, ... ] )</TT
+></DT
+><DD
+><P
+>      为该外部数据包装器更改选项。<TT
+CLASS="LITERAL"
+>ADD</TT
+>、<TT
+CLASS="LITERAL"
+>SET</TT
+>
+      以及<TT
+CLASS="LITERAL"
+>DROP</TT
+>指定要被执行的动作。如果没有显式地指定操作，
+      将假定为<TT
+CLASS="LITERAL"
+>ADD</TT
+>。选项名称必须唯一，选项名称和值（如果有）
+      也会使用该外部数据包装器的验证器函数来验证。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>new_owner</I
+></TT
+></DT
+><DD
+><P
+>      该外部数据包装器的新拥有者的用户名。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>new_name</I
+></TT
+></DT
+><DD
+><P
+>      该外部数据包装器的新名称。
+     </P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN72956"
+></A
+><H2
+>示例</H2
+><P
+>   更改一个外部数据包装器<TT
+CLASS="LITERAL"
+>dbi</TT
+>，增加选项
+   <TT
+CLASS="LITERAL"
+>foo</TT
+>并删除<TT
+CLASS="LITERAL"
+>bar</TT
+>：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>ALTER FOREIGN DATA WRAPPER dbi OPTIONS (ADD foo '1', DROP 'bar');</PRE
+><P>
+  </P
+><P
+>   把外部数据包装器<TT
+CLASS="LITERAL"
+>dbi</TT
+>的验证器改为
+   <TT
+CLASS="LITERAL"
+>bob.myvalidator</TT
+>：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>ALTER FOREIGN DATA WRAPPER dbi VALIDATOR bob.myvalidator;</PRE
+><P></P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN72967"
+></A
+><H2
+>兼容性</H2
+><P
+>   <TT
+CLASS="COMMAND"
+>ALTER FOREIGN DATA WRAPPER</TT
+>符合
+   ISO/IEC 9075-9 (SQL/MED)。不过<TT
+CLASS="LITERAL"
+>HANDLER</TT
+>、
+   <TT
+CLASS="LITERAL"
+>VALIDATOR</TT
+>、<TT
+CLASS="LITERAL"
+>OWNER TO</TT
+>
+   以及<TT
+CLASS="LITERAL"
+>RENAME</TT
+>子句是扩展。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN72975"
+></A
+><H2
+>另见</H2
+><A
+HREF="sql-createforeigndatawrapper.html"
+>CREATE FOREIGN DATA WRAPPER</A
+>, <A
+HREF="sql-dropforeigndatawrapper.html"
+>DROP FOREIGN DATA WRAPPER</A
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-alterextension.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="sql-alterforeigntable.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>ALTER EXTENSION</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>ALTER FOREIGN TABLE</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

@@ -1,0 +1,453 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>SPI_cursor_open_with_args</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="接口函数"
+HREF="spi-interface.html"><LINK
+REL="PREVIOUS"
+TITLE="SPI_cursor_open"
+HREF="spi-spi-cursor-open.html"><LINK
+REL="NEXT"
+TITLE="SPI_cursor_open_with_paramlist"
+HREF="spi-spi-cursor-open-with-paramlist.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="REFENTRY"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/spi.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="SPI_cursor_open"
+HREF="spi-spi-cursor-open.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="spi-interface.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="SPI_cursor_open_with_paramlist"
+HREF="spi-spi-cursor-open-with-paramlist.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="SPI-SPI-CURSOR-OPEN-WITH-ARGS"
+></A
+>SPI_cursor_open_with_args</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN70138"
+></A
+><H2
+>&#21517;&#31216;</H2
+>SPI_cursor_open_with_args&nbsp;--&nbsp;使用一个查询和参数建立一个游标</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN70141"
+></A
+><H2
+>&#22823;&#32434;</H2
+><PRE
+CLASS="SYNOPSIS"
+>Portal SPI_cursor_open_with_args(const char *<TT
+CLASS="PARAMETER"
+>name</TT
+>,
+                                 const char *<TT
+CLASS="PARAMETER"
+>command</TT
+>,
+                                 int <TT
+CLASS="PARAMETER"
+>nargs</TT
+>, Oid *<TT
+CLASS="PARAMETER"
+>argtypes</TT
+>,
+                                 Datum *<TT
+CLASS="PARAMETER"
+>values</TT
+>, const char *<TT
+CLASS="PARAMETER"
+>nulls</TT
+>,
+                                 bool <TT
+CLASS="PARAMETER"
+>read_only</TT
+>, int <TT
+CLASS="PARAMETER"
+>cursorOptions</TT
+>)</PRE
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN70151"
+></A
+><H2
+>描述</H2
+><P
+>   <CODE
+CLASS="FUNCTION"
+>SPI_cursor_open_with_args</CODE
+>建立一个将
+   执行指定查询的游标（在内部是一个 portal）。大部分参数具有和
+   <CODE
+CLASS="FUNCTION"
+>SPI_prepare_cursor</CODE
+>
+   和<CODE
+CLASS="FUNCTION"
+>SPI_cursor_open</CODE
+>中相应参数相同的含
+   义。
+  </P
+><P
+>   对于一次性的查询执行，这个函数应该比
+   <CODE
+CLASS="FUNCTION"
+>SPI_prepare_cursor</CODE
+>加上其后的
+   <CODE
+CLASS="FUNCTION"
+>SPI_cursor_open</CODE
+>更好。如果相同的命令
+   要被用很多不同的参数执行，哪种方法更快就要取决于重做计划的
+   代价与定制计划带来的好处之间谁更有利。
+  </P
+><P
+>   被传入的参数数据将被复制到游标的 portal 中，因此在该游标仍然存在时
+   可以释放掉被传入的参数数据。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN70161"
+></A
+><H2
+>参数</H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="LITERAL"
+>const char * <TT
+CLASS="PARAMETER"
+>name</TT
+></TT
+></DT
+><DD
+><P
+>      portal 的名字，或者设置成<TT
+CLASS="SYMBOL"
+>NULL</TT
+>
+      让系统选择一个名称
+     </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>const char * <TT
+CLASS="PARAMETER"
+>command</TT
+></TT
+></DT
+><DD
+><P
+>      命令字符串
+     </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>int <TT
+CLASS="PARAMETER"
+>nargs</TT
+></TT
+></DT
+><DD
+><P
+>      输入参数的数量（<TT
+CLASS="LITERAL"
+>$1</TT
+>、<TT
+CLASS="LITERAL"
+>$2</TT
+>等等）
+     </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>Oid * <TT
+CLASS="PARAMETER"
+>argtypes</TT
+></TT
+></DT
+><DD
+><P
+>      一个长度为<TT
+CLASS="PARAMETER"
+>nargs</TT
+>的数组，它包含参数的
+      数据类型的<ACRONYM
+CLASS="ACRONYM"
+>OID</ACRONYM
+>
+     </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>Datum * <TT
+CLASS="PARAMETER"
+>values</TT
+></TT
+></DT
+><DD
+><P
+>      一个长度为<TT
+CLASS="PARAMETER"
+>nargs</TT
+>的数组，它包含实际的参数值
+     </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>const char * <TT
+CLASS="PARAMETER"
+>nulls</TT
+></TT
+></DT
+><DD
+><P
+>      一个长度为<TT
+CLASS="PARAMETER"
+>nargs</TT
+>的数组，它描述哪些参数为空值
+     </P
+><P
+>      如果<TT
+CLASS="PARAMETER"
+>nulls</TT
+>为<TT
+CLASS="SYMBOL"
+>NULL</TT
+>，
+      那么<CODE
+CLASS="FUNCTION"
+>SPI_cursor_open_with_args</CODE
+>会假设没有参数
+      为空值。否则，如果对应的参数值为非空，
+      <TT
+CLASS="PARAMETER"
+>nulls</TT
+>
+      数组的每一个项都应该是<TT
+CLASS="LITERAL"
+>'&nbsp;'</TT
+>；如果对应参数值为空，
+      <TT
+CLASS="PARAMETER"
+>nulls</TT
+>数组的项应为<TT
+CLASS="LITERAL"
+>'n'</TT
+>（在后
+      面的情况中，对应的<TT
+CLASS="PARAMETER"
+>values</TT
+>项中的值没有
+      关系）。注意<TT
+CLASS="PARAMETER"
+>nulls</TT
+>不是一个文本字符串，
+      它只是一个数组：它不需要一个<TT
+CLASS="LITERAL"
+>'\0'</TT
+>终止符。
+     </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>bool <TT
+CLASS="PARAMETER"
+>read_only</TT
+></TT
+></DT
+><DD
+><P
+><TT
+CLASS="LITERAL"
+>true</TT
+>表示只读执行</P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>int <TT
+CLASS="PARAMETER"
+>cursorOptions</TT
+></TT
+></DT
+><DD
+><P
+>      游标选项的整数型位掩码，为零会产生默认行为
+     </P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN70231"
+></A
+><H2
+>返回值</H2
+><P
+>   指向包含该游标的 portal 的指针。注意这里没有错误返回约定，
+   任何错误都将通过<CODE
+CLASS="FUNCTION"
+>elog</CODE
+>报告。
+  </P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="spi-spi-cursor-open.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="spi-spi-cursor-open-with-paramlist.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>SPI_cursor_open</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="spi-interface.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>SPI_cursor_open_with_paramlist</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

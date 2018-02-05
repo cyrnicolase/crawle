@@ -1,0 +1,653 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>条件表达式</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="函数和操作符"
+HREF="functions.html"><LINK
+REL="PREVIOUS"
+TITLE="序列操作函数"
+HREF="functions-sequence.html"><LINK
+REL="NEXT"
+TITLE="数组函数和操作符"
+HREF="functions-array.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/func.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="序列操作函数"
+HREF="functions-sequence.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="functions.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#31456; 9. 函数和操作符</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="数组函数和操作符"
+HREF="functions-array.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="FUNCTIONS-CONDITIONAL"
+>9.17. 条件表达式</A
+></H1
+><P
+>   本节描述在<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>中可用的<ACRONYM
+CLASS="ACRONYM"
+>SQL</ACRONYM
+>兼容的条件表达式。
+  </P
+><DIV
+CLASS="TIP"
+><BLOCKQUOTE
+CLASS="TIP"
+><P
+><B
+>&#25552;&#31034;: </B
+>    如果你的需求超过这些条件表达式的能力，你可能会希望用一种更富表现力的编程语言写一个存储过程。
+   </P
+></BLOCKQUOTE
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="FUNCTIONS-CASE"
+>9.17.1. <TT
+CLASS="LITERAL"
+>CASE</TT
+></A
+></H2
+><P
+>   <ACRONYM
+CLASS="ACRONYM"
+>SQL</ACRONYM
+> <TT
+CLASS="TOKEN"
+>CASE</TT
+>表达式是一种通用的条件表达式，类似于其它编程语言中的 if/else 语句：
+
+</P><PRE
+CLASS="SYNOPSIS"
+>CASE WHEN <TT
+CLASS="REPLACEABLE"
+><I
+>condition</I
+></TT
+> THEN <TT
+CLASS="REPLACEABLE"
+><I
+>result</I
+></TT
+>
+     [<SPAN
+CLASS="OPTIONAL"
+>WHEN ...</SPAN
+>]
+     [<SPAN
+CLASS="OPTIONAL"
+>ELSE <TT
+CLASS="REPLACEABLE"
+><I
+>result</I
+></TT
+></SPAN
+>]
+END</PRE
+><P>
+
+   <TT
+CLASS="TOKEN"
+>CASE</TT
+>子句可以用于任何表达式可以出现的地方。每一个<TT
+CLASS="REPLACEABLE"
+><I
+>condition</I
+></TT
+>是一个返回<TT
+CLASS="TYPE"
+>boolean</TT
+>结果的表达式。如果结果为真，那么<TT
+CLASS="TOKEN"
+>CASE</TT
+>表达式的结果就是符合条件的<TT
+CLASS="REPLACEABLE"
+><I
+>result</I
+></TT
+>，并且剩下的<TT
+CLASS="TOKEN"
+>CASE</TT
+>表达式不会被处理。如果条件的结果不为真，那么以相同方式搜寻任何随后的<TT
+CLASS="TOKEN"
+>WHEN</TT
+>子句。如果没有<TT
+CLASS="TOKEN"
+>WHEN</TT
+> <TT
+CLASS="REPLACEABLE"
+><I
+>condition</I
+></TT
+>为真，那么<TT
+CLASS="TOKEN"
+>CASE</TT
+>表达式的值就是在<TT
+CLASS="TOKEN"
+>ELSE</TT
+>子句里的<TT
+CLASS="REPLACEABLE"
+><I
+>result</I
+></TT
+>。如果省略了<TT
+CLASS="TOKEN"
+>ELSE</TT
+>子句而且没有条件为真，结果为空。
+  </P
+><P
+>    例子：
+</P><PRE
+CLASS="SCREEN"
+>SELECT * FROM test;
+
+ a
+---
+ 1
+ 2
+ 3
+
+
+SELECT a,
+       CASE WHEN a=1 THEN 'one'
+            WHEN a=2 THEN 'two'
+            ELSE 'other'
+       END
+    FROM test;
+
+ a | case
+---+-------
+ 1 | one
+ 2 | two
+ 3 | other</PRE
+><P>
+   </P
+><P
+>   所有<TT
+CLASS="REPLACEABLE"
+><I
+>result</I
+></TT
+>表达式的数据类型都必须可以转换成单一的输出类型。 参阅<A
+HREF="typeconv-union-case.html"
+>第 10.5 &#33410;</A
+>获取细节。
+  </P
+><P
+>   下面这个<SPAN
+CLASS="QUOTE"
+>"简单"</SPAN
+>形式的<TT
+CLASS="TOKEN"
+>CASE</TT
+>表达式是上述通用形式的一个变种：
+
+</P><PRE
+CLASS="SYNOPSIS"
+>CASE <TT
+CLASS="REPLACEABLE"
+><I
+>expression</I
+></TT
+>
+    WHEN <TT
+CLASS="REPLACEABLE"
+><I
+>value</I
+></TT
+> THEN <TT
+CLASS="REPLACEABLE"
+><I
+>result</I
+></TT
+>
+    [<SPAN
+CLASS="OPTIONAL"
+>WHEN ...</SPAN
+>]
+    [<SPAN
+CLASS="OPTIONAL"
+>ELSE <TT
+CLASS="REPLACEABLE"
+><I
+>result</I
+></TT
+></SPAN
+>]
+END</PRE
+><P>
+
+   第一个<TT
+CLASS="REPLACEABLE"
+><I
+>expression</I
+></TT
+>会被计算，然后与所有在<TT
+CLASS="TOKEN"
+>WHEN</TT
+>子句中的每一个<TT
+CLASS="REPLACEABLE"
+><I
+>value</I
+></TT
+>对比，直到找到一个相等的。如果没有找到匹配的，则返回在<TT
+CLASS="TOKEN"
+>ELSE</TT
+>子句中的<TT
+CLASS="REPLACEABLE"
+><I
+>result</I
+></TT
+>（或者控制）。 这类似于 C 里的<CODE
+CLASS="FUNCTION"
+>switch</CODE
+>语句。
+  </P
+><P
+>    上面的例子可以用简单<TT
+CLASS="TOKEN"
+>CASE</TT
+>语法来写：
+</P><PRE
+CLASS="SCREEN"
+>SELECT a,
+       CASE a WHEN 1 THEN 'one'
+              WHEN 2 THEN 'two'
+              ELSE 'other'
+       END
+    FROM test;
+
+ a | case
+---+-------
+ 1 | one
+ 2 | two
+ 3 | other</PRE
+><P>
+   </P
+><P
+>    <TT
+CLASS="TOKEN"
+>CASE</TT
+>表达式并不计算任何无助于判断结果的子表达式。例如，下面是一个可以避免被零除错误的方法：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>SELECT ... WHERE CASE WHEN x &lt;&gt; 0 THEN y/x &gt; 1.5 ELSE false END;</PRE
+><P>
+   </P
+><DIV
+CLASS="NOTE"
+><BLOCKQUOTE
+CLASS="NOTE"
+><P
+><B
+>&#27880;&#24847;: </B
+>     如<A
+HREF="sql-expressions.html#SYNTAX-EXPRESS-EVAL"
+>第 4.2.14 &#33410;</A
+>中所述，在有几种情况中一个表达式的子表达式
+     会被计算多次，因此<SPAN
+CLASS="QUOTE"
+>"<TT
+CLASS="TOKEN"
+>CASE</TT
+>只计算必要的表达式"</SPAN
+>这
+     一原则并非不可打破。例如一个常量子表达式<TT
+CLASS="LITERAL"
+>1/0</TT
+>通常将会在规划时导致一次
+     除零错误，即便它位于一个执行时永远也不会进入的<TT
+CLASS="TOKEN"
+>CASE</TT
+>分支时也是
+     如此。
+    </P
+></BLOCKQUOTE
+></DIV
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="FUNCTIONS-COALESCE-NVL-IFNULL"
+>9.17.2. <TT
+CLASS="LITERAL"
+>COALESCE</TT
+></A
+></H2
+><PRE
+CLASS="SYNOPSIS"
+><CODE
+CLASS="FUNCTION"
+>COALESCE</CODE
+>(<TT
+CLASS="REPLACEABLE"
+><I
+>value</I
+></TT
+> [<SPAN
+CLASS="OPTIONAL"
+>, ...</SPAN
+>])</PRE
+><P
+>   <CODE
+CLASS="FUNCTION"
+>COALESCE</CODE
+>函数返回它的第一个非空参数的值。当且仅当所有参数都为空时才会返回空。它常用于在为显示目的检索数据时用缺省值替换空值。例如：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>SELECT COALESCE(description, short_description, '(none)') ...</PRE
+><P>
+   如果<TT
+CLASS="VARNAME"
+>description</TT
+>不为空，这将会返回它的值，否则如果<TT
+CLASS="VARNAME"
+>short_description</TT
+>非空则返回<TT
+CLASS="VARNAME"
+>short_description</TT
+>的值，如果前两个都为空则返回<TT
+CLASS="LITERAL"
+>(none)</TT
+>。
+  </P
+><P
+>    和<TT
+CLASS="TOKEN"
+>CASE</TT
+>表达式一样，<CODE
+CLASS="FUNCTION"
+>COALESCE</CODE
+>将不会 计算无助于判断结果的参数；也就是说，在第一个非空参数右边的参数不会被计算。这个 SQL 标准函数提供了类似于<CODE
+CLASS="FUNCTION"
+>NVL</CODE
+>和<CODE
+CLASS="FUNCTION"
+>IFNULL</CODE
+>的能力，它们被用在某些其他数据库系统中。
+   </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="FUNCTIONS-NULLIF"
+>9.17.3. <TT
+CLASS="LITERAL"
+>NULLIF</TT
+></A
+></H2
+><PRE
+CLASS="SYNOPSIS"
+><CODE
+CLASS="FUNCTION"
+>NULLIF</CODE
+>(<TT
+CLASS="REPLACEABLE"
+><I
+>value1</I
+></TT
+>, <TT
+CLASS="REPLACEABLE"
+><I
+>value2</I
+></TT
+>)</PRE
+><P
+>   当<TT
+CLASS="REPLACEABLE"
+><I
+>value1</I
+></TT
+>和<TT
+CLASS="REPLACEABLE"
+><I
+>value2</I
+></TT
+>相等时，<CODE
+CLASS="FUNCTION"
+>NULLIF</CODE
+>返回一个空值。 否则它返回<TT
+CLASS="REPLACEABLE"
+><I
+>value1</I
+></TT
+>。 这些可以用于执行前文给出的<CODE
+CLASS="FUNCTION"
+>COALESCE</CODE
+>例子的逆操作：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>SELECT NULLIF(value, '(none)') ...</PRE
+><P>
+  </P
+><P
+>   在这个例子中，如果<TT
+CLASS="LITERAL"
+>value</TT
+>是<TT
+CLASS="LITERAL"
+>(none)</TT
+>，将返回空值，否则返回<TT
+CLASS="LITERAL"
+>value</TT
+>的值。
+  </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="FUNCTIONS-GREATEST-LEAST"
+>9.17.4. <TT
+CLASS="LITERAL"
+>GREATEST</TT
+>和<TT
+CLASS="LITERAL"
+>LEAST</TT
+></A
+></H2
+><PRE
+CLASS="SYNOPSIS"
+><CODE
+CLASS="FUNCTION"
+>GREATEST</CODE
+>(<TT
+CLASS="REPLACEABLE"
+><I
+>value</I
+></TT
+> [<SPAN
+CLASS="OPTIONAL"
+>, ...</SPAN
+>])</PRE
+><PRE
+CLASS="SYNOPSIS"
+><CODE
+CLASS="FUNCTION"
+>LEAST</CODE
+>(<TT
+CLASS="REPLACEABLE"
+><I
+>value</I
+></TT
+> [<SPAN
+CLASS="OPTIONAL"
+>, ...</SPAN
+>])</PRE
+><P
+>    <CODE
+CLASS="FUNCTION"
+>GREATEST</CODE
+>和<CODE
+CLASS="FUNCTION"
+>LEAST</CODE
+>函数从一个任意的数字表达式列表里选取最大或者最小的数值。 这些表达式必须都可以转换成一个普通的数据类型，它将会是结果类型 （参阅<A
+HREF="typeconv-union-case.html"
+>第 10.5 &#33410;</A
+>获取细节）。列表中的 NULL 数值将被忽略。只有所有表达式的结果都是 NULL 的时候，结果才会是 NULL。
+   </P
+><P
+>    请注意<CODE
+CLASS="FUNCTION"
+>GREATEST</CODE
+>和<CODE
+CLASS="FUNCTION"
+>LEAST</CODE
+>都不是 SQL 标准，但却是很常见的扩展。某些其他数据库让它们在任何参数为 NULL 时返回 NULL，而不是在所有参数都为 NULL 时才返回 NULL。
+   </P
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="functions-sequence.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="functions-array.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>序列操作函数</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="functions.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>数组函数和操作符</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

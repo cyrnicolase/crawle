@@ -1,0 +1,476 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>earthdistance</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="额外提供的模块"
+HREF="contrib.html"><LINK
+REL="PREVIOUS"
+TITLE="dict_xsyn"
+HREF="dict-xsyn.html"><LINK
+REL="NEXT"
+TITLE="file_fdw"
+HREF="file-fdw.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/earthdistance.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="dict_xsyn"
+HREF="dict-xsyn.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="contrib.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#38468;&#24405; F. 额外提供的模块</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="file_fdw"
+HREF="file-fdw.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="EARTHDISTANCE"
+>F.13. earthdistance</A
+></H1
+><P
+>  <TT
+CLASS="FILENAME"
+>earthdistance</TT
+>模块提供两种不同的方法来计算地球表面的大圆距离。第一种要介绍的依赖于<TT
+CLASS="FILENAME"
+>cube</TT
+>模块（<SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>必须</I
+></SPAN
+>在<TT
+CLASS="FILENAME"
+>earthdistance</TT
+>之前安装）。第二种基于内建的<TT
+CLASS="TYPE"
+>point</TT
+>数据类型，为座标使用精度和纬度。
+ </P
+><P
+>  在这个模块中，地球被假定为完美的球型（如果这对你不够精确，你可能希望去看看<SPAN
+CLASS="APPLICATION"
+><A
+HREF="http://postgis.net/"
+TARGET="_top"
+>PostGIS</A
+></SPAN
+>项目）。
+ </P
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN176331"
+>F.13.1. 基于立方体的地球距离</A
+></H2
+><P
+>   数据被存储在立方体中，立方体的点（所有的角都一样）使用 3 个座标表示到地球中心的 x、y 和 z 距离。提供了一个<TT
+CLASS="TYPE"
+>cube</TT
+>之上的域<TT
+CLASS="TYPE"
+>earth</TT
+>，这包括检查值符合这些限制并且合理地接近于地球的真实表面的约束。
+  </P
+><P
+>   地球的半径获得自<CODE
+CLASS="FUNCTION"
+>earth()</CODE
+>函数。其单位是米。但是通过改变这一个函数你能够把该模块改为使用某些其他单位，或者使用一种你认为更合适的不同半径值。
+  </P
+><P
+>   这个包也有在天文数据库中的应用。天文学家可能想要改变<CODE
+CLASS="FUNCTION"
+>earth()</CODE
+>来返回一个<TT
+CLASS="LITERAL"
+>180/pi()</TT
+>的半径，这样距离就会是度数。
+  </P
+><P
+>   函数也被提供来支持经纬度输入（以度数）、经纬度输出、计算两点间的大圆距离以及容易地指定一个可用于索引搜索的边界框。
+  </P
+><P
+>   所提供的函数在<A
+HREF="earthdistance.html#EARTHDISTANCE-CUBE-FUNCTIONS"
+>&#34920; F-6</A
+>中描述。
+  </P
+><DIV
+CLASS="TABLE"
+><A
+NAME="EARTHDISTANCE-CUBE-FUNCTIONS"
+></A
+><P
+><B
+>&#34920; F-6. 基于立方体的地球距离函数</B
+></P
+><TABLE
+BORDER="1"
+CLASS="CALSTABLE"
+><COL><COL><COL><THEAD
+><TR
+><TH
+>函数</TH
+><TH
+>返回</TH
+><TH
+>描述</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+><CODE
+CLASS="FUNCTION"
+>earth()</CODE
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>float8</TT
+></TD
+><TD
+>返回地球的假定半径。</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="FUNCTION"
+>sec_to_gc(float8)</CODE
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>float8</TT
+></TD
+><TD
+>将地球表面两点间的普通直线（切线）距离转换为它们之间的大圆距离。
+      </TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="FUNCTION"
+>gc_to_sec(float8)</CODE
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>float8</TT
+></TD
+><TD
+>将地球表面两点间的大圆距离转换为它们之间的普通直线（切线）距离。
+      </TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="FUNCTION"
+>ll_to_earth(float8, float8)</CODE
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>earth</TT
+></TD
+><TD
+>给定一个地球表面点的维度（参数 1）和精度（参数 2）度数，返回它的位置。
+      </TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="FUNCTION"
+>latitude(earth)</CODE
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>float8</TT
+></TD
+><TD
+>返回一个地球表面点的以度数表示的维度。
+      </TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="FUNCTION"
+>longitude(earth)</CODE
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>float8</TT
+></TD
+><TD
+>返回一个地球表面点的以度数表示的经度。
+      </TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="FUNCTION"
+>earth_distance(earth, earth)</CODE
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>float8</TT
+></TD
+><TD
+>返回地球表面上两点间的大圆距离。
+      </TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="FUNCTION"
+>earth_box(earth, float8)</CODE
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>cube</TT
+></TD
+><TD
+>为一个位置的给定大圆距离范围内的点使用立方体<TT
+CLASS="LITERAL"
+>@&gt;</TT
+>操作符返回一个适合于索引搜索的框。这个框中的某些点到该位置的大圆距离会超过指定的大圆距离，因此使用<CODE
+CLASS="FUNCTION"
+>earth_distance</CODE
+>的第二次检查应该被包括在查询中。
+      </TD
+></TR
+></TBODY
+></TABLE
+></DIV
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN176419"
+>F.13.2. 基于点的地球距离</A
+></H2
+><P
+>   这个模块的第二部分依赖于将地球位置表示为类型<TT
+CLASS="TYPE"
+>point</TT
+>的值，其中第一部分被用来表示经度数，第二部分被用来表示纬度数。点被取做 (longitude, latitude) 并且不能反过来，因为经度更接近直观上的 x 轴，而纬度则接近 y 轴。
+  </P
+><P
+>   如<A
+HREF="earthdistance.html#EARTHDISTANCE-POINT-OPERATORS"
+>&#34920; F-7</A
+>所示，这一部分只提供了一个单一操作符。
+  </P
+><DIV
+CLASS="TABLE"
+><A
+NAME="EARTHDISTANCE-POINT-OPERATORS"
+></A
+><P
+><B
+>&#34920; F-7. 基于点的地球距离操作符</B
+></P
+><TABLE
+BORDER="1"
+CLASS="CALSTABLE"
+><COL><COL><COL><THEAD
+><TR
+><TH
+>操作符</TH
+><TH
+>返回</TH
+><TH
+>描述</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+><TT
+CLASS="TYPE"
+>point</TT
+> <TT
+CLASS="LITERAL"
+>&lt;@&gt;</TT
+> <TT
+CLASS="TYPE"
+>point</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>float8</TT
+></TD
+><TD
+>给定地球表面两点之间的法定英里距离。
+      </TD
+></TR
+></TBODY
+></TABLE
+></DIV
+><P
+>   注意和这个模块的基于<TT
+CLASS="TYPE"
+>cube</TT
+>的部分不同，这里的单位是被硬编码的：改变<CODE
+CLASS="FUNCTION"
+>earth()</CODE
+>函数将不会影响这个操作符的结果。
+  </P
+><P
+>   经度/纬度表示的一个缺点是你需要小心靠近两极和靠近经度正负 180 度处的边界情况。基于<TT
+CLASS="TYPE"
+>cube</TT
+>的表示可以避免这些不连续性。
+  </P
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="dict-xsyn.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="file-fdw.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>dict_xsyn</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="contrib.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>file_fdw</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

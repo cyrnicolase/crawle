@@ -1,0 +1,750 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>CREATE LANGUAGE</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="SQL 命令"
+HREF="sql-commands.html"><LINK
+REL="PREVIOUS"
+TITLE="CREATE INDEX"
+HREF="sql-createindex.html"><LINK
+REL="NEXT"
+TITLE="CREATE MATERIALIZED VIEW"
+HREF="sql-creatematerializedview.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="REFENTRY"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/ref/create_language.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="CREATE INDEX"
+HREF="sql-createindex.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="CREATE MATERIALIZED VIEW"
+HREF="sql-creatematerializedview.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="SQL-CREATELANGUAGE"
+></A
+>CREATE LANGUAGE</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN80085"
+></A
+><H2
+>&#21517;&#31216;</H2
+>CREATE LANGUAGE&nbsp;--&nbsp;定义一种新的过程语言</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN80088"
+></A
+><H2
+>&#22823;&#32434;</H2
+><PRE
+CLASS="SYNOPSIS"
+>CREATE [ OR REPLACE ] [ PROCEDURAL ] LANGUAGE <TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+>
+CREATE [ OR REPLACE ] [ TRUSTED ] [ PROCEDURAL ] LANGUAGE <TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+>
+    HANDLER <TT
+CLASS="REPLACEABLE"
+><I
+>call_handler</I
+></TT
+> [ INLINE <TT
+CLASS="REPLACEABLE"
+><I
+>inline_handler</I
+></TT
+> ] [ VALIDATOR <TT
+CLASS="REPLACEABLE"
+><I
+>valfunction</I
+></TT
+> ]</PRE
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="SQL-CREATELANGUAGE-DESCRIPTION"
+></A
+><H2
+>描述</H2
+><P
+>   <TT
+CLASS="COMMAND"
+>CREATE LANGUAGE</TT
+>为一个
+   <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>数据库注册一种新的
+   过程语言。接着，可以用这种新语言定义函数和触发器过程。
+  </P
+><DIV
+CLASS="NOTE"
+><BLOCKQUOTE
+CLASS="NOTE"
+><P
+><B
+>&#27880;&#24847;: </B
+>    从<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+> 9.1 开始，大多数
+    过程语言已经被做成了<SPAN
+CLASS="QUOTE"
+>"扩展"</SPAN
+>，并且应该用
+    <A
+HREF="sql-createextension.html"
+>CREATE EXTENSION</A
+>而不是
+    <TT
+CLASS="COMMAND"
+>CREATE LANGUAGE</TT
+>来安装。
+    <TT
+CLASS="COMMAND"
+>CREATE LANGUAGE</TT
+>的直接使用现在应该
+    被限制在扩展安装脚本中。如果在数据库中有一种<SPAN
+CLASS="QUOTE"
+>"裸"</SPAN
+>语言（
+    可能是一次升级的结果），可以用
+    <TT
+CLASS="LITERAL"
+>CREATE EXTENSION <TT
+CLASS="REPLACEABLE"
+><I
+>langname</I
+></TT
+> FROM
+    unpackaged</TT
+>把它转换成一个扩展。
+   </P
+></BLOCKQUOTE
+></DIV
+><P
+>   <TT
+CLASS="COMMAND"
+>CREATE LANGUAGE</TT
+>实际上把该语言名称与
+   负责执行用该语言编写的函数的处理器函数关联在一起。有关语言处理器的
+   更多信息可以参考<A
+HREF="plhandler.html"
+>第 54 &#31456;</A
+>。
+  </P
+><P
+>   有两种形式的<TT
+CLASS="COMMAND"
+>CREATE LANGUAGE</TT
+>命令。在
+   第一种形式中，用户只提供想要的语言的名称。
+   <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>服务器会查询
+   <A
+HREF="catalog-pg-pltemplate.html"
+><TT
+CLASS="STRUCTNAME"
+>pg_pltemplate</TT
+></A
+>系统目录来决定正确的参数。在第二种形式中，用户
+   要提供语言参数和语言名称。第二种形式可以被用来创建一种没有定义在
+   <TT
+CLASS="STRUCTNAME"
+>pg_pltemplate</TT
+>中的语言，但是这种方法被认为即将
+   废弃。
+  </P
+><P
+>   当服务器在<TT
+CLASS="STRUCTNAME"
+>pg_pltemplate</TT
+>目录中为给定的语言名称
+   找到一个项时，即使命令中已经包括了语言参数，它也将使用目录中的
+   数据。这种行为简化了旧转储文件的载入，旧转储文件很可能包含过时的
+   信息。
+  </P
+><P
+>   通常，用户必须拥有
+   <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>超级用户特权来注册
+   一种新的语言。不过，如果该语言被列举在
+   <TT
+CLASS="STRUCTNAME"
+>pg_pltemplate</TT
+>目录中并且被标记为允许
+   由数据库拥有者创建（<TT
+CLASS="STRUCTFIELD"
+>tmpldbacreate</TT
+>为真），则数据
+   库的拥有者可以把新语言注册在数据库中。默认是可信的语言能够由数据
+   库拥有者创建，但是超级用户可以通过修改
+   <TT
+CLASS="STRUCTNAME"
+>pg_pltemplate</TT
+>的内容来调整这种行为。
+   语言的创建者会成为它的拥有者，并且以后可以删除它、对它重命名或者
+   把它赋予给一个新的拥有者。
+  </P
+><P
+>   <TT
+CLASS="COMMAND"
+>CREATE OR REPLACE LANGUAGE</TT
+>将创建
+   或者替换一种现有的定义。如果该语言已经存在，其参数会被根据指定的
+   值或者来自<TT
+CLASS="STRUCTNAME"
+>pg_pltemplate</TT
+>的值更新。但
+   该语言的拥有关系和权限设置不会更改，并且任何已有的用该语言编写的
+   函数仍然被假定有效。除了创建一种语言的普通特权需求，用户还必须是
+   超级用户或者已有语言的拥有者。<TT
+CLASS="LITERAL"
+>REPLACE</TT
+>情况主要被用来
+   确保该语言存在。如果该语言有一个
+   <TT
+CLASS="STRUCTNAME"
+>pg_pltemplate</TT
+>项，那么
+   <TT
+CLASS="LITERAL"
+>REPLACE</TT
+>将不会实际更改现有定义的任何东西，除非从该语
+   言被创建以来<TT
+CLASS="STRUCTNAME"
+>pg_pltemplate</TT
+>已经被修改
+   过（很少见的情况）。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="SQL-CREATELANGUAGE-PARAMETERS"
+></A
+><H2
+>参数</H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="LITERAL"
+>TRUSTED</TT
+></DT
+><DD
+><P
+><TT
+CLASS="LITERAL"
+>TRUSTED</TT
+>指定该语言不会授予用户不该具有的
+      数据访问。如果在注册语言时这个关键词被省略，只有具有
+       <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>超级用户特权的用户才能
+       使用该语言创建新函数。
+      </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>PROCEDURAL</TT
+></DT
+><DD
+><P
+>       这是一个噪声词。
+      </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+></DT
+><DD
+><P
+>       新过程语言的名称。该名称必须在该数据库的语言中唯一。
+      </P
+><P
+>       为了向后兼容，名称可以用单引号围绕。
+      </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>HANDLER</TT
+> <TT
+CLASS="REPLACEABLE"
+><I
+>call_handler</I
+></TT
+></DT
+><DD
+><P
+><TT
+CLASS="REPLACEABLE"
+><I
+>call_handler</I
+></TT
+>
+       是一个之前注册的函数的名称，它将被调用来执行该过程语言的函数。
+       一种过程语言的调用处理器必须以一种编译型语言（如 C）编写并且
+       具有版本 1 的调用约定，它必须在
+       <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>内注册为一个没有
+       参数并且返回<TT
+CLASS="TYPE"
+>language_handler</TT
+>类型的函数。
+       <TT
+CLASS="TYPE"
+>language_handler</TT
+>是一种占位符类型， 它被用来
+       标识该函数为一个调用处理器。
+      </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>INLINE</TT
+> <TT
+CLASS="REPLACEABLE"
+><I
+>inline_handler</I
+></TT
+></DT
+><DD
+><P
+><TT
+CLASS="REPLACEABLE"
+><I
+>inline_handler</I
+></TT
+>
+       是一个之前注册的函数的名称，它将被调用来执行一个该语言的匿名代码块（
+       <A
+HREF="sql-do.html"
+>DO</A
+>命令）。如果没有指定
+       <TT
+CLASS="REPLACEABLE"
+><I
+>inline_handler</I
+></TT
+>函数，则
+       该语言不支持匿名代码块。该处理器函数必须接受一个<TT
+CLASS="TYPE"
+>internal</TT
+>
+       类型的参数，该参数将是<TT
+CLASS="COMMAND"
+>DO</TT
+>命令的内部表示，而且它通常
+       将返回<TT
+CLASS="TYPE"
+>void</TT
+>。该处理器的返回值会被忽略。
+      </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>VALIDATOR</TT
+> <TT
+CLASS="REPLACEABLE"
+><I
+>valfunction</I
+></TT
+></DT
+><DD
+><P
+><TT
+CLASS="REPLACEABLE"
+><I
+>valfunction</I
+></TT
+> is the
+       是一个之前注册的函数的名称，当一个该语言的新函数被创建时会调用该函数来
+       验证新函数。如果没有指定验证器函数，那么一个新函数被创建时不会被检查。
+       验证器函数必须接受一个<TT
+CLASS="TYPE"
+>oid</TT
+>类型的参数，它将是要被创建的
+       函数的 OID，而且它通常将返回<TT
+CLASS="TYPE"
+>void</TT
+>。
+      </P
+><P
+>       一个验证器函数通常会检查函数体中的语法正确性，但是它也能查看函数的其他
+       属性，例如该语言能否处理特定的参数类型。为了发出一个错误，验证器函数应该
+       使用<CODE
+CLASS="FUNCTION"
+>ereport()</CODE
+>函数。验证器函数的返回值会被忽略。
+      </P
+></DD
+></DL
+></DIV
+><P
+>   如果指定的语言名称在<TT
+CLASS="STRUCTNAME"
+>pg_pltemplate</TT
+>中有一项，服务器会忽略
+   <TT
+CLASS="LITERAL"
+>TRUSTED</TT
+>选项和支持函数的名称。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="SQL-CREATELANGUAGE-NOTES"
+></A
+><H2
+>注解</H2
+><P
+>   <A
+HREF="app-createlang.html"
+><SPAN
+CLASS="APPLICATION"
+>createlang</SPAN
+></A
+>程序是
+   <TT
+CLASS="COMMAND"
+>CREATE LANGUAGE</TT
+>命令的一个简单的包装器。它可以从
+   shell 命令行轻松地安装过程语言。
+  </P
+><P
+>   使用<A
+HREF="sql-droplanguage.html"
+>DROP LANGUAGE</A
+>或者更好的<A
+HREF="app-droplang.html"
+><SPAN
+CLASS="APPLICATION"
+>droplang</SPAN
+></A
+>程序来删除过程语言。
+  </P
+><P
+>   系统目录<CODE
+CLASS="CLASSNAME"
+>pg_language</CODE
+>（见<A
+HREF="catalog-pg-language.html"
+>第 50.29 &#33410;</A
+>）记录着有关当前已安装的语言的信息。
+   还有，<TT
+CLASS="COMMAND"
+>createlang</TT
+>有一个选项可以列出已安装的语言。
+  </P
+><P
+>   要以一种过程语言创建函数，用户必须具有对于该语言的
+   <TT
+CLASS="LITERAL"
+>USAGE</TT
+>特权。默认情况下，对于可信语言，
+   <TT
+CLASS="LITERAL"
+>USAGE</TT
+>被授予给<TT
+CLASS="LITERAL"
+>PUBLIC</TT
+>（即所有人）。
+   如果需要可以将它收回。
+  </P
+><P
+>   过程语言对于单个数据库来说是本地的。但是，一种语言可以被安装在
+   <TT
+CLASS="LITERAL"
+>template1</TT
+>数据库中，这会导致它在所有后续创建的
+   数据库中自动变得可用。
+  </P
+><P
+>   如果对语言在服务器的<TT
+CLASS="STRUCTNAME"
+>pg_pltemplate</TT
+>中没有一项，
+   调用处理器函数、内联处理器函数（如果有）以及验证器函数（如果有）
+   必须已经存在。但是当有一个那样的项时，这些函数不必已经存在。如果
+   它们在数据库中不存在，将自动定义它们（如果安装中实现该语言的共享
+   库不可用可能会导致<TT
+CLASS="COMMAND"
+>CREATE LANGUAGE</TT
+>失败）。
+  </P
+><P
+>   在<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+> 版本 7.3 之前，需要
+   将处理器函数声明为返回占位符类型<TT
+CLASS="TYPE"
+>opaque</TT
+>而不是
+   <TT
+CLASS="TYPE"
+>language_handler</TT
+>。为了支持载入旧的转储文件，
+   <TT
+CLASS="COMMAND"
+>CREATE LANGUAGE</TT
+>将接受被声明为返回
+   <TT
+CLASS="TYPE"
+>opaque</TT
+>的函数，但是它将发出一个提示并且把该函数的声明
+   返回类型改为<TT
+CLASS="TYPE"
+>language_handler</TT
+>。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="SQL-CREATELANGUAGE-EXAMPLES"
+></A
+><H2
+>示例</H2
+><P
+>   创建任何标准过程语言的最好的方式是：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>CREATE LANGUAGE plperl;</PRE
+><P>
+  </P
+><P
+>   对于<TT
+CLASS="STRUCTNAME"
+>pg_pltemplate</TT
+>目录不知道的一种语言，需要这样的命令序列：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>CREATE FUNCTION plsample_call_handler() RETURNS language_handler
+    AS '$libdir/plsample'
+    LANGUAGE C;
+CREATE LANGUAGE plsample
+    HANDLER plsample_call_handler;</PRE
+><P></P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="SQL-CREATELANGUAGE-COMPAT"
+></A
+><H2
+>兼容性</H2
+><P
+>   <TT
+CLASS="COMMAND"
+>CREATE LANGUAGE</TT
+>是一种
+   <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>扩展。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN80230"
+></A
+><H2
+>另见</H2
+><A
+HREF="sql-alterlanguage.html"
+>ALTER LANGUAGE</A
+>, <A
+HREF="sql-createfunction.html"
+>CREATE FUNCTION</A
+>, <A
+HREF="sql-droplanguage.html"
+>DROP LANGUAGE</A
+>, <A
+HREF="sql-grant.html"
+>GRANT</A
+>, <A
+HREF="sql-revoke.html"
+>REVOKE</A
+>, <A
+HREF="app-createlang.html"
+><SPAN
+CLASS="APPLICATION"
+>createlang</SPAN
+></A
+>, <A
+HREF="app-droplang.html"
+><SPAN
+CLASS="APPLICATION"
+>droplang</SPAN
+></A
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-createindex.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="sql-creatematerializedview.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>CREATE INDEX</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>CREATE MATERIALIZED VIEW</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

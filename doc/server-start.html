@@ -1,0 +1,603 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>启动数据库服务器</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="服务器设置和操作"
+HREF="runtime.html"><LINK
+REL="PREVIOUS"
+TITLE="创建一个数据库集簇"
+HREF="creating-cluster.html"><LINK
+REL="NEXT"
+TITLE="管理内核资源"
+HREF="kernel-resources.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/runtime.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="创建一个数据库集簇"
+HREF="creating-cluster.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="runtime.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#31456; 18. 服务器设置和操作</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="管理内核资源"
+HREF="kernel-resources.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="SERVER-START"
+>18.3. 启动数据库服务器</A
+></H1
+><P
+>   在任何人可以访问数据库前，你必须启动数据库服务器。 数据库服务器程序是<TT
+CLASS="COMMAND"
+>postgres</TT
+>， 它必须知道在哪里能找到它要用的数据。这是用<TT
+CLASS="OPTION"
+>-D</TT
+>选项实现的。 因此，启动服务器最简单的方法是：
+</P><PRE
+CLASS="SCREEN"
+>$ <KBD
+CLASS="USERINPUT"
+>postgres -D /usr/local/pgsql/data</KBD
+></PRE
+><P>
+   这将把服务器放在前台运行。这个步骤同样必须以<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>用户帐户登录来操作。如果没有<TT
+CLASS="OPTION"
+>-D</TT
+>选项，服务器将尝试使用环境变量<TT
+CLASS="ENVAR"
+>PGDATA</TT
+>命名的目录。如果这个环境变量也没有提供则导致失败。
+  </P
+><P
+>   通常最好在后台启动<TT
+CLASS="COMMAND"
+>postgres</TT
+>。要这样做，使用常用的 Unix shell 语法：
+</P><PRE
+CLASS="SCREEN"
+>$ <KBD
+CLASS="USERINPUT"
+>postgres -D /usr/local/pgsql/data &gt;logfile 2&gt;&amp;1 &amp;</KBD
+></PRE
+><P>
+   如上所示，把服务器的<SPAN
+CLASS="SYSTEMITEM"
+>stdout</SPAN
+>和<SPAN
+CLASS="SYSTEMITEM"
+>stderr</SPAN
+>输出存储到某个地方是非常重要的。这将对审计目的和诊断问题有所帮助（更深入的有关日志文件处理的讨论请见（<A
+HREF="logfile-maintenance.html"
+>第 24.3 &#33410;</A
+>）。
+  </P
+><P
+>   <TT
+CLASS="COMMAND"
+>postgres</TT
+>还接受其它一些命令行选项。更多的信息请见<A
+HREF="app-postgres.html"
+><SPAN
+CLASS="APPLICATION"
+>postgres</SPAN
+></A
+>参考页 和下面的<A
+HREF="runtime-config.html"
+>第 19 &#31456;</A
+>。
+  </P
+><P
+>   这些 shell 语法很容易让人觉得无聊。因此我们提供了包装器程序<A
+HREF="app-pg-ctl.html"
+><SPAN
+CLASS="APPLICATION"
+>pg_ctl</SPAN
+></A
+>以简化一些任务。例如：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>pg_ctl start -l logfile</PRE
+><P>
+   将在后台启动服务器并且把输出放到指定的日志文件中。<TT
+CLASS="OPTION"
+>-D</TT
+>选项和<TT
+CLASS="COMMAND"
+>postgres</TT
+>中的一样。<TT
+CLASS="COMMAND"
+>pg_ctl</TT
+>还可以用于停止服务器。
+  </P
+><P
+>   通常，你会希望在计算机启动的时候启动数据库服务器。自动启动脚本是操作系统相关的。<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>在<TT
+CLASS="FILENAME"
+>contrib/start-scripts</TT
+>目录中提供了几种。安装将需要 root 权限。
+  </P
+><P
+>   不同的系统在引导时有不同的启动守护进程的习惯。许多系统有一个文件<TT
+CLASS="FILENAME"
+>/etc/rc.local</TT
+>或<TT
+CLASS="FILENAME"
+>/etc/rc.d/rc.local</TT
+>。其他的使用<TT
+CLASS="FILENAME"
+>init.d</TT
+>或<TT
+CLASS="FILENAME"
+>rc.d</TT
+>目录。不管你做什么，服务器必须由<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>用户账户<SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>而不是 root</I
+></SPAN
+>或任何其他用户启动。因此你可能应该在你的命令中使用<TT
+CLASS="LITERAL"
+>su postgres -c '...'</TT
+>这种形式。例如：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>su postgres -c 'pg_ctl start -D /usr/local/pgsql/data -l serverlog'</PRE
+><P>
+  </P
+><P
+>   下面是一些更加与操作系统相关的建议（在每一种情况中要确保在我们展示通用值的地方使用正确的安装目录和用户名）。
+
+   <P
+></P
+></P><UL
+><LI
+><P
+>      对于<SPAN
+CLASS="PRODUCTNAME"
+>FreeBSD</SPAN
+>，找找<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>源码发布中的文件<TT
+CLASS="FILENAME"
+>contrib/start-scripts/freebsd</TT
+>。
+     </P
+></LI
+><LI
+><P
+>      在<SPAN
+CLASS="PRODUCTNAME"
+>OpenBSD</SPAN
+>上， 把下面几行加到<TT
+CLASS="FILENAME"
+>/etc/rc.local</TT
+>文件中：
+      
+</P><PRE
+CLASS="PROGRAMLISTING"
+>if [ -x /usr/local/pgsql/bin/pg_ctl -a -x /usr/local/pgsql/bin/postgres ]; then
+    su -l postgres -c '/usr/local/pgsql/bin/pg_ctl start -s -l /var/postgresql/log -D /usr/local/pgsql/data'
+    echo -n ' postgresql'
+fi</PRE
+><P>
+     </P
+></LI
+><LI
+><P
+>      在<SPAN
+CLASS="PRODUCTNAME"
+>Linux</SPAN
+>系统上将
+      
+</P><PRE
+CLASS="PROGRAMLISTING"
+>/usr/local/pgsql/bin/pg_ctl start -l logfile -D /usr/local/pgsql/data</PRE
+><P>
+      加入到<TT
+CLASS="FILENAME"
+>/etc/rc.d/rc.local</TT
+>或<TT
+CLASS="FILENAME"
+>/etc/rc.local</TT
+>中，还可以在<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>的源码发布中找找文件<TT
+CLASS="FILENAME"
+>contrib/start-scripts/linux</TT
+>。
+     </P
+><P
+>      在使用<SPAN
+CLASS="APPLICATION"
+>systemd</SPAN
+>时，可以使用下面的服务单元文件（例如<TT
+CLASS="FILENAME"
+>/etc/systemd/system/postgresql.service</TT
+>）：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>[Unit]
+Description=PostgreSQL database server
+Documentation=man:postgres(1)
+
+[Service]
+Type=notify
+User=postgres
+ExecStart=/usr/local/pgsql/bin/postgres -D /usr/local/pgsql/data
+ExecReload=/bin/kill -HUP $MAINPID
+KillMode=mixed
+KillSignal=SIGINT
+TimeoutSec=0
+
+[Install]
+WantedBy=multi-user.target</PRE
+><P>
+      使用<TT
+CLASS="LITERAL"
+>Type=notify</TT
+>要求服务器的二进制文件使用<TT
+CLASS="LITERAL"
+>configure --with-systemd</TT
+>编译。
+     </P
+><P
+>      要仔细地考虑超时设置。在写作这份文档时，<SPAN
+CLASS="APPLICATION"
+>systemd</SPAN
+>的默认超时时长是 90 秒，并且将会杀死没有在这段时间内报告准备好的进程。但是<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>服务器可能因为执行崩溃恢复而导致启动过程大大超过这个默认时间。建议的值是 0 禁用超时逻辑。
+     </P
+></LI
+><LI
+><P
+>      在<SPAN
+CLASS="PRODUCTNAME"
+>NetBSD</SPAN
+>上，你可以根据爱好选择<SPAN
+CLASS="PRODUCTNAME"
+>FreeBSD</SPAN
+>或<SPAN
+CLASS="PRODUCTNAME"
+>Linux</SPAN
+>的启动脚本。
+      
+     </P
+></LI
+><LI
+><P
+>      在<SPAN
+CLASS="PRODUCTNAME"
+>Solaris</SPAN
+>上，创建一个名为<TT
+CLASS="FILENAME"
+>/etc/init.d/postgresql</TT
+>的文件，其中包含下列行：
+      
+</P><PRE
+CLASS="PROGRAMLISTING"
+>su - postgres -c "/usr/local/pgsql/bin/pg_ctl start -l logfile -D /usr/local/pgsql/data"</PRE
+><P>
+      然后在<TT
+CLASS="FILENAME"
+>/etc/rc3.d</TT
+>中创建一个符号链接<TT
+CLASS="FILENAME"
+>S99postgresql</TT
+>指向它。
+     </P
+></LI
+></UL
+><P>
+
+  </P
+><P
+>    当服务器在运行时，它的<ACRONYM
+CLASS="ACRONYM"
+>PID</ACRONYM
+>被保存在数据目录中的<TT
+CLASS="FILENAME"
+>postmaster.pid</TT
+>文件。这样做 可以防止多个服务器实例运行在同一个数据目录中，并且也可以被用来关闭服务器。
+   </P
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="SERVER-START-FAILURES"
+>18.3.1. 服务器启动失败</A
+></H2
+><P
+>     有几个常见的原因会导致服务器启动失败。通过检查服务器日志或使用手工启动的方法（不做标准输出或标准错误的重定向）， 就可以看到出现什么错误消息。下面我们详细地解释一些最常见的错误消息。
+    </P
+><P
+></P><PRE
+CLASS="SCREEN"
+>LOG:  could not bind IPv4 socket: Address already in use
+HINT:  Is another postmaster already running on port 5432? If not, wait a few seconds and retry.
+FATAL:  could not create TCP/IP listen socket</PRE
+><P>
+     正如这个消息所说的，这表示：你试图在一个已经有服务器运行着的端口上再启动另一个服务器。不过，如果核心错误消息不是<SAMP
+CLASS="COMPUTEROUTPUT"
+>Address already in use</SAMP
+>或其变体，那就有可能是别的问题。 例如，试图在一个被保留的端口上启动服务器会收到下面这样的消息：
+</P><PRE
+CLASS="SCREEN"
+>$ <KBD
+CLASS="USERINPUT"
+>postgres -p 666</KBD
+>
+LOG:  could not bind IPv4 socket: Permission denied
+HINT:  Is another postmaster already running on port 666? If not, wait a few seconds and retry.
+FATAL:  could not create TCP/IP listen socket</PRE
+><P>
+    </P
+><P
+>     像这样的消息：
+</P><PRE
+CLASS="SCREEN"
+>FATAL:  could not create shared memory segment: Invalid argument
+DETAIL:  Failed system call was shmget(key=5440001, size=4011376640, 03600).</PRE
+><P>
+     可能意味着你的内核对共享内存区的限制小于<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>试图创建的工作区域（本例中是 4011376640 字节）。或者可能意味着根本就没有 System-V 风格的共享内存支持被配置在你的内核中。作为一种临时的解决方案， 你可以试着以小于正常数量的缓冲区（<A
+HREF="runtime-config-resource.html#GUC-SHARED-BUFFERS"
+>shared_buffers</A
+>）启动服务器。 你最终还是会希望重新配置内核以增加共享内存允许的尺寸。 当你试图在同一台机器上启动多个服务器，并且它们所需的总空间超过了内核的限制，也会报这个错。
+    </P
+><P
+>     一个这样的错误：
+</P><PRE
+CLASS="SCREEN"
+>FATAL:  could not create semaphores: No space left on device
+DETAIL:  Failed system call was semget(5440126, 17, 03600).</PRE
+><P>
+     并<SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>不</I
+></SPAN
+>意味着你已经用光了磁盘空间。它的意思是你的内核对<SPAN
+CLASS="SYSTEMITEM"
+>System V</SPAN
+>信号量的限制小于<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>想创建的数量。和上面一样，你可以通过减少允许的连接数（<A
+HREF="runtime-config-connection.html#GUC-MAX-CONNECTIONS"
+>max_connections</A
+>）来绕开这个限制，但最终你还是会希望提高内核的限制。
+    </P
+><P
+>     如果你收到一个<SPAN
+CLASS="QUOTE"
+>"illegal system call"</SPAN
+>错误， 那么很有可能是你的内核根本不支持共享内存或者信号量。这种情况下你唯一的选择就是重新配置内核并且把这些特性打开。
+    </P
+><P
+>     关于配置<SPAN
+CLASS="SYSTEMITEM"
+>System V</SPAN
+> <ACRONYM
+CLASS="ACRONYM"
+>IPC</ACRONYM
+>功能的细节请见<A
+HREF="kernel-resources.html#SYSVIPC"
+>第 18.4.1 &#33410;</A
+>。
+    </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="CLIENT-CONNECTION-PROBLEMS"
+>18.3.2. 客户端连接问题</A
+></H2
+><P
+>     尽管可能在客户端出现的错误情况范围宽广而且是应用相关的，但的确有几种与服务器的启动方式直接相关。除了下面提到的几种错误之外的问题都应该在相应的客户端应用文档中。
+    </P
+><P
+></P><PRE
+CLASS="SCREEN"
+>psql: could not connect to server: Connection refused
+        Is the server running on host "server.joe.com" and accepting
+        TCP/IP connections on port 5432?</PRE
+><P>
+     这是常见的<SPAN
+CLASS="QUOTE"
+>"I couldn't find a server to talk to"</SPAN
+>失败。上面的情况看起来是发生在尝试 TCP/IP 通信时。常见的错误是忘记把服务器配置成允许 TCP/IP 连接。
+    </P
+><P
+>     另外，当试图通过 Unix 域套接字与本地服务器通信时，你会看到这个：
+</P><PRE
+CLASS="SCREEN"
+>psql: could not connect to server: No such file or directory
+        Is the server running locally and accepting
+        connections on Unix domain socket "/tmp/.s.PGSQL.5432"?</PRE
+><P>
+    </P
+><P
+>     最后一行可以验证客户端是不是尝试连接到正确的位置。如果实际上没有服务器在那里运行，典型的核心错误消息将是<SAMP
+CLASS="COMPUTEROUTPUT"
+>Connection refused</SAMP
+>或<SAMP
+CLASS="COMPUTEROUTPUT"
+>No such file or directory</SAMP
+>（值得注意的是这种环境中的<SAMP
+CLASS="COMPUTEROUTPUT"
+>Connection refused</SAMP
+>并<SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>不</I
+></SPAN
+>表示服务器得到了你的连接请求并拒绝了它。那种情况会产生一个不同的消息，如<A
+HREF="client-authentication-problems.html"
+>第 20.4 &#33410;</A
+>中所示）。其它像<SAMP
+CLASS="COMPUTEROUTPUT"
+>Connection timed out</SAMP
+>这样的消息可能表示更基础的问题，如缺少网络连接。
+    </P
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="creating-cluster.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="kernel-resources.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>创建一个数据库集簇</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="runtime.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>管理内核资源</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

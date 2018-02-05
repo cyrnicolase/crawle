@@ -1,0 +1,764 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>EXPLAIN</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="SQL 命令"
+HREF="sql-commands.html"><LINK
+REL="PREVIOUS"
+TITLE="EXECUTE"
+HREF="sql-execute.html"><LINK
+REL="NEXT"
+TITLE="FETCH"
+HREF="sql-fetch.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="REFENTRY"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/ref/explain.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="EXECUTE"
+HREF="sql-execute.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="FETCH"
+HREF="sql-fetch.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="SQL-EXPLAIN"
+></A
+>EXPLAIN</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN87374"
+></A
+><H2
+>&#21517;&#31216;</H2
+>EXPLAIN&nbsp;--&nbsp;显示一个语句的执行计划</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN87377"
+></A
+><H2
+>&#22823;&#32434;</H2
+><PRE
+CLASS="SYNOPSIS"
+>EXPLAIN [ ( <TT
+CLASS="REPLACEABLE"
+><I
+>option</I
+></TT
+> [, ...] ) ] <TT
+CLASS="REPLACEABLE"
+><I
+>statement</I
+></TT
+>
+EXPLAIN [ ANALYZE ] [ VERBOSE ] <TT
+CLASS="REPLACEABLE"
+><I
+>statement</I
+></TT
+>
+
+<SPAN
+CLASS="phrase"
+><SPAN
+CLASS="PHRASE"
+>这里 <TT
+CLASS="REPLACEABLE"
+><I
+>option</I
+></TT
+>可以是：</SPAN
+></SPAN
+>
+
+    ANALYZE [ <TT
+CLASS="REPLACEABLE"
+><I
+>boolean</I
+></TT
+> ]
+    VERBOSE [ <TT
+CLASS="REPLACEABLE"
+><I
+>boolean</I
+></TT
+> ]
+    COSTS [ <TT
+CLASS="REPLACEABLE"
+><I
+>boolean</I
+></TT
+> ]
+    BUFFERS [ <TT
+CLASS="REPLACEABLE"
+><I
+>boolean</I
+></TT
+> ]
+    TIMING [ <TT
+CLASS="REPLACEABLE"
+><I
+>boolean</I
+></TT
+> ]
+    FORMAT { TEXT | XML | JSON | YAML }</PRE
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN87389"
+></A
+><H2
+>描述</H2
+><P
+>   这个命令显示<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>计划器为提供的语句所生成的执行计划。该执行计划会显示将怎样扫描语句中引用的表 &mdash; 普通的顺序扫描、索引扫描等等 &mdash; 以及在引用多个表时使用何种连接算法来把来自每个输入表的行连接在一起。
+  </P
+><P
+>   显示中最重要的部分是估计出的语句执行代价，它是计划器对于该语句要运行多久的猜测（以任意的代价单位度量，但是习惯上表示取磁盘页面的次数）。事实上会显示两个数字：在第一行能被返回前的启动代价，以及返回所有行的总代价。对于大部分查询来说总代价是最重要的，但是在一些情景中（如<TT
+CLASS="LITERAL"
+>EXISTS</TT
+>中的子查询），计划器将选择更小的启动代价来代替最小的总代价（因为因为执行器将在得到一行后停止）。此外，如果你用一个<TT
+CLASS="LITERAL"
+>LIMIT</TT
+>子句限制返回行的数量，计划器会在终端代价之间做出适当的插值来估计到底哪个计划是真正代价最低的。
+  </P
+><P
+>   <TT
+CLASS="LITERAL"
+>ANALYZE</TT
+>选项导致该语句被实际执行，而不仅仅是被计划。那么实际的运行时间统计会被显示出来，包括在每个计划结点上花费的总时间（以毫秒计）以及它实际返回的行数。这对观察计划器的估计是否与实际相近很有用。
+  </P
+><DIV
+CLASS="IMPORTANT"
+><BLOCKQUOTE
+CLASS="IMPORTANT"
+><P
+><B
+>&#37325;&#35201;: </B
+>    记住当使用了<TT
+CLASS="LITERAL"
+>ANALYZE</TT
+>选项时语句会被实际执行。尽管<TT
+CLASS="COMMAND"
+>EXPLAIN</TT
+>将丢弃<TT
+CLASS="COMMAND"
+>SELECT</TT
+>所返回的任何输出，照例该语句的其他副作用还是会发生。如果你希望在<TT
+CLASS="COMMAND"
+>INSERT</TT
+>、<TT
+CLASS="COMMAND"
+>UPDATE</TT
+>、<TT
+CLASS="COMMAND"
+>DELETE</TT
+>、<TT
+CLASS="COMMAND"
+>CREATE TABLE AS</TT
+>或者<TT
+CLASS="COMMAND"
+>EXECUTE</TT
+>上使用<TT
+CLASS="COMMAND"
+>EXPLAIN ANALYZE</TT
+>而不希望它们影响你的数据，可以使用下面的方法：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>BEGIN;
+EXPLAIN ANALYZE ...;
+ROLLBACK;</PRE
+><P>
+   </P
+></BLOCKQUOTE
+></DIV
+><P
+>   只有<TT
+CLASS="LITERAL"
+>ANALYZE</TT
+>和<TT
+CLASS="LITERAL"
+>VERBOSE</TT
+>选项能被指定，并且必须按照上述的顺序，不要把选项列表放在圆括号内。在<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+> 9.0 之前，只支持没有圆括号的语法。我们期望所有新的选项将只在圆括号语法中支持。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN87414"
+></A
+><H2
+>参数</H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="LITERAL"
+>ANALYZE</TT
+></DT
+><DD
+><P
+>      执行命令并且显示实际的运行时间和其他统计信息。这个参数默认被设置为<TT
+CLASS="LITERAL"
+>FALSE</TT
+>。
+     </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>VERBOSE</TT
+></DT
+><DD
+><P
+>      显示关于计划的额外信息。特别是：计划树中每个结点的输出列列表、模式限定的表和函数名、总是把表达式中的变量标上它们的范围表别名，以及总是打印统计信息被显示的每个触发器的名称。这个参数默认被设置为<TT
+CLASS="LITERAL"
+>FALSE</TT
+>。
+     </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>COSTS</TT
+></DT
+><DD
+><P
+>      包括每一个计划结点的估计启动和总代价，以及估计的行数和每行的宽度。这个参数默认被设置为<TT
+CLASS="LITERAL"
+>TRUE</TT
+>。
+     </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>BUFFERS</TT
+></DT
+><DD
+><P
+>      包括缓冲区使用的信息。特别是：共享块命中、读取、标记为脏和写入的次数、本地块命中、读取、标记为脏和写入的次数、以及临时块读取和写入的次数。一次<SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>命中</I
+></SPAN
+>表示避免了一次读取，因为需要的块已经在缓存中找到了。共享块包含着来自于常规表和索引的数据，本地块包含着来自于临时表和索引的数据，而临时块包含着在排序、哈希、物化计划结点和类似情况中使用的短期工作数据。<SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>脏</I
+></SPAN
+>块的数量表示被这个查询改变的之前未被修改块的数量，而<SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>写入</I
+></SPAN
+>块的数量表示这个后台在查询处理期间从缓存中替换出去的脏块的数量。为一个较高层结点显示的块数包括它的所有子结点所用到的块数。在文本格式中，只会打印非零值。只有当<TT
+CLASS="LITERAL"
+>ANALYZE</TT
+>也被启用时，这个参数才能使用。它的默认被设置为<TT
+CLASS="LITERAL"
+>FALSE</TT
+>。
+     </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>TIMING</TT
+></DT
+><DD
+><P
+>      在输出中包括实际启动时间以及在每个结点中花掉的时间。反复读取系统时钟的负荷在某些系统上会显著地拖慢查询，因此在只需要实际的行计数而不是实际时间时，把这个参数设置为<TT
+CLASS="LITERAL"
+>FALSE</TT
+>可能会有用。即便用这个选项关闭结点层的计时，整个语句的运行时间也总是会被度量。只有当<TT
+CLASS="LITERAL"
+>ANALYZE</TT
+>也被启用时，这个参数才能使用。它的默认被设置为<TT
+CLASS="LITERAL"
+>TRUE</TT
+>。
+     </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>FORMAT</TT
+></DT
+><DD
+><P
+>      指定输出格式，可以是 TEXT、XML、JSON 或者 YAML。非文本输出包含和文本输出格式相同的信息，但是更容易被程序解析。这个参数默认被设置为<TT
+CLASS="LITERAL"
+>TEXT</TT
+>。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>boolean</I
+></TT
+></DT
+><DD
+><P
+>      指定被选中的选项是否应该被打开或关闭。可以写<TT
+CLASS="LITERAL"
+>TRUE</TT
+>、<TT
+CLASS="LITERAL"
+>ON</TT
+>或<TT
+CLASS="LITERAL"
+>1</TT
+>来启用选项，写<TT
+CLASS="LITERAL"
+>FALSE</TT
+>、<TT
+CLASS="LITERAL"
+>OFF</TT
+>或<TT
+CLASS="LITERAL"
+>0</TT
+>禁用它。<TT
+CLASS="REPLACEABLE"
+><I
+>boolean</I
+></TT
+>值也能被忽略，在这种情况下会假定值为<TT
+CLASS="LITERAL"
+>TRUE</TT
+>。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>statement</I
+></TT
+></DT
+><DD
+><P
+>      你想查看其执行计划的任何<TT
+CLASS="COMMAND"
+>SELECT</TT
+>、<TT
+CLASS="COMMAND"
+>INSERT</TT
+>、<TT
+CLASS="COMMAND"
+>UPDATE</TT
+>、<TT
+CLASS="COMMAND"
+>DELETE</TT
+>、<TT
+CLASS="COMMAND"
+>VALUES</TT
+>、<TT
+CLASS="COMMAND"
+>EXECUTE</TT
+>、<TT
+CLASS="COMMAND"
+>DECLARE</TT
+>、<TT
+CLASS="COMMAND"
+>CREATE TABLE AS</TT
+>或者<TT
+CLASS="COMMAND"
+>CREATE MATERIALIZED VIEW AS</TT
+>语句。
+     </P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN87486"
+></A
+><H2
+>输出</H2
+><P
+>    这个命令的结果是为<TT
+CLASS="REPLACEABLE"
+><I
+>statement</I
+></TT
+>选中的计划的文本描述，可能还标注了执行统计信息。<A
+HREF="using-explain.html"
+>第 14.1 &#33410;</A
+>描述了所提供的信息。
+   </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN87491"
+></A
+><H2
+>注解</H2
+><P
+>   为了允许<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>查询计划器在优化查询时能做出合理的知情决策，查询中用到的所有表的<A
+HREF="catalog-pg-statistic.html"
+><TT
+CLASS="STRUCTNAME"
+>pg_statistic</TT
+></A
+>数据应该能保持为最新。通常这个工作会由<A
+HREF="routine-vacuuming.html#AUTOVACUUM"
+>autovacuum daemon</A
+>负责自动完成。但是如果一个表最近在内容上有大量的改变，我们可能需要做一次手动的<A
+HREF="sql-analyze.html"
+>ANALYZE</A
+>而不是等待 autovacuum 捕捉这些改变。
+  </P
+><P
+>   为了执行计划中每个结点的运行时间开销，当前的In order to measure the run-time cost of each node in the execution
+   plan, the current implementation of <TT
+CLASS="COMMAND"
+>EXPLAIN
+   ANALYZE</TT
+>实现为查询执行增加了 profiling overhead 。这样，在一个查询上运行<TT
+CLASS="COMMAND"
+>EXPLAIN ANALYZE</TT
+>有时候比正常执行该查询要慢很多。开销的量取决于该查询的性质，以及使用的平台。最坏的情况会发生在那些自身执行时间很短的结点上，以及在那些具有相对较慢的有关时间的操作系统调用的机器上。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN87502"
+></A
+><H2
+>例子</H2
+><P
+>   有一个具有单个<TT
+CLASS="TYPE"
+>integer</TT
+>列和 10000 行的表，要显示在其上的一个简单查询的计划：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>EXPLAIN SELECT * FROM foo;
+
+                       QUERY PLAN
+---------------------------------------------------------
+ Seq Scan on foo  (cost=0.00..155.00 rows=10000 width=4)
+(1 row)</PRE
+><P>
+  </P
+><P
+>  这里有同样一个查询的 JSON 输出格式：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>EXPLAIN (FORMAT JSON) SELECT * FROM foo;
+           QUERY PLAN
+--------------------------------
+ [                             +
+   {                           +
+     "Plan": {                 +
+       "Node Type": "Seq Scan",+
+       "Relation Name": "foo", +
+       "Alias": "foo",         +
+       "Startup Cost": 0.00,   +
+       "Total Cost": 155.00,   +
+       "Plan Rows": 10000,     +
+       "Plan Width": 4         +
+     }                         +
+   }                           +
+ ]
+(1 row)</PRE
+><P>
+  </P
+><P
+>   如果有一个索引，并且我们使用了一个带有可索引<TT
+CLASS="LITERAL"
+>WHERE</TT
+>条件的查询，<TT
+CLASS="COMMAND"
+>EXPLAIN</TT
+>可能会显示一个不同的计划：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>EXPLAIN SELECT * FROM foo WHERE i = 4;
+
+                         QUERY PLAN
+--------------------------------------------------------------
+ Index Scan using fi on foo  (cost=0.00..5.98 rows=1 width=4)
+   Index Cond: (i = 4)
+(2 rows)</PRE
+><P>
+  </P
+><P
+>  这里是同一查询的 YAML 格式：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>EXPLAIN (FORMAT YAML) SELECT * FROM foo WHERE i='4';
+          QUERY PLAN
+-------------------------------
+ - Plan:                      +
+     Node Type: "Index Scan"  +
+     Scan Direction: "Forward"+
+     Index Name: "fi"         +
+     Relation Name: "foo"     +
+     Alias: "foo"             +
+     Startup Cost: 0.00       +
+     Total Cost: 5.98         +
+     Plan Rows: 1             +
+     Plan Width: 4            +
+     Index Cond: "(i = 4)"
+(1 row)</PRE
+><P>
+
+    XML 格式我们留给读者做练习。
+  </P
+><P
+>   这里是去掉了代价估计的同样一个计划：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>EXPLAIN (COSTS FALSE) SELECT * FROM foo WHERE i = 4;
+
+        QUERY PLAN
+----------------------------
+ Index Scan using fi on foo
+   Index Cond: (i = 4)
+(2 rows)</PRE
+><P>
+  </P
+><P
+>   这里是一个使用聚集函数的查询的查询计划例子：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>EXPLAIN SELECT sum(i) FROM foo WHERE i &lt; 10;
+
+                             QUERY PLAN
+---------------------------------------------------------------------
+ Aggregate  (cost=23.93..23.93 rows=1 width=4)
+   -&gt;  Index Scan using fi on foo  (cost=0.00..23.92 rows=6 width=4)
+         Index Cond: (i &lt; 10)
+(3 rows)</PRE
+><P>
+  </P
+><P
+>   这里是一个使用<TT
+CLASS="COMMAND"
+>EXPLAIN EXECUTE</TT
+>显示预备查询的执行计划的例子：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>PREPARE query(int, int) AS SELECT sum(bar) FROM test
+    WHERE id &gt; $1 AND id &lt; $2
+    GROUP BY foo;
+
+EXPLAIN ANALYZE EXECUTE query(100, 200);
+
+                                                       QUERY PLAN                                                       
+------------------------------------------------------------------------------------------------------------------------
+ HashAggregate  (cost=9.54..9.54 rows=1 width=8) (actual time=0.156..0.161 rows=11 loops=1)
+   Group Key: foo
+   -&gt;  Index Scan using test_pkey on test  (cost=0.29..9.29 rows=50 width=8) (actual time=0.039..0.091 rows=99 loops=1)
+         Index Cond: ((id &gt; $1) AND (id &lt; $2))
+ Planning time: 0.197 ms
+ Execution time: 0.225 ms
+(6 rows)</PRE
+><P>
+  </P
+><P
+>   当然，这里显示的有关数字取决于表涉及到的实际内容。还要注意这些数字甚至选中的查询策略，可能在<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>的不同版本之间变化，因为计划器可能被改进。此外，<TT
+CLASS="COMMAND"
+>ANALYZE</TT
+>命令使用随机采样来估计数据统计。因此，在一次新的<TT
+CLASS="COMMAND"
+>ANALYZE</TT
+>运行之后，代价估计可能会改变，即便是表中数据的实际分布没有改变也是如此。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN87526"
+></A
+><H2
+>兼容性</H2
+><P
+>   在 SQL 标准中没有定义<TT
+CLASS="COMMAND"
+>EXPLAIN</TT
+>语句。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN87530"
+></A
+><H2
+>参见</H2
+><A
+HREF="sql-analyze.html"
+>ANALYZE</A
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-execute.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="sql-fetch.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>EXECUTE</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>FETCH</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

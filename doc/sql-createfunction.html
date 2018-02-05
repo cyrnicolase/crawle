@@ -1,0 +1,1366 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>CREATE FUNCTION</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="SQL 命令"
+HREF="sql-commands.html"><LINK
+REL="PREVIOUS"
+TITLE="CREATE FOREIGN TABLE"
+HREF="sql-createforeigntable.html"><LINK
+REL="NEXT"
+TITLE="CREATE GROUP"
+HREF="sql-creategroup.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="REFENTRY"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/ref/create_function.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="CREATE FOREIGN TABLE"
+HREF="sql-createforeigntable.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="CREATE GROUP"
+HREF="sql-creategroup.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="SQL-CREATEFUNCTION"
+></A
+>CREATE FUNCTION</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN79334"
+></A
+><H2
+>&#21517;&#31216;</H2
+>CREATE FUNCTION&nbsp;--&nbsp;定义一个新函数</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN79337"
+></A
+><H2
+>&#22823;&#32434;</H2
+><PRE
+CLASS="SYNOPSIS"
+>CREATE [ OR REPLACE ] FUNCTION
+    <TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+> ( [ [ <TT
+CLASS="REPLACEABLE"
+><I
+>argmode</I
+></TT
+> ] [ <TT
+CLASS="REPLACEABLE"
+><I
+>argname</I
+></TT
+> ] <TT
+CLASS="REPLACEABLE"
+><I
+>argtype</I
+></TT
+> [ { DEFAULT | = } <TT
+CLASS="REPLACEABLE"
+><I
+>default_expr</I
+></TT
+> ] [, ...] ] )
+    [ RETURNS <TT
+CLASS="REPLACEABLE"
+><I
+>rettype</I
+></TT
+>
+      | RETURNS TABLE ( <TT
+CLASS="REPLACEABLE"
+><I
+>column_name</I
+></TT
+> <TT
+CLASS="REPLACEABLE"
+><I
+>column_type</I
+></TT
+> [, ...] ) ]
+  { LANGUAGE <TT
+CLASS="REPLACEABLE"
+><I
+>lang_name</I
+></TT
+>
+    | TRANSFORM { FOR TYPE <TT
+CLASS="REPLACEABLE"
+><I
+>type_name</I
+></TT
+> } [, ... ]
+    | WINDOW
+    | IMMUTABLE | STABLE | VOLATILE | [ NOT ] LEAKPROOF
+    | CALLED ON NULL INPUT | RETURNS NULL ON NULL INPUT | STRICT
+    | [ EXTERNAL ] SECURITY INVOKER | [ EXTERNAL ] SECURITY DEFINER
+    | PARALLEL { UNSAFE | RESTRICTED | SAFE }
+    | COST <TT
+CLASS="REPLACEABLE"
+><I
+>execution_cost</I
+></TT
+>
+    | ROWS <TT
+CLASS="REPLACEABLE"
+><I
+>result_rows</I
+></TT
+>
+    | SET <TT
+CLASS="REPLACEABLE"
+><I
+>configuration_parameter</I
+></TT
+> { TO <TT
+CLASS="REPLACEABLE"
+><I
+>value</I
+></TT
+> | = <TT
+CLASS="REPLACEABLE"
+><I
+>value</I
+></TT
+> | FROM CURRENT }
+    | AS '<TT
+CLASS="REPLACEABLE"
+><I
+>definition</I
+></TT
+>'
+    | AS '<TT
+CLASS="REPLACEABLE"
+><I
+>obj_file</I
+></TT
+>', '<TT
+CLASS="REPLACEABLE"
+><I
+>link_symbol</I
+></TT
+>'
+  } ...
+    [ WITH ( <TT
+CLASS="REPLACEABLE"
+><I
+>attribute</I
+></TT
+> [, ...] ) ]</PRE
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="SQL-CREATEFUNCTION-DESCRIPTION"
+></A
+><H2
+>描述</H2
+><P
+>   <TT
+CLASS="COMMAND"
+>CREATE FUNCTION</TT
+>定义一个新函数。<TT
+CLASS="COMMAND"
+>CREATE OR REPLACE FUNCTION</TT
+>将创建一个新函数或者替换一个现有的函数。要定义一个函数，用户必须具有该语言上的<TT
+CLASS="LITERAL"
+>USAGE</TT
+>特权。
+  </P
+><P
+>   如果包括了一个模式名，那么该函数会被创建在指定的模式中。否则，它会被创建在当前模式中。新函数的名称不能匹配同一个模式中具有相同输入参数类型的任何现有函数。不过，不同参数类型的函数能够共享一个名字（这被称作<I
+CLASS="FIRSTTERM"
+>重载</I
+>）。
+  </P
+><P
+>   要替换一个现有函数的当前定义，可以使用<TT
+CLASS="COMMAND"
+>CREATE OR REPLACE FUNCTION</TT
+>。但不能用这种方式更改函数的名称或者参数类型（如果尝试这样做，实际上就会创建一个新的不同的函数）。还有，<TT
+CLASS="COMMAND"
+>CREATE OR REPLACE FUNCTION</TT
+>将不会让你更改一个现有函数的返回类型。要这样做，你必须先删除再重建该函数（在使用<TT
+CLASS="LITERAL"
+>OUT</TT
+>参数时，这意味着除了删除函数之外无法更改任何<TT
+CLASS="LITERAL"
+>OUT</TT
+>参数的类型）。
+  </P
+><P
+>   当<TT
+CLASS="COMMAND"
+>CREATE OR REPLACE FUNCTION</TT
+>被用来替换一个现有的函数，该函数的拥有权和权限不会改变。所有其他的函数属性会按照该命令中所指定的或者隐含的来赋值。必须拥有（包括成为拥有角色的成员）该函数才能替换它。
+  </P
+><P
+>   如果你删除并且重建一个函数，新函数将和旧的不一样，你将必须删掉引用旧函数的现有规则、视图、触发器等。使用<TT
+CLASS="COMMAND"
+>CREATE OR REPLACE FUNCTION</TT
+>更改一个函数定义不会破坏引用该函数的对象。还有，<TT
+CLASS="COMMAND"
+>ALTER FUNCTION</TT
+>可以被用来更改一个现有函数的大部分辅助属性。
+  </P
+><P
+>   创建该函数的用户将成为该函数的拥有者。
+  </P
+><P
+>   要创建一个函数，你必须拥有参数类型和返回类型上的<TT
+CLASS="LITERAL"
+>USAGE</TT
+>特权。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN79379"
+></A
+><H2
+>参数</H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+></DT
+><DD
+><P
+>       要创建的函数的名称（可以被模式限定）。
+      </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>argmode</I
+></TT
+></DT
+><DD
+><P
+>       一个参数的模式：<TT
+CLASS="LITERAL"
+>IN</TT
+>、<TT
+CLASS="LITERAL"
+>OUT</TT
+>、<TT
+CLASS="LITERAL"
+>INOUT</TT
+>或者<TT
+CLASS="LITERAL"
+>VARIADIC</TT
+>。如果省略，默认为<TT
+CLASS="LITERAL"
+>IN</TT
+>。只有<TT
+CLASS="LITERAL"
+>OUT</TT
+>参数能跟在一个<TT
+CLASS="LITERAL"
+>VARIADIC</TT
+>参数后面。还有，<TT
+CLASS="LITERAL"
+>OUT</TT
+>和<TT
+CLASS="LITERAL"
+>INOUT</TT
+>参数不能和<TT
+CLASS="LITERAL"
+>RETURNS TABLE</TT
+>符号一起使用。
+      </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>argname</I
+></TT
+></DT
+><DD
+><P
+>       一个参数的名称。一些语言（包括 SQL 和 PL/pgSQL）让你在函数体中使用该名称。对于其他语言，一个输入参数的名字只是额外的文字（就该函数本身所关心的来说）。但是你可以在调用一个函数时使用输入参数名来提高可读性（见<A
+HREF="sql-syntax-calling-funcs.html"
+>第 4.3 &#33410;</A
+>）。在任何情况下，输出参数的名称是有意义的，因为它定义了结果行类型中的列名（如果忽略一个输出参数的名称，系统将选择一个默认的列名）。
+      </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>argtype</I
+></TT
+></DT
+><DD
+><P
+>       该函数参数（如果有）的数据类型（可以是模式限定的）。参数类型可以是基本类型、组合类型或者域类型，或者可以引用一个表列的类型。
+      </P
+><P
+>       根据实现语言，也可以允许指定<TT
+CLASS="TYPE"
+>cstring</TT
+>之类的<SPAN
+CLASS="QUOTE"
+>"伪类型"</SPAN
+>。伪类型表示实际参数类型没有被完整指定或者不属于普通 SQL 数据类型集合。
+      </P
+><P
+>       可以写<TT
+CLASS="LITERAL"
+><TT
+CLASS="REPLACEABLE"
+><I
+>table_name</I
+></TT
+>.<TT
+CLASS="REPLACEABLE"
+><I
+>column_name</I
+></TT
+>%TYPE</TT
+>来引用一列的类型。使用这种特性有时可以帮助创建一个不受表定义更改影响的函数。
+      </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>default_expr</I
+></TT
+></DT
+><DD
+><P
+>       如果参数没有被指定值时要用作默认值的表达式。该表达式必须能被强制为该参数的参数类型。只有输入（包括<TT
+CLASS="LITERAL"
+>INOUT</TT
+>）参数可以具有默认值。所有跟随在一个具有默认值的参数之后的输入参数也必须有默认值。
+      </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>rettype</I
+></TT
+></DT
+><DD
+><P
+>       返回数据类型（可能被模式限定）。返回类型可以是一种基本类型、组合类型或者域类型，也可以引用一个表列的类型。根据实现语言，也可以允许指定<TT
+CLASS="TYPE"
+>cstring</TT
+>之类的<SPAN
+CLASS="QUOTE"
+>"伪类型"</SPAN
+>。如果该函数不会返回一个值，可以指定返回类型为<TT
+CLASS="TYPE"
+>void</TT
+>。
+      </P
+><P
+>       当有<TT
+CLASS="LITERAL"
+>OUT</TT
+>或者<TT
+CLASS="LITERAL"
+>INOUT</TT
+>参数时，可以省略<TT
+CLASS="LITERAL"
+>RETURNS</TT
+>子句。如果存在，该子句必须和输出参数所表示的结果类型一致：如果有多个输出参数，则为<TT
+CLASS="LITERAL"
+>RECORD</TT
+>，否则与单个输出参数的类型相同。
+      </P
+><P
+>       <TT
+CLASS="LITERAL"
+>SETOF</TT
+>修饰符表示该函数将返回一个项的集合而不是一个单一项。
+      </P
+><P
+>       可以写<TT
+CLASS="LITERAL"
+><TT
+CLASS="REPLACEABLE"
+><I
+>table_name</I
+></TT
+>.<TT
+CLASS="REPLACEABLE"
+><I
+>column_name</I
+></TT
+>%TYPE</TT
+>来引用一列的类型。
+      </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>column_name</I
+></TT
+></DT
+><DD
+><P
+>       <TT
+CLASS="LITERAL"
+>RETURNS TABLE</TT
+>语法中一个输出列的名称。这实际上是另一种声明<TT
+CLASS="LITERAL"
+>OUT</TT
+>参数的方法，不过<TT
+CLASS="LITERAL"
+>RETURNS TABLE</TT
+>也隐含了<TT
+CLASS="LITERAL"
+>RETURNS SETOF</TT
+>。
+      </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>column_type</I
+></TT
+></DT
+><DD
+><P
+>       <TT
+CLASS="LITERAL"
+>RETURNS TABLE</TT
+>语法中的输出列的数据类型。
+      </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>lang_name</I
+></TT
+></DT
+><DD
+><P
+>       用以实现该函数的语言的名称。可以是<TT
+CLASS="LITERAL"
+>sql</TT
+>、<TT
+CLASS="LITERAL"
+>c</TT
+>、<TT
+CLASS="LITERAL"
+>internal</TT
+>或者一个用户定义的过程语言的名称，例如<TT
+CLASS="LITERAL"
+>plpgsql</TT
+>。不推荐用单引号包围该名称，并且要求区分大小写。
+      </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>TRANSFORM { FOR TYPE <TT
+CLASS="REPLACEABLE"
+><I
+>type_name</I
+></TT
+> } [, ... ] }</TT
+></DT
+><DD
+><P
+>       一个由转换构成的列表，对该函数的调用适用于它们。转换在 SQL 类型和语言相关的数据类型之间进行变换，详见<A
+HREF="sql-createtransform.html"
+>CREATE TRANSFORM</A
+>。过程语言实现通常把有关内建类型的知识硬编码在代码中，因此那些不需要列举在这里。如果一种过程语言实现不知道如何处理一种类型并且没有转换被提供，它将回退到一种默认的行为来转换数据类型，但是这取决于具体实现。
+      </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>WINDOW</TT
+></DT
+><DD
+><P
+><TT
+CLASS="LITERAL"
+>WINDOW</TT
+>表示该函数是一个<I
+CLASS="FIRSTTERM"
+>窗口函数</I
+>而不是一个普通函数。当前只用于用 C 编写的函数。在替换一个现有函数定义时，不能更改<TT
+CLASS="LITERAL"
+>WINDOW</TT
+>属性。
+      </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>IMMUTABLE</TT
+><BR><TT
+CLASS="LITERAL"
+>STABLE</TT
+><BR><TT
+CLASS="LITERAL"
+>VOLATILE</TT
+></DT
+><DD
+><P
+>       这些属性告知查询优化器该函数的行为。最多只能指定其中一个。如果这些都不出现，则会默认为<TT
+CLASS="LITERAL"
+>VOLATILE</TT
+>。
+      </P
+><P
+><TT
+CLASS="LITERAL"
+>IMMUTABLE</TT
+>表示该函数不能修改数据库并且对于给定的参数值总是会返回相同的值。也就是说，它不会做数据库查找或者使用没有在其参数列表中直接出现的信息。如果给定合格选项，任何用全常量参数对该函数的额调用可以立刻用该函数值替换。
+      </P
+><P
+><TT
+CLASS="LITERAL"
+>STABLE</TT
+>表示该函数不能修改数据库，并且对于相同的参数值，它在一次表扫描中将返回相同的结果。但是这种结果在不同的 SQL 语句执行期间可能会变化。对于那些结果依赖于数据库查找、参数变量（例如当前时区）等的函数来说，这是合适的（对希望查询被当前命令修改的行的<TT
+CLASS="LITERAL"
+>AFTER</TT
+>触发器不适合）。还要注意<CODE
+CLASS="FUNCTION"
+>current_timestamp</CODE
+>函数族适合被标记为稳定，因为它们的值在一个事务内不会改变。
+      </P
+><P
+><TT
+CLASS="LITERAL"
+>VOLATILE</TT
+>表示该函数的值在一次表扫描中都有可能改变，因此不能做优化。在这种意义上，相对较少的数据库函数是不稳定的，一些例子是<TT
+CLASS="LITERAL"
+>random()</TT
+>、<TT
+CLASS="LITERAL"
+>currval()</TT
+>、<TT
+CLASS="LITERAL"
+>timeofday()</TT
+>。但是注意任何有副作用的函数都必须被分类为不稳定的，即便其结果是可以预测的，这是为了调用被优化掉。一个例子是<TT
+CLASS="LITERAL"
+>setval()</TT
+>。
+      </P
+><P
+>       更多细节可见<A
+HREF="xfunc-volatility.html"
+>第 36.6 &#33410;</A
+>。
+      </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>LEAKPROOF</TT
+></DT
+><DD
+><P
+>       <TT
+CLASS="LITERAL"
+>LEAKPROOF</TT
+>表示该函数没有副作用。它不会泄露有关其参数的信息（除了通过返回值）。例如，一个只对某些参数值抛出错误消息而对另外一些却不抛出错误的函数不是防泄漏的，一个把参数值包括在任何错误消息中的函数也不是防泄漏的。这会影响系统如何执行在使用<TT
+CLASS="LITERAL"
+>security_barrier</TT
+>选项创建的视图或者开启了行级安全性的表上执行查询。对于包含有非防泄漏函数的查询，系统将在任何来自查询本身的用户提供条件之前强制来自安全策略或者安全屏障的条件，防止无意中的数据暴露。被标记为防泄漏的函数和操作符被假定是可信的，并且可以在安全性策略和安全性屏障视图的条件之前被执行。此外，没有参数的函数或者不从安全屏障视图或表传递任何参数的函数不一定要被标记为防泄漏的。详见<A
+HREF="sql-createview.html"
+>CREATE VIEW</A
+>和<A
+HREF="rules-privileges.html"
+>第 39.5 &#33410;</A
+>。这个选项只能由超级用户设置。
+      </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>CALLED ON NULL INPUT</TT
+><BR><TT
+CLASS="LITERAL"
+>RETURNS NULL ON NULL INPUT</TT
+><BR><TT
+CLASS="LITERAL"
+>STRICT</TT
+></DT
+><DD
+><P
+><TT
+CLASS="LITERAL"
+>CALLED ON NULL INPUT</TT
+>（默认）表示在某些参数为空值时应正常调用该函数。如果有必要，函数的作者应该负责检查空值并且做出适当的相应。
+      </P
+><P
+><TT
+CLASS="LITERAL"
+>RETURNS NULL ON NULL INPUT</TT
+>或<TT
+CLASS="LITERAL"
+>STRICT</TT
+>表示只要其任意参数为空值，该函数就会返回空值。如果指定了这个参数，当有空值参数时该函数不会被执行，而是自动返回一个空值结果。
+      </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>[<SPAN
+CLASS="OPTIONAL"
+>EXTERNAL</SPAN
+>] SECURITY INVOKER</TT
+><BR><TT
+CLASS="LITERAL"
+>[<SPAN
+CLASS="OPTIONAL"
+>EXTERNAL</SPAN
+>] SECURITY DEFINER</TT
+></DT
+><DD
+><P
+><TT
+CLASS="LITERAL"
+>SECURITY INVOKER</TT
+>表示要用调用该函数的用户的特权来执行它。这是默认值。<TT
+CLASS="LITERAL"
+>SECURITY DEFINER</TT
+>指定要用创建函数的用户的特权来执行该函数。
+     </P
+><P
+>      为了符合 SQL，允许使用关键词<TT
+CLASS="LITERAL"
+>EXTERNAL</TT
+>。但是它是可选的，因为与 SQL 中不同，这个特性适用于所有函数而不仅是那些外部函数。
+     </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>PARALLEL</TT
+></DT
+><DD
+><P
+><TT
+CLASS="LITERAL"
+>PARALLEL UNSAFE</TT
+>表示该函数不能在并行模式中运行并且 SQL 语句中存在一个这样的函数会强制使用顺序执行计划。这是默认选项。<TT
+CLASS="LITERAL"
+>PARALLEL RESTRICTED</TT
+>表示该函数能在并行模式中运行，但是其执行被限制在并行组的领导者中。<TT
+CLASS="LITERAL"
+>PARALLEL SAFE</TT
+>表示该函数对于在并行模式中运行是安全的并且不受限制。
+     </P
+><P
+>      如果函数修改任何数据库状态、会使用子事务之类的方式改变事务、访问序列或者对设置（如<TT
+CLASS="LITERAL"
+>setval</TT
+>）做出持久性的更改，它们就应该被标记为并行不安全。如果它们访问临时表、客户端连接状态、游标、预备语句或者系统无法在并行模式中同步的本地后端状态（例如<TT
+CLASS="LITERAL"
+>setseed</TT
+>只能在组领导者中执行，因为另一个进程所作的更改不会在领导者中被反映出来），它们应该被标为并行受限。通常，如果一个函数是受限的或者不安全的却被标成了安全，或者它本来是不安全的却被标成了受限，在并行查询中执行时它可能会抛出错误或者产生错误的答案。如果被错误的标记， C 语言函数理论上可能展现出完全无法定义的行为，因为系统没有办法保护自己不受任意的 C 代码影响，但是在大部分情况下其结果也不会比任何其他函数差到哪里去。如果有疑问，函数应该被标为<TT
+CLASS="LITERAL"
+>UNSAFE</TT
+>，这也是默认值。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>execution_cost</I
+></TT
+></DT
+><DD
+><P
+>       一个给出该函数的估计执行代价的正数，单位是<A
+HREF="runtime-config-query.html#GUC-CPU-OPERATOR-COST"
+>cpu_operator_cost</A
+>。如果该函数返回一个集合，这就是每个被返回行的代价。如果没有指定代价，对 C 语言和内部函数会指定为 1 个单位，对其他语言的函数则会指定为 100 单位。更大的值会导致规划器尝试避免对该函数的不必要的过多计算。
+      </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>result_rows</I
+></TT
+></DT
+><DD
+><P
+>       一个正数，它给出规划器期望该函数返回的行数估计。只有当该函数被声明为返回一个集合时才允许这个参数。默认假设为 1000 行。
+      </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>configuration_parameter</I
+></TT
+><BR><TT
+CLASS="REPLACEABLE"
+><I
+>value</I
+></TT
+></DT
+><DD
+><P
+>       <TT
+CLASS="LITERAL"
+>SET</TT
+>子句导致进入该函数时指定配置参数将被设置为指定值。并且在该函数退出时恢复到该参数之前的值。<TT
+CLASS="LITERAL"
+>SET FROM CURRENT</TT
+>会把<TT
+CLASS="COMMAND"
+>CREATE FUNCTION</TT
+>被执行时该参数的当前值保存为进入该函数时将被应用的值。
+      </P
+><P
+>       如果一个<TT
+CLASS="LITERAL"
+>SET</TT
+>子句被附加到一个函数，那么在该函数内为同一个变量执行的<TT
+CLASS="COMMAND"
+>SET LOCAL</TT
+>命令会被限制于该函数：在函数退出时该配置参数之前的值仍会被恢复。不过，一个普通的<TT
+CLASS="COMMAND"
+>SET</TT
+>命令（没有<TT
+CLASS="LITERAL"
+>LOCAL</TT
+>）会覆盖<TT
+CLASS="LITERAL"
+>SET</TT
+>子句，更像一个之前的<TT
+CLASS="COMMAND"
+>SET LOCAL</TT
+>命令所做的那样：这种命令的效果在函数退出后将会持续，除非当前事务被回滚。
+      </P
+><P
+>       更多有关允许的参数名和参数值的信息请见<A
+HREF="sql-set.html"
+>SET</A
+>和<A
+HREF="runtime-config.html"
+>第 19 &#31456;</A
+>。
+      </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>definition</I
+></TT
+></DT
+><DD
+><P
+>       一个定义该函数的字符串常量，其含义取决于语言。它可以是一个内部函数名、一个对象文件的路径、一个 SQL 命令或者用一种过程语言编写的文本。
+      </P
+><P
+>       美元引用<A
+HREF="sql-syntax-lexical.html#SQL-SYNTAX-DOLLAR-QUOTING"
+>第 4.1.2.4 &#33410;</A
+>通常对书写函数定义字符串有所帮助，而普通单引号语法则不会有用。如果没有美元引用，函数定义中的任何单引号或者反斜线必须用双写来转义。
+      </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+><TT
+CLASS="REPLACEABLE"
+><I
+>obj_file</I
+></TT
+>, <TT
+CLASS="REPLACEABLE"
+><I
+>link_symbol</I
+></TT
+></TT
+></DT
+><DD
+><P
+>       当 C 语言源代码中该函数的名称与 SQL 函数的名称不同时，这种形式的<TT
+CLASS="LITERAL"
+>AS</TT
+>子句被用于动态可载入 C 语言函数。字符串<TT
+CLASS="REPLACEABLE"
+><I
+>obj_file</I
+></TT
+>是包含动态可载入对象的文件名，并且<TT
+CLASS="REPLACEABLE"
+><I
+>link_symbol</I
+></TT
+>是该函数的链接符号，也就是该函数在 C 语言源代码中的名称。如果省略链接符号，它将被假定为要定义的 SQL 函数的名称。
+      </P
+><P
+>       在重复调用引用同一对象文件的<TT
+CLASS="COMMAND"
+>CREATE FUNCTION</TT
+>时，对每个会话该文件只会被载入一次。要卸载并且重新装载该文件（可能是在开发期间），需要开始一个新会话。
+      </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>attribute</I
+></TT
+></DT
+><DD
+><P
+>       历史遗留的指定有关该函数可选信息的方法。可以出现下列属性：
+
+      <P
+></P
+></P><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="LITERAL"
+>isStrict</TT
+></DT
+><DD
+><P
+>          等效于<TT
+CLASS="LITERAL"
+>STRICT</TT
+>或者<TT
+CLASS="LITERAL"
+>RETURNS NULL ON NULL INPUT</TT
+>。
+         </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>isCachable</TT
+></DT
+><DD
+><P
+><TT
+CLASS="LITERAL"
+>isCachable</TT
+>是<TT
+CLASS="LITERAL"
+>IMMUTABLE</TT
+>的一个已被废弃的等效体。为了向后兼容的原因，它仍被接受。
+         </P
+></DD
+></DL
+></DIV
+><P>
+
+      属性名大小写无关。
+     </P
+></DD
+></DL
+></DIV
+><P
+>    编写函数的进一步信息可以参考<A
+HREF="xfunc.html"
+>第 36.3 &#33410;</A
+>。
+   </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="SQL-CREATEFUNCTION-OVERLOADING"
+></A
+><H2
+>重载</H2
+><P
+>    <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>允许函数<I
+CLASS="FIRSTTERM"
+>重载</I
+>，也就是说同一个名称可以被用于多个不同的函数，只要它们具有可区分的输入参数类型。不过，所有函数的 C 名称必须不同，因此你必须给被重载的 C 函数指定不同的 C 名称（例如，把参数类型作为 C 名称的一部分）。
+   </P
+><P
+>    如果两个函数具有相同的名称和<SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>输入</I
+></SPAN
+>参数类型，它们被认为相同（不考虑任何<TT
+CLASS="LITERAL"
+>OUT</TT
+>参数）。因此这些声明会冲突：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>CREATE FUNCTION foo(int) ...
+CREATE FUNCTION foo(int, out text) ...</PRE
+><P>
+   </P
+><P
+>    具有不同参数类型列表的函数在创建时将不会被认为是冲突的，但是如果默认值被提供，在使用时它们有可能会冲突。例如，考虑
+</P><PRE
+CLASS="PROGRAMLISTING"
+>CREATE FUNCTION foo(int) ...
+CREATE FUNCTION foo(int, int default 42) ...</PRE
+><P>
+    调用<TT
+CLASS="LITERAL"
+>foo(10)</TT
+>将会失败，因为在要决定应该调用哪个函数时会有歧义。
+   </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="SQL-CREATEFUNCTION-NOTES"
+></A
+><H2
+>注解</H2
+><P
+>    允许把完整的<ACRONYM
+CLASS="ACRONYM"
+>SQL</ACRONYM
+>类型语法用于声明一个函数的参数和返回值。不过，<TT
+CLASS="COMMAND"
+>CREATE FUNCTION</TT
+>会抛弃带圆括号的类型修饰符（例如类型<TT
+CLASS="TYPE"
+>numeric</TT
+>的精度域）。例如<TT
+CLASS="LITERAL"
+>CREATE FUNCTION foo (varchar(10)) ...</TT
+>和<TT
+CLASS="LITERAL"
+>CREATE FUNCTION foo (varchar) ...</TT
+>完全一样。
+   </P
+><P
+>    在用<TT
+CLASS="COMMAND"
+>CREATE OR REPLACE FUNCTION</TT
+>替换一个现有函数时，对于更改参数名是有限制的。不能更改已经分配给任何输入参数的名称（不过可以给之前没有名称的参数增加名称）。如果有多于一个输出参数，不能更改输出参数的名称，因为可能会改变描述函数结果的匿名组合类型的列名。这些限制是为了确保函数被替换时，已有的对该函数的调用不会停止工作。
+   </P
+><P
+>    如果一个被声明为<TT
+CLASS="LITERAL"
+>STRICT</TT
+>的函数带有一个<TT
+CLASS="LITERAL"
+>VARIADIC</TT
+>参数，会严格检查该可变数组<SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>作为一个整体</I
+></SPAN
+>是否为非空。如果该数组有空值元素，该函数仍将被调用。
+   </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="SQL-CREATEFUNCTION-EXAMPLES"
+></A
+><H2
+>示例</H2
+><P
+>   这里是一些小例子，它们可以帮你了解函数创建。更多信息和例子可见
+   <A
+HREF="xfunc.html"
+>第 36.3 &#33410;</A
+>。
+</P><PRE
+CLASS="PROGRAMLISTING"
+>CREATE FUNCTION add(integer, integer) RETURNS integer
+    AS 'select $1 + $2;'
+    LANGUAGE SQL
+    IMMUTABLE
+    RETURNS NULL ON NULL INPUT;</PRE
+><P>
+  </P
+><P
+>   在<SPAN
+CLASS="APPLICATION"
+>PL/pgSQL</SPAN
+>中，使用一个参数名称增加一个整数：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>CREATE OR REPLACE FUNCTION increment(i integer) RETURNS integer AS $$
+        BEGIN
+                RETURN i + 1;
+        END;
+$$ LANGUAGE plpgsql;</PRE
+><P>
+  </P
+><P
+>   返回一个包含多个输出参数的记录：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>CREATE FUNCTION dup(in int, out f1 int, out f2 text)
+    AS $$ SELECT $1, CAST($1 AS text) || ' is text' $$
+    LANGUAGE SQL;
+
+SELECT * FROM dup(42);</PRE
+><P>
+   你可以用更复杂的方式（用一个显式命名的组合类型）来做同样的事情：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>CREATE TYPE dup_result AS (f1 int, f2 text);
+
+CREATE FUNCTION dup(int) RETURNS dup_result
+    AS $$ SELECT $1, CAST($1 AS text) || ' is text' $$
+    LANGUAGE SQL;
+
+SELECT * FROM dup(42);</PRE
+><P>
+   另一种返回多列的方法是使用一个<TT
+CLASS="LITERAL"
+>TABLE</TT
+>函数：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>CREATE FUNCTION dup(int) RETURNS TABLE(f1 int, f2 text)
+    AS $$ SELECT $1, CAST($1 AS text) || ' is text' $$
+    LANGUAGE SQL;
+
+SELECT * FROM dup(42);</PRE
+><P>
+   不过，<TT
+CLASS="LITERAL"
+>TABLE</TT
+>函数与之前的例子不同，因为它实际返回了一个记录<SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>集合</I
+></SPAN
+>而不只是一个记录。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="SQL-CREATEFUNCTION-SECURITY"
+></A
+><H2
+>安全地编写 <TT
+CLASS="LITERAL"
+>SECURITY DEFINER</TT
+>函数</H2
+><P
+>    因为一个<TT
+CLASS="LITERAL"
+>SECURITY DEFINER</TT
+>函数会被以创建它的用户的特权来执行，需要小心地确保该函数不会被误用。为了安全，<A
+HREF="runtime-config-client.html#GUC-SEARCH-PATH"
+>search_path</A
+>应该被设置为排除任何不可信用户可写的模式。这可以阻止恶意用户创建对象（例如表、函数以及操作符）来掩饰该函数所要用到的对象。在这方面特别重要的是临时表模式，默认情况下它会第一个被搜索并且通常对任何用户都是可写的。可以通过强制最后搜索临时模式来得到一种安全的布局。要这样做，把<TT
+CLASS="LITERAL"
+>pg_temp</TT
+>写成<TT
+CLASS="VARNAME"
+>search_path</TT
+>中的最后一项。这个函数展示了安全的用法：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>CREATE FUNCTION check_password(uname TEXT, pass TEXT)
+RETURNS BOOLEAN AS $$
+DECLARE passed BOOLEAN;
+BEGIN
+        SELECT  (pwd = $2) INTO passed
+        FROM    pwds
+        WHERE   username = $1;
+
+        RETURN passed;
+END;
+$$  LANGUAGE plpgsql
+    SECURITY DEFINER
+    -- 设置一个安全的 search_path：受信的模式，然后是 'pg_temp'。
+    SET search_path = admin, pg_temp;</PRE
+><P>
+
+    这个函数的目的是为了访问表<TT
+CLASS="LITERAL"
+>admin.pwds</TT
+>。但是如果没有<TT
+CLASS="LITERAL"
+>SET</TT
+>子句或者带有<TT
+CLASS="LITERAL"
+>SET</TT
+>子句却只提到<TT
+CLASS="LITERAL"
+>admin</TT
+>，该函数会变成创建一个名为<TT
+CLASS="LITERAL"
+>pwds</TT
+>的临时表。
+   </P
+><P
+>    在<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+> 版本 8.3 之前，<TT
+CLASS="LITERAL"
+>SET</TT
+>子句不可用，因而较老的函数可能包含相当复杂的逻辑来保存、设置以及恢复<TT
+CLASS="VARNAME"
+>search_path</TT
+>。对于这种目的，<TT
+CLASS="LITERAL"
+>SET</TT
+>子句更容易。
+   </P
+><P
+>    另一点要记住的是默认情况下，会为新创建的函数给<TT
+CLASS="LITERAL"
+>PUBLIC</TT
+>授予执行特权（详见<A
+HREF="sql-grant.html"
+>GRANT</A
+>）。你常常会希望把安全定义器函数的使用限制在某些用户中。要这样做，你必须收回默认的<TT
+CLASS="LITERAL"
+>PUBLIC</TT
+>特权，然后选择性地授予执行特权。为了避免出现新函数能被所有人访问的时间窗口，应在一个事务中创建它并且设置特权。例如：
+   </P
+><PRE
+CLASS="PROGRAMLISTING"
+>BEGIN;
+CREATE FUNCTION check_password(uname TEXT, pass TEXT) ... SECURITY DEFINER;
+REVOKE ALL ON FUNCTION check_password(uname TEXT, pass TEXT) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION check_password(uname TEXT, pass TEXT) TO admins;
+COMMIT;</PRE
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="SQL-CREATEFUNCTION-COMPAT"
+></A
+><H2
+>兼容性</H2
+><P
+>   <TT
+CLASS="COMMAND"
+>CREATE FUNCTION</TT
+>命令被定义在 SQL:1999 及其后的版本中。<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>的版本类似但不完全兼容。属性是不可移植的，不同的可用语言也是不能移植的。
+  </P
+><P
+>   对于和一些其他数据库系统的兼容性，<TT
+CLASS="REPLACEABLE"
+><I
+>argmode</I
+></TT
+>可以被写在<TT
+CLASS="REPLACEABLE"
+><I
+>argname</I
+></TT
+>之前或者之后。但只有第一种方式是兼容标准的。
+  </P
+><P
+>   对于参数默认值，SQL 标准只指定带有<TT
+CLASS="LITERAL"
+>DEFAULT</TT
+>关键词的语法。带有<TT
+CLASS="LITERAL"
+>=</TT
+>的语法被用在 T-SQL 和 Firebird 中。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN79710"
+></A
+><H2
+>另见</H2
+><A
+HREF="sql-alterfunction.html"
+>ALTER FUNCTION</A
+>, <A
+HREF="sql-dropfunction.html"
+>DROP FUNCTION</A
+>, <A
+HREF="sql-grant.html"
+>GRANT</A
+>, <A
+HREF="sql-load.html"
+>LOAD</A
+>, <A
+HREF="sql-revoke.html"
+>REVOKE</A
+>, <A
+HREF="app-createlang.html"
+><SPAN
+CLASS="APPLICATION"
+>createlang</SPAN
+></A
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-createforeigntable.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="sql-creategroup.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>CREATE FOREIGN TABLE</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>CREATE GROUP</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

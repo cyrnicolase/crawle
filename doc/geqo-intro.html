@@ -1,0 +1,211 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>将查询处理看成是一个复杂的优化问题</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="遗传查询优化器"
+HREF="geqo.html"><LINK
+REL="PREVIOUS"
+TITLE="遗传查询优化器"
+HREF="geqo.html"><LINK
+REL="NEXT"
+TITLE="遗传算法"
+HREF="geqo-intro2.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/geqo.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="遗传查询优化器"
+HREF="geqo.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="geqo.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#31456; 58. 遗传查询优化器</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="遗传算法"
+HREF="geqo-intro2.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="GEQO-INTRO"
+>58.1. 将查询处理看成是一个复杂的优化问题</A
+></H1
+><P
+>    在所有关系操作符中，最难于处理和优化的是<I
+CLASS="FIRSTTERM"
+>连接</I
+>。可能的查询计划数目以查询中连接数量的指数增长。对各种各样处理独立连接的<I
+CLASS="FIRSTTERM"
+>连接方法</I
+>（如<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>中的嵌套循环、哈希连接、归并连接）和多种关系访问方法的<I
+CLASS="FIRSTTERM"
+>indexes</I
+>（如<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>中的 B 树、哈希、GiST 和 GIN）的支持也进一步加重了优化的负担。
+   </P
+><P
+>    通常的<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>查询优化器会执行一次在可选策略空间上的<I
+CLASS="FIRSTTERM"
+>近似穷举搜索</I
+>。这个算法最早由 IBM 的系统 R 数据库引入，它能产生接近最优的连接顺序，但是当查询中的连接数增长到很大时，该算法需要大量的时间和内存空间。这使得普通的<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>查询优化器不适合需要连接大量表的查询。
+   </P
+><P
+>    德国弗莱堡的矿业大学自动控制学院在使用<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>作为电力网格维护决策支持知识系统的后端时遇到了一些问题。DBMS 需要为知识系统中的推理机器处理大量连接查询。这些查询中的连接数不可能用普通的查询优化器来处理。
+   </P
+><P
+>    接下来我们将介绍一种<I
+CLASS="FIRSTTERM"
+>遗传算法</I
+>的实现，它被用来以一种更有效率的方式为涉及大量连接的查询解决连接顺序问题。
+   </P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="geqo.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="geqo-intro2.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>遗传查询优化器</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="geqo.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>遗传算法</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

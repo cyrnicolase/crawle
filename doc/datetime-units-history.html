@@ -1,0 +1,285 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>单位的历史</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="日期/时间支持"
+HREF="datetime-appendix.html"><LINK
+REL="PREVIOUS"
+TITLE="日期/时间配置文件"
+HREF="datetime-config-files.html"><LINK
+REL="NEXT"
+TITLE="SQL关键词"
+HREF="sql-keywords-appendix.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/datetime.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="日期/时间配置文件"
+HREF="datetime-config-files.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="datetime-appendix.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#38468;&#24405; B. 日期/时间支持</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="SQL关键词"
+HREF="sql-keywords-appendix.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="DATETIME-UNITS-HISTORY"
+>B.4. 单位的历史</A
+></H1
+><P
+>   SQL 标准说到<SPAN
+CLASS="QUOTE"
+>"在一个<SPAN
+CLASS="QUOTE"
+>'日期时间文字'</SPAN
+>的定义中，<SPAN
+CLASS="QUOTE"
+>'日期时间值'</SPAN
+>根据格里高利历被日期和时间的自然规则所约束"</SPAN
+>。<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>遵循 SQL 标准，导致只在格里高利历内计算日期，即使对于该历法开始使用之前的日期也是如此。这个规则被称作<I
+CLASS="FIRSTTERM"
+>外推格里高利历</I
+>。
+  </P
+><P
+>   儒略日期是由 Julius Caesar 在公元前 45 年引入的。直到 1582 年开始转为使用公历之前，西方世界一直使用儒略日期。 在儒略日期中，一回归年近似等于 365 又 1/4 天 = 365.25 天。它大约在128年中会出现 1 天的误差。
+  </P
+><P
+>   不断积累的历法错误促使教皇格里高利十三世按照特伦托会议的指示改革了历法。在格里高利历中，一回归年近似为 365 + 97/400 天 = 365.2425 天。因此对于格里高利历，大约要 3300 年一回归年才会积累一天的误差。
+  </P
+><P
+>   近似值 365+97/400 是通过利用下面的规则，并规定每 400 年有 97 个闰年实现的：
+
+   <P
+></P
+><TABLE
+BORDER="0"
+><TBODY
+><TR
+><TD
+>     每个可被 4 整除的年是一个闰年。
+    </TD
+></TR
+><TR
+><TD
+>     不过，可被 100 整除的年不是闰年。
+    </TD
+></TR
+><TR
+><TD
+>     但是，可以被 400 整除的年还是闰年。
+    </TD
+></TR
+></TBODY
+></TABLE
+><P
+></P
+>
+
+   因此，1700、1800、1900、2100 和 2200 都不是闰年。而 1600、2000、2400 是闰年。相比而言，旧式的儒略历法里面只有能被4整除的年是闰年。
+
+   相反，在旧的儒略历法中所有能被 4 整除的年都是闰年。
+  </P
+><P
+>   罗马教皇在 1582 年 2 月宣布从 1582 年的 10 月中减除 10 天，这样 10 月 15 日就紧跟在 10 月 4 日的后面。意大利、波兰、葡萄牙和西班牙遵守了这个要求。其他天主教的国家也紧跟它们的步伐。但新教国家拒绝改变，而希腊东正教国家却一直拖延到 20 世纪开始时才逐渐遵守这个规定。
+
+   大英帝国及其殖民地（包含今天的美国）在 1752 年开始遵守这项改革。因此 1752 年 9 月 2 日之后紧跟着 14 日。
+
+   这就是为什么 Unix 系统上的<TT
+CLASS="COMMAND"
+>cal</TT
+>程序 会产生如下输出的原因：
+
+</P><PRE
+CLASS="SCREEN"
+>$ <KBD
+CLASS="USERINPUT"
+>cal 9 1752</KBD
+>
+   September 1752
+ S  M Tu  W Th  F  S
+       1  2 14 15 16
+17 18 19 20 21 22 23
+24 25 26 27 28 29 30</PRE
+><P>
+
+   不过，这种历法只对大英帝国及其殖民地有效，对其他地方无效。因为尝试在多个地方多个时刻使用的实际历法很难并且也很让人困惑，<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>并没有做这种尝试，而是对所有日期遵循格里高利历规则，即使该方法在历史上是不精确的。
+  </P
+><P
+>   在世界的多个地方，发展了不同的历法，很多比格里高利系统还早。
+
+   例如，中国历法的开端可以追溯到公元前 14 世纪。传说黄帝在公元前 2637 年就发明了这个历法。
+
+   中华人民共和国把格里高利历作为民用。中国历法则被用于决定节日/节气。
+  </P
+><P
+>   <I
+CLASS="FIRSTTERM"
+>儒略日期</I
+>不是另一种类型的历法，虽然在命名上很相似，但是它和儒略历法无关。儒略日期系统是法国学者 Joseph Justus Scaliger（1540-1609）（可能是取自其父亲的名字，即意大利学者 Julius Caesar Scaliger（1484-1558））发明的。 在儒略日期系统中，每天都有一个序数，从 JD 0 开始（有时被叫做<SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>那个</I
+></SPAN
+>儒略日期）。 JD 0 在儒略历法中对应公元前 4713 年 1 月 1 日，或者在格里高利历中对应公元前 4714 年 12 月 24 日。儒略日期计数经常被天文学家用来标注夜间观测，并且因此一个日期就是从一个正午 UTC 到下一个正午 UTC，而不是从午夜到另一个午夜：JD 0 设计的 24 小时是从公元前 4714 年 12 月 24 日的正午 UTC 到公元前 4714 年 12 月 25 日的正午 UTC。
+  </P
+><P
+>   尽管<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>在输入输出日期时支持儒略日期符号（并且也用在一些内部的日期时间计算上使用儒略日期），它不遵守从正午到正午。<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>把儒略日期当作是从午夜到午夜。
+  </P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="datetime-config-files.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="sql-keywords-appendix.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>日期/时间配置文件</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="datetime-appendix.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><ACRONYM
+CLASS="ACRONYM"
+>SQL</ACRONYM
+>关键词</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

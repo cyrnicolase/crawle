@@ -1,0 +1,373 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>REFRESH MATERIALIZED VIEW</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="SQL 命令"
+HREF="sql-commands.html"><LINK
+REL="PREVIOUS"
+TITLE="REASSIGN OWNED"
+HREF="sql-reassign-owned.html"><LINK
+REL="NEXT"
+TITLE="REINDEX"
+HREF="sql-reindex.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="REFENTRY"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/ref/refresh_materialized_view.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="REASSIGN OWNED"
+HREF="sql-reassign-owned.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="REINDEX"
+HREF="sql-reindex.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="SQL-REFRESHMATERIALIZEDVIEW"
+></A
+>REFRESH MATERIALIZED VIEW</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN89174"
+></A
+><H2
+>&#21517;&#31216;</H2
+>REFRESH MATERIALIZED VIEW&nbsp;--&nbsp;替换一个物化视图的内容</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN89177"
+></A
+><H2
+>&#22823;&#32434;</H2
+><PRE
+CLASS="SYNOPSIS"
+>REFRESH MATERIALIZED VIEW [ CONCURRENTLY ] <TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+>
+    [ WITH [ NO ] DATA ]</PRE
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN89180"
+></A
+><H2
+>描述</H2
+><P
+>   <TT
+CLASS="COMMAND"
+>REFRESH MATERIALIZED VIEW</TT
+>完全替换一个
+   物化视图的内容。旧的内容会被抛弃。如果指定了
+   <TT
+CLASS="LITERAL"
+>WITH DATA</TT
+>（或者作为默认值），支持查询将被执行以
+   提供新的数据，并且会让物化视图将处于可扫描的状态。如果指定了
+   <TT
+CLASS="LITERAL"
+>WITH NO DATA</TT
+>，则不会生成新数据并且会让物化视图
+   处于一种不可扫描的状态。
+  </P
+><P
+>   <TT
+CLASS="LITERAL"
+>CONCURRENTLY</TT
+>和<TT
+CLASS="LITERAL"
+>WITH NO DATA</TT
+>
+   不能被一起指定。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN89189"
+></A
+><H2
+>参数</H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="LITERAL"
+>CONCURRENTLY</TT
+></DT
+><DD
+><P
+>      对物化视图的刷新不阻塞在该物化视图上的并发选择。如果没有这个选项，
+      一次影响很多行的刷新将使用更少的资源并且更快结束，但是可能会阻塞
+      其他尝试从物化视图中读取的连接。这个选项在只有少量行被影响的情况
+      下可能会更快。
+     </P
+><P
+>      只有当物化视图上有至少一个<TT
+CLASS="LITERAL"
+>UNIQUE</TT
+>索引（只用列名
+      并且包括所有行）时，才允许这个选项。也就是说，该索引不能建立在任何
+      表达式上或者包括<TT
+CLASS="LITERAL"
+>WHERE</TT
+>子句。
+     </P
+><P
+>      当物化视图还未被填充时，这个选项不能被使用。
+     </P
+><P
+>      即使带有这个选项，对于任意一个物化视图一次也只能运行一个
+      <TT
+CLASS="LITERAL"
+>REFRESH</TT
+>。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+></DT
+><DD
+><P
+>      要刷新的物化视图的名称（可以被模式限定）。
+     </P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN89208"
+></A
+><H2
+>注解</H2
+><P
+>   虽然用于未来的<A
+HREF="sql-cluster.html"
+>CLUSTER</A
+>操作的默认索引会被保持，
+   <TT
+CLASS="COMMAND"
+>REFRESH MATERIALIZED VIEW</TT
+>不会基于这个属性排序产生
+   的行。如果希望数据在产生时排序，必须在支持查询中使用
+   <TT
+CLASS="LITERAL"
+>ORDER BY</TT
+>子句。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN89214"
+></A
+><H2
+>示例</H2
+><P
+>   这个命令将使用物化视图<TT
+CLASS="LITERAL"
+>order_summary</TT
+>定义中的查询
+   来替换该物化视图的内容，并且让它处于一种可扫描的状态：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>REFRESH MATERIALIZED VIEW order_summary;</PRE
+><P>
+  </P
+><P
+>   这个命令将释放与物化视图<TT
+CLASS="LITERAL"
+>annual_statistics_basis</TT
+>相关
+   的存储并且让它变成一种不可扫描的状态：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>REFRESH MATERIALIZED VIEW annual_statistics_basis WITH NO DATA;</PRE
+><P></P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN89222"
+></A
+><H2
+>兼容性</H2
+><P
+>   <TT
+CLASS="COMMAND"
+>REFRESH MATERIALIZED VIEW</TT
+>是一种
+   <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>扩展。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN89227"
+></A
+><H2
+>另见</H2
+><A
+HREF="sql-creatematerializedview.html"
+>CREATE MATERIALIZED VIEW</A
+>, <A
+HREF="sql-altermaterializedview.html"
+>ALTER MATERIALIZED VIEW</A
+>, <A
+HREF="sql-dropmaterializedview.html"
+>DROP MATERIALIZED VIEW</A
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-reassign-owned.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="sql-reindex.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>REASSIGN OWNED</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>REINDEX</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

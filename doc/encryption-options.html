@@ -1,0 +1,265 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>加密选项</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="服务器设置和操作"
+HREF="runtime.html"><LINK
+REL="PREVIOUS"
+TITLE="阻止服务器欺骗"
+HREF="preventing-server-spoofing.html"><LINK
+REL="NEXT"
+TITLE="用 SSL 进行安全的 TCP/IP 连接"
+HREF="ssl-tcp.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/runtime.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="阻止服务器欺骗"
+HREF="preventing-server-spoofing.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="runtime.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#31456; 18. 服务器设置和操作</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="用 SSL 进行安全的 TCP/IP 连接"
+HREF="ssl-tcp.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="ENCRYPTION-OPTIONS"
+>18.8. 加密选项</A
+></H1
+><P
+>   <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>提供了几个不同级别的加密， 并且在保护数据不会因为数据库服务器偷窃、不道德的管理员、不安全网络等因素而泄漏方面 提供很高的灵活性。加密可能也是保护一些诸如医疗记录或财务交易等敏感数据所要求的。
+  </P
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+>口令存储加密</DT
+><DD
+><P
+>     默认情况下，数据库用户的口令以 MD5 哈希的方式存储， 所以管理员无法判断赋予用户的实际口令。如果 MD5 被加密用于客户端认证， 那么未加密的口令甚至都不可能临时出现在服务器上，因为客户端在透过网络发送口令之前，就先用 MD5 加密过。
+    </P
+></DD
+><DT
+>指定列加密</DT
+><DD
+><P
+>     <A
+HREF="pgcrypto.html"
+>pgcrypto</A
+>模块允许对特定域进行加密存储。这个功能只对某些敏感数据有用。 客户端提供解密的密钥，然后数据在服务器端解密并发送给客户端。
+    </P
+><P
+>     在数据被解密和在服务器与客户端之间传递时，解密数据和解密密钥将会在服务器端存在短暂的一段时间。 这就给那些能完全访问数据库服务器的人提供了一个短暂的截获密钥和数据的时间，例如系统管理员。
+    </P
+></DD
+><DT
+>数据分区加密</DT
+><DD
+><P
+>     存储加密可以在文件系统层面或者块层面上执行。Linux 文件系统加密
+     选项包括 eCryptfs 和 EncFS，而 FreeBSD 使用 PEFS。快层面或者全
+     盘加密选项包括 Linux 上的 dm-crypt + LUKS 以及 FreeBSD 上的
+     GEOM 模块 geli 及 gbde。很多其他操作系统也支持这个功能，包括
+     Windows。
+    </P
+><P
+>     这个机制避免了在整个计算机或者驱动器被盗的情况下， 未加密的数据被从驱动器中读取。它无法防止在文件系统被挂 载时的攻击，因为在挂载之后，操作系统提供数据的解密视图。不过，要想挂载该文件系统，你需要有一些方法把加密密钥传递给操作 系统，并且有时候这个密钥就存储在挂载该磁盘的主机上的某处。
+    </P
+></DD
+><DT
+>跨网络加密口令</DT
+><DD
+><P
+>      <TT
+CLASS="LITERAL"
+>MD5</TT
+>认证方法在将口令发送给服务器之前由客户端对它进行双重加密。第一次 MD5 加密是基于用户名的， 然后在建立数据库连接时，用服务器发送的随机盐粒再次加密口令。通过网络传递给服务器的就是这个双重加密的值。双重加密 不仅可以防止口令被发现，还可以防止稍后另一个连接使用同样的加密口令连接数据库。
+     </P
+></DD
+><DT
+>跨网络加密数据</DT
+><DD
+><P
+>      SSL 连接加密所有跨网络发送的数据：口令、查询以及返回的数据。<TT
+CLASS="FILENAME"
+>pg_hba.conf</TT
+>文件允许管理员指定哪些主机可以使用 非加密连接（<TT
+CLASS="LITERAL"
+>host</TT
+>），以及哪些主机需要使用 SSL 加密的连接（<TT
+CLASS="LITERAL"
+>hostssl</TT
+>）。客户端还可以指定它们只通过 SSL 连接到服务器。我们还可以使用<SPAN
+CLASS="APPLICATION"
+>Stunnel</SPAN
+>或<SPAN
+CLASS="APPLICATION"
+>SSH</SPAN
+>加密传输。
+     </P
+></DD
+><DT
+>SSL 主机认证</DT
+><DD
+><P
+>     客户端和主机都可以提供 SSL 证书给对方。这在两边都需要一些额外的配置， 但是这种方式提供了比仅使用口令更强的身份验证。 它避免一个计算机伪装成服务器，这个时长只要足够读取客户端发送的口令就行了。它还避免了 <SPAN
+CLASS="QUOTE"
+>"中间人"</SPAN
+>攻击，在其中有一台计算机处于客户端和服务器之间并伪装成服务器读取和传递两者之间的所有数据。
+    </P
+></DD
+><DT
+>客户端加密</DT
+><DD
+><P
+>     如果服务器所在机器的系统管理员是不可信的，那么客户端加密数据也是必要的。在这种情况下，未加密的数据从来不会在数据库服务器上出现。数据在发送给服务器之前加密，而数据库结果在能使用之前必须在客户端上解密。
+    </P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="preventing-server-spoofing.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="ssl-tcp.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>阻止服务器欺骗</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="runtime.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>用 SSL 进行安全的 TCP/IP 连接</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

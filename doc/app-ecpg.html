@@ -1,0 +1,555 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>ecpg</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="PostgreSQL 客户端应用"
+HREF="reference-client.html"><LINK
+REL="PREVIOUS"
+TITLE="dropuser"
+HREF="app-dropuser.html"><LINK
+REL="NEXT"
+TITLE="pg_basebackup"
+HREF="app-pgbasebackup.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="REFENTRY"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/ref/ecpg-ref.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="dropuser"
+HREF="app-dropuser.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="reference-client.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="pg_basebackup"
+HREF="app-pgbasebackup.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="APP-ECPG"
+></A
+><SPAN
+CLASS="APPLICATION"
+>ecpg</SPAN
+></H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN94168"
+></A
+><H2
+>&#21517;&#31216;</H2
+><SPAN
+CLASS="APPLICATION"
+>ecpg</SPAN
+>&nbsp;--&nbsp;嵌入式 SQL C 预处理器</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN94172"
+></A
+><H2
+>&#22823;&#32434;</H2
+><P
+><TT
+CLASS="COMMAND"
+>ecpg</TT
+> [<TT
+CLASS="REPLACEABLE"
+><I
+>option</I
+></TT
+>...]  <TT
+CLASS="REPLACEABLE"
+><I
+>file</I
+></TT
+>... </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="APP-ECPG-DESCRIPTION"
+></A
+><H2
+>描述</H2
+><P
+>   <TT
+CLASS="COMMAND"
+>ecpg</TT
+>是用于 C 程序的嵌入式 SQL 预处理器。它通过将 SQL 调用替换为特殊函数调用把带有嵌入式 SQL 语句的 C 程序转换为普通 C 代码。输出文件可以被任何 C 编译器工具链处理。
+  </P
+><P
+>   <TT
+CLASS="COMMAND"
+>ecpg</TT
+>将把命令行中给出的每一个输入文件转换为相应的 C 输出文件。输入文件更适宜于使用扩展名<TT
+CLASS="FILENAME"
+>.pgc</TT
+>，在这种情况下该扩展名将被替换为<TT
+CLASS="FILENAME"
+>.c</TT
+>来决定输出文件名。如果输入文件的扩展名不是<TT
+CLASS="FILENAME"
+>.pgc</TT
+>，那么输出文件名则通过在完整文件名上追加<TT
+CLASS="LITERAL"
+>.c</TT
+>来确定。输出文件名也可以使用<TT
+CLASS="OPTION"
+>-o</TT
+>选项覆盖。
+  </P
+><P
+>   这个参考页没有描述嵌入式 SQL 语言。关于该主题请参考<A
+HREF="ecpg.html"
+>第 34 &#31456;</A
+>。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN94192"
+></A
+><H2
+>选项</H2
+><P
+>   <TT
+CLASS="COMMAND"
+>ecpg</TT
+>接受下列命令行参数：
+
+   <P
+></P
+></P><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="OPTION"
+>-c</TT
+></DT
+><DD
+><P
+>       自动从 SQL 代码生成确定的 C 代码。当前，这对<TT
+CLASS="LITERAL"
+>EXEC SQL TYPE</TT
+>起效。
+      </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-C <TT
+CLASS="REPLACEABLE"
+><I
+>mode</I
+></TT
+></TT
+></DT
+><DD
+><P
+>       设置一个兼容性模式。<TT
+CLASS="REPLACEABLE"
+><I
+>mode</I
+></TT
+>可以是<TT
+CLASS="LITERAL"
+>INFORMIX</TT
+>或<TT
+CLASS="LITERAL"
+>INFORMIX_SE</TT
+>。
+      </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-D <TT
+CLASS="REPLACEABLE"
+><I
+>symbol</I
+></TT
+></TT
+></DT
+><DD
+><P
+>       定义一个 C 预处理器符号。
+      </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-i</TT
+></DT
+><DD
+><P
+>       分析系统也包括文件。
+      </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-I <TT
+CLASS="REPLACEABLE"
+><I
+>directory</I
+></TT
+></TT
+></DT
+><DD
+><P
+>       指定一个额外的包括路径，用来寻找通过<TT
+CLASS="LITERAL"
+>EXEC SQL INCLUDE</TT
+>包括的文件。默认值是<TT
+CLASS="FILENAME"
+>.</TT
+>（当前目录）、<TT
+CLASS="FILENAME"
+>/usr/local/include</TT
+>、在编译时定义的<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>包括目录（默认：<TT
+CLASS="FILENAME"
+>/usr/local/pgsql/include</TT
+>）以及<TT
+CLASS="FILENAME"
+>/usr/include</TT
+>。
+      </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-o <TT
+CLASS="REPLACEABLE"
+><I
+>filename</I
+></TT
+></TT
+></DT
+><DD
+><P
+>       指定<TT
+CLASS="COMMAND"
+>ecpg</TT
+>应该将它的所有输出写到给定的<TT
+CLASS="REPLACEABLE"
+><I
+>filename</I
+></TT
+>。
+      </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-r <TT
+CLASS="REPLACEABLE"
+><I
+>option</I
+></TT
+></TT
+></DT
+><DD
+><P
+>       选择运行时行为。<TT
+CLASS="REPLACEABLE"
+><I
+>option</I
+></TT
+>可以是下列之一：
+       <P
+></P
+></P><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="OPTION"
+>no_indicator</TT
+></DT
+><DD
+><P
+>         不使用指示器而使用特殊值来表示空值。历史上曾有数据库使用这种方法。
+         </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>prepare</TT
+></DT
+><DD
+><P
+>         在使用所有语句之前准备它们。libecpg 将保持一个预备语句的缓冲并当语句再被执行时重用该语句。如果缓冲满了，libecpg 将释放最少使用的语句。
+         </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>questionmarks</TT
+></DT
+><DD
+><P
+>         为兼容性原因允许使用问号作为占位符。在很久以前这被用作默认值。
+         </P
+></DD
+></DL
+></DIV
+><P></P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-t</TT
+></DT
+><DD
+><P
+>       打开事务的自动提交。在这种模式下，每一个 SQL 命令会被自动提交，除非它位于一个显式事务块中。在默认模式中，命令只有当<TT
+CLASS="COMMAND"
+>EXEC SQL COMMIT</TT
+>被发出时才被提交。
+      </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-v</TT
+></DT
+><DD
+><P
+>       打印额外信息，包括版本和“包括”路径。
+      </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>--version</TT
+></DT
+><DD
+><P
+>       打印<SPAN
+CLASS="APPLICATION"
+>ecpg</SPAN
+>版本并退出。
+      </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-?</TT
+><BR><TT
+CLASS="OPTION"
+>--help</TT
+></DT
+><DD
+><P
+>       显示关于<SPAN
+CLASS="APPLICATION"
+>ecpg</SPAN
+>命令行参数的帮助并退出。
+      </P
+></DD
+></DL
+></DIV
+><P>
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN94291"
+></A
+><H2
+>注解</H2
+><P
+>   在编译预处理好的 C 代码文件时，编译器需要能够找到<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>包括目录中的<SPAN
+CLASS="APPLICATION"
+>ECPG</SPAN
+>头文件。因此，在调用编译器时，你可能必须使用<TT
+CLASS="OPTION"
+>-I</TT
+>选项（例如，<TT
+CLASS="LITERAL"
+>-I/usr/local/pgsql/include</TT
+>）。
+  </P
+><P
+>   使用带有嵌入式 SQL 的 C 代码的程序必须被链接到<TT
+CLASS="FILENAME"
+>libecpg</TT
+>库，例如使用链接器选项<TT
+CLASS="LITERAL"
+>-L/usr/local/pgsql/lib -lecpg</TT
+>。
+  </P
+><P
+>   适合于安装的这些目录的值可以使用<A
+HREF="app-pgconfig.html"
+>pg_config</A
+>找到。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN94303"
+></A
+><H2
+>例子</H2
+><P
+>   如果你有一个名为<TT
+CLASS="FILENAME"
+>prog1.pgc</TT
+>的嵌入式 SQL C 源文件，你可以使用下列命令序列创建一个可执行程序：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>ecpg prog1.pgc
+cc -I/usr/local/pgsql/include -c prog1.c
+cc -o prog1 prog1.o -L/usr/local/pgsql/lib -lecpg</PRE
+><P></P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="app-dropuser.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="app-pgbasebackup.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><SPAN
+CLASS="APPLICATION"
+>dropuser</SPAN
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="reference-client.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>pg_basebackup</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

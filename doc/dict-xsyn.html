@@ -1,0 +1,370 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>dict_xsyn</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="额外提供的模块"
+HREF="contrib.html"><LINK
+REL="PREVIOUS"
+TITLE="dict_int"
+HREF="dict-int.html"><LINK
+REL="NEXT"
+TITLE="earthdistance"
+HREF="earthdistance.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/dict-xsyn.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="dict_int"
+HREF="dict-int.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="contrib.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#38468;&#24405; F. 额外提供的模块</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="earthdistance"
+HREF="earthdistance.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="DICT-XSYN"
+>F.12. dict_xsyn</A
+></H1
+><P
+>  <TT
+CLASS="FILENAME"
+>dict_xsyn</TT
+>（扩展同义词字典）是一个附加全文搜索字典模板的例子。这种字典类型将词替换为它们的同义词分组，并且让使用其任一同义词进行搜索变得可能。
+ </P
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN176267"
+>F.12.1. 配置</A
+></H2
+><P
+>   一个<TT
+CLASS="LITERAL"
+>dict_xsyn</TT
+>词典接受以下选项：
+  </P
+><P
+></P
+><UL
+><LI
+><P
+>     <TT
+CLASS="LITERAL"
+>matchorig</TT
+>控制该词典是否接受原生词。默认为<TT
+CLASS="LITERAL"
+>true</TT
+>。
+    </P
+></LI
+><LI
+><P
+>     <TT
+CLASS="LITERAL"
+>matchsynonyms</TT
+>控制该词典是否接受同义词。默认为<TT
+CLASS="LITERAL"
+>false</TT
+>。
+    </P
+></LI
+><LI
+><P
+>     <TT
+CLASS="LITERAL"
+>keeporig</TT
+>控制原生词是否被包括在词典的输出中。默认为<TT
+CLASS="LITERAL"
+>true</TT
+>。
+    </P
+></LI
+><LI
+><P
+>     <TT
+CLASS="LITERAL"
+>keepsynonyms</TT
+>控制同义词是否被包括在词典的输出中。默认为<TT
+CLASS="LITERAL"
+>true</TT
+>。
+    </P
+></LI
+><LI
+><P
+>     <TT
+CLASS="LITERAL"
+>rules</TT
+>是包含同义词列表的文件的基本名。这个文件必须被存储在<TT
+CLASS="FILENAME"
+>$SHAREDIR/tsearch_data/</TT
+>（其中<TT
+CLASS="LITERAL"
+>$SHAREDIR</TT
+>表示<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>安装的共享数据目录）中。它的名称必须以<TT
+CLASS="LITERAL"
+>.rules</TT
+>结束（这不包括在<TT
+CLASS="LITERAL"
+>rules</TT
+>参数中）。
+    </P
+></LI
+></UL
+><P
+>   规则文件具有下面的格式：
+  </P
+><P
+></P
+><UL
+><LI
+><P
+>     每一行表示一个单一词的同义词分组，它在该行中首先被给出。同义词被空白分隔，这样：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>word syn1 syn2 syn3</PRE
+><P>
+    </P
+></LI
+><LI
+><P
+>     井号（<TT
+CLASS="LITERAL"
+>#</TT
+>）是注释定界符。它可以出现在一行中的任何位置。该行的剩余部分将被跳过。
+    </P
+></LI
+></UL
+><P
+>   例如，可以看看安装在<TT
+CLASS="FILENAME"
+>$SHAREDIR/tsearch_data/</TT
+>中的<TT
+CLASS="FILENAME"
+>xsyn_sample.rules</TT
+>。
+  </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN176307"
+>F.12.2. 用法</A
+></H2
+><P
+>   安装<TT
+CLASS="LITERAL"
+>dict_xsyn</TT
+>扩展会用默认参数创建一个文本搜索模板<TT
+CLASS="LITERAL"
+>xsyn_template</TT
+>以及一个基于它的词典<TT
+CLASS="LITERAL"
+>xsyn</TT
+>。你可以修改参数，例如
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>mydb# ALTER TEXT SEARCH DICTIONARY xsyn (RULES='my_rules', KEEPORIG=false);
+ALTER TEXT SEARCH DICTIONARY</PRE
+><P>
+
+   或者基于该模板创建新的词典。
+  </P
+><P
+>   要测试该词典，你可以尝试
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>mydb=# SELECT ts_lexize('xsyn', 'word');
+      ts_lexize
+-----------------------
+ {syn1,syn2,syn3}
+
+mydb# ALTER TEXT SEARCH DICTIONARY xsyn (RULES='my_rules', KEEPORIG=true);
+ALTER TEXT SEARCH DICTIONARY
+
+mydb=# SELECT ts_lexize('xsyn', 'word');
+      ts_lexize
+-----------------------
+ {word,syn1,syn2,syn3}
+
+mydb# ALTER TEXT SEARCH DICTIONARY xsyn (RULES='my_rules', KEEPORIG=false, MATCHSYNONYMS=true);
+ALTER TEXT SEARCH DICTIONARY
+
+mydb=# SELECT ts_lexize('xsyn', 'syn1');
+      ts_lexize
+-----------------------
+ {syn1,syn2,syn3}
+
+mydb# ALTER TEXT SEARCH DICTIONARY xsyn (RULES='my_rules', KEEPORIG=true, MATCHORIG=false, KEEPSYNONYMS=false);
+ALTER TEXT SEARCH DICTIONARY
+
+mydb=# SELECT ts_lexize('xsyn', 'syn1');
+      ts_lexize
+-----------------------
+ {word}</PRE
+><P>
+
+   现实世界的用法将涉及将它包括在一个<A
+HREF="textsearch.html"
+>第 12 &#31456;</A
+>中描述的文本搜索配置中。看起来像这样：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>ALTER TEXT SEARCH CONFIGURATION english
+    ALTER MAPPING FOR word, asciiword WITH xsyn, english_stem;</PRE
+><P>
+
+  </P
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="dict-int.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="earthdistance.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>dict_int</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="contrib.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>earthdistance</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

@@ -1,0 +1,602 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>triggers</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="信息模式"
+HREF="information-schema.html"><LINK
+REL="PREVIOUS"
+TITLE="triggered_update_columns"
+HREF="infoschema-triggered-update-columns.html"><LINK
+REL="NEXT"
+TITLE="udt_privileges"
+HREF="infoschema-udt-privileges.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/information_schema.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="triggered_update_columns"
+HREF="infoschema-triggered-update-columns.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="information-schema.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#31456; 35. 信息模式</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="udt_privileges"
+HREF="infoschema-udt-privileges.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="INFOSCHEMA-TRIGGERS"
+>35.55. <TT
+CLASS="LITERAL"
+>triggers</TT
+></A
+></H1
+><P
+>   视图<TT
+CLASS="LITERAL"
+>triggers</TT
+>包含所有定义在当前数据库中表和视图上的触发器，并且只显示当前用户拥有的触发器或者是当前用户在其上具有某种除<TT
+CLASS="LITERAL"
+>SELECT</TT
+>之外特权的触发器。
+  </P
+><DIV
+CLASS="TABLE"
+><A
+NAME="AEN58280"
+></A
+><P
+><B
+>&#34920; 35-53. <TT
+CLASS="LITERAL"
+>triggers</TT
+>列</B
+></P
+><TABLE
+BORDER="1"
+CLASS="CALSTABLE"
+><COL><COL><COL><THEAD
+><TR
+><TH
+>名称</TH
+><TH
+>数据类型</TH
+><TH
+>描述</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>trigger_catalog</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>sql_identifier</TT
+></TD
+><TD
+>包含该触发器的数据库名（总是当前数据库）</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>trigger_schema</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>sql_identifier</TT
+></TD
+><TD
+>包含该触发器的模式名</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>trigger_name</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>sql_identifier</TT
+></TD
+><TD
+>该触发器的名称</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>event_manipulation</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>character_data</TT
+></TD
+><TD
+>       触发该触发器的事件（<TT
+CLASS="LITERAL"
+>INSERT</TT
+>、
+       <TT
+CLASS="LITERAL"
+>UPDATE</TT
+>或<TT
+CLASS="LITERAL"
+>DELETE</TT
+>）
+      </TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>event_object_catalog</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>sql_identifier</TT
+></TD
+><TD
+>       包含触发器所在的表的数据库名（总是当前数据库）
+      </TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>event_object_schema</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>sql_identifier</TT
+></TD
+><TD
+>包含该触发器所在的表的模式名</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>event_object_table</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>sql_identifier</TT
+></TD
+><TD
+>该触发器所在的表的名称</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>action_order</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>cardinal_number</TT
+></TD
+><TD
+>还未被实现</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>action_condition</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>character_data</TT
+></TD
+><TD
+>       触发器的<TT
+CLASS="LITERAL"
+>WHEN</TT
+>条件，如果没有则为空（如果该表不被一个当前已启用角色拥有也是为空）
+      </TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>action_statement</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>character_data</TT
+></TD
+><TD
+>       该触发器执行的语句（当前总是
+       <TT
+CLASS="LITERAL"
+>EXECUTE PROCEDURE
+       <TT
+CLASS="REPLACEABLE"
+><I
+>function</I
+></TT
+>(...)</TT
+>）
+      </TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>action_orientation</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>character_data</TT
+></TD
+><TD
+>       标识触发器是对每个被处理的行触发一次还是为每个语句触发一次（<TT
+CLASS="LITERAL"
+>ROW</TT
+>或<TT
+CLASS="LITERAL"
+>STATEMENT</TT
+>）
+      </TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>action_timing</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>character_data</TT
+></TD
+><TD
+>       触发器在什么时候触发（<TT
+CLASS="LITERAL"
+>BEFORE</TT
+>、
+       <TT
+CLASS="LITERAL"
+>AFTER</TT
+>或<TT
+CLASS="LITERAL"
+>INSTEAD OF</TT
+>）
+      </TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>action_reference_old_table</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>sql_identifier</TT
+></TD
+><TD
+>应用于一个<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>中不可用的特性</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>action_reference_new_table</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>sql_identifier</TT
+></TD
+><TD
+>应用于一个<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>中不可用的特性</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>action_reference_old_row</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>sql_identifier</TT
+></TD
+><TD
+>应用于一个<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>中不可用的特性</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>action_reference_new_row</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>sql_identifier</TT
+></TD
+><TD
+>应用于一个<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>中不可用的特性</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>created</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>time_stamp</TT
+></TD
+><TD
+>应用于一个<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>中不可用的特性</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+><P
+>   Triggers in <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>中的触发器有两点与 SQL 标准不兼容，这会影响在该信息模式中的表示。第一，在<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>中触发器的名字是局限于每个表的，而不是独立于模式对象。因此可能在一个模式中会有重复的触发器名称，只要它们属于不同的表（<TT
+CLASS="LITERAL"
+>trigger_catalog</TT
+>和<TT
+CLASS="LITERAL"
+>trigger_schema</TT
+>才真正标识了触发器被定义在哪个表上）。第二，在<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>中触发器可以被定义为在多个事件上触发（例如<TT
+CLASS="LITERAL"
+>ON INSERT OR
+   UPDATE</TT
+>），而在 SQL 标准中只允许一个。如果一个触发器被定义为在多个事件上触发，它在信息模式中被表示为多行，每一行对应于一类事件。作为这两个问题的结果，视图<TT
+CLASS="LITERAL"
+>triggers</TT
+>的主键实际上是<TT
+CLASS="LITERAL"
+>(trigger_catalog, trigger_schema, event_object_table,
+   trigger_name, event_manipulation)</TT
+>，而不是<TT
+CLASS="LITERAL"
+>(trigger_catalog, trigger_schema, trigger_name)</TT
+>（这是 SQL 标准指定的）。尽管如此，如果你以符合 SQL 标准（在模式中触发器名称唯一并且每个触发器只能有一种事件类型）的方式定义你的触发器，这将不会影响你。
+  </P
+><DIV
+CLASS="NOTE"
+><BLOCKQUOTE
+CLASS="NOTE"
+><P
+><B
+>&#27880;&#24847;: </B
+>    在<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+> 9.1 之前，这个视图的列
+    <TT
+CLASS="STRUCTFIELD"
+>action_timing</TT
+>、
+    <TT
+CLASS="STRUCTFIELD"
+>action_reference_old_table</TT
+>、
+    <TT
+CLASS="STRUCTFIELD"
+>action_reference_new_table</TT
+>、
+    <TT
+CLASS="STRUCTFIELD"
+>action_reference_old_row</TT
+>和
+    <TT
+CLASS="STRUCTFIELD"
+>action_reference_new_row</TT
+>
+    分别被命名为
+    <TT
+CLASS="STRUCTFIELD"
+>condition_timing</TT
+>、
+    <TT
+CLASS="STRUCTFIELD"
+>condition_reference_old_table</TT
+>、
+    <TT
+CLASS="STRUCTFIELD"
+>condition_reference_new_table</TT
+>、
+    <TT
+CLASS="STRUCTFIELD"
+>condition_reference_old_row</TT
+>和
+    <TT
+CLASS="STRUCTFIELD"
+>condition_reference_new_row</TT
+>。
+    那也是它们在 SQL:1999 标准中的命名。新的命名遵循 SQL:2003 及其后的版本。
+   </P
+></BLOCKQUOTE
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="infoschema-triggered-update-columns.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="infoschema-udt-privileges.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><TT
+CLASS="LITERAL"
+>triggered_update_columns</TT
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="information-schema.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><TT
+CLASS="LITERAL"
+>udt_privileges</TT
+></TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

@@ -1,0 +1,311 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>SPI_getbinval</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="接口支持函数"
+HREF="spi-interface-support.html"><LINK
+REL="PREVIOUS"
+TITLE="SPI_getvalue"
+HREF="spi-spi-getvalue.html"><LINK
+REL="NEXT"
+TITLE="SPI_gettype"
+HREF="spi-spi-gettype.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="REFENTRY"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/spi.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="SPI_getvalue"
+HREF="spi-spi-getvalue.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="spi-interface-support.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="SPI_gettype"
+HREF="spi-spi-gettype.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="SPI-SPI-GETBINVAL"
+></A
+>SPI_getbinval</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN70803"
+></A
+><H2
+>&#21517;&#31216;</H2
+>SPI_getbinval&nbsp;--&nbsp;返回指定列的二进制值</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN70806"
+></A
+><H2
+>&#22823;&#32434;</H2
+><PRE
+CLASS="SYNOPSIS"
+>Datum SPI_getbinval(HeapTuple <TT
+CLASS="PARAMETER"
+>row</TT
+>, TupleDesc <TT
+CLASS="PARAMETER"
+>rowdesc</TT
+>, int <TT
+CLASS="PARAMETER"
+>colnumber</TT
+>,
+                    bool * <TT
+CLASS="PARAMETER"
+>isnull</TT
+>)</PRE
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN70812"
+></A
+><H2
+>描述</H2
+><P
+>   <CODE
+CLASS="FUNCTION"
+>SPI_getbinval</CODE
+>以内部格
+   式（以<TT
+CLASS="TYPE"
+>Datum</TT
+>类型）返回指定列的值。
+  </P
+><P
+>   这个函数不会为该 datum 分配新空间。在传引用数据类型的情况下，
+   返回值将是一个被传递行的指针。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN70818"
+></A
+><H2
+>参数</H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="LITERAL"
+>HeapTuple <TT
+CLASS="PARAMETER"
+>row</TT
+></TT
+></DT
+><DD
+><P
+>      要检查的输入行
+     </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>TupleDesc <TT
+CLASS="PARAMETER"
+>rowdesc</TT
+></TT
+></DT
+><DD
+><P
+>      输入行描述
+     </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>int <TT
+CLASS="PARAMETER"
+>colnumber</TT
+></TT
+></DT
+><DD
+><P
+>      列号（从 1 开始计）
+     </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>bool * <TT
+CLASS="PARAMETER"
+>isnull</TT
+></TT
+></DT
+><DD
+><P
+>      列中是否为空值的标志
+     </P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN70845"
+></A
+><H2
+>返回值</H2
+><P
+>   该列的二进制值会被返回。如果该列为空值，由<TT
+CLASS="PARAMETER"
+>isnull</TT
+>
+   指向的变量将被设置为真，否则会被设置为假。
+  </P
+><P
+>   错误时<TT
+CLASS="VARNAME"
+>SPI_result</TT
+>会被设置成
+   <TT
+CLASS="SYMBOL"
+>SPI_ERROR_NOATTRIBUTE</TT
+>。
+  </P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="spi-spi-getvalue.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="spi-spi-gettype.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>SPI_getvalue</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="spi-interface-support.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>SPI_gettype</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

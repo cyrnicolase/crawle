@@ -1,0 +1,392 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>ALTER GROUP</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="SQL 命令"
+HREF="sql-commands.html"><LINK
+REL="PREVIOUS"
+TITLE="ALTER FUNCTION"
+HREF="sql-alterfunction.html"><LINK
+REL="NEXT"
+TITLE="ALTER INDEX"
+HREF="sql-alterindex.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="REFENTRY"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/ref/alter_group.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="ALTER FUNCTION"
+HREF="sql-alterfunction.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="ALTER INDEX"
+HREF="sql-alterindex.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="SQL-ALTERGROUP"
+></A
+>ALTER GROUP</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN73553"
+></A
+><H2
+>&#21517;&#31216;</H2
+>ALTER GROUP&nbsp;--&nbsp;更改角色名称或者成员关系</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN73556"
+></A
+><H2
+>&#22823;&#32434;</H2
+><PRE
+CLASS="SYNOPSIS"
+>ALTER GROUP <TT
+CLASS="REPLACEABLE"
+><I
+>role_specification</I
+></TT
+> ADD USER <TT
+CLASS="REPLACEABLE"
+><I
+>user_name</I
+></TT
+> [, ... ]
+ALTER GROUP <TT
+CLASS="REPLACEABLE"
+><I
+>role_specification</I
+></TT
+> DROP USER <TT
+CLASS="REPLACEABLE"
+><I
+>user_name</I
+></TT
+> [, ... ]
+
+<SPAN
+CLASS="phrase"
+><SPAN
+CLASS="PHRASE"
+>其中 <TT
+CLASS="REPLACEABLE"
+><I
+>role_specification</I
+></TT
+> 可以是：</SPAN
+></SPAN
+>
+
+    <TT
+CLASS="REPLACEABLE"
+><I
+>role_name</I
+></TT
+>
+  | CURRENT_USER
+  | SESSION_USER
+
+ALTER GROUP <TT
+CLASS="REPLACEABLE"
+><I
+>group_name</I
+></TT
+> RENAME TO <TT
+CLASS="REPLACEABLE"
+><I
+>new_name</I
+></TT
+></PRE
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN73567"
+></A
+><H2
+>描述</H2
+><P
+>   <TT
+CLASS="COMMAND"
+>ALTER GROUP</TT
+>更改一个用户组的属性。
+   这是一个被废弃的命令，不过为了向后兼容还是会被接受，因为组（以及用户）
+   已经被更一般的角色概念替代了。
+  </P
+><P
+>   前两个变体向一个组增加用户或者从一个组中移除用户（为了这个目的，
+   任何角色都可以扮演<SPAN
+CLASS="QUOTE"
+>"用户"</SPAN
+>或者<SPAN
+CLASS="QUOTE"
+>"组"</SPAN
+>）。这些变体
+   实际上等效于在被称为<SPAN
+CLASS="QUOTE"
+>"组"</SPAN
+>的角色中授予或者回收成员关系，
+   因此最好的方法是使用<A
+HREF="sql-grant.html"
+>GRANT</A
+>或者
+   <A
+HREF="sql-revoke.html"
+>REVOKE</A
+>。
+  </P
+><P
+>   第三种变体会更改该组的名称。这恰好等效于用<A
+HREF="sql-alterrole.html"
+>ALTER ROLE</A
+>
+   重命名该角色。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN73579"
+></A
+><H2
+>参数</H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>group_name</I
+></TT
+></DT
+><DD
+><P
+>      要修改的组（角色）的名称。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>user_name</I
+></TT
+></DT
+><DD
+><P
+>      要被加入到该组或者从该组移除的用户（角色）。这些用户必须已经存在，
+      <TT
+CLASS="COMMAND"
+>ALTER GROUP</TT
+>不会创建或者删除用户。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>new_name</I
+></TT
+></DT
+><DD
+><P
+>      该组的新名称。
+     </P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN73598"
+></A
+><H2
+>示例</H2
+><P
+>   向一个组增加用户：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>ALTER GROUP staff ADD USER karl, john;</PRE
+><P>
+
+   从一个组移除一个用户：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>ALTER GROUP workers DROP USER beth;</PRE
+><P></P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN73603"
+></A
+><H2
+>兼容性</H2
+><P
+>   在 SQL 标准中没有<TT
+CLASS="COMMAND"
+>ALTER GROUP</TT
+>语句。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN73607"
+></A
+><H2
+>另见</H2
+><A
+HREF="sql-grant.html"
+>GRANT</A
+>, <A
+HREF="sql-revoke.html"
+>REVOKE</A
+>, <A
+HREF="sql-alterrole.html"
+>ALTER ROLE</A
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-alterfunction.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="sql-alterindex.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>ALTER FUNCTION</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>ALTER INDEX</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

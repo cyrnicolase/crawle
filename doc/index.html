@@ -1,0 +1,729 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>PostgreSQL 9.6.0 手册</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="NEXT"
+TITLE="前言"
+HREF="preface.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="BOOK"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/postgres.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="BOOK"
+><A
+NAME="POSTGRES"
+></A
+><DIV
+CLASS="TITLEPAGE"
+><H1
+CLASS="TITLE"
+><A
+NAME="POSTGRES"
+>PostgreSQL 9.6.0 手册</A
+></H1
+><H3
+CLASS="CORPAUTHOR"
+>PostgreSQL 全球开发组</H3
+><H3
+CLASS="CORPAUTHOR"
+>翻译：<A
+HREF="http://www.pengyuwei.net"
+TARGET="_top"
+>彭煜玮</A
+>，
+    <A
+HREF="http://www.highgo.com/"
+TARGET="_top"
+>瀚高软件</A
+>及其他贡献者</H3
+><P
+CLASS="COPYRIGHT"
+><A
+HREF="LEGALNOTICE.html"
+>&#29256;&#26435;</A
+> &copy; 1996-2016 The PostgreSQL Global Development Group</P
+><DIV
+><DIV
+CLASS="ABSTRACT"
+><P
+></P
+><A
+NAME="AEN24"
+></A
+><P
+>&#13; 《PostgreSQL9.6.0手册》基于彭煜玮副教授翻译的
+ <A
+HREF="http://www.pengyuwei.net/PGDOC/960/index.html"
+TARGET="_top"
+>《PostgreSQL 9.6.0 文档》</A
+>
+ 。"版本说明"中的大部分翻译内容提取自<A
+HREF="http://www.postgres.cn"
+TARGET="_top"
+>PostgreSQL中国用户会</A
+>组织翻译的上一个版本
+ <A
+HREF="http://www.postgres.cn/docs/9.5"
+TARGET="_top"
+>《PostgreSQL9.5.3中文手册》</A
+>。
+ "版本说明"中9.6新增修改部分的翻译及一部分sgml文件和英文原文不匹配的处理由瀚高软件的韩悦悦完成。
+ 详细请参考<A
+HREF="https://github.com/postgres-cn/pgdoc-cn/wiki/pg9.6"
+TARGET="_top"
+>PostgreSQL9.6中文手册的翻译</A
+>。
+ 
+如果发现中文手册中的问题请向<A
+HREF="https://github.com/postgres-cn/pgdoc-cn"
+TARGET="_top"
+>Github源码仓库</A
+>或PostgreSQL中文手册翻译小组QQ群(309292849)反馈,也可直接向Github源码仓库提交PR。</P
+><P
+>中文手册版本:1.0 最后更新时间:2017-12-17</P
+><P
+></P
+></DIV
+></DIV
+><HR></DIV
+><DIV
+CLASS="TOC"
+><DL
+><DT
+><B
+>&#30446;&#24405;</B
+></DT
+><DT
+><A
+HREF="preface.html"
+>前言</A
+></DT
+><DD
+><DL
+><DT
+><A
+HREF="intro-whatis.html"
+>何为<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>？</A
+></DT
+><DT
+><A
+HREF="history.html"
+><SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>简史</A
+></DT
+><DT
+><A
+HREF="notation.html"
+>约定</A
+></DT
+><DT
+><A
+HREF="resources.html"
+>进一步的信息</A
+></DT
+><DT
+><A
+HREF="bug-reporting.html"
+>缺陷报告指南</A
+></DT
+></DL
+></DD
+><DT
+>I. <A
+HREF="tutorial.html"
+>教程</A
+></DT
+><DD
+><DL
+><DT
+>1. <A
+HREF="tutorial-start.html"
+>从头开始</A
+></DT
+><DT
+>2. <A
+HREF="tutorial-sql.html"
+><ACRONYM
+CLASS="ACRONYM"
+>SQL</ACRONYM
+>语言</A
+></DT
+><DT
+>3. <A
+HREF="tutorial-advanced.html"
+>高级特性</A
+></DT
+></DL
+></DD
+><DT
+>II. <A
+HREF="sql.html"
+>SQL 语言</A
+></DT
+><DD
+><DL
+><DT
+>4. <A
+HREF="sql-syntax.html"
+>SQL语法</A
+></DT
+><DT
+>5. <A
+HREF="ddl.html"
+>数据定义</A
+></DT
+><DT
+>6. <A
+HREF="dml.html"
+>数据操纵</A
+></DT
+><DT
+>7. <A
+HREF="queries.html"
+>查询</A
+></DT
+><DT
+>8. <A
+HREF="datatype.html"
+>数据类型</A
+></DT
+><DT
+>9. <A
+HREF="functions.html"
+>函数和操作符</A
+></DT
+><DT
+>10. <A
+HREF="typeconv.html"
+>类型转换</A
+></DT
+><DT
+>11. <A
+HREF="indexes.html"
+>索引</A
+></DT
+><DT
+>12. <A
+HREF="textsearch.html"
+>全文搜索</A
+></DT
+><DT
+>13. <A
+HREF="mvcc.html"
+>并发控制</A
+></DT
+><DT
+>14. <A
+HREF="performance-tips.html"
+>性能提示</A
+></DT
+><DT
+>15. <A
+HREF="parallel-query.html"
+>并行查询</A
+></DT
+></DL
+></DD
+><DT
+>III. <A
+HREF="admin.html"
+>服务器管理</A
+></DT
+><DD
+><DL
+><DT
+>16. <A
+HREF="installation.html"
+>从源代码安装</A
+></DT
+><DT
+>17. <A
+HREF="install-windows.html"
+>在<SPAN
+CLASS="PRODUCTNAME"
+>Windows</SPAN
+>上从源代码安装</A
+></DT
+><DT
+>18. <A
+HREF="runtime.html"
+>服务器设置和操作</A
+></DT
+><DT
+>19. <A
+HREF="runtime-config.html"
+>服务器配置</A
+></DT
+><DT
+>20. <A
+HREF="client-authentication.html"
+>客户端认证</A
+></DT
+><DT
+>21. <A
+HREF="user-manag.html"
+>数据库角色</A
+></DT
+><DT
+>22. <A
+HREF="managing-databases.html"
+>管理数据库</A
+></DT
+><DT
+>23. <A
+HREF="charset.html"
+>本地化</A
+></DT
+><DT
+>24. <A
+HREF="maintenance.html"
+>日常数据库维护工作</A
+></DT
+><DT
+>25. <A
+HREF="backup.html"
+>备份和恢复</A
+></DT
+><DT
+>26. <A
+HREF="high-availability.html"
+>高可用、负载均衡和复制</A
+></DT
+><DT
+>27. <A
+HREF="recovery-config.html"
+>恢复配置</A
+></DT
+><DT
+>28. <A
+HREF="monitoring.html"
+>监控数据库活动</A
+></DT
+><DT
+>29. <A
+HREF="diskusage.html"
+>监控磁盘使用</A
+></DT
+><DT
+>30. <A
+HREF="wal.html"
+>可靠性和预写式日志</A
+></DT
+><DT
+>31. <A
+HREF="regress.html"
+>回归测试</A
+></DT
+></DL
+></DD
+><DT
+>IV. <A
+HREF="client-interfaces.html"
+>客户端接口</A
+></DT
+><DD
+><DL
+><DT
+>32. <A
+HREF="libpq.html"
+><SPAN
+CLASS="APPLICATION"
+>libpq</SPAN
+> - C 库</A
+></DT
+><DT
+>33. <A
+HREF="largeobjects.html"
+>大对象</A
+></DT
+><DT
+>34. <A
+HREF="ecpg.html"
+><SPAN
+CLASS="APPLICATION"
+>ECPG</SPAN
+> - C 中的嵌入式 <ACRONYM
+CLASS="ACRONYM"
+>SQL</ACRONYM
+></A
+></DT
+><DT
+>35. <A
+HREF="information-schema.html"
+>信息模式</A
+></DT
+></DL
+></DD
+><DT
+>V. <A
+HREF="server-programming.html"
+>服务器编程</A
+></DT
+><DD
+><DL
+><DT
+>36. <A
+HREF="extend.html"
+>扩展 <ACRONYM
+CLASS="ACRONYM"
+>SQL</ACRONYM
+></A
+></DT
+><DT
+>37. <A
+HREF="triggers.html"
+>触发器</A
+></DT
+><DT
+>38. <A
+HREF="event-triggers.html"
+>事件触发器</A
+></DT
+><DT
+>39. <A
+HREF="rules.html"
+>规则系统</A
+></DT
+><DT
+>40. <A
+HREF="xplang.html"
+>过程语言</A
+></DT
+><DT
+>41. <A
+HREF="plpgsql.html"
+><SPAN
+CLASS="APPLICATION"
+>PL/pgSQL</SPAN
+> - <ACRONYM
+CLASS="ACRONYM"
+>SQL</ACRONYM
+>过程语言</A
+></DT
+><DT
+>42. <A
+HREF="pltcl.html"
+>PL/Tcl - Tcl 过程语言</A
+></DT
+><DT
+>43. <A
+HREF="plperl.html"
+>PL/Perl - Perl 过程语言</A
+></DT
+><DT
+>44. <A
+HREF="plpython.html"
+>PL/Python - Python 过程语言</A
+></DT
+><DT
+>45. <A
+HREF="spi.html"
+>服务器编程接口</A
+></DT
+><DT
+>46. <A
+HREF="bgworker.html"
+>后台工作者进程</A
+></DT
+><DT
+>47. <A
+HREF="logicaldecoding.html"
+>逻辑解码</A
+></DT
+><DT
+>48. <A
+HREF="replication-origins.html"
+>复制进度追踪</A
+></DT
+></DL
+></DD
+><DT
+>VI. <A
+HREF="reference.html"
+>参考</A
+></DT
+><DD
+><DL
+><DT
+>I. <A
+HREF="sql-commands.html"
+>SQL 命令</A
+></DT
+><DT
+>II. <A
+HREF="reference-client.html"
+>PostgreSQL 客户端应用</A
+></DT
+><DT
+>III. <A
+HREF="reference-server.html"
+>PostgreSQL 服务器应用</A
+></DT
+></DL
+></DD
+><DT
+>VII. <A
+HREF="internals.html"
+>内部</A
+></DT
+><DD
+><DL
+><DT
+>49. <A
+HREF="overview.html"
+>PostgreSQL内部概述</A
+></DT
+><DT
+>50. <A
+HREF="catalogs.html"
+>系统目录</A
+></DT
+><DT
+>51. <A
+HREF="protocol.html"
+>前端/后端协议</A
+></DT
+><DT
+>52. <A
+HREF="source.html"
+>PostgreSQL编码习惯</A
+></DT
+><DT
+>53. <A
+HREF="nls.html"
+>本国语言支持</A
+></DT
+><DT
+>54. <A
+HREF="plhandler.html"
+>编写一个过程语言处理器</A
+></DT
+><DT
+>55. <A
+HREF="fdwhandler.html"
+>编写一个外部数据包装器</A
+></DT
+><DT
+>56. <A
+HREF="tablesample-method.html"
+>编写一种表采样方法</A
+></DT
+><DT
+>57. <A
+HREF="custom-scan.html"
+>编写一个自定义扫描提供者</A
+></DT
+><DT
+>58. <A
+HREF="geqo.html"
+>遗传查询优化器</A
+></DT
+><DT
+>59. <A
+HREF="indexam.html"
+>索引访问方法接口定义</A
+></DT
+><DT
+>60. <A
+HREF="generic-wal.html"
+>通用WAL 记录</A
+></DT
+><DT
+>61. <A
+HREF="gist.html"
+>GiST 索引</A
+></DT
+><DT
+>62. <A
+HREF="spgist.html"
+>SP-GiST索引</A
+></DT
+><DT
+>63. <A
+HREF="gin.html"
+>GIN 索引</A
+></DT
+><DT
+>64. <A
+HREF="brin.html"
+>BRIN 索引</A
+></DT
+><DT
+>65. <A
+HREF="storage.html"
+>数据库物理存储</A
+></DT
+><DT
+>66. <A
+HREF="bki.html"
+><ACRONYM
+CLASS="ACRONYM"
+>BKI</ACRONYM
+>后端接口</A
+></DT
+><DT
+>67. <A
+HREF="planner-stats-details.html"
+>规划器如何使用统计信息</A
+></DT
+></DL
+></DD
+><DT
+>VIII. <A
+HREF="appendixes.html"
+>附录</A
+></DT
+><DD
+><DL
+><DT
+>A. <A
+HREF="errcodes-appendix.html"
+><SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>错误代码</A
+></DT
+><DT
+>B. <A
+HREF="datetime-appendix.html"
+>日期/时间支持</A
+></DT
+><DT
+>C. <A
+HREF="sql-keywords-appendix.html"
+><ACRONYM
+CLASS="ACRONYM"
+>SQL</ACRONYM
+>关键词</A
+></DT
+><DT
+>D. <A
+HREF="features.html"
+>SQL 符合性</A
+></DT
+><DT
+>E. <A
+HREF="release.html"
+>版本说明</A
+></DT
+><DT
+>F. <A
+HREF="contrib.html"
+>额外提供的模块</A
+></DT
+><DT
+>G. <A
+HREF="contrib-prog.html"
+>额外提供的程序</A
+></DT
+><DT
+>H. <A
+HREF="external-projects.html"
+>外部项目</A
+></DT
+><DT
+>I. <A
+HREF="sourcerepo.html"
+>源代码仓库</A
+></DT
+><DT
+>J. <A
+HREF="docguide.html"
+>文档</A
+></DT
+><DT
+>K. <A
+HREF="acronyms.html"
+>首字母缩写词</A
+></DT
+></DL
+></DD
+><DT
+><A
+HREF="biblio.html"
+>参考书目</A
+></DT
+><DT
+><A
+HREF="bookindex.html"
+>&#32034;&#24341;</A
+></DT
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>&nbsp;</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+>&nbsp;</TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="preface.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>&nbsp;</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+>&nbsp;</TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>前言</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

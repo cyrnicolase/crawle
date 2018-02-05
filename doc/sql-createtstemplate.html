@@ -1,0 +1,331 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>CREATE TEXT SEARCH TEMPLATE</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="SQL 命令"
+HREF="sql-commands.html"><LINK
+REL="PREVIOUS"
+TITLE="CREATE TEXT SEARCH PARSER"
+HREF="sql-createtsparser.html"><LINK
+REL="NEXT"
+TITLE="CREATE TRANSFORM"
+HREF="sql-createtransform.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="REFENTRY"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/ref/create_tstemplate.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="CREATE TEXT SEARCH PARSER"
+HREF="sql-createtsparser.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="CREATE TRANSFORM"
+HREF="sql-createtransform.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="SQL-CREATETSTEMPLATE"
+></A
+>CREATE TEXT SEARCH TEMPLATE</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN83125"
+></A
+><H2
+>&#21517;&#31216;</H2
+>CREATE TEXT SEARCH TEMPLATE&nbsp;--&nbsp;定义一种新的文本搜索模板</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN83128"
+></A
+><H2
+>&#22823;&#32434;</H2
+><PRE
+CLASS="SYNOPSIS"
+>CREATE TEXT SEARCH TEMPLATE <TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+> (
+    [ INIT = <TT
+CLASS="REPLACEABLE"
+><I
+>init_function</I
+></TT
+> , ]
+    LEXIZE = <TT
+CLASS="REPLACEABLE"
+><I
+>lexize_function</I
+></TT
+>
+)</PRE
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN83133"
+></A
+><H2
+>描述</H2
+><P
+>   <TT
+CLASS="COMMAND"
+>CREATE TEXT SEARCH TEMPLATE</TT
+>创建一个
+   新的文本搜索模板。文本搜索模板定义实现文本搜索字典的函数。一个模板
+   本身没什么用处，但是必须被实例化为一个字典来使用。字典通常指定要给
+   予模板函数的参数。
+  </P
+><P
+>   如果给出了一个模式名，文本搜索模板会被创建在指定模式中。否则它会被
+   创建在当前模式中。
+  </P
+><P
+>   必须成为超级用户以使用
+   <TT
+CLASS="COMMAND"
+>CREATE TEXT SEARCH TEMPLATE</TT
+>。做出
+   这种限制是因为错误的模板定义会让服务器混淆甚至崩溃。将模板与字典
+   分隔开来的原因是模板中封装了定义字典的<SPAN
+CLASS="QUOTE"
+>"不安全"</SPAN
+>方面。在
+   定义字典时可以被设置的参数对非特权用户是可以安全设置的，因此创建
+   字典不需要拥有特权来操作。
+  </P
+><P
+>   进一步的信息可以参考<A
+HREF="textsearch.html"
+>第 12 &#31456;</A
+>。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN83143"
+></A
+><H2
+>参数</H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+></DT
+><DD
+><P
+>      要创建的额文本搜索模板的名称。该名称可以被模式限定。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>init_function</I
+></TT
+></DT
+><DD
+><P
+>      用于模板的初始化函数的名称。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>lexize_function</I
+></TT
+></DT
+><DD
+><P
+>      用于模板的分词函数的名称。
+     </P
+></DD
+></DL
+></DIV
+><P
+>   如有必要，函数名称可以被模式限定。参数类型没有给出，因为每一类
+   函数的参数列表是预先定义好的。分词函数是必需的，但是初始化函数
+   是可选的。
+  </P
+><P
+>   参数可以以任何顺序出现，而不是只能按照上文的顺序。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN83163"
+></A
+><H2
+>兼容性</H2
+><P
+>   在 SQL 标准中没有
+   <TT
+CLASS="COMMAND"
+>CREATE TEXT SEARCH TEMPLATE</TT
+>语句。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN83167"
+></A
+><H2
+>另见</H2
+><A
+HREF="sql-altertstemplate.html"
+>ALTER TEXT SEARCH TEMPLATE</A
+>, <A
+HREF="sql-droptstemplate.html"
+>DROP TEXT SEARCH TEMPLATE</A
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-createtsparser.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="sql-createtransform.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>CREATE TEXT SEARCH PARSER</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>CREATE TRANSFORM</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

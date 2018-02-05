@@ -1,0 +1,415 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>日期/时间配置文件</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="日期/时间支持"
+HREF="datetime-appendix.html"><LINK
+REL="PREVIOUS"
+TITLE="日期/时间关键词"
+HREF="datetime-keywords.html"><LINK
+REL="NEXT"
+TITLE="单位的历史"
+HREF="datetime-units-history.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/datetime.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="日期/时间关键词"
+HREF="datetime-keywords.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="datetime-appendix.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#38468;&#24405; B. 日期/时间支持</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="单位的历史"
+HREF="datetime-units-history.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="DATETIME-CONFIG-FILES"
+>B.3. 日期/时间配置文件</A
+></H1
+><P
+>    因为时区缩写并未被很好地标准化，<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>提供了一种方法来自定义服务器所接受的缩写集合。<A
+HREF="runtime-config-client.html#GUC-TIMEZONE-ABBREVIATIONS"
+>timezone_abbreviations</A
+>运行时参数决定活动的缩写集合。虽然这个参数可以被任何数据库用户修改，但它的可能值是受到数据库管理员的控制的 &mdash; 它们实际上是存储在安装目录的<TT
+CLASS="FILENAME"
+>.../share/timezonesets/</TT
+>子目录中的一些配置文件。通过在那个目录中增加或修改文件，管理员可以为时区缩写设定本地策略。
+   </P
+><P
+>    <TT
+CLASS="VARNAME"
+>timezone_abbreviations</TT
+>可以被设置为任何在<TT
+CLASS="FILENAME"
+>.../share/timezonesets/</TT
+>中可以找到的文件名，前提该文件的名字完全是字母的（<TT
+CLASS="VARNAME"
+>timezone_abbreviations</TT
+>中禁止非字母字符防止从预期目录的外面读取文件以及读取编辑器的备份文件和其他外部文件）。
+   </P
+><P
+>    一个时区缩写文件可以包含空行和以<TT
+CLASS="LITERAL"
+>#</TT
+>开始的注释。非注释行必须具有下列格式之一：
+
+</P><PRE
+CLASS="SYNOPSIS"
+><TT
+CLASS="REPLACEABLE"
+><I
+>zone_abbreviation</I
+></TT
+> <TT
+CLASS="REPLACEABLE"
+><I
+>offset</I
+></TT
+>
+<TT
+CLASS="REPLACEABLE"
+><I
+>zone_abbreviation</I
+></TT
+> <TT
+CLASS="REPLACEABLE"
+><I
+>offset</I
+></TT
+> D
+<TT
+CLASS="REPLACEABLE"
+><I
+>zone_abbreviation</I
+></TT
+> <TT
+CLASS="REPLACEABLE"
+><I
+>time_zone_name</I
+></TT
+>
+@INCLUDE <TT
+CLASS="REPLACEABLE"
+><I
+>file_name</I
+></TT
+>
+@OVERRIDE</PRE
+><P>
+   </P
+><P
+>    一个<TT
+CLASS="REPLACEABLE"
+><I
+>zone_abbreviation</I
+></TT
+>就是被定义的缩写。<TT
+CLASS="REPLACEABLE"
+><I
+>offset</I
+></TT
+>是一个整数，它给出以秒计的到 UTC 的等效偏移量，为正表示东起格林威治，为负表示西起格林威治。例如， -18000 表示格林威治西边的五个小时，或者北美东海岸标准时间。<TT
+CLASS="LITERAL"
+>D</TT
+>指示该区域名表示本地夏令时而非标准时间。另外，还可以给出一个<TT
+CLASS="REPLACEABLE"
+><I
+>time_zone_name</I
+></TT
+>，在这种情况下会查阅该时区定义，并且会使用该时区中的缩写含义。这种替代方案只用于那些含义在历史上有变化的缩写，因为比起使用一个固定的整数值，查找该含义开销要大得多。
+   </P
+><P
+>    另外，还可以给出一个<TT
+CLASS="REPLACEABLE"
+><I
+>time_zone_name</I
+></TT
+>，它引用 IANA 时区数据库中定义的时区名。这时会参考该时区的定义来判断在时区中是否有或者使用了该缩写。如果是，会使用适当的含义 &mdash; 也就是正在判断其值的时间戳中当前使用的含义，或者之前刚刚使用的含义（如果当时不是当前），或者最老的含义（如果只在那时之后用过）。这种行为对于处理其含义在历史上变化过的缩写是至关重要的。也允许按照缩写没有出现在其中的时区名来定义缩写，这样使用该缩写就等效于直接写出该时区名。
+   </P
+><DIV
+CLASS="TIP"
+><BLOCKQUOTE
+CLASS="TIP"
+><P
+><B
+>&#25552;&#31034;: </B
+>     在定义其 UTC 偏移没有改变过的缩写时，使用简单的整数<TT
+CLASS="REPLACEABLE"
+><I
+>offset</I
+></TT
+>更好，这样的缩写在处理时代价比那些需要查阅时区定义的缩写更低。
+    </P
+></BLOCKQUOTE
+></DIV
+><P
+> <TT
+CLASS="LITERAL"
+>@INCLUDE</TT
+>语法允许包括<TT
+CLASS="FILENAME"
+>.../share/timezonesets/</TT
+>目录中
+    的其它文件。允许进行嵌套包括，但是嵌套深度有限制。
+   </P
+><P
+>    <TT
+CLASS="LITERAL"
+>@OVERRIDE</TT
+>语法表示文件中后续项可以覆盖前面的项（典型的：从被包括的文件中
+    得到的项）。如果没有它，同一个时区缩写的相互冲突的定义会被认为是一种错误。
+   </P
+><P
+>    在一个未被修改的安装中，文件<TT
+CLASS="FILENAME"
+>Default</TT
+>包含用于世界大部分地区的非冲突时区缩
+    写。附加文件<TT
+CLASS="FILENAME"
+>Australia</TT
+>和<TT
+CLASS="FILENAME"
+>India</TT
+>被提供给那些地区：这些文件
+    首先会包括<TT
+CLASS="LITERAL"
+>Default</TT
+>文件，并且接着根据需要增加或修改缩写。
+   </P
+><P
+>    为了便于参考，标准安装也包含了<TT
+CLASS="FILENAME"
+>Africa.txt</TT
+>、<TT
+CLASS="FILENAME"
+>America.txt</TT
+>
+    等文件，它们包含了所有根据IANA 时区数据库中已知正在使用的时区缩写信息。 如果需要，这些文件中的时区名定义可以复制并粘贴到自定义的配置文件中。注意这些文件名
+    不能直接被<TT
+CLASS="VARNAME"
+>timezone_abbreviations</TT
+>设置引用，因为它们的名称中嵌有句点。
+   </P
+><DIV
+CLASS="NOTE"
+><BLOCKQUOTE
+CLASS="NOTE"
+><P
+><B
+>&#27880;&#24847;: </B
+>     如果在读取时区缩写集时发生错误，将不会应用任何新值并且保留旧的集合。如果该错误是在数据库
+     启动时发生，那么启动将失败。
+    </P
+></BLOCKQUOTE
+></DIV
+><DIV
+CLASS="CAUTION"
+><P
+></P
+><TABLE
+CLASS="CAUTION"
+BORDER="1"
+WIDTH="100%"
+><TR
+><TD
+ALIGN="CENTER"
+><B
+>&#23567;&#24515;</B
+></TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+><P
+>     配置文件中定义的时区缩写将会覆盖<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>中内建的非
+     时区含义。例如<TT
+CLASS="FILENAME"
+>Australia</TT
+>配置文件定义了<TT
+CLASS="LITERAL"
+>SAT</TT
+>（南澳洲标准时
+     间）。当该文件为活动时，<TT
+CLASS="LITERAL"
+>SAT</TT
+>将不会被识别为周六的缩写。
+    </P
+></TD
+></TR
+></TABLE
+></DIV
+><DIV
+CLASS="CAUTION"
+><P
+></P
+><TABLE
+CLASS="CAUTION"
+BORDER="1"
+WIDTH="100%"
+><TR
+><TD
+ALIGN="CENTER"
+><B
+>&#23567;&#24515;</B
+></TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+><P
+>     如果你修改<TT
+CLASS="FILENAME"
+>.../share/timezonesets/</TT
+>中的文件， 那么你必须自己创建备份 &mdash; 因为通常的数据库转储不会包括这个目录。
+    </P
+></TD
+></TR
+></TABLE
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="datetime-keywords.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="datetime-units-history.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>日期/时间关键词</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="datetime-appendix.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>单位的历史</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

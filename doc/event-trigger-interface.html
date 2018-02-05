@@ -1,0 +1,341 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>用 C 编写事件触发器函数</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="事件触发器"
+HREF="event-triggers.html"><LINK
+REL="PREVIOUS"
+TITLE="事件触发器触发矩阵"
+HREF="event-trigger-matrix.html"><LINK
+REL="NEXT"
+TITLE="一个完整的事件触发器例子"
+HREF="event-trigger-example.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/event-trigger.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="事件触发器触发矩阵"
+HREF="event-trigger-matrix.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="event-triggers.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#31456; 38. 事件触发器</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="一个完整的事件触发器例子"
+HREF="event-trigger-example.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="EVENT-TRIGGER-INTERFACE"
+>38.3. 用 C 编写事件触发器函数</A
+></H1
+><P
+>    这一节描述了事件触发器函数接口的低层细节。只有在用 C 编写事件
+    触发器函数时才需要用到这里的信息。如果使用更高层的语言，那么
+    这些细节已经被处理好了。在大部分情况下都应该优先考虑使用过程
+    语言来编写你的事件触发器。每一种过程语言的文档都解释了如何用
+    它编写事件触发器。
+   </P
+><P
+>    事件触发器函数必须使用<SPAN
+CLASS="QUOTE"
+>"版本 1"</SPAN
+>的函数管理器接口。
+   </P
+><P
+>    当一个函数被事件触发器管理器调用时，向它传递的并不是普通参数，
+    而是一个指向<TT
+CLASS="STRUCTNAME"
+>EventTriggerData</TT
+>结构的
+    <SPAN
+CLASS="QUOTE"
+>"context"</SPAN
+>指针。C 函数可以通过执行以下宏来检查它是否
+    被事件触发器管理器调用：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>CALLED_AS_EVENT_TRIGGER(fcinfo)</PRE
+><P>
+    这个宏会被扩展为：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>((fcinfo)-&gt;context != NULL &amp;&amp; IsA((fcinfo)-&gt;context, EventTriggerData))</PRE
+><P>
+    如果这个宏返回真，那么就可以安全地把
+    <TT
+CLASS="LITERAL"
+>fcinfo-&gt;context</TT
+>造型为类型<TT
+CLASS="LITERAL"
+>EventTriggerData
+    *</TT
+>并且使用所指向的<TT
+CLASS="STRUCTNAME"
+>EventTriggerData</TT
+>结构。
+    函数<SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>不能</I
+></SPAN
+>修改
+    <TT
+CLASS="STRUCTNAME"
+>EventTriggerData</TT
+>结构以及它指向的任何内容。
+   </P
+><P
+>    <TT
+CLASS="STRUCTNAME"
+>struct EventTriggerData</TT
+>在
+    <TT
+CLASS="FILENAME"
+>commands/event_trigger.h</TT
+>中定义：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>typedef struct EventTriggerData
+{
+    NodeTag     type;
+    const char *event;      /* 事件名称 */
+    Node       *parsetree;  /* 解析树 */
+    const char *tag;        /* 命令标签 */
+} EventTriggerData;</PRE
+><P>
+
+    其中的成员定义如下：
+
+    <P
+></P
+></P><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="STRUCTFIELD"
+>type</TT
+></DT
+><DD
+><P
+>        总是<TT
+CLASS="LITERAL"
+>T_EventTriggerData</TT
+>。
+       </P
+></DD
+><DT
+><TT
+CLASS="STRUCTFIELD"
+>event</TT
+></DT
+><DD
+><P
+>        描述要为其调用这个函数的事件，可以是
+        <TT
+CLASS="LITERAL"
+>"ddl_command_start"</TT
+>、<TT
+CLASS="LITERAL"
+>"ddl_command_end"</TT
+>、
+        <TT
+CLASS="LITERAL"
+>"sql_drop"</TT
+>、<TT
+CLASS="LITERAL"
+>"table_rewrite"</TT
+>之一。
+        这些事件的含义请见<A
+HREF="event-trigger-definition.html"
+>第 38.1 &#33410;</A
+>。
+       </P
+></DD
+><DT
+><TT
+CLASS="STRUCTFIELD"
+>parsetree</TT
+></DT
+><DD
+><P
+>        该命令的解析树的指针。其细节可以参考 PostgreSQL 的源代码。
+        解析树结构可能会在未经通知的情况下改变。
+       </P
+></DD
+><DT
+><TT
+CLASS="STRUCTFIELD"
+>tag</TT
+></DT
+><DD
+><P
+>        与事件触发器的事件相关联的命令标签，例如
+        <TT
+CLASS="LITERAL"
+>"CREATE FUNCTION"</TT
+>。
+       </P
+></DD
+></DL
+></DIV
+><P>
+   </P
+><P
+>    一个事件触发器函数必须返回一个<TT
+CLASS="SYMBOL"
+>NULL</TT
+>指针（
+    <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>不是</I
+></SPAN
+>一个 SQL 空值，也就是不要把
+    <TT
+CLASS="PARAMETER"
+>isNull</TT
+>设置为真）。
+   </P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="event-trigger-matrix.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="event-trigger-example.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>事件触发器触发矩阵</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="event-triggers.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>一个完整的事件触发器例子</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

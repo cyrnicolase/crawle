@@ -1,0 +1,726 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>ALTER DOMAIN</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="SQL 命令"
+HREF="sql-commands.html"><LINK
+REL="PREVIOUS"
+TITLE="ALTER DEFAULT PRIVILEGES"
+HREF="sql-alterdefaultprivileges.html"><LINK
+REL="NEXT"
+TITLE="ALTER EVENT TRIGGER"
+HREF="sql-altereventtrigger.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="REFENTRY"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/ref/alter_domain.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="ALTER DEFAULT PRIVILEGES"
+HREF="sql-alterdefaultprivileges.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="ALTER EVENT TRIGGER"
+HREF="sql-altereventtrigger.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="SQL-ALTERDOMAIN"
+></A
+>ALTER DOMAIN</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN72423"
+></A
+><H2
+>&#21517;&#31216;</H2
+>ALTER DOMAIN&nbsp;--&nbsp;   更改一个域的定义
+  </DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN72426"
+></A
+><H2
+>&#22823;&#32434;</H2
+><PRE
+CLASS="SYNOPSIS"
+>ALTER DOMAIN <TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+>
+    { SET DEFAULT <TT
+CLASS="REPLACEABLE"
+><I
+>expression</I
+></TT
+> | DROP DEFAULT }
+ALTER DOMAIN <TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+>
+    { SET | DROP } NOT NULL
+ALTER DOMAIN <TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+>
+    ADD <TT
+CLASS="REPLACEABLE"
+><I
+>domain_constraint</I
+></TT
+> [ NOT VALID ]
+ALTER DOMAIN <TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+>
+    DROP CONSTRAINT [ IF EXISTS ] <TT
+CLASS="REPLACEABLE"
+><I
+>constraint_name</I
+></TT
+> [ RESTRICT | CASCADE ]
+ALTER DOMAIN <TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+>
+     RENAME CONSTRAINT <TT
+CLASS="REPLACEABLE"
+><I
+>constraint_name</I
+></TT
+> TO <TT
+CLASS="REPLACEABLE"
+><I
+>new_constraint_name</I
+></TT
+>
+ALTER DOMAIN <TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+>
+    VALIDATE CONSTRAINT <TT
+CLASS="REPLACEABLE"
+><I
+>constraint_name</I
+></TT
+>
+ALTER DOMAIN <TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+>
+    OWNER TO { <TT
+CLASS="REPLACEABLE"
+><I
+>new_owner</I
+></TT
+> | CURRENT_USER | SESSION_USER }
+ALTER DOMAIN <TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+>
+    RENAME TO <TT
+CLASS="REPLACEABLE"
+><I
+>new_name</I
+></TT
+>
+ALTER DOMAIN <TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+>
+    SET SCHEMA <TT
+CLASS="REPLACEABLE"
+><I
+>new_schema</I
+></TT
+></PRE
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN72446"
+></A
+><H2
+>描述</H2
+><P
+>   <TT
+CLASS="COMMAND"
+>ALTER DOMAIN</TT
+>更改一个现有域的定义。有几种形式：
+  </P
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+>SET/DROP DEFAULT</DT
+><DD
+><P
+>      这些形式设置或者移除一个域的默认值。注意默认值只会应用到后续的
+      <TT
+CLASS="COMMAND"
+>INSERT</TT
+>命令，它们不影响使用该域的已经
+      存在于表中的行。
+     </P
+></DD
+><DT
+>SET/DROP NOT NULL</DT
+><DD
+><P
+>      这些形式更改一个域是被标记为允许 NULL 值还是拒绝 NULL 值。只有当使用该
+      域的列不包含空值时才能<TT
+CLASS="LITERAL"
+>SET NOT NULL</TT
+>。
+     </P
+></DD
+><DT
+>ADD <TT
+CLASS="REPLACEABLE"
+><I
+>domain_constraint</I
+></TT
+> [ NOT VALID ]</DT
+><DD
+><P
+>      这种形式使用和<A
+HREF="sql-createdomain.html"
+>CREATE DOMAIN</A
+>相同的语法为一个
+      域增加一个新的约束。当一个新的约束被增加到一个域时，所有使用该域的列
+      都会被根据新加的约束进行检查。可以通过增加使用
+      <TT
+CLASS="LITERAL"
+>NOT VALID</TT
+>选项的新约束来抑制这类检查，而该约束则可
+      以在以后使用
+      <TT
+CLASS="COMMAND"
+>ALTER DOMAIN ... VALIDATE CONSTRAINT</TT
+>
+      变为可用。新插入和更新的行总是会被根据所有约束进行检查（包括被标记为
+      <TT
+CLASS="LITERAL"
+>NOT VALID</TT
+>的约束）。只有<TT
+CLASS="LITERAL"
+>CHECK</TT
+>约束接受
+      <TT
+CLASS="LITERAL"
+>NOT VALID</TT
+>。
+     </P
+></DD
+><DT
+>DROP CONSTRAINT [ IF EXISTS ]</DT
+><DD
+><P
+>      这种形式删除一个域上的约束。如果指定了<TT
+CLASS="LITERAL"
+>IF EXISTS</TT
+>并且
+      约束不存在，不会抛出错误。在这种情况下会转而发出一个提示。
+     </P
+></DD
+><DT
+>RENAME CONSTRAINT</DT
+><DD
+><P
+>      这种形式更改一个域上的一个约束的名称。
+     </P
+></DD
+><DT
+>VALIDATE CONSTRAINT</DT
+><DD
+><P
+>      这种形式验证一个之前作为<TT
+CLASS="LITERAL"
+>NOT VALID</TT
+>增加的约束，也就是说
+      验证使用该域的列中所有数据满足指定的约束。
+     </P
+></DD
+><DT
+>OWNER</DT
+><DD
+><P
+>      这种形式更改域的拥有者为指定用户。
+     </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>RENAME</TT
+></DT
+><DD
+><P
+>      这种形式更改域的名称。
+     </P
+></DD
+><DT
+>SET SCHEMA</DT
+><DD
+><P
+>      这种形式更改域的模式。任何与该域关联的约束也被会移动到新的模式中。
+     </P
+></DD
+></DL
+></DIV
+><P
+>   要使用<TT
+CLASS="COMMAND"
+>ALTER DOMAIN</TT
+>，你必须拥有该域。要更改一个域的模式，
+   你还必须具有新模式上的<TT
+CLASS="LITERAL"
+>CREATE</TT
+>特权。要更改拥有者，你还必须
+   是新拥有角色的一个直接或者间接成员，并且该角色必须具有该域的模式上的
+   <TT
+CLASS="LITERAL"
+>CREATE</TT
+>特权（这些限制强制修改拥有者不能做一些通过删除和重
+   建域做不到的事情。不过，一个超级用户怎么都能更改任何域的所有权。）。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN72503"
+></A
+><H2
+>参数</H2
+><P
+>    <P
+></P
+></P><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+></DT
+><DD
+><P
+>        要修改的一个现有域的名称（可能是模式限定的）。
+       </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>domain_constraint</I
+></TT
+></DT
+><DD
+><P
+>        用于该域的新域约束。
+       </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>constraint_name</I
+></TT
+></DT
+><DD
+><P
+>        要删除或重命名的一个现有约束的名称。
+       </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>NOT VALID</I
+></TT
+></DT
+><DD
+><P
+>        不为约束的合法性验证现有的列数据。
+       </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>CASCADE</TT
+></DT
+><DD
+><P
+>        自动删除依赖于该约束的对象，并且接着删除依赖于那些对象的
+        所有对象（见<A
+HREF="ddl-depend.html"
+>第 5.13 &#33410;</A
+>）。
+       </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>RESTRICT</TT
+></DT
+><DD
+><P
+>        如果有任何依赖对象则拒绝删除该约束。这是默认行为。
+       </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>new_name</I
+></TT
+></DT
+><DD
+><P
+>        域的新名称。
+       </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>new_constraint_name</I
+></TT
+></DT
+><DD
+><P
+>        约束的新名称。
+       </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>new_owner</I
+></TT
+></DT
+><DD
+><P
+>        域的新拥有者的用户名。
+       </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>new_schema</I
+></TT
+></DT
+><DD
+><P
+>        域的新模式。
+       </P
+></DD
+></DL
+></DIV
+><P>
+   </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN72558"
+></A
+><H2
+>注解</H2
+><P
+>   当前，如果经过验证的所提及的域或者任何衍生域被数据库中的任意表的一个组合类型
+   列使用，<TT
+CLASS="COMMAND"
+>ALTER DOMAIN ADD CONSTRAINT</TT
+>、<TT
+CLASS="COMMAND"
+>ALTER
+   DOMAIN VALIDATE CONSTRAINT</TT
+>和
+   <TT
+CLASS="COMMAND"
+>ALTER DOMAIN SET NOT NULL</TT
+>将会失败。它们最终将
+   会被改进成能够对这类嵌套列进行新约束验证。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN72564"
+></A
+><H2
+>示例</H2
+><P
+>   要把一个<TT
+CLASS="LITERAL"
+>NOT NULL</TT
+>约束加到一个域：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>ALTER DOMAIN zipcode SET NOT NULL;</PRE
+><P>
+   要从一个域中移除一个<TT
+CLASS="LITERAL"
+>NOT NULL</TT
+>约束：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>ALTER DOMAIN zipcode DROP NOT NULL;</PRE
+><P>
+  </P
+><P
+>   要把一个检查约束增加到一个域：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>ALTER DOMAIN zipcode ADD CONSTRAINT zipchk CHECK (char_length(VALUE) = 5);</PRE
+><P>
+  </P
+><P
+>   要从一个域移除一个检查约束：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>ALTER DOMAIN zipcode DROP CONSTRAINT zipchk;</PRE
+><P>
+  </P
+><P
+>   要重命名一个域上的一个检查约束：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>ALTER DOMAIN zipcode RENAME CONSTRAINT zipchk TO zip_check;</PRE
+><P>
+  </P
+><P
+>   要把域移动到一个不同的模式：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>ALTER DOMAIN zipcode SET SCHEMA customers;</PRE
+><P></P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="SQL-ALTERDOMAIN-COMPATIBILITY"
+></A
+><H2
+>兼容性</H2
+><P
+>   <TT
+CLASS="COMMAND"
+>ALTER DOMAIN</TT
+> conforms to the <ACRONYM
+CLASS="ACRONYM"
+>SQL</ACRONYM
+>
+   standard, except for the 
+   除<TT
+CLASS="LITERAL"
+>OWNER</TT
+>、<TT
+CLASS="LITERAL"
+>RENAME</TT
+>、<TT
+CLASS="LITERAL"
+>SET SCHEMA</TT
+>
+   以及<TT
+CLASS="LITERAL"
+>VALIDATE CONSTRAINT</TT
+>变体之外（它们是
+   <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>的扩展），
+   <TT
+CLASS="COMMAND"
+>ALTER DOMAIN</TT
+>符合<ACRONYM
+CLASS="ACRONYM"
+>SQL</ACRONYM
+>标准。
+   <TT
+CLASS="LITERAL"
+>ADD CONSTRAINT</TT
+>变体的<TT
+CLASS="LITERAL"
+>NOT VALID</TT
+>子句也是一个
+   <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>扩展。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="SQL-ALTERDOMAIN-SEE-ALSO"
+></A
+><H2
+>另见</H2
+><A
+HREF="sql-createdomain.html"
+>CREATE DOMAIN</A
+>, <A
+HREF="sql-dropdomain.html"
+>DROP DOMAIN</A
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-alterdefaultprivileges.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="sql-altereventtrigger.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>ALTER DEFAULT PRIVILEGES</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>ALTER EVENT TRIGGER</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

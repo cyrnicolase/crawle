@@ -1,0 +1,403 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>sslinfo</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="额外提供的模块"
+HREF="contrib.html"><LINK
+REL="PREVIOUS"
+TITLE="spi"
+HREF="contrib-spi.html"><LINK
+REL="NEXT"
+TITLE="tablefunc"
+HREF="tablefunc.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/sslinfo.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="spi"
+HREF="contrib-spi.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="contrib.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#38468;&#24405; F. 额外提供的模块</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="tablefunc"
+HREF="tablefunc.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="SSLINFO"
+>F.37. sslinfo</A
+></H1
+><P
+>  在连接到<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>时，<TT
+CLASS="FILENAME"
+>sslinfo</TT
+>模块提供当前客户端提供的 SSL 证书的有关信息。如果当前连接不使用 SSL，这个模块就没有用处（大部分函数将返回 NULL）。
+ </P
+><P
+>  除非安装时用<TT
+CLASS="LITERAL"
+>--with-openssl</TT
+>进行了配置，这个扩展压根就不会被编译。
+ </P
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN181619"
+>F.37.1. 提供的函数</A
+></H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><CODE
+CLASS="FUNCTION"
+>ssl_is_used() 返回 boolean</CODE
+>
+    </DT
+><DD
+><P
+>     如果当前到服务器的连接使用 SSL 则返回 TRUE，否则返回 FALSE。
+    </P
+></DD
+><DT
+><CODE
+CLASS="FUNCTION"
+>ssl_version() 返回 text</CODE
+>
+     </DT
+><DD
+><P
+>     返回 SSL 连接使用的协议名称（如 SSLv2、SSLv3 或者 TLSv1）。
+    </P
+></DD
+><DT
+><CODE
+CLASS="FUNCTION"
+>ssl_cipher() 返回 text</CODE
+>
+     </DT
+><DD
+><P
+>     返回 SSL 连接所用的加密方法名称（如 DHE-RSA-AES256-SHA）。
+    </P
+></DD
+><DT
+><CODE
+CLASS="FUNCTION"
+>ssl_client_cert_present() 返回 boolean</CODE
+>
+     </DT
+><DD
+><P
+>     如果当前客户端已经向服务器出示了一个合法的 SSL 客户端证书则返回 TRUE，否则返回 FALSE（服务器可能被配置要求一个客户端配置，也可能没有被配置成这样）。
+    </P
+></DD
+><DT
+><CODE
+CLASS="FUNCTION"
+>ssl_client_serial() 返回 numeric</CODE
+>
+     </DT
+><DD
+><P
+>     返回当前客户端证书的序列号。证书序列号和证书发行人的组合被确保可以
+     唯一标识一个证书（但是不能唯一标识其拥有者 &mdash; 拥有者应该定期地更换其密钥，
+     并且从发行人那里得到新的证书）。
+    </P
+><P
+>     因此，如果你运行自己的 CA 并且只允许服务器接收来自于这个 CA 的证书，序列号就是最可靠的（虽然并非很好记忆）标识一个用户的方法。
+    </P
+></DD
+><DT
+><CODE
+CLASS="FUNCTION"
+>ssl_client_dn() 返回 text</CODE
+>
+     </DT
+><DD
+><P
+>     返回当前客户端证书的完整主题，并且将字符数据转换成当前数据库的编码。我们假定如果你在证书名中使用非 ASCII 字符，你的数据库也有能力展示这些字符。如果你的数据库使用 SQL_ASCII 编码，名称中的非 ASCII 字符将被表示为 UTF-8 序列。
+    </P
+><P
+>     结果看起来像<TT
+CLASS="LITERAL"
+>/CN=某人 /C=某个国家 /O=某个组织</TT
+>。
+    </P
+></DD
+><DT
+><CODE
+CLASS="FUNCTION"
+>ssl_issuer_dn() 返回 text</CODE
+>
+    </DT
+><DD
+><P
+>     返回当前客户端证书的完整的发行人名称，并把字符数据转换成当前数据库的编码。编码转换以与<CODE
+CLASS="FUNCTION"
+>ssl_client_dn</CODE
+>相同的方式处理。
+    </P
+><P
+>     这个函数的返回值与证书序列号的组合唯一地标识证书。
+    </P
+><P
+>     如果在服务器的<TT
+CLASS="FILENAME"
+>root.crt</TT
+>文件中有多于一个的可信 CA 证书，或者如果 CAI 已经发行了某些中间认证授权证书，这个函数就真的很有用。
+    </P
+></DD
+><DT
+><CODE
+CLASS="FUNCTION"
+>ssl_client_dn_field(fieldname text) 返回 text</CODE
+>
+    </DT
+><DD
+><P
+>     这个函数返回证书主题中指定域的值，如果域不存在则返回 NULL。域的名称是字符串常量，它们被使用 OpenSSL 对象数据库转换成 ASN1 对象标识符。下列值是可接受的：
+    </P
+><PRE
+CLASS="LITERALLAYOUT"
+>commonName (alias CN)
+surname (alias SN)
+name
+givenName (alias GN)
+countryName (alias C)
+localityName (alias L)
+stateOrProvinceName (alias ST)
+organizationName (alias O)
+organizationUnitName (alias OU)
+title
+description
+initials
+postalCode
+streetAddress
+generationQualifier
+description
+dnQualifier
+x500UniqueIdentifier
+pseudonym
+role
+emailAddress</PRE
+><P
+>     这些域中除了<TT
+CLASS="STRUCTFIELD"
+>commonName</TT
+>都是可选的。它们之中哪些会被包括或者不会被包括完全取决于你的 CA 策略。不过，这些域的含义由 X.500 和 X.509 标准严格地定义，因此你不能只是为它们分配任意含义。
+    </P
+></DD
+><DT
+><CODE
+CLASS="FUNCTION"
+>ssl_issuer_field(fieldname text) 返回 text</CODE
+>
+    </DT
+><DD
+><P
+>     和<CODE
+CLASS="FUNCTION"
+>ssl_client_dn_field</CODE
+>一样，但是用于证书发行人而不是证书主题。
+    </P
+></DD
+><DT
+><CODE
+CLASS="FUNCTION"
+>ssl_extension_info() 返回 setof record</CODE
+>
+     </DT
+><DD
+><P
+>     提供有关客户端证书扩展的信息：扩展名、扩展值以及是否为
+     决定性的扩展。
+    </P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN181703"
+>F.37.2. 作者</A
+></H2
+><P
+>   Victor Wagner <CODE
+CLASS="EMAIL"
+>&#60;<A
+HREF="mailto:vitus@cryptocom.ru"
+>vitus@cryptocom.ru</A
+>&#62;</CODE
+>, Cryptocom LTD
+  </P
+><P
+>   Dmitry Voronin <CODE
+CLASS="EMAIL"
+>&#60;<A
+HREF="mailto:carriingfate92@yandex.ru"
+>carriingfate92@yandex.ru</A
+>&#62;</CODE
+>
+  </P
+><P
+>   Cryptocom OpenSSL 开发组的 E-Mail：
+   <CODE
+CLASS="EMAIL"
+>&#60;<A
+HREF="mailto:openssl@cryptocom.ru"
+>openssl@cryptocom.ru</A
+>&#62;</CODE
+>
+  </P
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="contrib-spi.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="tablefunc.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>spi</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="contrib.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>tablefunc</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

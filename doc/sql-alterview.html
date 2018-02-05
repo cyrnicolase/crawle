@@ -1,0 +1,557 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>ALTER VIEW</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="SQL 命令"
+HREF="sql-commands.html"><LINK
+REL="PREVIOUS"
+TITLE="ALTER USER MAPPING"
+HREF="sql-alterusermapping.html"><LINK
+REL="NEXT"
+TITLE="ANALYZE"
+HREF="sql-analyze.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="REFENTRY"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/ref/alter_view.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="ALTER USER MAPPING"
+HREF="sql-alterusermapping.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="ANALYZE"
+HREF="sql-analyze.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="SQL-ALTERVIEW"
+></A
+>ALTER VIEW</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN76433"
+></A
+><H2
+>&#21517;&#31216;</H2
+>ALTER VIEW&nbsp;--&nbsp;更改一个视图的定义</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN76436"
+></A
+><H2
+>&#22823;&#32434;</H2
+><PRE
+CLASS="SYNOPSIS"
+>ALTER VIEW [ IF EXISTS ] <TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+> ALTER [ COLUMN ] <TT
+CLASS="REPLACEABLE"
+><I
+>column_name</I
+></TT
+> SET DEFAULT <TT
+CLASS="REPLACEABLE"
+><I
+>expression</I
+></TT
+>
+ALTER VIEW [ IF EXISTS ] <TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+> ALTER [ COLUMN ] <TT
+CLASS="REPLACEABLE"
+><I
+>column_name</I
+></TT
+> DROP DEFAULT
+ALTER VIEW [ IF EXISTS ] <TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+> OWNER TO { <TT
+CLASS="REPLACEABLE"
+><I
+>new_owner</I
+></TT
+> | CURRENT_USER | SESSION_USER }
+ALTER VIEW [ IF EXISTS ] <TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+> RENAME TO <TT
+CLASS="REPLACEABLE"
+><I
+>new_name</I
+></TT
+>
+ALTER VIEW [ IF EXISTS ] <TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+> SET SCHEMA <TT
+CLASS="REPLACEABLE"
+><I
+>new_schema</I
+></TT
+>
+ALTER VIEW [ IF EXISTS ] <TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+> SET ( <TT
+CLASS="REPLACEABLE"
+><I
+>view_option_name</I
+></TT
+> [= <TT
+CLASS="REPLACEABLE"
+><I
+>view_option_value</I
+></TT
+>] [, ... ] )
+ALTER VIEW [ IF EXISTS ] <TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+> RESET ( <TT
+CLASS="REPLACEABLE"
+><I
+>view_option_name</I
+></TT
+> [, ... ] )</PRE
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN76454"
+></A
+><H2
+>描述</H2
+><P
+>   <TT
+CLASS="COMMAND"
+>ALTER VIEW</TT
+>更改一个视图的多种辅助属性（如果想要
+   修改视图的查询定义，应使用<TT
+CLASS="COMMAND"
+>CREATE OR REPLACE VIEW</TT
+>）。
+  </P
+><P
+>   要使用<TT
+CLASS="COMMAND"
+>ALTER VIEW</TT
+>，你必须拥有该视图。要更改一个视图的模式，
+   你还必须具有新模式上的<TT
+CLASS="LITERAL"
+>CREATE</TT
+>特权。要更改拥有者，你还必须
+   是新拥有角色的一个直接或者间接成员，并且该角色必须具有该视图的模式上的
+   <TT
+CLASS="LITERAL"
+>CREATE</TT
+>特权（这些限制强制修改拥有者不能做一些通过删除和重
+   建视图做不到的事情。不过，一个超级用户怎么都能更改任何视图的所有权。）。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN76463"
+></A
+><H2
+>参数</H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+></DT
+><DD
+><P
+>      一个现有视图的名称（可以是模式限定的）。
+     </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>IF EXISTS</TT
+></DT
+><DD
+><P
+>      该视图不存在时不要抛出一个错误。这种情况下会发出一个提示。
+     </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>SET</TT
+>/<TT
+CLASS="LITERAL"
+>DROP DEFAULT</TT
+></DT
+><DD
+><P
+>      这些形式为一个列设置或者移除默认值。对于任何在该视图上的
+      <TT
+CLASS="COMMAND"
+>INSERT</TT
+>或者<TT
+CLASS="COMMAND"
+>UPDATE</TT
+>命令，一个视图列的默认值
+      会在引用该视图的任何规则或触发器之前被替换进来。因此，该视图的默认值将会
+      优先于来自底层关系的任何默认值。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>new_owner</I
+></TT
+></DT
+><DD
+><P
+>      该视图的新拥有者的用户名。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>new_name</I
+></TT
+></DT
+><DD
+><P
+>      该视图的新名称。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>new_schema</I
+></TT
+></DT
+><DD
+><P
+>      该视图的新模式。
+     </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>SET ( <TT
+CLASS="REPLACEABLE"
+><I
+>view_option_name</I
+></TT
+> [= <TT
+CLASS="REPLACEABLE"
+><I
+>view_option_value</I
+></TT
+>] [, ... ] )</TT
+><BR><TT
+CLASS="LITERAL"
+>RESET ( <TT
+CLASS="REPLACEABLE"
+><I
+>view_option_name</I
+></TT
+> [, ... ] )</TT
+></DT
+><DD
+><P
+>      设置或者重置一个视图选项。当前支持的选项有：
+      <P
+></P
+></P><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="LITERAL"
+>check_option</TT
+> (<TT
+CLASS="TYPE"
+>string</TT
+>)</DT
+><DD
+><P
+>          更改该视图的检查选项。值必须是<TT
+CLASS="LITERAL"
+>local</TT
+>
+          或者<TT
+CLASS="LITERAL"
+>cascaded</TT
+>。
+         </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>security_barrier</TT
+> (<TT
+CLASS="TYPE"
+>boolean</TT
+>)</DT
+><DD
+><P
+>          更改该视图的安全屏障属性。值必须是一个布尔值，如
+          <TT
+CLASS="LITERAL"
+>true</TT
+>或者<TT
+CLASS="LITERAL"
+>false</TT
+>。
+         </P
+></DD
+></DL
+></DIV
+><P>
+     </P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN76526"
+></A
+><H2
+>注解</H2
+><P
+>   由于历史原因，<TT
+CLASS="COMMAND"
+>ALTER TABLE</TT
+>也可以用于视图，但是
+   只允许等效于以上形式的<TT
+CLASS="COMMAND"
+>ALTER TABLE</TT
+>变体用于视图。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN76531"
+></A
+><H2
+>示例</H2
+><P
+>   把视图<TT
+CLASS="LITERAL"
+>foo</TT
+>重命名为
+   <TT
+CLASS="LITERAL"
+>bar</TT
+>：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>ALTER VIEW foo RENAME TO bar;</PRE
+><P>
+  </P
+><P
+>   要为一个可更新视图附加一个默认列值：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>CREATE TABLE base_table (id int, ts timestamptz);
+CREATE VIEW a_view AS SELECT * FROM base_table;
+ALTER VIEW a_view ALTER COLUMN ts SET DEFAULT now();
+INSERT INTO base_table(id) VALUES(1);  -- ts will receive a NULL
+INSERT INTO a_view(id) VALUES(2);  -- ts will receive the current time</PRE
+><P></P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN76539"
+></A
+><H2
+>兼容性</H2
+><P
+>   <TT
+CLASS="COMMAND"
+>ALTER VIEW</TT
+>是一种<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>
+   的 SQL 标准扩展。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN76544"
+></A
+><H2
+>另见</H2
+><A
+HREF="sql-createview.html"
+>CREATE VIEW</A
+>, <A
+HREF="sql-dropview.html"
+>DROP VIEW</A
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-alterusermapping.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="sql-analyze.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>ALTER USER MAPPING</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>ANALYZE</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

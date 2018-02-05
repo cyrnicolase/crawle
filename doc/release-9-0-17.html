@@ -1,0 +1,319 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>版本 9.0.17</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="版本说明"
+HREF="release.html"><LINK
+REL="PREVIOUS"
+TITLE="版本 9.0.18"
+HREF="release-9-0-18.html"><LINK
+REL="NEXT"
+TITLE="版本 9.0.16"
+HREF="release-9-0-16.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/release-9.0.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="版本 9.0.18"
+HREF="release-9-0-18.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="release.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#38468;&#24405; E. 版本说明</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="版本 9.0.16"
+HREF="release-9-0-16.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="RELEASE-9-0-17"
+>E.81. 版本 9.0.17</A
+></H1
+><DIV
+CLASS="NOTE"
+><BLOCKQUOTE
+CLASS="NOTE"
+><P
+><B
+>发布日期: </B
+>2014-03-20</P
+></BLOCKQUOTE
+></DIV
+><P
+>这个版本包含各种自9.0.16以来的修复。想要获得关于9.0主版本的新特性信息，
+请参阅<A
+HREF="release-9-0.html"
+>第 E.98 &#33410;</A
+>。</P
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN149268"
+>E.81.1. 迁移到版本 9.0.17</A
+></H2
+><P
+>运行9.0.X的系统不需要转储/恢复。</P
+><P
+>不过，如果你是从一个早于9.0.15的版本升级而来，
+请参阅<A
+HREF="release-9-0-15.html"
+>第 E.83 &#33410;</A
+>。</P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN149273"
+>E.81.2. 修改列表</A
+></H2
+><P
+></P
+><UL
+><LI
+><P
+>恢复GIN元页无条件的避免页撕裂风险 (Heikki Linnakangas)</P
+><P
+>尽管这个疏忽理论上会导致损坏索引，但是实际上不太可能导致任何问题，
+因为GIN元页的活动部分要比标准512字节磁盘扇区要小。</P
+></LI
+><LI
+><P
+>在收到<TT
+CLASS="COMMAND"
+>NOTIFY</TT
+>信息时，避免检查事务提交状态中的竞态条件 (Marko Tiikkaja)</P
+><P
+>这阻止了在通知者所做的数据库更新还未被接收者可见之前，
+在足够快的客户端上响应通知的情况。</P
+></LI
+><LI
+><P
+>允许查询取消请求提早终止正则表达式运算 (Tom Lane)</P
+><P
+>这阻止了病态的正则表达式锁定服务器处理使其很长一段时间不可中断的情况。</P
+></LI
+><LI
+><P
+>删除尝试允许<TT
+CLASS="LITERAL"
+>OVERLAPS</TT
+>带有单元素行参数的不正确代码 (Joshua Yanovski)</P
+><P
+>这段代码从未正确运行过，并且该情况未被SQL标准说明也未记录，
+所以看起来最好是删除它而不是修复。</P
+></LI
+><LI
+><P
+>在解析视图的规则时，避免获得多于<TT
+CLASS="LITERAL"
+>AccessShareLock</TT
+>个锁 (Dean Rasheed)</P
+><P
+>这个疏忽会导致<SPAN
+CLASS="APPLICATION"
+>pg_dump</SPAN
+>在规则中
+<TT
+CLASS="LITERAL"
+>INSERT</TT
+>/<TT
+CLASS="LITERAL"
+>UPDATE</TT
+>/<TT
+CLASS="LITERAL"
+>DELETE</TT
+>
+命令提到的目标表上意外的请求<TT
+CLASS="LITERAL"
+>RowExclusiveLock</TT
+>锁。
+虽然通常是无害的，但是会干扰尝试在那些表上请求，比如<TT
+CLASS="LITERAL"
+>ShareLock</TT
+>
+锁的并发事务。</P
+></LI
+><LI
+><P
+>改善规划期间索引端点探针的性能 (Tom Lane)</P
+><P
+>这个修改修复了在索引末端有许多还未提交的行时发生的重要性能问题，
+这是顺序分配值的索引上的共同情况，比如时间戳或顺序生成的标识符。</P
+></LI
+><LI
+><P
+>修复测试，查看在崩溃后是否立即允许热备份链接 (Heikki Linnakangas)</P
+></LI
+><LI
+><P
+>在报告非<TT
+CLASS="LITERAL"
+>ERROR</TT
+>消息时，阻止中断 (Tom Lane)</P
+><P
+>这防止了由于<CODE
+CLASS="FUNCTION"
+>syslog()</CODE
+>递归项引起的少见服务器处理冻结，
+和可能的其他相关问题。</P
+></LI
+><LI
+><P
+>阻止最近Windows版本上间歇的<SPAN
+CLASS="QUOTE"
+>"could not reserve shared memory region"</SPAN
+>
+失败 (MauMau)</P
+></LI
+><LI
+><P
+>更新时区数据文件到<SPAN
+CLASS="APPLICATION"
+>tzdata</SPAN
+>版本2014a，
+因为DST规律在斐济和土耳其发生了改变，加上以色列和乌克兰的历史修改。</P
+></LI
+></UL
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="release-9-0-18.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="release-9-0-16.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>版本 9.0.18</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="release.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>版本 9.0.16</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

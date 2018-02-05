@@ -1,0 +1,956 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>版本 9.4.2</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="版本说明"
+HREF="release.html"><LINK
+REL="PREVIOUS"
+TITLE="版本 9.4.3"
+HREF="release-9-4-3.html"><LINK
+REL="NEXT"
+TITLE="版本 9.4.1"
+HREF="release-9-4-1.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/release-9.4.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="版本 9.4.3"
+HREF="release-9-4-3.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="release.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#38468;&#24405; E. 版本说明</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="版本 9.4.1"
+HREF="release-9-4-1.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="RELEASE-9-4-2"
+>E.14. 版本 9.4.2</A
+></H1
+><DIV
+CLASS="NOTE"
+><BLOCKQUOTE
+CLASS="NOTE"
+><P
+><B
+>发布日期: </B
+>2015-05-22</P
+></BLOCKQUOTE
+></DIV
+><P
+>   这个版本包含各种自9.4.1以来的修复。关于9.4主版本的的新特性信息，
+   请查看<A
+HREF="release-9-4.html"
+>第 E.16 &#33410;</A
+>。
+  </P
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN134451"
+>E.14.1. 迁移到版本9.4.2</A
+></H2
+><P
+>    运行9.4.X版本的用户不需要转储/恢复。
+   </P
+><P
+>    不过，如果你使用了<TT
+CLASS="FILENAME"
+>contrib/citext</TT
+>的<CODE
+CLASS="FUNCTION"
+>regexp_matches()</CODE
+>
+    函数，请产看下面关于它的修改日志项。
+   </P
+><P
+>    另外，如果你是从早于9.4.1的版本升级而来，请查看<A
+HREF="release-9-4-1.html"
+>第 E.15 &#33410;</A
+>。
+   </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN134459"
+>E.14.2. 修改列表</A
+></H2
+><P
+></P
+><UL
+><LI
+><P
+>      避免正好在认证超时之前客户端断开时可能的崩溃 (Benkocs Norbert Attila)
+     </P
+><P
+>      如果超时中断触发了会话关闭序列中的一部分，那么SSL相关的状态将会释放两次，
+      通常导致崩溃并且因此拒绝其他会话的服务。实验显示一个未认证的远程攻击会有些一致的触发该bug，
+      因此将其看做是安全问题。 (CVE-2015-3165)
+     </P
+></LI
+><LI
+><P
+>      改善系统调用失败的检测 (Noah Misch)
+     </P
+><P
+>      我们的<CODE
+CLASS="FUNCTION"
+>snprintf()</CODE
+>替换实现未能检查底层系统库调用报告的错误；
+      可能错过的主要情况是内存溢出状况。在最坏的情况下，这可能导致信息暴露，
+      因为我们的代码假设一个缓冲器已经重写了，而它没有重写。另外，
+      有几个地方有其他系统库函数的安全相关的调用没有检查失败。
+     </P
+><P
+>      如果内存溢出错误发生在错误的时间，那么仍然有可能<CODE
+CLASS="FUNCTION"
+>*printf()</CODE
+>
+      族的一些函数调用容易信息暴露。我们判断该风险不大，但是将继续在这方面分析。
+      (CVE-2015-3166)
+     </P
+></LI
+><LI
+><P
+>      在<TT
+CLASS="FILENAME"
+>contrib/pgcrypto</TT
+>中，统一报告解密失败为<SPAN
+CLASS="QUOTE"
+>"错误的键或数据损坏"</SPAN
+> (Noah Misch)
+     </P
+><P
+>      以前，用不正确的键解密的一些情况会报告其他错误消息文本。
+      已经证明，在错误报告中显示这样的变化会帮助攻击者从其他系统中恢复键。
+      虽然不知道<TT
+CLASS="FILENAME"
+>pgcrypto</TT
+>的特定行为是否也可以利用，
+      看起来最好是使用一个通用的消息避免风险。 (CVE-2015-3167)
+     </P
+></LI
+><LI
+><P
+>      防止包含multixact成员ID (&Aacute;lvaro Herrera, Robert Haas, Thomas Munro)
+     </P
+><P
+>      在某些使用模式，现有的防御可能是不充分的，允许<TT
+CLASS="FILENAME"
+>pg_multixact/members</TT
+>
+      文件过早的移除，导致数据丢失。对此的修复包括修改服务器让导致重写老的multixact成员ID数据的事务失败，
+      并且改进自动清理以确保它主动地阻止包括multixact成员ID，就像处理包含事务ID一样。
+     </P
+></LI
+><LI
+><P
+>      修复<TT
+CLASS="FILENAME"
+>contrib/citext</TT
+>的<CODE
+CLASS="FUNCTION"
+>regexp_matches()</CODE
+>
+      函数的错误声明 (Tom Lane)
+     </P
+><P
+>      这些函数应该返回<TT
+CLASS="TYPE"
+>setof text[]</TT
+>，就像它们封装的内核函数一样；
+      但是它们错误的声明为只返回<TT
+CLASS="TYPE"
+>text[]</TT
+>。这个错误有两个结果：
+      第一，如果没有匹配则获得一个标量null结果，而你应该得到的是一个空集合（0行）。
+      第二，有效的忽略了<TT
+CLASS="LITERAL"
+>g</TT
+>标志，因此你将只得到一个结果数组，
+      即使有多个匹配。
+     </P
+><P
+>      然而后者的行为明显是一个bug，可能有应用依赖于前者的行为；
+      因此函数声明缺省将不会改变，直到<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+> 9.5。
+      在9.5以前的分支，老的行为存在于<TT
+CLASS="LITERAL"
+>citext</TT
+>扩展的1.0版本中，
+      而我们在版本1.1中提供了纠正声明（缺省<SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>没有</I
+></SPAN
+>安装）。
+      要在9.5之前的分支中采用该修复，在每个安装了<TT
+CLASS="LITERAL"
+>citext</TT
+>
+      的数据库中执行<TT
+CLASS="LITERAL"
+>ALTER EXTENSION citext UPDATE TO '1.1'</TT
+>。
+      （如果要取消操作，你也可以<SPAN
+CLASS="QUOTE"
+>"update"</SPAN
+>回到1.0。）
+      要知道任一更新方向都将需要删除并重建任何使用<TT
+CLASS="FILENAME"
+>citext</TT
+>
+      的<CODE
+CLASS="FUNCTION"
+>regexp_matches()</CODE
+>函数的视图和规则。
+     </P
+></LI
+><LI
+><P
+>     在转换到<TT
+CLASS="TYPE"
+>json</TT
+>时，让无限的日期和时间戳显示为<TT
+CLASS="LITERAL"
+>infinity</TT
+>，
+     而不是抛出一个错误 (Andrew Dunstan)
+     </P
+></LI
+><LI
+><P
+>      修复<TT
+CLASS="TYPE"
+>json</TT
+>/<TT
+CLASS="TYPE"
+>jsonb</TT
+>的<CODE
+CLASS="FUNCTION"
+>populate_record()</CODE
+>
+      和<CODE
+CLASS="FUNCTION"
+>to_record()</CODE
+>函数，正确的处理空输入 (Andrew Dunstan)
+     </P
+></LI
+><LI
+><P
+>      修复HOT更新之后延迟排除约束的不正确的检查 (Tom Lane)
+     </P
+><P
+>      如果一个新行潜在的违反稍后在同一个事务中HOT更新（也就是，
+      没有索引的字段改变并且该行可以存储到相同的表页面中）的延迟排除约束，
+      那么当检查最终发生时，该排除约束将被报告为违反，即使最初与该新行冲突的行已经删除。
+     </P
+></LI
+><LI
+><P
+>      修复用<TT
+CLASS="LITERAL"
+>ALTER TABLE ... ALTER CONSTRAINT</TT
+>改变外键约束可延迟状态时的行为 (Tom Lane)
+     </P
+><P
+>     在同一会话或并发会话中的稍后操作可能不能立即遵守变化的状态。
+     </P
+></LI
+><LI
+><P
+>      修复星型模式风格查询的规划 (Tom Lane)
+     </P
+><P
+>      有时，大表的高效扫描需要多个表提供索引参数（通常，是提供键索引大的事实表的维度表）。
+      规划器应该能够找出这样的规划，但是过度限制的搜索提示会阻止找出规划。
+     </P
+></LI
+><LI
+><P
+>     阻止反连接(不存在连接)对其他外连接不正确的重新排序 (Tom Lane)
+     </P
+><P
+>      已经观察到规划器中的这个疏忽会导致<SPAN
+CLASS="QUOTE"
+>"未能找到给定relids的RelOptInfo"</SPAN
+>错误，
+      但是有可能有时通过不正确的查询规划，导致在静默的错误查询输出中有不一致的检查和结果。
+     </P
+></LI
+><LI
+><P
+>      修复外连接规划节点中不正确的子表达式匹配 (Tom Lane)
+     </P
+><P
+>      以前，如果外连接上下都使用了文本相同、非严格的子表达式，
+      规划器可能尝试重利用连接下面计算的值，这是不正确的，
+      因为执行器在外部行不匹配的情况下将强制该值为NULL。
+     </P
+></LI
+><LI
+><P
+>      修复GEQO规划器，以处理它的连接顺序启发方法的失败 (Tom Lane)
+     </P
+><P
+>      已经看到这个疏忽在包含<TT
+CLASS="LITERAL"
+>LATERAL</TT
+>的查询中会导致
+      <SPAN
+CLASS="QUOTE"
+>"未能同时连接所有关系"</SPAN
+>的错误，并且也可能在其他情况下发生。
+     </P
+></LI
+><LI
+><P
+>      当<TT
+CLASS="COMMAND"
+>UPDATE</TT
+>或<TT
+CLASS="COMMAND"
+>DELETE</TT
+>的目标是一个安全屏障视图时，
+      确保正确的发生行锁定 (Stephen Frost)
+     </P
+></LI
+><LI
+><P
+>      当在数据库启动期间同步复制槽数据时，使用文件打开来读/写 (Andres Freund)
+     </P
+><P
+>      在一些平台上，以前的编程会导致像
+      <SPAN
+CLASS="QUOTE"
+>"不能同步文件"pg_replslot/..."：错误的文件描述符"</SPAN
+>这样的错误。
+     </P
+></LI
+><LI
+><P
+>      修复当<TT
+CLASS="LITERAL"
+>max_prepared_transactions</TT
+>太小时，
+      启动时可能的死锁 (Heikki Linnakangas)
+     </P
+></LI
+><LI
+><P
+>      不要归档跟在时间线切换后面的无用的预先分配的WAL文件 (Heikki Linnakangas)
+     </P
+></LI
+><LI
+><P
+>      在崩溃后递归的<CODE
+CLASS="FUNCTION"
+>fsync()</CODE
+>数据目录 (Abhijit Menon-Sen, Robert Haas)
+     </P
+><P
+>      如果另一个崩溃稍后发生，这就确保了一致性。（第二个崩溃必须是一个系统级别的崩溃，
+      不只是数据库崩溃，所以这里是一个问题。）
+     </P
+></LI
+><LI
+><P
+>      修复自动清理启动器在接收到SIGTERM之后发生错误时可能的未能关闭 (&Aacute;lvaro Herrera)
+     </P
+></LI
+><LI
+><P
+>      修复早在会话启动的时候未能处理系统目录的无效消息 (Tom Lane)
+     </P
+><P
+>      这个疏忽会导致在系统目录上与<TT
+CLASS="COMMAND"
+>VACUUM FULL</TT
+>并发的会话中的失败。
+     </P
+></LI
+><LI
+><P
+>      修复尝试获取刚刚退出的后端进程的状态时<CODE
+CLASS="FUNCTION"
+>BackendIdGetTransactionIds()</CODE
+>
+      中的崩溃 (Tom Lane)
+     </P
+></LI
+><LI
+><P
+>      处理<CODE
+CLASS="FUNCTION"
+>LockBufferForCleanup()</CODE
+>中的意外信号 (Andres Freund)
+     </P
+><P
+>      这个疏忽会导致关于<SPAN
+CLASS="QUOTE"
+>"多个后端尝试等待pincount 1"</SPAN
+>的伪错误。
+     </P
+></LI
+><LI
+><P
+>      修复带有包含整行引用的检查约束执行<TT
+CLASS="LITERAL"
+>COPY IN</TT
+>到一个表时的崩溃 (Tom Lane)
+     </P
+><P
+>      已知的失败案例只在9.4及以上的版本中崩溃了，但是在9.3和9.2中有非常相似的代码，
+      所以也向后打了这些分支的补丁。
+     </P
+></LI
+><LI
+><P
+>      在用户关心的只读事务提交期间，避免等待WAL刷新或同步复制 (Andres Freund)
+     </P
+><P
+>      以前，在由于HOT页修剪写入WAL的事务中提交时会发生延迟，导致不良影响，
+      比如如果执行所有的同步复制，那么会话在启动时被卡住。同样观察到，
+      在使用同步复制时，在追赶中断处理中会话也会被卡住；这也会修复这个问题。
+     </P
+></LI
+><LI
+><P
+>      避免短暂的<TT
+CLASS="LITERAL"
+>recovery_min_apply_delay</TT
+>值忙碌等待 (Andres Freund)
+     </P
+></LI
+><LI
+><P
+>      修复在临时表上手动哈希索引时的崩溃 (Heikki Linnakangas)
+     </P
+></LI
+><LI
+><P
+>      修复其他进程并发的修改索引时，哈希索引桶分裂期间可能的失败 (Tom Lane)
+     </P
+></LI
+><LI
+><P
+>      修复GIN索引清理中的内存泄露 (Heikki Linnakangas)
+     </P
+></LI
+><LI
+><P
+>      在分析索引表达式时检查中断 (Jeff Janes)
+     </P
+><P
+>      <TT
+CLASS="COMMAND"
+>ANALYZE</TT
+>执行索引表达式多次；如果在这样的一个表达式中有缓慢的功能，
+      那么在循环结束之前取消<TT
+CLASS="COMMAND"
+>ANALYZE</TT
+>是可取的。
+     </P
+></LI
+><LI
+><P
+>      确保<TT
+CLASS="LITERAL"
+>READ COMMITTED</TT
+>复查发生在<TT
+CLASS="COMMAND"
+>SELECT FOR UPDATE</TT
+>、
+      <TT
+CLASS="COMMAND"
+>UPDATE</TT
+>或<TT
+CLASS="COMMAND"
+>DELETE</TT
+>中的锁定行之后时，正确的报告外部表的
+      <TT
+CLASS="STRUCTFIELD"
+>tableoid</TT
+> (Etsuro Fujita)
+     </P
+></LI
+><LI
+><P
+>      为使用映射的外部服务器用户添加目标服务器名字到目标描述字符串 (&Aacute;lvaro Herrera)
+     </P
+></LI
+><LI
+><P
+>      在用于转换的目标身份字符串中包含模式名 (&Aacute;lvaro Herrera)
+     </P
+></LI
+><LI
+><P
+>      当使用Kerberos/GSSAPI/SSPI认证时，推荐设置<TT
+CLASS="LITERAL"
+>include_realm</TT
+>为1 (Stephen Frost)
+     </P
+><P
+>      没有这个，不能识别来自不同领域的相同名字的用户。目前，这只是一个文档变化，
+      但是它在<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+> 9.5中将成为缺省设置。
+     </P
+></LI
+><LI
+><P
+>      移动匹配IPv4 <TT
+CLASS="FILENAME"
+>pg_hba.conf</TT
+>项的代码到IPv4-in-IPv6地址 (Tom Lane)
+     </P
+><P
+>      这个骇客是在2003年添加的，回应一些Linux内核有时报告IPv4为拥有IPv4-in-IPv6地址连接的报告。
+      不过，该逻辑在9.0被偶然的打断了。缺乏任何字段投诉之后显示不再需要这些代码了。
+      现在我们已经报告了不完善的代码在某些系统上会导致崩溃，
+      所以我们只是移除它而不是修复它。（如果我们选择修复它，那么在IPv4 <TT
+CLASS="FILENAME"
+>pg_hba.conf</TT
+>
+      项的有效含义中可能会有微妙的、潜在的安全问题改变，在小版本中做这个看起来不是一个好的事情。）
+     </P
+></LI
+><LI
+><P
+>      修复从未真正启动过的终止的后台进程的状态报告  (Robert Haas)
+     </P
+></LI
+><LI
+><P
+>      在数据库崩溃之后，不要重启标记为<TT
+CLASS="LITERAL"
+>BGW_NEVER_RESTART</TT
+>
+      的后台进程 (Amit Khandekar)
+     </P
+></LI
+><LI
+><P
+>      报告WAL刷新，不插入，定位在<TT
+CLASS="LITERAL"
+>IDENTIFY_SYSTEM</TT
+>复制命令中 (Heikki Linnakangas)
+     </P
+><P
+>      这避免了<SPAN
+CLASS="APPLICATION"
+>pg_receivexlog</SPAN
+>中一个可能的启动失败。
+     </P
+></LI
+><LI
+><P
+>      当在Windows上关闭服务时，定期发送状态更新到服务控制管理器，
+      以阻止它太快的杀死服务；并且确保<SPAN
+CLASS="APPLICATION"
+>pg_ctl</SPAN
+>等待关闭 (Krystian Bigaj)
+     </P
+></LI
+><LI
+><P
+>      减少使用<SPAN
+CLASS="APPLICATION"
+>libpq</SPAN
+>的非阻塞模式时网络死锁的风险 (Heikki Linnakangas)
+     </P
+><P
+>      当发送大量数据时，偶尔耗尽输入内存是非常重要的，以防服务器发送大量响应数据导致它阻塞输出。
+      （一个典型的情况是在<TT
+CLASS="LITERAL"
+>COPY FROM STDIN</TT
+>期间服务器发送大量的NOTICE消息。）
+      这在正常的阻塞模式下正确的工作，但是在非阻塞模式下不行。
+      我们已经修改了<SPAN
+CLASS="APPLICATION"
+>libpq</SPAN
+>以在可能时偶尔耗尽输入，
+      但是全面防御这个问题需要应用协同：应用应该注意套接字读准备好和写准备好条件，
+      并确保在读准备好时调用<CODE
+CLASS="FUNCTION"
+>PQconsumeInput()</CODE
+>。
+     </P
+></LI
+><LI
+><P
+>      在<SPAN
+CLASS="APPLICATION"
+>libpq</SPAN
+>中，修复URI连接字符串中对空值的错误解析 (Thomas Fanghaenel)
+     </P
+></LI
+><LI
+><P
+>      修复<SPAN
+CLASS="APPLICATION"
+>ecpg</SPAN
+>中的数组处理 (Michael Meskes)
+     </P
+></LI
+><LI
+><P
+>      修复<SPAN
+CLASS="APPLICATION"
+>psql</SPAN
+>以稳健的处理URI和conninfo字符串为<TT
+CLASS="COMMAND"
+>\connect</TT
+>
+      的第一个参数 (David Fetter, Andrew Dunstan, &Aacute;lvaro Herrera)
+     </P
+><P
+>      已经接受这个语法很长时间了（但是没有记录在册），
+      但是以前一些参数可能从老的连接而不是给定的字符串中获取，这是不可取的。
+     </P
+></LI
+><LI
+><P
+>      废止某些平台上<SPAN
+CLASS="APPLICATION"
+>psql</SPAN
+>在退出时未能写入<TT
+CLASS="FILENAME"
+>~/.psql_history</TT
+>
+      时不正确的抱怨 (Tom Lane)
+     </P
+><P
+>      这个错误行为是由很老的（2006以前）<SPAN
+CLASS="APPLICATION"
+>libedit</SPAN
+>版本绕开一个bug时引起的。
+      我们通过移除该变通方案来修复它，这将导致仍然使用这个<SPAN
+CLASS="APPLICATION"
+>libedit</SPAN
+>
+      版本的用户出现类似的错误。建议：更新该库，或使用<SPAN
+CLASS="APPLICATION"
+>libreadline</SPAN
+>。
+     </P
+></LI
+><LI
+><P
+>      修复<SPAN
+CLASS="APPLICATION"
+>pg_dump</SPAN
+>的规则以决定哪个转换是应该废弃的系统提供的转换 (Tom Lane)
+     </P
+></LI
+><LI
+><P
+>      在<SPAN
+CLASS="APPLICATION"
+>pg_dump</SPAN
+>中，修复未能遵守<TT
+CLASS="LITERAL"
+>-Z</TT
+>
+      压缩级别选项连同<TT
+CLASS="LITERAL"
+>-Fd</TT
+> (Michael Paquier)
+     </P
+></LI
+><LI
+><P
+>      让<SPAN
+CLASS="APPLICATION"
+>pg_dump</SPAN
+>在选择转储顺序时考虑扩展配置表间的外键关系
+      (Gilles Darold, Michael Paquier, Stephen Frost)
+     </P
+><P
+>      这个疏忽会导致生成的转储未能重载，因为外键约束暂时性的违反。
+     </P
+></LI
+><LI
+><P
+>      当创建并发的会话和删除临时函数时，避免可能的<SPAN
+CLASS="APPLICATION"
+>pg_dump</SPAN
+>失败 (Tom Lane)
+     </P
+></LI
+><LI
+><P
+>      修复仅有<TT
+CLASS="LITERAL"
+>VALUES(...)</TT
+>但是有字段别名的视图的转储 (Tom Lane)
+     </P
+></LI
+><LI
+><P
+>      确保一个视图的复制标识在转储/恢复期间正确的设置为<TT
+CLASS="LITERAL"
+>nothing</TT
+> (Marko Tiikkaja)
+     </P
+><P
+>      以前，如果该视图包含在一个循环依赖中，那么它可能以一个不正确的复制标识属性结束。
+     </P
+></LI
+><LI
+><P
+>      在<SPAN
+CLASS="APPLICATION"
+>pg_upgrade</SPAN
+>中，强制时间线1在新的群集中 (Bruce Momjian)
+     </P
+><P
+>      这个修改阻止了由于丢失WAL历史文件的虚假报错引起的升级失败。
+     </P
+></LI
+><LI
+><P
+>      在<SPAN
+CLASS="APPLICATION"
+>pg_upgrade</SPAN
+>中，在进行之前，先检查不适当的不可连接数据库
+      (Bruce Momjian)
+     </P
+></LI
+><LI
+><P
+>      在<SPAN
+CLASS="APPLICATION"
+>pg_upgrade</SPAN
+>中，在生成的<TT
+CLASS="LITERAL"
+>delete_old_cluster</TT
+>
+      脚本中正确的引用目录路径 (Bruce Momjian)
+     </P
+></LI
+><LI
+><P
+>      在<SPAN
+CLASS="APPLICATION"
+>pg_upgrade</SPAN
+>中，正确的保护数据库级别的冻结信息 (Bruce Momjian)
+     </P
+><P
+>      这个疏忽会导致<TT
+CLASS="LITERAL"
+>postgres</TT
+>和<TT
+CLASS="LITERAL"
+>template1</TT
+>
+      数据库中的表发生丢失阻碍文件错误。
+     </P
+></LI
+><LI
+><P
+>      用受限制的权限在Windows上运行<SPAN
+CLASS="APPLICATION"
+>pg_upgrade</SPAN
+>和<SPAN
+CLASS="APPLICATION"
+>pg_resetxlog</SPAN
+>，
+      这样它们在通过管理员运行时不会失败 (Muhammad Asif Naeem)
+     </P
+></LI
+><LI
+><P
+>      改善扫描路径在<SPAN
+CLASS="APPLICATION"
+>initdb</SPAN
+>和<SPAN
+CLASS="APPLICATION"
+>pg_basebackup</SPAN
+>中时，
+      <CODE
+CLASS="FUNCTION"
+>readdir()</CODE
+>失败的处理 (Marco Nenciarini)
+     </P
+></LI
+><LI
+><P
+>      修复<TT
+CLASS="FILENAME"
+>contrib/intarray</TT
+>中缓慢的分类算法 (Tom Lane)
+     </P
+></LI
+><LI
+><P
+>      修复Sparc V8机器上的编译失败 (Rob Rowan)
+     </P
+></LI
+><LI
+><P
+>      消除OS X上的某些构建警告 (Tom Lane)
+     </P
+></LI
+><LI
+><P
+>      更新时区数据文件到<SPAN
+CLASS="APPLICATION"
+>tzdata</SPAN
+>版本2015d，因为DST规律在埃及、
+      蒙古和巴拉斯坦发生了改变，还有加拿大和智利的历史变化。
+      还为America/Adak时区采取了改进的时区缩写 (HST/HDT not HAST/HADT).
+     </P
+></LI
+></UL
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="release-9-4-3.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="release-9-4-1.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>版本 9.4.3</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="release.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>版本 9.4.1</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

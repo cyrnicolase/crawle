@@ -1,0 +1,352 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>CREATE TEXT SEARCH DICTIONARY</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="SQL 命令"
+HREF="sql-commands.html"><LINK
+REL="PREVIOUS"
+TITLE="CREATE TEXT SEARCH CONFIGURATION"
+HREF="sql-createtsconfig.html"><LINK
+REL="NEXT"
+TITLE="CREATE TEXT SEARCH PARSER"
+HREF="sql-createtsparser.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="REFENTRY"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/ref/create_tsdictionary.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="CREATE TEXT SEARCH CONFIGURATION"
+HREF="sql-createtsconfig.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="CREATE TEXT SEARCH PARSER"
+HREF="sql-createtsparser.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="SQL-CREATETSDICTIONARY"
+></A
+>CREATE TEXT SEARCH DICTIONARY</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN82989"
+></A
+><H2
+>&#21517;&#31216;</H2
+>CREATE TEXT SEARCH DICTIONARY&nbsp;--&nbsp;定义一个新的文本搜索字典</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN82992"
+></A
+><H2
+>&#22823;&#32434;</H2
+><PRE
+CLASS="SYNOPSIS"
+>CREATE TEXT SEARCH DICTIONARY <TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+> (
+    TEMPLATE = <TT
+CLASS="REPLACEABLE"
+><I
+>template</I
+></TT
+>
+    [, <TT
+CLASS="REPLACEABLE"
+><I
+>option</I
+></TT
+> = <TT
+CLASS="REPLACEABLE"
+><I
+>value</I
+></TT
+> [, ... ]]
+)</PRE
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN82998"
+></A
+><H2
+>描述</H2
+><P
+>   <TT
+CLASS="COMMAND"
+>CREATE TEXT SEARCH DICTIONARY</TT
+>创建一个
+   新的文本搜索字典。一个文本搜索字典指定一种识别搜索感兴趣或者不感兴趣
+   的单词的方法。 一个字典依赖于一个文本搜索模板，后者指定了实际执行该工
+   作的函数。通常该字典提供一些控制该模板函数细节行为的选项。
+  </P
+><P
+>   如果给出了一个模式名称，那么该文本搜索字典会被创建在指定的模式中。
+   否则它会被创建在当前模式中。
+  </P
+><P
+>   定义文本搜索字典的用户将成为其拥有者。
+  </P
+><P
+>   进一步的信息可参考<A
+HREF="textsearch.html"
+>第 12 &#31456;</A
+>。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN83006"
+></A
+><H2
+>参数</H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+></DT
+><DD
+><P
+>      要创建的文本搜索字典的名称。该名称可以是模式限定的。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>template</I
+></TT
+></DT
+><DD
+><P
+>      将定义这个字典基本行为的文本搜索模板的名称。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>option</I
+></TT
+></DT
+><DD
+><P
+>      要为此字典设置的模板相关选项的名称。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>value</I
+></TT
+></DT
+><DD
+><P
+>      用于模板相关选项的值。如果该值不是一个简单标识符或者数字，它必须
+      被加引用（你可以按照你所希望的总是对它加上引用）。
+     </P
+></DD
+></DL
+></DIV
+><P
+>   选项可以以任意顺序出现。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN83030"
+></A
+><H2
+>示例</H2
+><P
+>   下面的例子命令创建了一个基于 Snowball 的字典，它使用了非标准的
+   停用词列表。
+  </P
+><PRE
+CLASS="PROGRAMLISTING"
+>CREATE TEXT SEARCH DICTIONARY my_russian (
+    template = snowball,
+    language = russian,
+    stopwords = myrussian
+);</PRE
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN83034"
+></A
+><H2
+>兼容性</H2
+><P
+>   在 SQL 标准中没有
+   <TT
+CLASS="COMMAND"
+>CREATE TEXT SEARCH DICTIONARY</TT
+>语句。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN83038"
+></A
+><H2
+>另见</H2
+><A
+HREF="sql-altertsdictionary.html"
+>ALTER TEXT SEARCH DICTIONARY</A
+>, <A
+HREF="sql-droptsdictionary.html"
+>DROP TEXT SEARCH DICTIONARY</A
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-createtsconfig.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="sql-createtsparser.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>CREATE TEXT SEARCH CONFIGURATION</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>CREATE TEXT SEARCH PARSER</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

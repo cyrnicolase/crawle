@@ -1,0 +1,675 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>CREATE OPERATOR CLASS</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="SQL 命令"
+HREF="sql-commands.html"><LINK
+REL="PREVIOUS"
+TITLE="CREATE OPERATOR"
+HREF="sql-createoperator.html"><LINK
+REL="NEXT"
+TITLE="CREATE OPERATOR FAMILY"
+HREF="sql-createopfamily.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="REFENTRY"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/ref/create_opclass.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="CREATE OPERATOR"
+HREF="sql-createoperator.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="CREATE OPERATOR FAMILY"
+HREF="sql-createopfamily.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="SQL-CREATEOPCLASS"
+></A
+>CREATE OPERATOR CLASS</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN80505"
+></A
+><H2
+>&#21517;&#31216;</H2
+>CREATE OPERATOR CLASS&nbsp;--&nbsp;定义一个新的操作符类</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN80508"
+></A
+><H2
+>&#22823;&#32434;</H2
+><PRE
+CLASS="SYNOPSIS"
+>CREATE OPERATOR CLASS <TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+> [ DEFAULT ] FOR TYPE <TT
+CLASS="REPLACEABLE"
+><I
+>data_type</I
+></TT
+>
+  USING <TT
+CLASS="REPLACEABLE"
+><I
+>index_method</I
+></TT
+> [ FAMILY <TT
+CLASS="REPLACEABLE"
+><I
+>family_name</I
+></TT
+> ] AS
+  {  OPERATOR <TT
+CLASS="REPLACEABLE"
+><I
+>strategy_number</I
+></TT
+> <TT
+CLASS="REPLACEABLE"
+><I
+>operator_name</I
+></TT
+> [ ( <TT
+CLASS="REPLACEABLE"
+><I
+>op_type</I
+></TT
+>, <TT
+CLASS="REPLACEABLE"
+><I
+>op_type</I
+></TT
+> ) ] [ FOR SEARCH | FOR ORDER BY <TT
+CLASS="REPLACEABLE"
+><I
+>sort_family_name</I
+></TT
+> ]
+   | FUNCTION <TT
+CLASS="REPLACEABLE"
+><I
+>support_number</I
+></TT
+> [ ( <TT
+CLASS="REPLACEABLE"
+><I
+>op_type</I
+></TT
+> [ , <TT
+CLASS="REPLACEABLE"
+><I
+>op_type</I
+></TT
+> ] ) ] <TT
+CLASS="REPLACEABLE"
+><I
+>function_name</I
+></TT
+> ( <TT
+CLASS="REPLACEABLE"
+><I
+>argument_type</I
+></TT
+> [, ...] )
+   | STORAGE <TT
+CLASS="REPLACEABLE"
+><I
+>storage_type</I
+></TT
+>
+  } [, ... ]</PRE
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN80525"
+></A
+><H2
+>描述</H2
+><P
+>   <TT
+CLASS="COMMAND"
+>CREATE OPERATOR CLASS</TT
+>创建新的操作符类。
+   一个操作符类定义一种特殊的数据类型如何被用于一个索引。操作符类指定为
+   该数据类型和索引方法扮演特殊角色或者<SPAN
+CLASS="QUOTE"
+>"策略"</SPAN
+>的操作符。操作符
+   类还指定当该操作符类被选择用于一个索引列时，索引方法要使用的支持过程。
+   操作符类所使用的所有操作符和函数必须在操作符类被创建之前被定义好。
+  </P
+><P
+>   如果给出了一个模式名称，那么该操作符类会被创建在指定模式中。否则，它
+   会被创建在当前模式中。同一模式中的两个操作符类只有在被用于不同的索引
+   方法时才可以具有相同的名称。
+  </P
+><P
+>   定义操作符类的用户将成为其拥有者。当前，创建用户必须是超级用户（做出
+   这种限制是因为错误的操作符类定义会让服务器混淆甚至崩溃）。
+  </P
+><P
+>   <TT
+CLASS="COMMAND"
+>CREATE OPERATOR CLASS</TT
+>当前不会检查操作符
+   类定义是否包括该索引方法所要求的所有操作符和函数，也不会检查这些操作符
+   和函数是否构成一个一致的集合。定义一个合法的操作符类是用户的责任。
+  </P
+><P
+>   相关的操作符类可以被组成<I
+CLASS="FIRSTTERM"
+>操作符族</I
+>。要把一个新的操作符类
+   加入到一个现有的族中，可以在<TT
+CLASS="COMMAND"
+>CREATE OPERATOR
+   CLASS</TT
+>中指定<TT
+CLASS="LITERAL"
+>FAMILY</TT
+>选项。如果没有这个选项，
+   新的类会被放到一个同名的族中（如果族不存在会创建之）。
+  </P
+><P
+>   进一步的信息可参考<A
+HREF="xindex.html"
+>第 36.14 &#33410;</A
+>。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN80540"
+></A
+><H2
+>参数</H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+></DT
+><DD
+><P
+>      要创建的操作符类的名称。该名称可以被模式限定。
+     </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>DEFAULT</TT
+></DT
+><DD
+><P
+>      如果存在，该操作符类将成为其数据类型的默认操作符类。对一种
+      特定的数据类型和索引方法至多有一个默认操作符类。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>data_type</I
+></TT
+></DT
+><DD
+><P
+>      这个操作符类所用于的列数据类型。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>index_method</I
+></TT
+></DT
+><DD
+><P
+>      这个操作符类所用于的索引方法的名称。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>family_name</I
+></TT
+></DT
+><DD
+><P
+>      要把这个操作符类加入其中的已有操作符族的名称。如果没有指定，
+      将使用一个同名操作符族（如果还不存在则创建之）。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>strategy_number</I
+></TT
+></DT
+><DD
+><P
+>      用于一个与该操作符类相关联的操作符的索引方法策略号。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>operator_name</I
+></TT
+></DT
+><DD
+><P
+>      一个与该操作符类相关联的操作符的名称（可以被模式限定）。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>op_type</I
+></TT
+></DT
+><DD
+><P
+>      在一个<TT
+CLASS="LITERAL"
+>OPERATOR</TT
+>子句中，这表示该操作符的操作数数据
+      类型，或者用<TT
+CLASS="LITERAL"
+>NONE</TT
+>来表示一个左一元或者右一元操作符。
+      在操作数数据类型与该操作符的数据类型相同的一般情况下，操作数的
+      数据类型可以被省略。
+     </P
+><P
+>      在一个<TT
+CLASS="LITERAL"
+>FUNCTION</TT
+>子句中，这表示该函数要支持的操作数
+      数据类型，如果它与该函数的输入数据类型（对于 B-树比较函数和哈希
+      函数）或者操作符类的数据类型（对于 B-树排序支持函数和所有GiST、
+      SP-GiST、GIN 和 BRIN 操作符类中的函数）不同。这些默认值是正确的，并且
+      <TT
+CLASS="REPLACEABLE"
+><I
+>op_type</I
+></TT
+>因此不必
+      在<TT
+CLASS="LITERAL"
+>FUNCTION</TT
+>子句中被指定，对于 B-树排序支持函数的情
+      况来说，这表示跨数据类型比较。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>sort_family_name</I
+></TT
+></DT
+><DD
+><P
+>      一个现有<TT
+CLASS="LITERAL"
+>btree</TT
+>操作符族的名称（可以是模式限定的），
+      它描述与一种排序操作符相关联的排序顺序。
+     </P
+><P
+>      如果<TT
+CLASS="LITERAL"
+>FOR SEARCH</TT
+>和<TT
+CLASS="LITERAL"
+>FOR ORDER BY</TT
+>都没有被
+      指定，那么<TT
+CLASS="LITERAL"
+>FOR SEARCH</TT
+>是默认值。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>support_number</I
+></TT
+></DT
+><DD
+><P
+>      用于一个与该操作符类相关联的函数的索引方法支持过程编号。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>function_name</I
+></TT
+></DT
+><DD
+><P
+>      一个用于该操作符类的索引方法支持过程的函数名称（可以是
+      模式限定的）。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>argument_type</I
+></TT
+></DT
+><DD
+><P
+>      该函数的参数数据类型。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>storage_type</I
+></TT
+></DT
+><DD
+><P
+>      实际存储在索引中的数据类型。通常这和列数据类型相同，但是有些
+      索引方法（当前有 GiST、GIN 和 BRIN）允许它们不同。
+      除非索引方法允许使用不同的类型，<TT
+CLASS="LITERAL"
+>STORAGE</TT
+>子句必须
+      被省略。
+     </P
+></DD
+></DL
+></DIV
+><P
+>   <TT
+CLASS="LITERAL"
+>OPERATOR</TT
+>、<TT
+CLASS="LITERAL"
+>FUNCTION</TT
+>和<TT
+CLASS="LITERAL"
+>STORAGE</TT
+>
+   子句可以以任何顺序出现。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN80624"
+></A
+><H2
+>注解</H2
+><P
+>   因为索引机制在使用函数之前不检查它们的权限，将一个函数或者操作符包括在
+   一个操作符类中相当于在其上授予公共执行权限。这对操作符类中很有用的函数
+   来说通常不成问题。
+  </P
+><P
+>   操作符不应该用 SQL 函数定义。SQL 函数很有可能会被内联到调用查询中，这
+   会妨碍优化器识别该查询匹配一个索引。
+  </P
+><P
+>   在<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+> 8.4 之前，
+   <TT
+CLASS="LITERAL"
+>OPERATOR</TT
+>子句可以包括一个<TT
+CLASS="LITERAL"
+>RECHECK</TT
+>选项。现在
+   已经不再支持，因为一个索引操作符是否为<SPAN
+CLASS="QUOTE"
+>"有损的"</SPAN
+>现在是在运行
+   时实时决定的。这允许在一个操作符可能是或者可能不是有损的情况下有效地处理。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN80633"
+></A
+><H2
+>示例</H2
+><P
+>   下面的例子为数据类型<TT
+CLASS="LITERAL"
+>_int4</TT
+>（<TT
+CLASS="TYPE"
+>int4</TT
+>数组）
+   定义了一个 GiST 索引操作符。完整的例子请见
+   <A
+HREF="intarray.html"
+>intarray</A
+>模块。
+  </P
+><PRE
+CLASS="PROGRAMLISTING"
+>CREATE OPERATOR CLASS gist__int_ops
+    DEFAULT FOR TYPE _int4 USING gist AS
+        OPERATOR        3       &amp;&amp;,
+        OPERATOR        6       = (anyarray, anyarray),
+        OPERATOR        7       @&gt;,
+        OPERATOR        8       &lt;@,
+        OPERATOR        20      @@ (_int4, query_int),
+        FUNCTION        1       g_int_consistent (internal, _int4, smallint, oid, internal),
+        FUNCTION        2       g_int_union (internal, internal),
+        FUNCTION        3       g_int_compress (internal),
+        FUNCTION        4       g_int_decompress (internal),
+        FUNCTION        5       g_int_penalty (internal, internal, internal),
+        FUNCTION        6       g_int_picksplit (internal, internal),
+        FUNCTION        7       g_int_same (_int4, _int4, internal);</PRE
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN80640"
+></A
+><H2
+>兼容性</H2
+><P
+>   <TT
+CLASS="COMMAND"
+>CREATE OPERATOR CLASS</TT
+>是一种
+   <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>扩展。在 SQL 标准中没有
+   <TT
+CLASS="COMMAND"
+>CREATE OPERATOR CLASS</TT
+>语句。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN80646"
+></A
+><H2
+>另见</H2
+><A
+HREF="sql-alteropclass.html"
+>ALTER OPERATOR CLASS</A
+>, <A
+HREF="sql-dropopclass.html"
+>DROP OPERATOR CLASS</A
+>, <A
+HREF="sql-createopfamily.html"
+>CREATE OPERATOR FAMILY</A
+>, <A
+HREF="sql-alteropfamily.html"
+>ALTER OPERATOR FAMILY</A
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-createoperator.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="sql-createopfamily.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>CREATE OPERATOR</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>CREATE OPERATOR FAMILY</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

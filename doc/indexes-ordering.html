@@ -1,0 +1,289 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>索引和ORDER BY</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="索引"
+HREF="indexes.html"><LINK
+REL="PREVIOUS"
+TITLE="多列索引"
+HREF="indexes-multicolumn.html"><LINK
+REL="NEXT"
+TITLE="组合多个索引"
+HREF="indexes-bitmap-scans.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/indices.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="多列索引"
+HREF="indexes-multicolumn.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="indexes.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#31456; 11. 索引</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="组合多个索引"
+HREF="indexes-bitmap-scans.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="INDEXES-ORDERING"
+>11.4. 索引和<TT
+CLASS="LITERAL"
+>ORDER BY</TT
+></A
+></H1
+><P
+>   除了简单地查找查询要返回的行外，一个索引可能还需要将它们以指定的顺序传递。这使得查询中的<TT
+CLASS="LITERAL"
+>ORDER BY</TT
+>不需要独立的排序步骤。在<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>当前支持的索引类型中，只有B-tree可以产生排序后的输出，其他索引类型会把行以一种没有指定的且与实现相关的顺序返回。
+  </P
+><P
+>   规划器会考虑以两种方式来满足一个<TT
+CLASS="LITERAL"
+>ORDER BY</TT
+>说明：扫描一个符合说明的可用索引，或者先以物理顺序扫描表然后再显式排序。对于一个需要扫描表的大部分的查询，一个显式的排序很可能比使用一个索引更快，因为其顺序访问模式使得它所需要的磁盘I/O更少。只有在少数行需要被取出时，索引才会更有用。一种重要的特殊情况是<TT
+CLASS="LITERAL"
+>ORDER BY</TT
+>与<TT
+CLASS="LITERAL"
+>LIMIT</TT
+> <TT
+CLASS="REPLACEABLE"
+><I
+>n</I
+></TT
+>联合使用：一个显式的排序将会处理所有的数据来确定最前面的<TT
+CLASS="REPLACEABLE"
+><I
+>n</I
+></TT
+>行，但如果有一个符合<TT
+CLASS="LITERAL"
+>ORDER BY</TT
+>的索引，前<TT
+CLASS="REPLACEABLE"
+><I
+>n</I
+></TT
+>行将会被直接获取且根本不需要扫描剩下的数据。
+  </P
+><P
+>   默认情况下，B-tree索引将它的项以升序方式存储，并将空值放在最后。这意味着对列<TT
+CLASS="LITERAL"
+>x</TT
+>上索引的一次前向扫描将产生满足<TT
+CLASS="LITERAL"
+>ORDER BY x</TT
+>（或者更长的形式：<TT
+CLASS="LITERAL"
+>ORDER BY x ASC NULLS LAST</TT
+>）的结果。索引也可以被后向扫描，产生满足<TT
+CLASS="LITERAL"
+>ORDER BY x DESC</TT
+>（<TT
+CLASS="LITERAL"
+>ORDER BY x DESC NULLS FIRST</TT
+>， <TT
+CLASS="LITERAL"
+>NULLS FIRST</TT
+>是<TT
+CLASS="LITERAL"
+>ORDER BY DESC</TT
+>的默认情况）。
+  </P
+><P
+>   我们可以在创建B-tree索引时通过<TT
+CLASS="LITERAL"
+>ASC</TT
+>、<TT
+CLASS="LITERAL"
+>DESC</TT
+>、<TT
+CLASS="LITERAL"
+>NULLS FIRST</TT
+>和<TT
+CLASS="LITERAL"
+>NULLS LAST</TT
+>选项来改变索引的排序，例如：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>CREATE INDEX test2_info_nulls_low ON test2 (info NULLS FIRST);
+CREATE INDEX test3_desc_index ON test3 (id DESC NULLS LAST);</PRE
+><P>
+   一个以升序存储且将空值前置的索引可以根据扫描方向来支持<TT
+CLASS="LITERAL"
+>ORDER BY x ASC NULLS FIRST</TT
+>或 <TT
+CLASS="LITERAL"
+>ORDER BY x DESC NULLS LAST</TT
+>。
+  </P
+><P
+>   读者可能会疑惑为什么要麻烦地提供所有四个选项，因为两个选项连同后向扫描的概率可以覆盖所有<TT
+CLASS="LITERAL"
+>ORDER BY</TT
+>的变体。在单列索引中这些选项确实有冗余，但是在多列索引中它们却很有用。考虑<TT
+CLASS="LITERAL"
+>(x, y)</TT
+>上的一个两列索引：它可以通过前向扫描满足<TT
+CLASS="LITERAL"
+>ORDER BY x, y</TT
+>，或者通过后向扫描满足<TT
+CLASS="LITERAL"
+>ORDER BY x DESC, y DESC</TT
+>。但是应用可能需要频繁地使用<TT
+CLASS="LITERAL"
+>ORDER BY x ASC, y DESC</TT
+>。这样就没有办法从通常的索引中得到这种顺序，但是如果将索引定义为<TT
+CLASS="LITERAL"
+>(x ASC, y DESC)</TT
+>或者<TT
+CLASS="LITERAL"
+>(x DESC, y ASC)</TT
+>就可以产生这种排序。
+  </P
+><P
+>   显然，具有非默认排序的索引是相当专门的特性，但是有时它们会为特定查询提供巨大的速度提升。是否值得维护这样一个索引取决于我们会多频繁地使用需要特殊排序的查询。
+  </P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="indexes-multicolumn.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="indexes-bitmap-scans.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>多列索引</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="indexes.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>组合多个索引</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

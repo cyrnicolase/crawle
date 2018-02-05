@@ -1,0 +1,315 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>标准 Unix 工具</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="监控数据库活动"
+HREF="monitoring.html"><LINK
+REL="PREVIOUS"
+TITLE="监控数据库活动"
+HREF="monitoring.html"><LINK
+REL="NEXT"
+TITLE="统计收集器"
+HREF="monitoring-stats.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/monitoring.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="监控数据库活动"
+HREF="monitoring.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="monitoring.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#31456; 28. 监控数据库活动</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="统计收集器"
+HREF="monitoring-stats.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="MONITORING-PS"
+>28.1. 标准 Unix 工具</A
+></H1
+><P
+>   在大部分 Unix 平台上，<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>会修改由<TT
+CLASS="COMMAND"
+>ps</TT
+>报告的命令标题，这样个体服务器进程可以被标识。一个显示样例是
+
+</P><PRE
+CLASS="SCREEN"
+>$ ps auxww | grep ^postgres
+postgres  15551  0.0  0.1  57536  7132 pts/0    S    18:02   0:00 postgres -i
+postgres  15554  0.0  0.0  57536  1184 ?        Ss   18:02   0:00 postgres: writer process
+postgres  15555  0.0  0.0  57536   916 ?        Ss   18:02   0:00 postgres: checkpointer process
+postgres  15556  0.0  0.0  57536   916 ?        Ss   18:02   0:00 postgres: wal writer process
+postgres  15557  0.0  0.0  58504  2244 ?        Ss   18:02   0:00 postgres: autovacuum launcher process
+postgres  15558  0.0  0.0  17512  1068 ?        Ss   18:02   0:00 postgres: stats collector process
+postgres  15582  0.0  0.0  58772  3080 ?        Ss   18:04   0:00 postgres: joe runbug 127.0.0.1 idle
+postgres  15606  0.0  0.0  58772  3052 ?        Ss   18:07   0:00 postgres: tgl regression [local] SELECT waiting
+postgres  15610  0.0  0.0  58772  3056 ?        Ss   18:07   0:00 postgres: tgl regression [local] idle in transaction</PRE
+><P>
+
+   （<TT
+CLASS="COMMAND"
+>ps</TT
+>的调用方式随不同的平台而变，但是显示的细节都差不多。这个例子来自于一个最近的 Linux 系统）。列在这里的第一个进程是主服务器进程。为它显示的命令参数是当它被启动时使用的那些。接下来的五个进程是由主进程自动启动的后台工作者进程（如果你已经设置系统为不启动统计收集器，<SPAN
+CLASS="QUOTE"
+>"统计收集器"</SPAN
+>进程将不会出现；同样<SPAN
+CLASS="QUOTE"
+>"自动清理发动"</SPAN
+>进程也可以被禁用）。剩余的每一个进程都是一个处理一个客户端连接的服务器进程。每个这种进程都会把它的命令行显示设置为这种形式
+
+</P><PRE
+CLASS="SCREEN"
+>postgres: <TT
+CLASS="REPLACEABLE"
+><I
+>user</I
+></TT
+> <TT
+CLASS="REPLACEABLE"
+><I
+>database</I
+></TT
+> <TT
+CLASS="REPLACEABLE"
+><I
+>host</I
+></TT
+> <TT
+CLASS="REPLACEABLE"
+><I
+>activity</I
+></TT
+></PRE
+><P>
+
+  在该客户端连接的生命期中，用户、数据库以及（客户端）主机项保持不变，但是活动指示器会改变。活动可以是<TT
+CLASS="LITERAL"
+>闲置</TT
+>（即等待一个客户端命令）、<TT
+CLASS="LITERAL"
+>在事务中闲置</TT
+>（在一个<TT
+CLASS="COMMAND"
+>BEGIN</TT
+>块里等待客户端）或者一个命令类型名，例如<TT
+CLASS="LITERAL"
+>SELECT</TT
+>。还有，如果服务器进程正在等待一个其它会话持有的锁， <TT
+CLASS="LITERAL"
+>等待中</TT
+>会被追加到上述信息中。在上面的例子中，我们可以推断：进程 15606 正在等待进程 15610 完成其事务并且因此释放一些锁（进程 15610 必定是阻塞者，因为没有其他活动会话。在更复杂的情况中，可能需要查看<A
+HREF="view-pg-locks.html"
+><TT
+CLASS="STRUCTNAME"
+>pg_locks</TT
+></A
+>系统视图来决定谁阻塞了谁）。
+  </P
+><P
+>   如果配置了<A
+HREF="runtime-config-logging.html#GUC-CLUSTER-NAME"
+>cluster_name</A
+>，则集簇的名字
+   也将会显示在<TT
+CLASS="COMMAND"
+>ps</TT
+>的输出中：
+</P><PRE
+CLASS="SCREEN"
+>$ psql -c 'SHOW cluster_name'
+ cluster_name
+--------------
+ server1
+(1 row)
+
+$ ps aux|grep server1
+postgres   27093  0.0  0.0  30096  2752 ?        Ss   11:34   0:00 postgres: server1: writer process
+...</PRE
+><P>
+  </P
+><P
+>   如果你已经关闭了<A
+HREF="runtime-config-logging.html#GUC-UPDATE-PROCESS-TITLE"
+>update_process_title</A
+>，那么活动指示器将不会被更新，进程标题仅在新进程被启动的时候设置一次。 在某些平台上这样做可以为每个命令节省可观的开销，但在其它平台上却不明显。
+  </P
+><DIV
+CLASS="TIP"
+><BLOCKQUOTE
+CLASS="TIP"
+><P
+><B
+>&#25552;&#31034;: </B
+>  <SPAN
+CLASS="PRODUCTNAME"
+>Solaris</SPAN
+>需要特别的处理。你必需使用<TT
+CLASS="COMMAND"
+>/usr/ucb/ps</TT
+>而不是<TT
+CLASS="COMMAND"
+>/bin/ps</TT
+>。 你还必需使用两个<TT
+CLASS="OPTION"
+>w</TT
+>标志，而不是一个。另外，你对<TT
+CLASS="COMMAND"
+>postgres</TT
+>命令的最初调用必须用一个比服务器进程提供的短的<TT
+CLASS="COMMAND"
+>ps</TT
+>状态显示。如果你没有满足全部三个要求，每个服务器进程的<TT
+CLASS="COMMAND"
+>ps</TT
+>输出将是原始的<TT
+CLASS="COMMAND"
+>postgres</TT
+>命令行。
+  command line.
+  </P
+></BLOCKQUOTE
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="monitoring.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="monitoring-stats.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>监控数据库活动</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="monitoring.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>统计收集器</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

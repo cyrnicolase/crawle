@@ -1,0 +1,344 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>执行自定义扫描</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="编写一个自定义扫描提供者"
+HREF="custom-scan.html"><LINK
+REL="PREVIOUS"
+TITLE="创建自定义扫描计划"
+HREF="custom-scan-plan.html"><LINK
+REL="NEXT"
+TITLE="遗传查询优化器"
+HREF="geqo.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/custom-scan.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="创建自定义扫描计划"
+HREF="custom-scan-plan.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="custom-scan.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#31456; 57. 编写一个自定义扫描提供者</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="遗传查询优化器"
+HREF="geqo.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="CUSTOM-SCAN-EXECUTION"
+>57.3. 执行自定义扫描</A
+></H1
+><P
+>   在执行一个<TT
+CLASS="STRUCTFIELD"
+>CustomScan</TT
+>时，它的执行状态由一个<TT
+CLASS="STRUCTFIELD"
+>CustomScanState</TT
+>表示，其定义如下：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>typedef struct CustomScanState
+{
+    ScanState ss;
+    uint32    flags;
+    const CustomExecMethods *methods;
+} CustomScanState;</PRE
+><P>
+  </P
+><P
+>   <TT
+CLASS="STRUCTFIELD"
+>ss</TT
+>和任何其他扫描状态一样被初始化，不过如果该扫描是用于连接而不是基本关系，则<TT
+CLASS="LITERAL"
+>ss.ss_currentRelation</TT
+>会被留成 NULL。<TT
+CLASS="STRUCTFIELD"
+>flags</TT
+>是一个位掩码，它的含义与<TT
+CLASS="STRUCTNAME"
+>CustomPath</TT
+>和<TT
+CLASS="STRUCTNAME"
+>CustomScan</TT
+>中的一样。<TT
+CLASS="STRUCTFIELD"
+>methods</TT
+>必须指向一个实现了所需自定义扫描状态方法的对象（通常是静态分配的），将进一步在下文详细介绍。通常一个<TT
+CLASS="STRUCTNAME"
+>CustomScanState</TT
+>（不需要支持<CODE
+CLASS="FUNCTION"
+>copyObject</CODE
+>）实际将是一个较大的结构，上面的结构将嵌入在其中作为第一个成员。
+  </P
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="CUSTOM-SCAN-EXECUTION-CALLBACKS"
+>57.3.1. 自定义扫描执行回调</A
+></H2
+><P
+></P><PRE
+CLASS="PROGRAMLISTING"
+>void (*BeginCustomScan) (CustomScanState *node,
+                         EState *estate,
+                         int eflags);</PRE
+><P>
+    完成所提供的<TT
+CLASS="STRUCTNAME"
+>CustomScanState</TT
+>的初始化。标准的域已经被<CODE
+CLASS="FUNCTION"
+>ExecInitCustomScan</CODE
+>初始化，但是任何私有的域应该在这里被初始化。
+   </P
+><P
+></P><PRE
+CLASS="PROGRAMLISTING"
+>TupleTableSlot *(*ExecCustomScan) (CustomScanState *node);</PRE
+><P>
+    取下一个扫描元组。如果还有任何元组剩余，它应该用当前扫描方向的下一个元组填充<TT
+CLASS="LITERAL"
+>ps_ResultTupleSlot</TT
+>，并且接着返回该元组槽。如果没有，则用<TT
+CLASS="LITERAL"
+>NULL</TT
+>填充或者返回一个空槽。
+   </P
+><P
+></P><PRE
+CLASS="PROGRAMLISTING"
+>void (*EndCustomScan) (CustomScanState *node);</PRE
+><P>
+    清除任何与<TT
+CLASS="LITERAL"
+>CustomScanState</TT
+>相关的私有数据。这个方法是必需的，但是如果没有相关的数据或者相关数据将被自动清除，则它不需要做任何事情。
+   </P
+><P
+></P><PRE
+CLASS="PROGRAMLISTING"
+>void (*ReScanCustomScan) (CustomScanState *node);</PRE
+><P>
+    把当前扫描倒回到开始处，并且准备重新扫描该关系。
+   </P
+><P
+></P><PRE
+CLASS="PROGRAMLISTING"
+>void (*MarkPosCustomScan) (CustomScanState *node);</PRE
+><P>
+    保存当前的扫描位置，这样可以在以后由<CODE
+CLASS="FUNCTION"
+>RestrPosCustomScan</CODE
+>回调函数恢复。这个回调函数是可选的，只有在<TT
+CLASS="LITERAL"
+>CUSTOMPATH_SUPPORT_MARK_RESTORE</TT
+>标志被设置时才需要提供。
+   </P
+><P
+></P><PRE
+CLASS="PROGRAMLISTING"
+>void (*RestrPosCustomScan) (CustomScanState *node);</PRE
+><P>
+    恢复由<CODE
+CLASS="FUNCTION"
+>MarkPosCustomScan</CODE
+>回调函数保存的扫描位置。这个回调函数是可选的，只有在<TT
+CLASS="LITERAL"
+>CUSTOMPATH_SUPPORT_MARK_RESTORE</TT
+>标志被设置时才需要提供。
+   </P
+><P
+></P><PRE
+CLASS="PROGRAMLISTING"
+>Size (*EstimateDSMCustomScan) (CustomScanState *node,
+                               ParallelContext *pcxt);</PRE
+><P>
+    估计并行操作所需要的动态共享内存的数量。这可能会比实际使用的量更大，但是绝不能更低。返回值的单位是字节。这个回调是可选的，只有在这个自定义扫描提供者支持并行执行时才必须提供这个回调。
+   </P
+><P
+></P><PRE
+CLASS="PROGRAMLISTING"
+>void (*InitializeDSMCustomScan) (CustomScanState *node,
+                                 ParallelContext *pcxt,
+                                 void *coordinate);</PRE
+><P>
+    初始化并行操作所需的动态共享内存，<TT
+CLASS="LITERAL"
+>coordinate</TT
+>指向一块分配好的容量等于<CODE
+CLASS="FUNCTION"
+>EstimateDSMCustomScan</CODE
+>返回值的空间。这个回调是可选的，只有在这个自定义扫描提供者支持并行执行时才必须提供这个回调。
+   </P
+><P
+></P><PRE
+CLASS="PROGRAMLISTING"
+>void (*InitializeWorkerCustomScan) (CustomScanState *node,
+                                    shm_toc *toc,
+                                    void *coordinate);</PRE
+><P>
+    基于领导者中由<TT
+CLASS="LITERAL"
+>InitializeDSMCustomScan</TT
+>设置的共享状态初始化并行工作者的自定义状态。这个回调是可选的，只有在这个自定义扫描提供者支持并行执行时才必须提供这个回调。
+   </P
+><P
+></P><PRE
+CLASS="PROGRAMLISTING"
+>void (*ExplainCustomScan) (CustomScanState *node,
+                           List *ancestors,
+                           ExplainState *es);</PRE
+><P>
+    为一个自定义扫描计划节点的<TT
+CLASS="COMMAND"
+>EXPLAIN</TT
+>输出额外的信息。这个回调函数是可选的。即使没有这个回调函数，被存储在<TT
+CLASS="STRUCTNAME"
+>ScanState</TT
+>中的公共的数据（例如目标列表和扫描关系）也将被显示，但是该回调函数允许显示额外的信息（例如私有状态）。
+   </P
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="custom-scan-plan.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="geqo.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>创建自定义扫描计划</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="custom-scan.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>遗传查询优化器</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

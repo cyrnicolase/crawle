@@ -1,0 +1,5311 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>系统信息函数</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="函数和操作符"
+HREF="functions.html"><LINK
+REL="PREVIOUS"
+TITLE="集合返回函数"
+HREF="functions-srf.html"><LINK
+REL="NEXT"
+TITLE="系统管理函数"
+HREF="functions-admin.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/func.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="集合返回函数"
+HREF="functions-srf.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="functions.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#31456; 9. 函数和操作符</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="系统管理函数"
+HREF="functions-admin.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="FUNCTIONS-INFO"
+>9.25. 系统信息函数</A
+></H1
+><P
+>   <A
+HREF="functions-info.html#FUNCTIONS-INFO-SESSION-TABLE"
+>&#34920; 9-59</A
+>展示了多个可以抽取会话和系统信息的函数。
+  </P
+><P
+>   除了本节列出的函数，还有一些与统计系统相关的函数也提供系统信息。详见<A
+HREF="monitoring-stats.html#MONITORING-STATS-VIEWS"
+>第 28.2.2 &#33410;</A
+>。
+  </P
+><DIV
+CLASS="TABLE"
+><A
+NAME="FUNCTIONS-INFO-SESSION-TABLE"
+></A
+><P
+><B
+>&#34920; 9-59. 会话信息函数</B
+></P
+><TABLE
+BORDER="1"
+CLASS="CALSTABLE"
+><COL><COL><COL><THEAD
+><TR
+><TH
+>名称</TH
+><TH
+>返回类型</TH
+><TH
+>描述</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>current_catalog</CODE
+></TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>name</TT
+></TD
+><TD
+>当前数据库名（SQL 标准中称作<SPAN
+CLASS="QUOTE"
+>"目录"</SPAN
+>）</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>current_database()</CODE
+></TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>name</TT
+></TD
+><TD
+>当前数据库名</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>current_query()</CODE
+></TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>text</TT
+></TD
+><TD
+>当前正在执行的查询的文本，和客户端提交的一样（可能包含多于一个语句）</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>current_schema</CODE
+>[()]</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>name</TT
+></TD
+><TD
+>当前模式名</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>current_schemas(<TT
+CLASS="TYPE"
+>boolean</TT
+>)</CODE
+></TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>name[]</TT
+></TD
+><TD
+>搜索路径中的模式名，可以选择是否包含隐式模式</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>current_user</CODE
+></TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>name</TT
+></TD
+><TD
+>当前执行上下文的用户名</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>inet_client_addr()</CODE
+></TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>inet</TT
+></TD
+><TD
+>远程的客户端连接地址</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>inet_client_port()</CODE
+></TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>int</TT
+></TD
+><TD
+>远程的客户端连接端口</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>inet_server_addr()</CODE
+></TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>inet</TT
+></TD
+><TD
+>本地的服务端连接地址</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>inet_server_port()</CODE
+></TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>int</TT
+></TD
+><TD
+>本地的服务端连接端口</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>pg_backend_pid()</CODE
+></TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>int</TT
+></TD
+><TD
+>        与当前会话关联的服务器进程的进程 ID
+       </TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>pg_blocking_pids(<TT
+CLASS="TYPE"
+>int</TT
+>)</CODE
+></TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>int[]</TT
+></TD
+><TD
+>阻塞指定服务器进程 ID 的进程 ID</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>pg_conf_load_time()</CODE
+></TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>timestamp with time zone</TT
+></TD
+><TD
+>配置载入时间</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>pg_my_temp_schema()</CODE
+></TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>oid</TT
+></TD
+><TD
+>会话的临时模式的 OID，如果没有则为 0</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>pg_is_other_temp_schema(<TT
+CLASS="TYPE"
+>oid</TT
+>)</CODE
+></TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>boolean</TT
+></TD
+><TD
+>模式是另一个会话的临时模式吗？</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>pg_listening_channels()</CODE
+></TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>setof text</TT
+></TD
+><TD
+>会话当前正在监听的频道名称</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>pg_notification_queue_usage()</CODE
+></TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>double</TT
+></TD
+><TD
+>异步通知队列当前被占用的分数（0-1）</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>pg_postmaster_start_time()</CODE
+></TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>timestamp with time zone</TT
+></TD
+><TD
+>服务器启动时间</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>pg_trigger_depth()</CODE
+></TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>int</TT
+></TD
+><TD
+><SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>触发器的当前嵌套层次（如果没有调用则为 0，直接或间接，从一个触发器内部开始）</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>session_user</CODE
+></TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>name</TT
+></TD
+><TD
+>会话用户名</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>user</CODE
+></TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>name</TT
+></TD
+><TD
+>等价于<CODE
+CLASS="FUNCTION"
+>current_user</CODE
+></TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>version()</CODE
+></TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>text</TT
+></TD
+><TD
+><SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>版本信息。参阅<A
+HREF="runtime-config-preset.html#GUC-SERVER-VERSION-NUM"
+>server_version_num</A
+>获取机器可读版本。</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+><DIV
+CLASS="NOTE"
+><BLOCKQUOTE
+CLASS="NOTE"
+><P
+><B
+>&#27880;&#24847;: </B
+>     <CODE
+CLASS="FUNCTION"
+>current_catalog</CODE
+>、<CODE
+CLASS="FUNCTION"
+>current_schema</CODE
+>、<CODE
+CLASS="FUNCTION"
+>current_user</CODE
+>、<CODE
+CLASS="FUNCTION"
+>session_user</CODE
+>和<CODE
+CLASS="FUNCTION"
+>user</CODE
+>在<ACRONYM
+CLASS="ACRONYM"
+>SQL</ACRONYM
+>里有特殊的语意状态： 它们被调用时结尾不要跟着园括号（在 PostgreSQL 中，圆括号可以有选择性地被用于<CODE
+CLASS="FUNCTION"
+>current_schema</CODE
+>，但是不能和其他的一起用）。
+    </P
+></BLOCKQUOTE
+></DIV
+><P
+>    <CODE
+CLASS="FUNCTION"
+>session_user</CODE
+>通常是发起当前数据库连接的用户，不过超级用户可以用<A
+HREF="sql-set-session-authorization.html"
+>SET SESSION AUTHORIZATION</A
+>修改这个设置。<CODE
+CLASS="FUNCTION"
+>current_user</CODE
+>是用于权限检查的用户标识。通常， 它总是等于会话用户，但是可以被<A
+HREF="sql-set-role.html"
+>SET ROLE</A
+>改变。它也会在函数执行的过程中随着属性<TT
+CLASS="LITERAL"
+>SECURITY DEFINER</TT
+>的改变而改变。在 Unix 的说法里，那么会话用户是<SPAN
+CLASS="QUOTE"
+>"真实用户"</SPAN
+>，而当前用户是<SPAN
+CLASS="QUOTE"
+>"有效用户"</SPAN
+>。
+   </P
+><P
+>    <CODE
+CLASS="FUNCTION"
+>current_schema</CODE
+>返回在搜索路径中的第一个模式名（如果搜索路径是空则返回空值）。 如果创建表或者其它命名对象时没有声明目标模式，那么它将是被用于这些对象的模式。<CODE
+CLASS="FUNCTION"
+>current_schemas(boolean)</CODE
+>返回一个在搜索路径中出现的所有模式名的数组。布尔选项决定<TT
+CLASS="LITERAL"
+>pg_catalog</TT
+>这样的隐式包含的系统模式是否包含在返回的搜索路径中。
+   </P
+><DIV
+CLASS="NOTE"
+><BLOCKQUOTE
+CLASS="NOTE"
+><P
+><B
+>&#27880;&#24847;: </B
+>     搜索路径可以在运行时修改。命令是：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>SET search_path TO <TT
+CLASS="REPLACEABLE"
+><I
+>schema</I
+></TT
+> [<SPAN
+CLASS="OPTIONAL"
+>, <TT
+CLASS="REPLACEABLE"
+><I
+>schema</I
+></TT
+>, ...</SPAN
+>]</PRE
+><P>
+    </P
+></BLOCKQUOTE
+></DIV
+><P
+>     <CODE
+CLASS="FUNCTION"
+>inet_client_addr</CODE
+>返回当前客户端的 IP 地址，<CODE
+CLASS="FUNCTION"
+>inet_client_port</CODE
+>返回它的端口号。 <CODE
+CLASS="FUNCTION"
+>inet_server_addr</CODE
+>返回接受当前连接的服务器的 IP 地址，而<CODE
+CLASS="FUNCTION"
+>inet_server_port</CODE
+>返回对应的端口号。如果连接是通过 Unix 域套接字进行的，那么所有这些函数都返回 NULL。
+   </P
+><P
+>    <CODE
+CLASS="FUNCTION"
+>pg_blocking_pids</CODE
+>返回一个进程 ID 的数组，
+    数组中的进程中的会话阻塞了指定进程 ID 所代表的服务器进程，
+    如果指定的服务器进程不存在或者没有被阻塞则返回空数组。
+    如果一个进程持有与另一个进程加锁请求冲突的锁（硬锁），
+    或者前者正在等待一个与后者加锁请求冲突的锁并且前者在该锁的等待队列中
+    位于后者的前面（软锁），则前者会阻塞后者。在使用并行查询时，
+    这个函数的结果总是会列出客户端可见的进程 ID（即<CODE
+CLASS="FUNCTION"
+>pg_backend_pid</CODE
+>
+    的结果），即便实际的锁是由工作者进程所持有或者等待也是如此。
+    这样造成的后果是，结果中可能会有很多重复的 PID。
+    还要注意当一个预备事务持有一个冲突锁时，
+    这个函数的结果中它将被表示为一个为零的进程 ID。
+    对这个函数的频繁调用可能对数据库性能有一些影响，
+    因为它需要短时间地独占访问锁管理器的共享状态。
+   </P
+><P
+>    <CODE
+CLASS="FUNCTION"
+>pg_conf_load_time</CODE
+>返回服务器配置文件最近被载入的
+    <TT
+CLASS="TYPE"
+>timestamp with time zone</TT
+>（如果当前会话在那时就已经存在，
+    这个值将是该会话自己重新读取配置文件的时间，
+    因此在不同的会话中这个读数会有一点变化。如果不是这样，
+    这个值就是 postmaster 进程重读配置文件的时间）。
+   </P
+><P
+>    <CODE
+CLASS="FUNCTION"
+>pg_my_temp_schema</CODE
+>返回当前会话临时模式的 OID，如果没有使用临时模式（因为它没有创建任何临时表）则返回零。如果给定的 OID 是另一个会话的临时模式的 OID，则<CODE
+CLASS="FUNCTION"
+>pg_is_other_temp_schema</CODE
+>返回真（这是有用的，例如，要将其他会话的临时表从一个目录显示中排除）。
+   </P
+><P
+>    <CODE
+CLASS="FUNCTION"
+>pg_listening_channels</CODE
+>
+    返回当前会话正在监听的异步通知频道的名称的集合。
+    <CODE
+CLASS="FUNCTION"
+>pg_notification_queue_usage</CODE
+>
+    返回等待处理的通知占可用的通知空间的比例，
+    它是一个 0-1 范围内的<TT
+CLASS="TYPE"
+>double</TT
+>值。详见
+    <A
+HREF="sql-listen.html"
+>LISTEN</A
+>和<A
+HREF="sql-notify.html"
+>NOTIFY</A
+>。
+   </P
+><P
+>    <CODE
+CLASS="FUNCTION"
+>pg_postmaster_start_time</CODE
+>返回服务器启动时的<TT
+CLASS="TYPE"
+>timestamp with time zone</TT
+>。
+   </P
+><P
+>    <CODE
+CLASS="FUNCTION"
+>version</CODE
+>返回一个描述
+    <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>服务器版本的字符串。
+    你也可以从<A
+HREF="runtime-config-preset.html#GUC-SERVER-VERSION"
+>server_version</A
+>获取机器
+    可读版本<A
+HREF="runtime-config-preset.html#GUC-SERVER-VERSION-NUM"
+>server_version_num</A
+>信息，
+    软件开发者应该使用<TT
+CLASS="LITERAL"
+>server_version_num</TT
+>
+    (8.2可用)或者<A
+HREF="libpq-status.html#LIBPQ-PQSERVERVERSION"
+><I
+CLASS="TERM"
+>      <CODE
+CLASS="FUNCTION"
+>PQserverVersion</CODE
+>
+      
+     </I
+></A
+>解析文本版本。
+   </P
+><P
+>   <A
+HREF="functions-info.html#FUNCTIONS-INFO-ACCESS-TABLE"
+>&#34920; 9-60</A
+>列出那些允许用户编程查询对象访问权限的函数。参阅<A
+HREF="ddl-priv.html"
+>第 5.6 &#33410;</A
+>获取更多有关权限的信息。
+  </P
+><DIV
+CLASS="TABLE"
+><A
+NAME="FUNCTIONS-INFO-ACCESS-TABLE"
+></A
+><P
+><B
+>&#34920; 9-60. 访问权限查询函数</B
+></P
+><TABLE
+BORDER="1"
+CLASS="CALSTABLE"
+><COL><COL><COL><THEAD
+><TR
+><TH
+>名称</TH
+><TH
+>返回类型</TH
+><TH
+>描述</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>has_any_column_privilege</CODE
+>(<TT
+CLASS="PARAMETER"
+>user</TT
+>,
+                                  <TT
+CLASS="PARAMETER"
+>table</TT
+>,
+                                  <TT
+CLASS="PARAMETER"
+>privilege</TT
+>)</TT
+>
+       </TD
+><TD
+><TT
+CLASS="TYPE"
+>boolean</TT
+></TD
+><TD
+>用户有没有表中任意列上的权限</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>has_any_column_privilege</CODE
+>(<TT
+CLASS="PARAMETER"
+>table</TT
+>,
+                                  <TT
+CLASS="PARAMETER"
+>privilege</TT
+>)</TT
+>
+       </TD
+><TD
+><TT
+CLASS="TYPE"
+>boolean</TT
+></TD
+><TD
+>当前用户有没有表中任意列上的权限</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>has_column_privilege</CODE
+>(<TT
+CLASS="PARAMETER"
+>user</TT
+>,
+                                  <TT
+CLASS="PARAMETER"
+>table</TT
+>,
+                                  <TT
+CLASS="PARAMETER"
+>column</TT
+>,
+                                  <TT
+CLASS="PARAMETER"
+>privilege</TT
+>)</TT
+>
+       </TD
+><TD
+><TT
+CLASS="TYPE"
+>boolean</TT
+></TD
+><TD
+>用户有没有列的权限</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>has_column_privilege</CODE
+>(<TT
+CLASS="PARAMETER"
+>table</TT
+>,
+                                  <TT
+CLASS="PARAMETER"
+>column</TT
+>,
+                                  <TT
+CLASS="PARAMETER"
+>privilege</TT
+>)</TT
+>
+       </TD
+><TD
+><TT
+CLASS="TYPE"
+>boolean</TT
+></TD
+><TD
+>当前用户有没有列的权限</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>has_database_privilege</CODE
+>(<TT
+CLASS="PARAMETER"
+>user</TT
+>,
+                                  <TT
+CLASS="PARAMETER"
+>database</TT
+>,
+                                  <TT
+CLASS="PARAMETER"
+>privilege</TT
+>)</TT
+>
+       </TD
+><TD
+><TT
+CLASS="TYPE"
+>boolean</TT
+></TD
+><TD
+>用户有没有数据库的权限</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>has_database_privilege</CODE
+>(<TT
+CLASS="PARAMETER"
+>database</TT
+>,
+                                  <TT
+CLASS="PARAMETER"
+>privilege</TT
+>)</TT
+>
+       </TD
+><TD
+><TT
+CLASS="TYPE"
+>boolean</TT
+></TD
+><TD
+>当前用户有没有数据库的权限</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>has_foreign_data_wrapper_privilege</CODE
+>(<TT
+CLASS="PARAMETER"
+>user</TT
+>,
+                                  <TT
+CLASS="PARAMETER"
+>fdw</TT
+>,
+                                  <TT
+CLASS="PARAMETER"
+>privilege</TT
+>)</TT
+>
+       </TD
+><TD
+><TT
+CLASS="TYPE"
+>boolean</TT
+></TD
+><TD
+>用户有没有外部数据包装器上的权限</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>has_foreign_data_wrapper_privilege</CODE
+>(<TT
+CLASS="PARAMETER"
+>fdw</TT
+>,
+                                  <TT
+CLASS="PARAMETER"
+>privilege</TT
+>)</TT
+>
+       </TD
+><TD
+><TT
+CLASS="TYPE"
+>boolean</TT
+></TD
+><TD
+>当前用户有没有外部数据包装器上的权限</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>has_function_privilege</CODE
+>(<TT
+CLASS="PARAMETER"
+>user</TT
+>,
+                                  <TT
+CLASS="PARAMETER"
+>function</TT
+>,
+                                  <TT
+CLASS="PARAMETER"
+>privilege</TT
+>)</TT
+>
+       </TD
+><TD
+><TT
+CLASS="TYPE"
+>boolean</TT
+></TD
+><TD
+>用户有没有函数上的权限</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>has_function_privilege</CODE
+>(<TT
+CLASS="PARAMETER"
+>function</TT
+>,
+                                  <TT
+CLASS="PARAMETER"
+>privilege</TT
+>)</TT
+>
+       </TD
+><TD
+><TT
+CLASS="TYPE"
+>boolean</TT
+></TD
+><TD
+>当前用户有没有函数上的权限</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>has_language_privilege</CODE
+>(<TT
+CLASS="PARAMETER"
+>user</TT
+>,
+                                  <TT
+CLASS="PARAMETER"
+>language</TT
+>,
+                                  <TT
+CLASS="PARAMETER"
+>privilege</TT
+>)</TT
+>
+       </TD
+><TD
+><TT
+CLASS="TYPE"
+>boolean</TT
+></TD
+><TD
+>用户有没有语言上的权限</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>has_language_privilege</CODE
+>(<TT
+CLASS="PARAMETER"
+>language</TT
+>,
+                                  <TT
+CLASS="PARAMETER"
+>privilege</TT
+>)</TT
+>
+       </TD
+><TD
+><TT
+CLASS="TYPE"
+>boolean</TT
+></TD
+><TD
+>当前用户有没有语言上的权限</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>has_schema_privilege</CODE
+>(<TT
+CLASS="PARAMETER"
+>user</TT
+>,
+                                  <TT
+CLASS="PARAMETER"
+>schema</TT
+>,
+                                  <TT
+CLASS="PARAMETER"
+>privilege</TT
+>)</TT
+>
+       </TD
+><TD
+><TT
+CLASS="TYPE"
+>boolean</TT
+></TD
+><TD
+>用户有没有模式上的权限</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>has_schema_privilege</CODE
+>(<TT
+CLASS="PARAMETER"
+>schema</TT
+>,
+                                  <TT
+CLASS="PARAMETER"
+>privilege</TT
+>)</TT
+>
+       </TD
+><TD
+><TT
+CLASS="TYPE"
+>boolean</TT
+></TD
+><TD
+>当前用户有没有模式上的权限</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>has_sequence_privilege</CODE
+>(<TT
+CLASS="PARAMETER"
+>user</TT
+>,
+                                  <TT
+CLASS="PARAMETER"
+>sequence</TT
+>,
+                                  <TT
+CLASS="PARAMETER"
+>privilege</TT
+>)</TT
+>
+       </TD
+><TD
+><TT
+CLASS="TYPE"
+>boolean</TT
+></TD
+><TD
+>用户有没有序列上的权限</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>has_sequence_privilege</CODE
+>(<TT
+CLASS="PARAMETER"
+>sequence</TT
+>,
+                                  <TT
+CLASS="PARAMETER"
+>privilege</TT
+>)</TT
+>
+       </TD
+><TD
+><TT
+CLASS="TYPE"
+>boolean</TT
+></TD
+><TD
+>当前用户有没有序列上的权限</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>has_server_privilege</CODE
+>(<TT
+CLASS="PARAMETER"
+>user</TT
+>,
+                                  <TT
+CLASS="PARAMETER"
+>server</TT
+>,
+                                  <TT
+CLASS="PARAMETER"
+>privilege</TT
+>)</TT
+>
+       </TD
+><TD
+><TT
+CLASS="TYPE"
+>boolean</TT
+></TD
+><TD
+>用户有没有外部服务器上的权限</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>has_server_privilege</CODE
+>(<TT
+CLASS="PARAMETER"
+>server</TT
+>,
+                                  <TT
+CLASS="PARAMETER"
+>privilege</TT
+>)</TT
+>
+       </TD
+><TD
+><TT
+CLASS="TYPE"
+>boolean</TT
+></TD
+><TD
+>当前用户有没有外部服务器上的权限</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>has_table_privilege</CODE
+>(<TT
+CLASS="PARAMETER"
+>user</TT
+>,
+                                  <TT
+CLASS="PARAMETER"
+>table</TT
+>,
+                                  <TT
+CLASS="PARAMETER"
+>privilege</TT
+>)</TT
+>
+       </TD
+><TD
+><TT
+CLASS="TYPE"
+>boolean</TT
+></TD
+><TD
+>用户有没有表上的权限</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>has_table_privilege</CODE
+>(<TT
+CLASS="PARAMETER"
+>table</TT
+>,
+                                  <TT
+CLASS="PARAMETER"
+>privilege</TT
+>)</TT
+>
+       </TD
+><TD
+><TT
+CLASS="TYPE"
+>boolean</TT
+></TD
+><TD
+>当前用户有没有表上的权限</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>has_tablespace_privilege</CODE
+>(<TT
+CLASS="PARAMETER"
+>user</TT
+>,
+                                  <TT
+CLASS="PARAMETER"
+>tablespace</TT
+>,
+                                  <TT
+CLASS="PARAMETER"
+>privilege</TT
+>)</TT
+>
+       </TD
+><TD
+><TT
+CLASS="TYPE"
+>boolean</TT
+></TD
+><TD
+>用户有没有表空间上的权限</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>has_tablespace_privilege</CODE
+>(<TT
+CLASS="PARAMETER"
+>tablespace</TT
+>,
+                                  <TT
+CLASS="PARAMETER"
+>privilege</TT
+>)</TT
+>
+       </TD
+><TD
+><TT
+CLASS="TYPE"
+>boolean</TT
+></TD
+><TD
+>当前用户有没有表空间上的权限</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>has_type_privilege</CODE
+>(<TT
+CLASS="PARAMETER"
+>user</TT
+>,
+                                  <TT
+CLASS="PARAMETER"
+>type</TT
+>,
+                                  <TT
+CLASS="PARAMETER"
+>privilege</TT
+>)</TT
+>
+       </TD
+><TD
+><TT
+CLASS="TYPE"
+>boolean</TT
+></TD
+><TD
+>用户有没有类型的特权</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>has_type_privilege</CODE
+>(<TT
+CLASS="PARAMETER"
+>type</TT
+>,
+                                  <TT
+CLASS="PARAMETER"
+>privilege</TT
+>)</TT
+>
+       </TD
+><TD
+><TT
+CLASS="TYPE"
+>boolean</TT
+></TD
+><TD
+>当前用户有没有类型的特权</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>pg_has_role</CODE
+>(<TT
+CLASS="PARAMETER"
+>user</TT
+>,
+                                  <TT
+CLASS="PARAMETER"
+>role</TT
+>,
+                                  <TT
+CLASS="PARAMETER"
+>privilege</TT
+>)</TT
+>
+       </TD
+><TD
+><TT
+CLASS="TYPE"
+>boolean</TT
+></TD
+><TD
+>用户有没有角色上的权限</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>pg_has_role</CODE
+>(<TT
+CLASS="PARAMETER"
+>role</TT
+>,
+                                  <TT
+CLASS="PARAMETER"
+>privilege</TT
+>)</TT
+>
+       </TD
+><TD
+><TT
+CLASS="TYPE"
+>boolean</TT
+></TD
+><TD
+>当前用户有没有角色上的权限</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>row_security_active</CODE
+>(<TT
+CLASS="PARAMETER"
+>table</TT
+>)</TT
+>
+       </TD
+><TD
+><TT
+CLASS="TYPE"
+>boolean</TT
+></TD
+><TD
+>当前用户有没有表上的行级安全性</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+><P
+>    <CODE
+CLASS="FUNCTION"
+>has_table_privilege</CODE
+>判断一个用户是否可以用某种特定的方式访问一个表。 该用户可以通过名字或者 OID （<TT
+CLASS="LITERAL"
+>pg_authid.oid</TT
+>） 来指定，也可以用<TT
+CLASS="LITERAL"
+>public</TT
+>表示 PUBLIC 伪角色。如果省略该参数，则使用<CODE
+CLASS="FUNCTION"
+>current_user</CODE
+>。 该表可以通过名字或者 OID 指定（因此，实际上有六种 <CODE
+CLASS="FUNCTION"
+>has_table_privilege</CODE
+>的变体，我们可以通过它们的参数数目和类型来区分它们） 。如果用名字指定，那么在必要时该名字可以是模式限定的。 所希望的权限类型是用一个文本串来指定的，它必须是下面的几个值之一： <TT
+CLASS="LITERAL"
+>SELECT</TT
+>、<TT
+CLASS="LITERAL"
+>INSERT</TT
+>、<TT
+CLASS="LITERAL"
+>UPDATE</TT
+>、<TT
+CLASS="LITERAL"
+>DELETE</TT
+>、<TT
+CLASS="LITERAL"
+>TRUNCATE</TT
+>、<TT
+CLASS="LITERAL"
+>REFERENCES</TT
+>或<TT
+CLASS="LITERAL"
+>TRIGGER</TT
+>。<TT
+CLASS="LITERAL"
+>WITH GRANT OPTION</TT
+>可以被选择增加到一个权限类型来测试是否该权限是使用转授选项得到。另外，可以使用逗号分隔来列出多个权限类型，在这种情况下只要具有其中之一的权限则结果为<TT
+CLASS="LITERAL"
+>真</TT
+>（权限字符串的大小写并不重要，可以在权限名称之间出现额外的空白，但是在权限名内部不能有空白）。一些例子：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>SELECT has_table_privilege('myschema.mytable', 'select');
+SELECT has_table_privilege('joe', 'mytable', 'INSERT, SELECT WITH GRANT OPTION');</PRE
+><P>
+   </P
+><P
+>    <CODE
+CLASS="FUNCTION"
+>has_sequence_privilege</CODE
+>检查一个用户是否能以某种特定方式访问一个序列。它的参数可能性和<CODE
+CLASS="FUNCTION"
+>has_table_privilege</CODE
+>相似。所希望测试的访问权限类型必须是下列之一：<TT
+CLASS="LITERAL"
+>USAGE</TT
+>、<TT
+CLASS="LITERAL"
+>SELECT</TT
+>或<TT
+CLASS="LITERAL"
+>UPDATE</TT
+>。
+   </P
+><P
+>    <CODE
+CLASS="FUNCTION"
+>has_any_column_privilege</CODE
+>检查一个用户是否能以特定方式访问一个表的任意列。其参数可能性和<CODE
+CLASS="FUNCTION"
+>has_table_privilege</CODE
+>类似，除了所希望的访问权限类型必须是下面值的某种组合：<TT
+CLASS="LITERAL"
+>SELECT</TT
+>、<TT
+CLASS="LITERAL"
+>INSERT</TT
+>、<TT
+CLASS="LITERAL"
+>UPDATE</TT
+>或<TT
+CLASS="LITERAL"
+>REFERENCES</TT
+>。注意在表层面上具有这些权限的任意一个都会隐式地把它授权给表中的每一列，因此如果<CODE
+CLASS="FUNCTION"
+>has_table_privilege</CODE
+>对同样的参数返回真则<CODE
+CLASS="FUNCTION"
+>has_any_column_privilege</CODE
+>将总是返回<TT
+CLASS="LITERAL"
+>真</TT
+>。但是如果在至少一列上有一个该权限的列级授权，<CODE
+CLASS="FUNCTION"
+>has_any_column_privilege</CODE
+>也会成功。
+   </P
+><P
+>    <CODE
+CLASS="FUNCTION"
+>has_column_privilege</CODE
+>检查一个用户是否能以特定方式访问一个列。它的参数可能性与<CODE
+CLASS="FUNCTION"
+>has_table_privilege</CODE
+>类似，并且列还可以使用名字或者属性号来指定。希望的访问权限类型必须是下列值的某种组合：<TT
+CLASS="LITERAL"
+>SELECT</TT
+>、<TT
+CLASS="LITERAL"
+>INSERT</TT
+>、<TT
+CLASS="LITERAL"
+>UPDATE</TT
+>或<TT
+CLASS="LITERAL"
+>REFERENCES</TT
+>。注意在表级别上具有这些权限中的任意一种将会隐式地把它授予给表上的每一列。
+   </P
+><P
+>    <CODE
+CLASS="FUNCTION"
+>has_database_privilege</CODE
+>检查一个用户是否能以特定方式访问一个数据库。它的参数可能性类似 <CODE
+CLASS="FUNCTION"
+>has_table_privilege</CODE
+>。希望的访问权限类型必须是以下值的某种组合：<TT
+CLASS="LITERAL"
+>CREATE</TT
+>、<TT
+CLASS="LITERAL"
+>CONNECT</TT
+>、<TT
+CLASS="LITERAL"
+>TEMPORARY</TT
+>或<TT
+CLASS="LITERAL"
+>TEMP</TT
+>（等价于<TT
+CLASS="LITERAL"
+>TEMPORARY</TT
+>）。
+   </P
+><P
+>    <CODE
+CLASS="FUNCTION"
+>has_function_privilege</CODE
+>检查一个用户是否能以特定方式访问一个函数。其参数可能性类似<CODE
+CLASS="FUNCTION"
+>has_table_privilege</CODE
+>。在用一个文本串而不是 OID 指定一个函数时，允许的输入和<TT
+CLASS="TYPE"
+>regprocedure</TT
+>数据类型一样（参阅 <A
+HREF="datatype-oid.html"
+>第 8.18 &#33410;</A
+>）。希望的访问权限类型必须是<TT
+CLASS="LITERAL"
+>EXECUTE</TT
+>。一个例子：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>SELECT has_function_privilege('joeuser', 'myfunc(int, text)', 'execute');</PRE
+><P>
+   </P
+><P
+>    <CODE
+CLASS="FUNCTION"
+>has_foreign_data_wrapper_privilege</CODE
+>检查一个用户是否能以特定方式访问一个外部数据包装器。它的参数可能性类似于<CODE
+CLASS="FUNCTION"
+>has_table_privilege</CODE
+>。希望的访问权限类型必须是<TT
+CLASS="LITERAL"
+>USAGE</TT
+>。
+   </P
+><P
+>    <CODE
+CLASS="FUNCTION"
+>has_language_privilege</CODE
+>检查一个用户是否可以以某种特定的方式访问一个过程语言。 其参数可能性类似 <CODE
+CLASS="FUNCTION"
+>has_table_privilege</CODE
+>。希望的访问权限类型必须是<TT
+CLASS="LITERAL"
+>USAGE</TT
+>。
+   </P
+><P
+>    <CODE
+CLASS="FUNCTION"
+>has_schema_privilege</CODE
+>检查一个用户是否可以以某种特定的方式访问一个模式。 其参数可能性类似 <CODE
+CLASS="FUNCTION"
+>has_table_privilege</CODE
+>。希望的访问权限类型必须是<TT
+CLASS="LITERAL"
+>CREATE</TT
+>或<TT
+CLASS="LITERAL"
+>USAGE</TT
+>。
+   </P
+><P
+>    <CODE
+CLASS="FUNCTION"
+>has_server_privilege</CODE
+>检查一个用户是否可以以某种特定的方式访问一个外部服务器。 其参数可能性类似 <CODE
+CLASS="FUNCTION"
+>has_table_privilege</CODE
+>。希望的访问权限类型必须是<TT
+CLASS="LITERAL"
+>USAGE</TT
+>。
+   </P
+><P
+>    <CODE
+CLASS="FUNCTION"
+>has_tablespace_privilege</CODE
+>检查一个用户是否可以以某种特定的方式访问一个表空间。其参数可能性类似 <CODE
+CLASS="FUNCTION"
+>has_table_privilege</CODE
+>。希望的访问权限类型必须是<TT
+CLASS="LITERAL"
+>CREATE</TT
+>。
+   </P
+><P
+>    <CODE
+CLASS="FUNCTION"
+>pg_has_role</CODE
+>检查一个用户是否可以以某种特定的方式访问一个角色。其参数可能性类似 <CODE
+CLASS="FUNCTION"
+>has_table_privilege</CODE
+>，除了<TT
+CLASS="LITERAL"
+>public</TT
+>不能被允许作为一个用户名。希望的访问权限类型必须是下列值的某种组合：<TT
+CLASS="LITERAL"
+>MEMBER</TT
+>或<TT
+CLASS="LITERAL"
+>USAGE</TT
+>。<TT
+CLASS="LITERAL"
+>MEMBER</TT
+>表示该角色中的直接或间接成员关系（即使用<TT
+CLASS="COMMAND"
+>SET ROLE</TT
+>的权力），而<TT
+CLASS="LITERAL"
+>USAGE</TT
+>表示不做<TT
+CLASS="COMMAND"
+>SET ROLE</TT
+>的情况下该角色的权限是否立即可用。
+   </P
+><P
+>    <CODE
+CLASS="FUNCTION"
+>row_security_active</CODE
+>检查行级安全是否对
+    <CODE
+CLASS="FUNCTION"
+>current_user</CODE
+>以及环境上下文中的指定表是活跃的。
+    通过名称或者OID指定表。    
+   </P
+><P
+>&#13;    <CODE
+CLASS="FUNCTION"
+>row_security_active</CODE
+>检查在<CODE
+CLASS="FUNCTION"
+>current_user</CODE
+>
+    的上下文和环境中是否为指定的表激活了行级安全性。表可以用名称或者 OID 指定。
+   </P
+><P
+>   <A
+HREF="functions-info.html#FUNCTIONS-INFO-SCHEMA-TABLE"
+>&#34920; 9-61</A
+>展示了决定是否一个特定对象在当前模式搜索路径中<I
+CLASS="FIRSTTERM"
+>可见</I
+>的函数。例如，如果一个表所在的模式在当前搜索路径中并且在它之前没有出现过相同的名字，这个表就被说是可见的。这等价于在语句中表可以被用名称引用但不加显式的模式限定。要列出所有可见表的名字：
+
+
+
+
+
+
+
+
+
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>SELECT relname FROM pg_class WHERE pg_table_is_visible(oid);</PRE
+><P>
+  </P
+><DIV
+CLASS="TABLE"
+><A
+NAME="FUNCTIONS-INFO-SCHEMA-TABLE"
+></A
+><P
+><B
+>&#34920; 9-61. 模式可见性查询函数</B
+></P
+><TABLE
+BORDER="1"
+CLASS="CALSTABLE"
+><COL><COL><COL><THEAD
+><TR
+><TH
+>名称</TH
+><TH
+>返回类型</TH
+><TH
+>描述</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>pg_collation_is_visible(<TT
+CLASS="PARAMETER"
+>collation_oid</TT
+>)</CODE
+></TT
+>
+       </TD
+><TD
+><TT
+CLASS="TYPE"
+>boolean</TT
+></TD
+><TD
+>排序规则在搜索路径中可见吗？</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>pg_conversion_is_visible(<TT
+CLASS="PARAMETER"
+>conversion_oid</TT
+>)</CODE
+></TT
+>
+       </TD
+><TD
+><TT
+CLASS="TYPE"
+>boolean</TT
+></TD
+><TD
+>转换在搜索路径中可见吗？</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>pg_function_is_visible(<TT
+CLASS="PARAMETER"
+>function_oid</TT
+>)</CODE
+></TT
+>
+       </TD
+><TD
+><TT
+CLASS="TYPE"
+>boolean</TT
+></TD
+><TD
+>函数在搜索路径中可见吗？</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>pg_opclass_is_visible(<TT
+CLASS="PARAMETER"
+>opclass_oid</TT
+>)</CODE
+></TT
+>
+       </TD
+><TD
+><TT
+CLASS="TYPE"
+>boolean</TT
+></TD
+><TD
+>操作符类在搜索路径中可见吗？</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>pg_operator_is_visible(<TT
+CLASS="PARAMETER"
+>operator_oid</TT
+>)</CODE
+></TT
+>
+       </TD
+><TD
+><TT
+CLASS="TYPE"
+>boolean</TT
+></TD
+><TD
+>操作符在搜索路径中可见吗？</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>pg_opfamily_is_visible(<TT
+CLASS="PARAMETER"
+>opclass_oid</TT
+>)</CODE
+></TT
+>
+       </TD
+><TD
+><TT
+CLASS="TYPE"
+>boolean</TT
+></TD
+><TD
+>操作符族在搜索路径中可见吗？</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>pg_table_is_visible(<TT
+CLASS="PARAMETER"
+>table_oid</TT
+>)</CODE
+></TT
+>
+       </TD
+><TD
+><TT
+CLASS="TYPE"
+>boolean</TT
+></TD
+><TD
+>表在搜索路径中可见吗？</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>pg_ts_config_is_visible(<TT
+CLASS="PARAMETER"
+>config_oid</TT
+>)</CODE
+></TT
+>
+       </TD
+><TD
+><TT
+CLASS="TYPE"
+>boolean</TT
+></TD
+><TD
+>文本搜索配置在搜索路径中可见吗？</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>pg_ts_dict_is_visible(<TT
+CLASS="PARAMETER"
+>dict_oid</TT
+>)</CODE
+></TT
+>
+       </TD
+><TD
+><TT
+CLASS="TYPE"
+>boolean</TT
+></TD
+><TD
+>文本搜索字典在搜索路径中可见吗？</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>pg_ts_parser_is_visible(<TT
+CLASS="PARAMETER"
+>parser_oid</TT
+>)</CODE
+></TT
+>
+       </TD
+><TD
+><TT
+CLASS="TYPE"
+>boolean</TT
+></TD
+><TD
+>文本搜索解析器在搜索路径中可见吗？</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>pg_ts_template_is_visible(<TT
+CLASS="PARAMETER"
+>template_oid</TT
+>)</CODE
+></TT
+>
+       </TD
+><TD
+><TT
+CLASS="TYPE"
+>boolean</TT
+></TD
+><TD
+>文本搜索模板在搜索路径中可见吗？</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>pg_type_is_visible(<TT
+CLASS="PARAMETER"
+>type_oid</TT
+>)</CODE
+></TT
+>
+       </TD
+><TD
+><TT
+CLASS="TYPE"
+>boolean</TT
+></TD
+><TD
+>类型（或域）在搜索路径中可见吗？</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+><P
+>    每一个函数对一种数据库对象执行可见性检查。
+    注意<CODE
+CLASS="FUNCTION"
+>pg_table_is_visible</CODE
+>也可被用于视图、索引和序列以及外表，
+    <CODE
+CLASS="FUNCTION"
+>pg_type_is_visible</CODE
+>也可以被用于域。对于函数和操作符，
+    如果在路径中更早的地方没有出现具有相同名称<SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>和参数数据类型</I
+></SPAN
+>的对象，
+    该对象在搜索路径中是可见的。对于操作符类，名称和相关的索引访问方法都要考虑。
+   </P
+><P
+>    所有这些函数都要求用对象 OID 来标识将被检查的对象。如果你想用名称来测试一个对象，使用 OID 别名类型（<TT
+CLASS="TYPE"
+>regclass</TT
+>、<TT
+CLASS="TYPE"
+>regtype</TT
+>、<TT
+CLASS="TYPE"
+>regprocedure</TT
+>、<TT
+CLASS="TYPE"
+>regoperator</TT
+>、<TT
+CLASS="TYPE"
+>regconfig</TT
+>或<TT
+CLASS="TYPE"
+>regdictionary</TT
+>）将会很方便。例如：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>SELECT pg_type_is_visible('myschema.widget'::regtype);</PRE
+><P>
+    注意以这种方式测试一个非模式限定的类型名没什么意义 &mdash; 如果该名称完全能被识别，它必须是可见的。
+   </P
+><P
+>   <A
+HREF="functions-info.html#FUNCTIONS-INFO-CATALOG-TABLE"
+>&#34920; 9-62</A
+>列出了从系统目录抽取信息的函数。
+  </P
+><DIV
+CLASS="TABLE"
+><A
+NAME="FUNCTIONS-INFO-CATALOG-TABLE"
+></A
+><P
+><B
+>&#34920; 9-62. 系统目录信息函数</B
+></P
+><TABLE
+BORDER="1"
+CLASS="CALSTABLE"
+><COL><COL><COL><THEAD
+><TR
+><TH
+>名称</TH
+><TH
+>返回类型</TH
+><TH
+>描述</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>format_type(<TT
+CLASS="PARAMETER"
+>type_oid</TT
+>, <TT
+CLASS="PARAMETER"
+>typemod</TT
+>)</CODE
+></TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>text</TT
+></TD
+><TD
+>获得一个数据类型的 SQL 名字</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>pg_get_constraintdef(<TT
+CLASS="PARAMETER"
+>constraint_oid</TT
+>)</CODE
+></TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>text</TT
+></TD
+><TD
+>获得一个约束的定义</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>pg_get_constraintdef(<TT
+CLASS="PARAMETER"
+>constraint_oid</TT
+>, <TT
+CLASS="PARAMETER"
+>pretty_bool</TT
+>)</CODE
+></TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>text</TT
+></TD
+><TD
+>获得一个约束的定义</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>pg_get_expr(<TT
+CLASS="PARAMETER"
+>pg_node_tree</TT
+>, <TT
+CLASS="PARAMETER"
+>relation_oid</TT
+>)</CODE
+></TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>text</TT
+></TD
+><TD
+>反编译一个表达式的内部形式，假定其中的任何 Var 指向由第二个参数指示的关系</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>pg_get_expr(<TT
+CLASS="PARAMETER"
+>pg_node_tree</TT
+>, <TT
+CLASS="PARAMETER"
+>relation_oid</TT
+>, <TT
+CLASS="PARAMETER"
+>pretty_bool</TT
+>)</CODE
+></TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>text</TT
+></TD
+><TD
+>反编译一个表达式的内部形式，假定其中的任何 Var 指向由第二个参数指示的关系</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>pg_get_functiondef(<TT
+CLASS="PARAMETER"
+>func_oid</TT
+>)</CODE
+></TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>text</TT
+></TD
+><TD
+>获得一个函数的定义</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>pg_get_function_arguments(<TT
+CLASS="PARAMETER"
+>func_oid</TT
+>)</CODE
+></TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>text</TT
+></TD
+><TD
+>获得一个函数定义的参数列表（带有默认值）</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>pg_get_function_identity_arguments(<TT
+CLASS="PARAMETER"
+>func_oid</TT
+>)</CODE
+></TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>text</TT
+></TD
+><TD
+>获得标识一个函数的参数列表（不带默认值）</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>pg_get_function_result(<TT
+CLASS="PARAMETER"
+>func_oid</TT
+>)</CODE
+></TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>text</TT
+></TD
+><TD
+>获得函数的<TT
+CLASS="LITERAL"
+>RETURNS</TT
+>子句</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>pg_get_indexdef(<TT
+CLASS="PARAMETER"
+>index_oid</TT
+>)</CODE
+></TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>text</TT
+></TD
+><TD
+>获得索引的<TT
+CLASS="COMMAND"
+>CREATE INDEX</TT
+>命令</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>pg_get_indexdef(<TT
+CLASS="PARAMETER"
+>index_oid</TT
+>, <TT
+CLASS="PARAMETER"
+>column_no</TT
+>, <TT
+CLASS="PARAMETER"
+>pretty_bool</TT
+>)</CODE
+></TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>text</TT
+></TD
+><TD
+>获得索引的<TT
+CLASS="COMMAND"
+>CREATE INDEX</TT
+>命令，或者当<TT
+CLASS="PARAMETER"
+>column_no</TT
+>为非零时只得到一个索引列的定义</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>pg_get_keywords()</CODE
+></TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>setof record</TT
+></TD
+><TD
+>获得 SQL 关键字的列表及其分类</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>pg_get_ruledef(<TT
+CLASS="PARAMETER"
+>rule_oid</TT
+>)</CODE
+></TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>text</TT
+></TD
+><TD
+>获得规则的<TT
+CLASS="COMMAND"
+>CREATE RULE</TT
+>命令</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>pg_get_ruledef(<TT
+CLASS="PARAMETER"
+>rule_oid</TT
+>, <TT
+CLASS="PARAMETER"
+>pretty_bool</TT
+>)</CODE
+></TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>text</TT
+></TD
+><TD
+>获得规则的<TT
+CLASS="COMMAND"
+>CREATE RULE</TT
+>命令</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>pg_get_serial_sequence(<TT
+CLASS="PARAMETER"
+>table_name</TT
+>, <TT
+CLASS="PARAMETER"
+>column_name</TT
+>)</CODE
+></TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>text</TT
+></TD
+><TD
+>获得一个<TT
+CLASS="TYPE"
+>serial</TT
+>、<TT
+CLASS="TYPE"
+>smallserial</TT
+>或<TT
+CLASS="TYPE"
+>bigserial</TT
+>列使用的序列的名称</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="FUNCTION"
+>pg_get_triggerdef</CODE
+>(<TT
+CLASS="PARAMETER"
+>trigger_oid</TT
+>)</TD
+><TD
+><TT
+CLASS="TYPE"
+>text</TT
+></TD
+><TD
+>获得触发器的<TT
+CLASS="COMMAND"
+>CREATE [ CONSTRAINT ] TRIGGER</TT
+>命令</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="FUNCTION"
+>pg_get_triggerdef</CODE
+>(<TT
+CLASS="PARAMETER"
+>trigger_oid</TT
+>, <TT
+CLASS="PARAMETER"
+>pretty_bool</TT
+>)</TD
+><TD
+><TT
+CLASS="TYPE"
+>text</TT
+></TD
+><TD
+>获得触发器的<TT
+CLASS="COMMAND"
+>CREATE [ CONSTRAINT ] TRIGGER</TT
+>命令</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>pg_get_userbyid(<TT
+CLASS="PARAMETER"
+>role_oid</TT
+>)</CODE
+></TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>name</TT
+></TD
+><TD
+>获得给定 OID 指定的角色名</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>pg_get_viewdef(<TT
+CLASS="PARAMETER"
+>view_name</TT
+>)</CODE
+></TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>text</TT
+></TD
+><TD
+>获得视图或物化视图的底层<TT
+CLASS="COMMAND"
+>SELECT</TT
+>命令（<SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>已废弃</I
+></SPAN
+>）</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>pg_get_viewdef(<TT
+CLASS="PARAMETER"
+>view_name</TT
+>, <TT
+CLASS="PARAMETER"
+>pretty_bool</TT
+>)</CODE
+></TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>text</TT
+></TD
+><TD
+>获得视图或物化视图的底层<TT
+CLASS="COMMAND"
+>SELECT</TT
+>命令（<SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>已废弃</I
+></SPAN
+>）</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>pg_get_viewdef(<TT
+CLASS="PARAMETER"
+>view_oid</TT
+>)</CODE
+></TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>text</TT
+></TD
+><TD
+>获得视图或物化视图的底层<TT
+CLASS="COMMAND"
+>SELECT</TT
+>命令</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>pg_get_viewdef(<TT
+CLASS="PARAMETER"
+>view_oid</TT
+>, <TT
+CLASS="PARAMETER"
+>pretty_bool</TT
+>)</CODE
+></TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>text</TT
+></TD
+><TD
+>获得视图或物化视图的底层<TT
+CLASS="COMMAND"
+>SELECT</TT
+>命令</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>pg_get_viewdef(<TT
+CLASS="PARAMETER"
+>view_oid</TT
+>, <TT
+CLASS="PARAMETER"
+>wrap_column_int</TT
+>)</CODE
+></TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>text</TT
+></TD
+><TD
+>获得视图或物化视图的底层<TT
+CLASS="COMMAND"
+>SELECT</TT
+>命令；带域的行被包装成指定的列数，并隐含了优质打印</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>pg_index_column_has_property(<TT
+CLASS="PARAMETER"
+>index_oid</TT
+>, <TT
+CLASS="PARAMETER"
+>column_no</TT
+>, <TT
+CLASS="PARAMETER"
+>prop_name</TT
+>)</CODE
+></TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>boolean</TT
+></TD
+><TD
+>测试一个索引列是否有指定的性质</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>pg_index_has_property(<TT
+CLASS="PARAMETER"
+>index_oid</TT
+>, <TT
+CLASS="PARAMETER"
+>prop_name</TT
+>)</CODE
+></TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>boolean</TT
+></TD
+><TD
+>测试一个索引是否有指定的性质</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>pg_indexam_has_property(<TT
+CLASS="PARAMETER"
+>am_oid</TT
+>, <TT
+CLASS="PARAMETER"
+>prop_name</TT
+>)</CODE
+></TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>boolean</TT
+></TD
+><TD
+>测试一个索引访问方法是否有指定的性质</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>pg_options_to_table(<TT
+CLASS="PARAMETER"
+>reloptions</TT
+>)</CODE
+></TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>setof record</TT
+></TD
+><TD
+>获得存储选项的名称/值对的集合</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>pg_tablespace_databases(<TT
+CLASS="PARAMETER"
+>tablespace_oid</TT
+>)</CODE
+></TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>setof oid</TT
+></TD
+><TD
+>获得在该表空间中有对象的数据库的 OID 的集合</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>pg_tablespace_location(<TT
+CLASS="PARAMETER"
+>tablespace_oid</TT
+>)</CODE
+></TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>text</TT
+></TD
+><TD
+>获得这个表空间所在的文件系统的路径</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>pg_typeof(<TT
+CLASS="PARAMETER"
+>any</TT
+>)</CODE
+></TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>regtype</TT
+></TD
+><TD
+>获得任意值的数据类型</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>collation for (<TT
+CLASS="PARAMETER"
+>any</TT
+>)</CODE
+></TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>text</TT
+></TD
+><TD
+>获得该参数的排序规则</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>to_regclass(<TT
+CLASS="PARAMETER"
+>rel_name</TT
+>)</CODE
+></TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>regclass</TT
+></TD
+><TD
+>获得命名关系的OID</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>to_regproc(<TT
+CLASS="PARAMETER"
+>func_name</TT
+>)</CODE
+></TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>regproc</TT
+></TD
+><TD
+>获得命名函数的OID</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>to_regprocedure(<TT
+CLASS="PARAMETER"
+>func_name</TT
+>)</CODE
+></TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>regprocedure</TT
+></TD
+><TD
+>获得命名函数的OID</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>to_regoper(<TT
+CLASS="PARAMETER"
+>operator_name</TT
+>)</CODE
+></TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>regoper</TT
+></TD
+><TD
+>获得命名操作符的OID</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>to_regoperator(<TT
+CLASS="PARAMETER"
+>operator_name</TT
+>)</CODE
+></TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>regoperator</TT
+></TD
+><TD
+>获得命名操作符的OID</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>to_regtype(<TT
+CLASS="PARAMETER"
+>type_name</TT
+>)</CODE
+></TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>regtype</TT
+></TD
+><TD
+>获得命名类型的OID</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>to_regnamespace(<TT
+CLASS="PARAMETER"
+>schema_name</TT
+>)</CODE
+></TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>regnamespace</TT
+></TD
+><TD
+>获得命名模式的OID</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>to_regrole(<TT
+CLASS="PARAMETER"
+>role_name</TT
+>)</CODE
+></TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>regrole</TT
+></TD
+><TD
+>获得命名角色的OID</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+><P
+>   <CODE
+CLASS="FUNCTION"
+>format_type</CODE
+>返回一个数据类型的 SQL 名称，它由它的类型 OID 标识并且可能是一个类型修饰符。如果不知道相关的修饰符，则为类型修饰符传递 NULL。
+  </P
+><P
+>   <CODE
+CLASS="FUNCTION"
+>pg_get_keywords</CODE
+>返回一组记录描述服务器识别的 SQL 关键字。<TT
+CLASS="STRUCTFIELD"
+>word</TT
+>列包含关键字。<TT
+CLASS="STRUCTFIELD"
+>catcode</TT
+>列包含一个分类码：<TT
+CLASS="LITERAL"
+>U</TT
+>为未被预定，<TT
+CLASS="LITERAL"
+>C</TT
+> 为列名，<TT
+CLASS="LITERAL"
+>T</TT
+>类型或函数名，<TT
+CLASS="LITERAL"
+>R</TT
+>为预留。<TT
+CLASS="STRUCTFIELD"
+>catdesc</TT
+>列包含一个可能本地化的描述分类的字符串。
+  </P
+><P
+>   <CODE
+CLASS="FUNCTION"
+>pg_get_constraintdef</CODE
+>、<CODE
+CLASS="FUNCTION"
+>pg_get_indexdef</CODE
+>、<CODE
+CLASS="FUNCTION"
+>pg_get_ruledef</CODE
+>和<CODE
+CLASS="FUNCTION"
+>pg_get_triggerdef</CODE
+>分别重建一个约束、索引、规则或触发器的创建命令（注意这是一个反编译的重构，而不是命令的原始文本）。<CODE
+CLASS="FUNCTION"
+>pg_get_expr</CODE
+>反编译一个表达式的内部形式，例如一个列的默认值。在检查系统目录内容时有用。如果表达式可能包含 Var，在第二个参数中指定它们引用的关系的 OID；如果不会出现 Var，第二个参数设置为 0 即可。<CODE
+CLASS="FUNCTION"
+>pg_get_viewdef</CODE
+>重构定义一个视图的<TT
+CLASS="COMMAND"
+>SELECT</TT
+>查询。这些函数的大部分都有两种变体，一种可以可选地<SPAN
+CLASS="QUOTE"
+>"优质打印"</SPAN
+>结果。优质打印的格式可读性更强，但是默认格式更可能被未来版本的<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>以相同的方式解释。在转出目的中避免使用优质打印输出。为优质打印参数传递<TT
+CLASS="LITERAL"
+>假</TT
+>将得到和不带该参数的变体相同的结果。
+  </P
+><P
+>   <CODE
+CLASS="FUNCTION"
+>pg_get_functiondef</CODE
+>为一个函数返回一个完整的<TT
+CLASS="COMMAND"
+>CREATE OR REPLACE FUNCTION</TT
+>语句。<CODE
+CLASS="FUNCTION"
+>pg_get_function_arguments</CODE
+>返回一个函数的参数列表，形式按照它们出现在<TT
+CLASS="COMMAND"
+>CREATE FUNCTION</TT
+>中的那样。<CODE
+CLASS="FUNCTION"
+>pg_get_function_result</CODE
+>类似地返回函数的合适的<TT
+CLASS="LITERAL"
+>RETURNS</TT
+>子句。<CODE
+CLASS="FUNCTION"
+>pg_get_function_identity_arguments</CODE
+>返回标识一个函数必要的参数列表，形式和它们出现在<TT
+CLASS="COMMAND"
+>ALTER FUNCTION</TT
+>中的一样。这种形式忽略默认值。
+  </P
+><P
+>   <CODE
+CLASS="FUNCTION"
+>pg_get_serial_sequence</CODE
+>返回与一个列相关联的序列的名称，如果与列相关联的序列则返回 NULL。第一个输入参数是一个带可选模式的表名，第二个参数是一个列名。因为第一个参数可能是一个模式和表，它不能按照一个双引号包围的标识符来对待，意味着它默认情况下是小写的。而第二个参数只是一个列名，将被当作一个双引号包围的来处理并且会保留其大小写。函数返回的值会被适当地格式化以便传递给序列函数（参见<A
+HREF="functions-sequence.html"
+>第 9.16 &#33410;</A
+>）。这种关联可以使用<TT
+CLASS="COMMAND"
+>ALTER SEQUENCE OWNED BY</TT
+>来改变或移除（该函数应该曾经被称作<CODE
+CLASS="FUNCTION"
+>pg_get_owned_sequence</CODE
+>，它目前的名字反映了它通常和<TT
+CLASS="TYPE"
+>serial</TT
+>或<TT
+CLASS="TYPE"
+>bigserial</TT
+>列一起使用）。
+  </P
+><P
+>   <CODE
+CLASS="FUNCTION"
+>pg_get_userbyid</CODE
+>抽取给定 OID 的角色的名称。
+  </P
+><P
+>   <CODE
+CLASS="FUNCTION"
+>pg_index_column_has_property</CODE
+>、<CODE
+CLASS="FUNCTION"
+>pg_index_has_property</CODE
+>
+   和<CODE
+CLASS="FUNCTION"
+>pg_indexam_has_property</CODE
+>返回指定的索引列、
+   索引或者索引访问方法是否具有指定性质。如果性质的名称找不到或者不适用于特定的对象，
+   亦或者 OID 或者列号不表示合法的对象，则返回<TT
+CLASS="LITERAL"
+>NULL</TT
+>。
+   列的性质可参见<A
+HREF="functions-info.html#FUNCTIONS-INFO-INDEX-COLUMN-PROPS"
+>&#34920; 9-63</A
+>，
+   索引的性质可参见<A
+HREF="functions-info.html#FUNCTIONS-INFO-INDEX-PROPS"
+>&#34920; 9-64</A
+>，
+   访问方法的性质可参见<A
+HREF="functions-info.html#FUNCTIONS-INFO-INDEXAM-PROPS"
+>&#34920; 9-65</A
+>
+   （注意扩展访问方法可以为其索引定义额外的性质）。 
+  </P
+><DIV
+CLASS="TABLE"
+><A
+NAME="FUNCTIONS-INFO-INDEX-COLUMN-PROPS"
+></A
+><P
+><B
+>&#34920; 9-63.  索引列属性</B
+></P
+><TABLE
+BORDER="1"
+CLASS="CALSTABLE"
+><COL><COL><THEAD
+><TR
+><TH
+>名称</TH
+><TH
+>描述</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>asc</TT
+></TD
+><TD
+>在向前扫描时列是按照升序排列吗？ 
+      </TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>desc</TT
+></TD
+><TD
+>在向前扫描时列是按照降序排列吗？ 
+      </TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>nulls_first</TT
+></TD
+><TD
+>在向前扫描时列排序会把空值排在前面吗？ 
+      </TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>nulls_last</TT
+></TD
+><TD
+>在向前扫描时列排序会把空值排在最后吗？ 
+      </TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>orderable</TT
+></TD
+><TD
+>列具有已定义的排序顺序吗？ 
+      </TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>distance_orderable</TT
+></TD
+><TD
+>列能否通过一个<SPAN
+CLASS="QUOTE"
+>"distance"</SPAN
+>操作符
+      （例如<TT
+CLASS="LITERAL"
+>ORDER BY col &lt;-&gt; constant</TT
+>）有序地扫描？
+      </TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>returnable</TT
+></TD
+><TD
+>列值是否可以通过一次只用索引扫描返回？ 
+      </TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>search_array</TT
+></TD
+><TD
+>列是否天然支持<TT
+CLASS="LITERAL"
+>col = ANY(array)</TT
+>搜索？
+      </TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>search_nulls</TT
+></TD
+><TD
+>列是否支持<TT
+CLASS="LITERAL"
+>IS NULL</TT
+>和<TT
+CLASS="LITERAL"
+>IS NOT NULL</TT
+>搜索？
+      </TD
+></TR
+></TBODY
+></TABLE
+></DIV
+><DIV
+CLASS="TABLE"
+><A
+NAME="FUNCTIONS-INFO-INDEX-PROPS"
+></A
+><P
+><B
+>&#34920; 9-64. 索引性质</B
+></P
+><TABLE
+BORDER="1"
+CLASS="CALSTABLE"
+><COL><COL><THEAD
+><TR
+><TH
+>名称</TH
+><TH
+>描述</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>clusterable</TT
+></TD
+><TD
+>索引是否可以用于<TT
+CLASS="LITERAL"
+>CLUSTER</TT
+>命令？
+      </TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>index_scan</TT
+></TD
+><TD
+>索引是否支持普通扫描（非位图）？
+      </TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>bitmap_scan</TT
+></TD
+><TD
+>索引是否支持位图扫描？ 
+      </TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>backward_scan</TT
+></TD
+><TD
+>索引是否可以反向扫描？ 
+      </TD
+></TR
+></TBODY
+></TABLE
+></DIV
+><DIV
+CLASS="TABLE"
+><A
+NAME="FUNCTIONS-INFO-INDEXAM-PROPS"
+></A
+><P
+><B
+>&#34920; 9-65. 索引访问方法性质</B
+></P
+><TABLE
+BORDER="1"
+CLASS="CALSTABLE"
+><COL><COL><THEAD
+><TR
+><TH
+>名称</TH
+><TH
+>描述</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>can_order</TT
+></TD
+><TD
+>访问方法是否支持<TT
+CLASS="LITERAL"
+>ASC</TT
+>、<TT
+CLASS="LITERAL"
+>DESC</TT
+>
+      以及<TT
+CLASS="LITERAL"
+>CREATE INDEX</TT
+>中的有关关键词？ 
+      </TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>can_unique</TT
+></TD
+><TD
+>访问方法是否支持唯一索引？ 
+      </TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>can_multi_col</TT
+></TD
+><TD
+>访问方法是否支持多列索引？ 
+      </TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>can_exclude</TT
+></TD
+><TD
+>访问方法是否支持排除约束？ 
+      </TD
+></TR
+></TBODY
+></TABLE
+></DIV
+><P
+>   当传入<TT
+CLASS="STRUCTNAME"
+>pg_class</TT
+>.<TT
+CLASS="STRUCTFIELD"
+>reloptions</TT
+>或<TT
+CLASS="STRUCTNAME"
+>pg_attribute</TT
+>.<TT
+CLASS="STRUCTFIELD"
+>attoptions</TT
+>时，<CODE
+CLASS="FUNCTION"
+>pg_options_to_table</CODE
+>返回存储选项名称/值对（<TT
+CLASS="LITERAL"
+>option_name</TT
+>/<TT
+CLASS="LITERAL"
+>option_value</TT
+>）的集合。
+  </P
+><P
+>   <CODE
+CLASS="FUNCTION"
+>pg_tablespace_databases</CODE
+>允许一个表空间被检查。它返回一组数据库的 OID，这些数据库都有对象存储在该表空间中。如果这个函数返回任何行，则该表空间为非空并且不能被删除。为了显示该表空间中的指定对象，你将需要连接到<CODE
+CLASS="FUNCTION"
+>pg_tablespace_databases</CODE
+>标识的数据库并且查询它们的<TT
+CLASS="STRUCTNAME"
+>pg_class</TT
+>目录。
+  </P
+><P
+>   <CODE
+CLASS="FUNCTION"
+>pg_typeof</CODE
+>返回传递给它的值的数据类型的 OID。这在检修或者动态构建 SQL 查询时有用。函数被声明为返回<TT
+CLASS="TYPE"
+>regtype</TT
+>，它是一个 OID 别名类型（见<A
+HREF="datatype-oid.html"
+>第 8.18 &#33410;</A
+>）；这表明它和一个用于比较目的的 OID 相同，但是作为一个类型名称显示。例如：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>SELECT pg_typeof(33);
+
+ pg_typeof 
+-----------
+ integer
+(1 row) 
+
+SELECT typlen FROM pg_type WHERE oid = pg_typeof(33);
+ typlen 
+--------
+      4
+(1 row)</PRE
+><P>
+  </P
+><P
+>   表达式<TT
+CLASS="LITERAL"
+>collation for</TT
+>返回传递给它的值的排序规则。例子：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>SELECT collation for (description) FROM pg_description LIMIT 1;
+ pg_collation_for 
+------------------
+ "default"
+(1 row)
+
+SELECT collation for ('foo' COLLATE "de_DE");
+ pg_collation_for 
+------------------
+ "de_DE"
+(1 row)</PRE
+><P>
+  值可能被加上引号并且变成模式限定的。如果从参数表达式得不到排序规则，则返回一个空值。如果参数不是一个可排序的数据类型，则抛出一个错误。
+  </P
+><P
+>   <CODE
+CLASS="FUNCTION"
+>to_regclass</CODE
+>，<CODE
+CLASS="FUNCTION"
+>to_regproc</CODE
+>，
+   <CODE
+CLASS="FUNCTION"
+>to_regprocedure</CODE
+>，<CODE
+CLASS="FUNCTION"
+>to_regoper</CODE
+>，
+   <CODE
+CLASS="FUNCTION"
+>to_regoperator</CODE
+>，<CODE
+CLASS="FUNCTION"
+>to_regtype</CODE
+>，
+   <CODE
+CLASS="FUNCTION"
+>to_regnamespace</CODE
+>以及<CODE
+CLASS="FUNCTION"
+>to_regrole</CODE
+>
+   函数各自转换关系，函数，操作符，类型，模式以及角色名称为
+   <TT
+CLASS="TYPE"
+>regclass</TT
+>，<TT
+CLASS="TYPE"
+>regproc</TT
+>，<TT
+CLASS="TYPE"
+>regprocedure</TT
+>，
+   <TT
+CLASS="TYPE"
+>regoper</TT
+>，<TT
+CLASS="TYPE"
+>regoperator</TT
+>，<TT
+CLASS="TYPE"
+>regtype</TT
+>，
+   <TT
+CLASS="TYPE"
+>regnamespace</TT
+>以及<TT
+CLASS="TYPE"
+>regrole</TT
+>类型对象。
+   这些函数不同于来自不接受数字OID的文本映射，并返回空而不是抛出一个错误。
+   如果没有找到名称（或<CODE
+CLASS="FUNCTION"
+>to_regproc</CODE
+>和<CODE
+CLASS="FUNCTION"
+>to_regoper</CODE
+>，
+   如果给定的名称匹配多个对象）。
+  </P
+><P
+>   <A
+HREF="functions-info.html#FUNCTIONS-INFO-OBJECT-TABLE"
+>&#34920; 9-66</A
+>列出与数据库对象标识和寻址有关的函数。
+  </P
+><DIV
+CLASS="TABLE"
+><A
+NAME="FUNCTIONS-INFO-OBJECT-TABLE"
+></A
+><P
+><B
+>&#34920; 9-66. 对象信息和地址函数</B
+></P
+><TABLE
+BORDER="1"
+CLASS="CALSTABLE"
+><COL><COL><COL><THEAD
+><TR
+><TH
+>名称</TH
+><TH
+>返回类型</TH
+><TH
+>描述</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>pg_describe_object(<TT
+CLASS="PARAMETER"
+>catalog_id</TT
+>, <TT
+CLASS="PARAMETER"
+>object_id</TT
+>, <TT
+CLASS="PARAMETER"
+>object_sub_id</TT
+>)</CODE
+></TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>text</TT
+></TD
+><TD
+>获取数据库对象的描述</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>pg_identify_object(<TT
+CLASS="PARAMETER"
+>catalog_id</TT
+> <TT
+CLASS="TYPE"
+>oid</TT
+>, <TT
+CLASS="PARAMETER"
+>object_id</TT
+> <TT
+CLASS="TYPE"
+>oid</TT
+>, <TT
+CLASS="PARAMETER"
+>object_sub_id</TT
+> <TT
+CLASS="TYPE"
+>integer</TT
+>)</CODE
+></TT
+></TD
+><TD
+><TT
+CLASS="PARAMETER"
+>type</TT
+> <TT
+CLASS="TYPE"
+>text</TT
+>, <TT
+CLASS="PARAMETER"
+>schema</TT
+> <TT
+CLASS="TYPE"
+>text</TT
+>, <TT
+CLASS="PARAMETER"
+>name</TT
+> <TT
+CLASS="TYPE"
+>text</TT
+>, <TT
+CLASS="PARAMETER"
+>identity</TT
+> <TT
+CLASS="TYPE"
+>text</TT
+></TD
+><TD
+>获取数据库对象标识</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>pg_identify_object_as_address(<TT
+CLASS="PARAMETER"
+>catalog_id</TT
+> <TT
+CLASS="TYPE"
+>oid</TT
+>, <TT
+CLASS="PARAMETER"
+>object_id</TT
+> <TT
+CLASS="TYPE"
+>oid</TT
+>, <TT
+CLASS="PARAMETER"
+>object_sub_id</TT
+> <TT
+CLASS="TYPE"
+>integer</TT
+>)</CODE
+></TT
+></TD
+><TD
+><TT
+CLASS="PARAMETER"
+>type</TT
+> <TT
+CLASS="TYPE"
+>text</TT
+>, <TT
+CLASS="PARAMETER"
+>name</TT
+> <TT
+CLASS="TYPE"
+>text[]</TT
+>, <TT
+CLASS="PARAMETER"
+>args</TT
+> <TT
+CLASS="TYPE"
+>text[]</TT
+></TD
+><TD
+>获取数据库对象地址的外部表征</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>pg_get_object_address(<TT
+CLASS="PARAMETER"
+>type</TT
+> <TT
+CLASS="TYPE"
+>text</TT
+>, <TT
+CLASS="PARAMETER"
+>name</TT
+> <TT
+CLASS="TYPE"
+>text[]</TT
+>, <TT
+CLASS="PARAMETER"
+>args</TT
+> <TT
+CLASS="TYPE"
+>text[]</TT
+>)</CODE
+></TT
+></TD
+><TD
+><TT
+CLASS="PARAMETER"
+>catalog_id</TT
+> <TT
+CLASS="TYPE"
+>oid</TT
+>, <TT
+CLASS="PARAMETER"
+>object_id</TT
+> <TT
+CLASS="TYPE"
+>oid</TT
+>, <TT
+CLASS="PARAMETER"
+>object_sub_id</TT
+> <TT
+CLASS="TYPE"
+>int32</TT
+></TD
+><TD
+>从外部表征中获取数据库对象地址</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+><P
+>   <CODE
+CLASS="FUNCTION"
+>pg_describe_object</CODE
+>返回一个数据库对象的文本描述，
+      该数据库对象由目录 OID、对象 OID 和一个（可能为零）子对象 ID 指定。
+      这个描述会是人类可读的，并且可能是被翻译过的，具体情况取决于服务器配置。
+      这在判断存储在<TT
+CLASS="STRUCTNAME"
+>pg_depend</TT
+>目录中的一个对象的身份有用。
+  </P
+><P
+>   <CODE
+CLASS="FUNCTION"
+>pg_identify_object</CODE
+>返回一行，
+      其中包含足够的信息来唯一地标识数据库对象，
+      该数据库对象由目录 OID、对象 OID 和一个（可能为零）子对象 ID 指定。
+      这个信息是机器可读的，并且永远不会被翻译。<TT
+CLASS="PARAMETER"
+>type</TT
+>标识数据库对象的类型；
+      <TT
+CLASS="PARAMETER"
+>schema</TT
+>是对象所属的模式的名称，
+      如果对象类型不属于模式则为<TT
+CLASS="LITERAL"
+>NULL</TT
+>；
+      <TT
+CLASS="PARAMETER"
+>name</TT
+>是对象的名称，必要时要加上引号，
+      只在能被用作对象的唯一标识符时出现（和模式名称一起，如果相关），
+      否则为<TT
+CLASS="LITERAL"
+>NULL</TT
+>；<TT
+CLASS="PARAMETER"
+>identity</TT
+>是完整的对象身份，
+      确切格式取决于对象类型，并且格式中的每一部分都是模式限定的并且按照需要被加上了引号。
+  </P
+><P
+>   <CODE
+CLASS="FUNCTION"
+>pg_identify_object_as_address</CODE
+>返回一行，
+   其中包含足够的信息来唯一地标识数据库对象，
+   该数据库对象由目录 OID、对象 OID 和一个（可能为零）子对象 ID 指定。
+   返回的信息是独立于当前服务器的，也就是说，
+   它可以用于标识另一个服务器中同一个命名对象。
+   <TT
+CLASS="PARAMETER"
+>type</TT
+>标识数据库对象的类型；
+   <TT
+CLASS="PARAMETER"
+>name</TT
+>和<TT
+CLASS="PARAMETER"
+>args</TT
+>是形成对象引用的文本数组。 
+   传递三列到<CODE
+CLASS="FUNCTION"
+>pg_get_object_address</CODE
+>获取对象的外部地址。
+   这个函数是<CODE
+CLASS="FUNCTION"
+>pg_get_object_address</CODE
+>的逆函数。
+  </P
+><P
+>   <CODE
+CLASS="FUNCTION"
+>pg_get_object_address</CODE
+>返回行，
+   包含足够信息来唯一地标识数据库对象，该数据库对象由类型和对象名称以及参数数组指定。
+   返回值是在系统目录中使用的比如<TT
+CLASS="STRUCTNAME"
+>pg_depend</TT
+>，并且可以传递给其它系统函数
+   比如<CODE
+CLASS="FUNCTION"
+>pg_identify_object</CODE
+>或者<CODE
+CLASS="FUNCTION"
+>pg_describe_object</CODE
+>。
+   <TT
+CLASS="PARAMETER"
+>catalog_id</TT
+>是包含对象的系统目录OID； 
+   <TT
+CLASS="PARAMETER"
+>object_id</TT
+>是对象本身的OID，<TT
+CLASS="PARAMETER"
+>object_sub_id</TT
+>是对象的子ID，
+   如果没有则为零。这个函数是<CODE
+CLASS="FUNCTION"
+>pg_identify_object_as_address</CODE
+>的逆函数。
+  </P
+><P
+>    <A
+HREF="functions-info.html#FUNCTIONS-INFO-COMMENT-TABLE"
+>&#34920; 9-67</A
+>中展示的函数抽取注释，注释是由<A
+HREF="sql-comment.html"
+>COMMENT</A
+>命令在以前存储的。如果对指定参数找不到注释，则返回空值。
+   </P
+><DIV
+CLASS="TABLE"
+><A
+NAME="FUNCTIONS-INFO-COMMENT-TABLE"
+></A
+><P
+><B
+>&#34920; 9-67. 注释信息函数</B
+></P
+><TABLE
+BORDER="1"
+CLASS="CALSTABLE"
+><COL><COL><COL><THEAD
+><TR
+><TH
+>名称</TH
+><TH
+>返回类型</TH
+><TH
+>描述</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>col_description(<TT
+CLASS="PARAMETER"
+>table_oid</TT
+>, <TT
+CLASS="PARAMETER"
+>column_number</TT
+>)</CODE
+></TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>text</TT
+></TD
+><TD
+>为一个表列获得注释</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>obj_description(<TT
+CLASS="PARAMETER"
+>object_oid</TT
+>, <TT
+CLASS="PARAMETER"
+>catalog_name</TT
+>)</CODE
+></TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>text</TT
+></TD
+><TD
+>为一个数据库对象获得注释</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>obj_description(<TT
+CLASS="PARAMETER"
+>object_oid</TT
+>)</CODE
+></TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>text</TT
+></TD
+><TD
+>为一个数据库对象获得注释（<SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>已被废弃</I
+></SPAN
+>）</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>shobj_description(<TT
+CLASS="PARAMETER"
+>object_oid</TT
+>, <TT
+CLASS="PARAMETER"
+>catalog_name</TT
+>)</CODE
+></TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>text</TT
+></TD
+><TD
+>为一个共享数据库对象获得注释</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+><P
+>    <CODE
+CLASS="FUNCTION"
+>col_description</CODE
+>为一个表列返回注释，该表列由所在表的 OID 和它的列号指定（<CODE
+CLASS="FUNCTION"
+>obj_description</CODE
+>不能被用在表列，因为表列没有自己的 OID）。
+   </P
+><P
+>    <CODE
+CLASS="FUNCTION"
+>obj_description</CODE
+>的双参数形式返回一个由其 OID 和所在系统目录名称指定的数据库对象的注释。例如，<TT
+CLASS="LITERAL"
+>obj_description(123456,'pg_class')</TT
+>将会检索出 OID 为123456的表的注释。<CODE
+CLASS="FUNCTION"
+>obj_description</CODE
+>的单参数形式只要求对象 OID。它已经被废弃，因为无法保证 OID 在不同系统目录之间是唯一的；这样可能会返回错误的注释。
+   </P
+><P
+>    <CODE
+CLASS="FUNCTION"
+>shobj_description</CODE
+>用起来就像<CODE
+CLASS="FUNCTION"
+>obj_description</CODE
+>，但是前者是用于检索共享对象上的注释。某些系统目录对于一个集簇中的所有数据库是全局的，并且其中的对象的描述也是全局存储的。
+   </P
+><P
+>    <A
+HREF="functions-info.html#FUNCTIONS-TXID-SNAPSHOT"
+>&#34920; 9-68</A
+>中展示的函数以一种可导出的形式提供了服务器事务信息。这些函数的主要用途是判断在两个快照之间哪些事务被提交。
+   </P
+><DIV
+CLASS="TABLE"
+><A
+NAME="FUNCTIONS-TXID-SNAPSHOT"
+></A
+><P
+><B
+>&#34920; 9-68. 事务 ID 和快照</B
+></P
+><TABLE
+BORDER="1"
+CLASS="CALSTABLE"
+><COL><COL><COL><THEAD
+><TR
+><TH
+>名称</TH
+><TH
+>返回类型</TH
+><TH
+>描述</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>txid_current()</CODE
+></TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>bigint</TT
+></TD
+><TD
+>获得当前事务ID，如果当前事务没有则分配一个新的</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>txid_current_snapshot()</CODE
+></TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>txid_snapshot</TT
+></TD
+><TD
+>获得当前快照</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>txid_snapshot_xip(<TT
+CLASS="PARAMETER"
+>txid_snapshot</TT
+>)</CODE
+></TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>setof bigint</TT
+></TD
+><TD
+>获得快照中正在进行的事务 ID</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>txid_snapshot_xmax(<TT
+CLASS="PARAMETER"
+>txid_snapshot</TT
+>)</CODE
+></TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>bigint</TT
+></TD
+><TD
+>获得快照的<TT
+CLASS="LITERAL"
+>xmax</TT
+></TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>txid_snapshot_xmin(<TT
+CLASS="PARAMETER"
+>txid_snapshot</TT
+>)</CODE
+></TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>bigint</TT
+></TD
+><TD
+>获得快照的<TT
+CLASS="LITERAL"
+>xmin</TT
+></TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>txid_visible_in_snapshot(<TT
+CLASS="PARAMETER"
+>bigint</TT
+>, <TT
+CLASS="PARAMETER"
+>txid_snapshot</TT
+>)</CODE
+></TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>boolean</TT
+></TD
+><TD
+>事务 ID 在快照中可见吗？（不能用于子事务 ID）</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+><P
+>    内部事务 ID 类型（<TT
+CLASS="TYPE"
+>xid</TT
+>）是 32 位宽并且每 40 亿个事务就会回卷。但是，这些函数导出一种 64 位格式，它被使用一个<SPAN
+CLASS="QUOTE"
+>"世代"</SPAN
+>计数器，这样在一个安装的生命期内不会回卷。这些函数使用的数据类型<TT
+CLASS="TYPE"
+>txid_snapshot</TT
+>存储了在一个特定时刻有关事务 ID 可见性的信息。它的成分在<A
+HREF="functions-info.html#FUNCTIONS-TXID-SNAPSHOT-PARTS"
+>&#34920; 9-69</A
+>中描述。
+   </P
+><DIV
+CLASS="TABLE"
+><A
+NAME="FUNCTIONS-TXID-SNAPSHOT-PARTS"
+></A
+><P
+><B
+>&#34920; 9-69. 快照成分</B
+></P
+><TABLE
+BORDER="1"
+CLASS="CALSTABLE"
+><COL><COL><THEAD
+><TR
+><TH
+>名称</TH
+><TH
+>描述</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+><TT
+CLASS="TYPE"
+>xmin</TT
+></TD
+><TD
+>         仍然活动的最早的事务 ID （txid）。所有更早的事务要么已经被提交并且可见，要么已经被回滚并且死亡。
+       </TD
+></TR
+><TR
+><TD
+><TT
+CLASS="TYPE"
+>xmax</TT
+></TD
+><TD
+>        第一个还未分配的 txid。所有大于等于它的 txid 在快照的时刻还没有开始，并且因此是不可见的。
+       </TD
+></TR
+><TR
+><TD
+><TT
+CLASS="TYPE"
+>xip_list</TT
+></TD
+><TD
+>        在快照时刻活动的 txid。这个列表只包括那些位于<TT
+CLASS="LITERAL"
+>xmin</TT
+>和<TT
+CLASS="LITERAL"
+>xmax</TT
+>之间的活动 txid；可能有活动的超过<TT
+CLASS="LITERAL"
+>xmax</TT
+>的 txid。一个满足<TT
+CLASS="LITERAL"
+>xmin &lt;= txid &lt; xmax</TT
+>并且不在这个列表中的 txid 在快照时刻已经结束，并且因此根据其提交状态要么可见要么死亡。该列表不包括子事务的 txid。
+       </TD
+></TR
+></TBODY
+></TABLE
+></DIV
+><P
+>    <TT
+CLASS="TYPE"
+>txid_snapshot</TT
+>的文本表示是<TT
+CLASS="LITERAL"
+><TT
+CLASS="REPLACEABLE"
+><I
+>xmin</I
+></TT
+>:<TT
+CLASS="REPLACEABLE"
+><I
+>xmax</I
+></TT
+>:<TT
+CLASS="REPLACEABLE"
+><I
+>xip_list</I
+></TT
+></TT
+>。例如<TT
+CLASS="LITERAL"
+>10:20:10,14,15</TT
+>表示<TT
+CLASS="LITERAL"
+>xmin=10, xmax=20, xip_list=10, 14, 15</TT
+>。
+   </P
+><P
+>    在<A
+HREF="functions-info.html#FUNCTIONS-COMMIT-TIMESTAMP"
+>&#34920; 9-70</A
+>中显示的函数
+    提供了已提交事务的信息。这些函数主要提供关于事务提交的信息。
+    当<A
+HREF="runtime-config-replication.html#GUC-TRACK-COMMIT-TIMESTAMP"
+>track_commit_timestamp</A
+>配置选项启用的时候，
+    并且只有启用后提交的事务，它们只提供有用的数据。
+   </P
+><DIV
+CLASS="TABLE"
+><A
+NAME="FUNCTIONS-COMMIT-TIMESTAMP"
+></A
+><P
+><B
+>&#34920; 9-70. 已提交事务信息</B
+></P
+><TABLE
+BORDER="1"
+CLASS="CALSTABLE"
+><COL><COL><COL><THEAD
+><TR
+><TH
+>名称</TH
+><TH
+>返回类型</TH
+><TH
+>描述</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+>        
+        <TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>pg_xact_commit_timestamp(<TT
+CLASS="PARAMETER"
+>xid</TT
+>)</CODE
+></TT
+>
+       </TD
+><TD
+><TT
+CLASS="TYPE"
+>timestamp with time zone</TT
+></TD
+><TD
+>事务提交的时间戳</TD
+></TR
+><TR
+><TD
+>        
+        <TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>pg_last_committed_xact()</CODE
+></TT
+>
+       </TD
+><TD
+><TT
+CLASS="PARAMETER"
+>xid</TT
+> <TT
+CLASS="TYPE"
+>xid</TT
+>, <TT
+CLASS="PARAMETER"
+>timestamp</TT
+> <TT
+CLASS="TYPE"
+>timestamp with time zone</TT
+></TD
+><TD
+>最近提交事务的事务ID以及提交时间戳</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+><P
+>    <A
+HREF="functions-info.html#FUNCTIONS-CONTROLDATA"
+>&#34920; 9-71</A
+>中所展示的函数能打印<TT
+CLASS="COMMAND"
+>initdb</TT
+>
+    期间初始化的信息，例如系统目录版本。
+    它们也能显示有关预写式日志和检查点处理的信息。这些信息是集簇范围内的，
+    不与任何特定的一个数据库相关。对于同一种来源，它们返回和
+    <A
+HREF="app-pgcontroldata.html"
+><SPAN
+CLASS="APPLICATION"
+>pg_controldata</SPAN
+></A
+>大致相同的信息，不过其形式更适合于
+    <ACRONYM
+CLASS="ACRONYM"
+>SQL</ACRONYM
+>函数。 
+   </P
+><DIV
+CLASS="TABLE"
+><A
+NAME="FUNCTIONS-CONTROLDATA"
+></A
+><P
+><B
+>&#34920; 9-71. Control Data Functions</B
+></P
+><TABLE
+BORDER="1"
+CLASS="CALSTABLE"
+><COL><COL><COL><THEAD
+><TR
+><TH
+>名称</TH
+><TH
+>返回类型</TH
+><TH
+>描述</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+>        
+        <TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>pg_control_checkpoint()</CODE
+></TT
+>
+       </TD
+><TD
+><TT
+CLASS="TYPE"
+>record</TT
+></TD
+><TD
+>        返回有关当前检查点状态的信息。
+       </TD
+></TR
+><TR
+><TD
+>        
+        <TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>pg_control_system()</CODE
+></TT
+>
+       </TD
+><TD
+><TT
+CLASS="TYPE"
+>record</TT
+></TD
+><TD
+>        返回有关当前控制文件状态的信息。
+       </TD
+></TR
+><TR
+><TD
+>        
+        <TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>pg_control_init()</CODE
+></TT
+>
+       </TD
+><TD
+><TT
+CLASS="TYPE"
+>record</TT
+></TD
+><TD
+>        返回有关集簇初始化状态的信息。 
+       </TD
+></TR
+><TR
+><TD
+>        
+        <TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>pg_control_recovery()</CODE
+></TT
+>
+       </TD
+><TD
+><TT
+CLASS="TYPE"
+>record</TT
+></TD
+><TD
+>        返回有关恢复状态的信息。
+       </TD
+></TR
+></TBODY
+></TABLE
+></DIV
+><P
+>    <CODE
+CLASS="FUNCTION"
+>pg_control_checkpoint</CODE
+>返回一个
+    <A
+HREF="functions-info.html#FUNCTIONS-PG-CONTROL-CHECKPOINT"
+>&#34920; 9-72</A
+>中所示的记录 。
+   </P
+><DIV
+CLASS="TABLE"
+><A
+NAME="FUNCTIONS-PG-CONTROL-CHECKPOINT"
+></A
+><P
+><B
+>&#34920; 9-72. <CODE
+CLASS="FUNCTION"
+>pg_control_checkpoint</CODE
+> 列</B
+></P
+><TABLE
+BORDER="1"
+CLASS="CALSTABLE"
+><COL><COL><THEAD
+><TR
+><TH
+>列名</TH
+><TH
+>数据类型</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>checkpoint_location</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>pg_lsn</TT
+></TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>prior_location</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>pg_lsn</TT
+></TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>redo_location</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>pg_lsn</TT
+></TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>redo_wal_file</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>text</TT
+></TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>timeline_id</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>integer</TT
+></TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>prev_timeline_id</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>integer</TT
+></TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>full_page_writes</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>boolean</TT
+></TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>next_xid</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>text</TT
+></TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>next_oid</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>oid</TT
+></TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>next_multixact_id</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>xid</TT
+></TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>next_multi_offset</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>xid</TT
+></TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>oldest_xid</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>xid</TT
+></TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>oldest_xid_dbid</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>oid</TT
+></TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>oldest_active_xid</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>xid</TT
+></TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>oldest_multi_xid</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>xid</TT
+></TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>oldest_multi_dbid</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>oid</TT
+></TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>oldest_commit_ts_xid</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>xid</TT
+></TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>newest_commit_ts_xid</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>xid</TT
+></TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>checkpoint_time</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>timestamp with time zone</TT
+></TD
+></TR
+></TBODY
+></TABLE
+></DIV
+><P
+>    <CODE
+CLASS="FUNCTION"
+>pg_control_system</CODE
+>返回一个
+    <A
+HREF="functions-info.html#FUNCTIONS-PG-CONTROL-SYSTEM"
+>&#34920; 9-73</A
+>中所示的记录。
+   </P
+><DIV
+CLASS="TABLE"
+><A
+NAME="FUNCTIONS-PG-CONTROL-SYSTEM"
+></A
+><P
+><B
+>&#34920; 9-73. <CODE
+CLASS="FUNCTION"
+>pg_control_system</CODE
+> 列</B
+></P
+><TABLE
+BORDER="1"
+CLASS="CALSTABLE"
+><COL><COL><THEAD
+><TR
+><TH
+>列名</TH
+><TH
+>数据类型</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>pg_control_version</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>integer</TT
+></TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>catalog_version_no</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>integer</TT
+></TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>system_identifier</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>bigint</TT
+></TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>pg_control_last_modified</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>timestamp with time zone</TT
+></TD
+></TR
+></TBODY
+></TABLE
+></DIV
+><P
+>    <CODE
+CLASS="FUNCTION"
+>pg_control_init</CODE
+>返回一个
+    <A
+HREF="functions-info.html#FUNCTIONS-PG-CONTROL-INIT"
+>&#34920; 9-74</A
+>中所示的记录。
+   </P
+><DIV
+CLASS="TABLE"
+><A
+NAME="FUNCTIONS-PG-CONTROL-INIT"
+></A
+><P
+><B
+>&#34920; 9-74. <CODE
+CLASS="FUNCTION"
+>pg_control_init</CODE
+> 列</B
+></P
+><TABLE
+BORDER="1"
+CLASS="CALSTABLE"
+><COL><COL><THEAD
+><TR
+><TH
+>列名</TH
+><TH
+>数据类型</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>max_data_alignment</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>integer</TT
+></TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>database_block_size</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>integer</TT
+></TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>blocks_per_segment</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>integer</TT
+></TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>wal_block_size</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>integer</TT
+></TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>bytes_per_wal_segment</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>integer</TT
+></TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>max_identifier_length</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>integer</TT
+></TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>max_index_columns</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>integer</TT
+></TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>max_toast_chunk_size</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>integer</TT
+></TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>large_object_chunk_size</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>integer</TT
+></TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>bigint_timestamps</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>boolean</TT
+></TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>float4_pass_by_value</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>boolean</TT
+></TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>float8_pass_by_value</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>boolean</TT
+></TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>data_page_checksum_version</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>integer</TT
+></TD
+></TR
+></TBODY
+></TABLE
+></DIV
+><P
+>    <CODE
+CLASS="FUNCTION"
+>pg_control_recovery</CODE
+>返回一个
+    <A
+HREF="functions-info.html#FUNCTIONS-PG-CONTROL-RECOVERY"
+>&#34920; 9-75</A
+>中所示的记录。
+   </P
+><DIV
+CLASS="TABLE"
+><A
+NAME="FUNCTIONS-PG-CONTROL-RECOVERY"
+></A
+><P
+><B
+>&#34920; 9-75. <CODE
+CLASS="FUNCTION"
+>pg_control_recovery</CODE
+> 列</B
+></P
+><TABLE
+BORDER="1"
+CLASS="CALSTABLE"
+><COL><COL><THEAD
+><TR
+><TH
+>列名</TH
+><TH
+>数据类型</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>min_recovery_end_location</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>pg_lsn</TT
+></TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>min_recovery_end_timeline</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>integer</TT
+></TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>backup_start_location</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>pg_lsn</TT
+></TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>backup_end_location</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>pg_lsn</TT
+></TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>end_of_backup_record_required</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>boolean</TT
+></TD
+></TR
+></TBODY
+></TABLE
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="functions-srf.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="functions-admin.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>集合返回函数</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="functions.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>系统管理函数</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

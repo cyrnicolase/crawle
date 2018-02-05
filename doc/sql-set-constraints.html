@@ -1,0 +1,383 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>SET CONSTRAINTS</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="SQL 命令"
+HREF="sql-commands.html"><LINK
+REL="PREVIOUS"
+TITLE="SET"
+HREF="sql-set.html"><LINK
+REL="NEXT"
+TITLE="SET ROLE"
+HREF="sql-set-role.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="REFENTRY"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/ref/set_constraints.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="SET"
+HREF="sql-set.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="SET ROLE"
+HREF="sql-set-role.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="SQL-SET-CONSTRAINTS"
+></A
+>SET CONSTRAINTS</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN91482"
+></A
+><H2
+>&#21517;&#31216;</H2
+>SET CONSTRAINTS&nbsp;--&nbsp;为当前事务设置约束检查时机</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN91485"
+></A
+><H2
+>&#22823;&#32434;</H2
+><PRE
+CLASS="SYNOPSIS"
+>SET CONSTRAINTS { ALL | <TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+> [, ...] } { DEFERRED | IMMEDIATE }</PRE
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN91488"
+></A
+><H2
+>描述</H2
+><P
+>   <TT
+CLASS="COMMAND"
+>SET CONSTRAINTS</TT
+>设置当前事务内约束检查
+   的行为。<TT
+CLASS="LITERAL"
+>IMMEDIATE</TT
+>约束在每个语句结束时被检查。
+   <TT
+CLASS="LITERAL"
+>DEFERRED</TT
+>约束直到事务提交时才被检查。每个约束都有
+   自己的<TT
+CLASS="LITERAL"
+>IMMEDIATE</TT
+>或<TT
+CLASS="LITERAL"
+>DEFERRED</TT
+>模式。
+  </P
+><P
+>   在创建时，一个约束会被给定三种特性之一：
+   <TT
+CLASS="LITERAL"
+>DEFERRABLE INITIALLY DEFERRED</TT
+>、
+   <TT
+CLASS="LITERAL"
+>DEFERRABLE INITIALLY IMMEDIATE</TT
+>或者
+   <TT
+CLASS="LITERAL"
+>NOT DEFERRABLE</TT
+>。第三类总是
+   <TT
+CLASS="LITERAL"
+>IMMEDIATE</TT
+>并且不会受到
+   <TT
+CLASS="COMMAND"
+>SET CONSTRAINTS</TT
+>命令的影响。前两类在每个
+   事务开始时都处于指定的模式，但是它们的行为可以在一个事务内用
+   <TT
+CLASS="COMMAND"
+>SET CONSTRAINTS</TT
+>更改。
+  </P
+><P
+>   带有一个约束名称列表的<TT
+CLASS="COMMAND"
+>SET CONSTRAINTS</TT
+>
+   只更改那些约束（都必须是可延迟的）的模式。每一个约束名称都可以是
+   模式限定的。如果没有指定模式名称，则当前的模式搜索路径将被用来寻找
+   第一个匹配的名称。<TT
+CLASS="COMMAND"
+>SET CONSTRAINTS ALL</TT
+>
+   更改所有可延迟约束的模式。
+  </P
+><P
+>   当<TT
+CLASS="COMMAND"
+>SET CONSTRAINTS</TT
+>把一个约束的模式从
+   <TT
+CLASS="LITERAL"
+>DEFERRED</TT
+>改成<TT
+CLASS="LITERAL"
+>IMMEDIATE</TT
+>时，
+   新模式会有追溯效果：任何还没有解决的数据修改（本来会在事务结束时
+   被检查）会转而在<TT
+CLASS="COMMAND"
+>SET CONSTRAINTS</TT
+>命令
+   的执行期间被检查。如果任何这种约束被违背，
+   <TT
+CLASS="COMMAND"
+>SET CONSTRAINTS</TT
+>将会失败（并且不会改
+   变该约束模式）。这样，<TT
+CLASS="COMMAND"
+>SET
+   CONSTRAINTS</TT
+>可以被用来在一个事务中的特定点强制进
+   行约束检查。
+  </P
+><P
+>   当前，只有<TT
+CLASS="LITERAL"
+>UNIQUE</TT
+>、<TT
+CLASS="LITERAL"
+>PRIMARY KEY</TT
+>、
+   <TT
+CLASS="LITERAL"
+>REFERENCES</TT
+>（外键）以及<TT
+CLASS="LITERAL"
+>EXCLUDE</TT
+>
+   约束受到这个设置的影响。
+   <TT
+CLASS="LITERAL"
+>NOT NULL</TT
+>以及<TT
+CLASS="LITERAL"
+>CHECK</TT
+>约束总是在一行
+   被插入或修改时立即检查（<SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>不是</I
+></SPAN
+>在语句结束时）。
+   没有被声明为<TT
+CLASS="LITERAL"
+>DEFERRABLE</TT
+>的唯一和排除约束也会被
+   立刻检查。
+  </P
+><P
+>   被声明为<SPAN
+CLASS="QUOTE"
+>"约束触发器"</SPAN
+>的触发器的引发也受到这个设置
+   的控制 &mdash; 它们会在相关约束被检查的同时被引发。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN91524"
+></A
+><H2
+>注解</H2
+><P
+>   因为<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>并不要求约束名称在模式内
+   唯一（但是在表内要求唯一），可能有多于一个约束匹配指定的约束名称。在这种
+   情况下<TT
+CLASS="COMMAND"
+>SET CONSTRAINTS</TT
+>将会在所有的匹配上操作。
+   对于一个非模式限定的名称，一旦在搜索路径中的某个模式中发现一个或者多个匹
+   配，路径中后面的模式将不会被搜索。
+  </P
+><P
+>   这个命令只修改当前事务内约束的行为。在事务块外部发出这个命令会产生一个
+   警告并且也不会有任何效果。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN91530"
+></A
+><H2
+>兼容性</H2
+><P
+>   这个命令符合 SQL 标准中定义的行为，但有一点限制：在
+   <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>中，它不会应用在
+   <TT
+CLASS="LITERAL"
+>NOT NULL</TT
+>和<TT
+CLASS="LITERAL"
+>CHECK</TT
+>约束上。还有，
+   <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>会立刻检查非可延迟的
+   唯一约束，而不是按照标准建议的在语句结束时检查。
+  </P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-set.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="sql-set-role.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>SET</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>SET ROLE</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

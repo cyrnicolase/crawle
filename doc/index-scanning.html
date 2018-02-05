@@ -1,0 +1,383 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>索引扫描</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="索引访问方法接口定义"
+HREF="indexam.html"><LINK
+REL="PREVIOUS"
+TITLE="索引访问方法函数"
+HREF="index-functions.html"><LINK
+REL="NEXT"
+TITLE="索引锁定考虑"
+HREF="index-locking.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/indexam.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="索引访问方法函数"
+HREF="index-functions.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="indexam.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#31456; 59. 索引访问方法接口定义</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="索引锁定考虑"
+HREF="index-locking.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="INDEX-SCANNING"
+>59.3. 索引扫描</A
+></H1
+><P
+>   在一个索引扫描中，索引访问方法负责把它拿到的那些据说匹配<I
+CLASS="FIRSTTERM"
+>扫描键</I
+>的所有元组的 TID 的regurgitating。访问方法<SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>不</I
+></SPAN
+>会涉及从索引的父表中实际取得那些元组，也不会涉及判断它们是否通过了扫描的时间条件测试或者是其它条件。
+  </P
+><P
+>   一个扫描键是一个<TT
+CLASS="LITERAL"
+>WHERE</TT
+>子句的内部表示，<TT
+CLASS="LITERAL"
+>WHERE</TT
+>子句的形式是<TT
+CLASS="REPLACEABLE"
+><I
+>index_key</I
+></TT
+> <TT
+CLASS="REPLACEABLE"
+><I
+>operator</I
+></TT
+> <TT
+CLASS="REPLACEABLE"
+><I
+>constant</I
+></TT
+>，其中索引键字索引中的一个列，而操作符是和该索引列相关联的操作符族的一个成员。一个索引扫描拥有零个或者多个扫描键，它们是隐式 AND 关系 &mdash; 返回的元组被认为满足所有列出的条件。
+  </P
+><P
+>   对于一个特定查询，访问方法可能报告索引是<I
+CLASS="FIRSTTERM"
+>有损的</I
+>或者要求重新检查。这就暗示着该索引扫 描会返回所有通过扫描键的项，外加上一些可能没通过扫描键的项。核心系统的索引扫描机制然后就会再次在堆元组上应用索引条件来验证它是否真地应该被选择。如果没有指定重新检查选项，索引扫描必须返回准确的匹配项集合。
+  </P
+><P
+>   请注意，确保找到所有（只有）通过所有给定扫描键的条目的工作完全由访问方法负责。还有，核心系统将只是简单地 放过所有匹配扫描键和操作符族的<TT
+CLASS="LITERAL"
+>WHERE</TT
+>子句，而不会做任何语义分析来判断它们是否冗余或者矛盾。例如，给定<TT
+CLASS="LITERAL"
+>WHERE x &gt; 4 AND x &gt; 14</TT
+>（其中<TT
+CLASS="LITERAL"
+>x</TT
+>是一个 B-树 索引列，它被留给 B-树 <CODE
+CLASS="FUNCTION"
+>amrescan</CODE
+>函数来发现第一个扫描键是冗余并且可以被丢弃。<CODE
+CLASS="FUNCTION"
+>amrescan</CODE
+>期间需要的预处理的范围将取决于索引访问方法需要什么来把扫描键缩减为一种<SPAN
+CLASS="QUOTE"
+>"正规化的"</SPAN
+>形式。
+  </P
+><P
+>   一些访问方法按照一个良定义的顺序来返回索引项，其他的则不会。实际上一个访问方法可以有两种不同的方式支持排序输出：
+
+    <P
+></P
+></P><UL
+><LI
+><P
+>       总是按数据的自然序返回项的访问方法应该设置<TT
+CLASS="STRUCTFIELD"
+>amcanorder</TT
+>为真。当前，这样的访问方法必须对它们的等值和排序操作符使用b-tree兼容的策略号。
+      </P
+></LI
+><LI
+><P
+>       支持排序操作符的访问方法应该设置<TT
+CLASS="STRUCTFIELD"
+>amcanorderbyop</TT
+>为真。这表示索引有能力按照满足<TT
+CLASS="LITERAL"
+>ORDER BY</TT
+> <TT
+CLASS="REPLACEABLE"
+><I
+>index_key</I
+></TT
+> <TT
+CLASS="REPLACEABLE"
+><I
+>operator</I
+></TT
+> <TT
+CLASS="REPLACEABLE"
+><I
+>constant</I
+></TT
+>的一种顺序返回项。如前所述，这种形式的扫描修饰符可以被传递给<CODE
+CLASS="FUNCTION"
+>amrescan</CODE
+>。
+      </P
+></LI
+></UL
+><P>
+  </P
+><P
+>   <CODE
+CLASS="FUNCTION"
+>amgettuple</CODE
+>函数有一个<TT
+CLASS="LITERAL"
+>direction</TT
+>参数，它可以是 <TT
+CLASS="LITERAL"
+>ForwardScanDirection</TT
+>（正常情况）或者<TT
+CLASS="LITERAL"
+>BackwardScanDirection</TT
+>。如果<CODE
+CLASS="FUNCTION"
+>amrescan</CODE
+>之后的第一次调用指定了<TT
+CLASS="LITERAL"
+>BackwardScanDirection</TT
+>，那么匹配条件的索引项集合是从后向前扫描的，而 不是通常的从前向后扫描，因此<CODE
+CLASS="FUNCTION"
+>amgettuple</CODE
+>必须返回索引中最后一个匹配元组，而不是通常情况下的第一个（这只对设置了<TT
+CLASS="STRUCTFIELD"
+>amcanorder</TT
+>为真访问方法发生）。在第一次调用后，<CODE
+CLASS="FUNCTION"
+>amgettuple</CODE
+>必须被准备好从最近被返回项的位置按照任何一种方向推进扫描（但是如果<TT
+CLASS="STRUCTFIELD"
+>amcanbackward</TT
+>为假，所有后续调用将使用第一次相同的方向）。
+  </P
+><P
+>   支持排序扫描的访问方法必须支持在扫描里<SPAN
+CLASS="QUOTE"
+>"标记"</SPAN
+>一个位置并且随后返回到这个标记过的位置。同一个位置可能会被重复多次还原。但是，每个扫描中只有一个位置需要被记住；一个新的<CODE
+CLASS="FUNCTION"
+>ammarkpos</CODE
+>调用将重写之前标记的位置。一个不支持排序扫描的访问方法无需在<TT
+CLASS="STRUCTNAME"
+>IndexAmRoutine</TT
+>中提供<CODE
+CLASS="FUNCTION"
+>ammarkpos</CODE
+>和<CODE
+CLASS="FUNCTION"
+>amrestrpos</CODE
+>函数，把这些指针设置为 NULL 即可。
+  </P
+><P
+>   扫描位置和标记位置（如果存在)）都必须在面对索引中的并发插入和删除时保持一致性。如果一个新插入的项并未被一个扫描返回（如果该扫描开始的时候该项已经存在，该扫描将已经找到该项），或者说扫描通过重新扫描或者反向扫描返回这样一个项（即使它第一次没有返回这样一个项），这些情况都是可以接受的。类似的还有，一个并发的删除可能或不可能被反映在一个扫描的结果中。重要的是，插入或者删除不会导致扫描错过或者多次返回本身不是被插入或者删除的项。
+  </P
+><P
+>   如果索引存储原始被索引的数据值（并且不是它们的某种有损表示），它可用来支持<A
+HREF="indexes-index-only-scans.html"
+>只用索引的扫描</A
+>，着这种扫描中索引返回的就是实际的数据而不只是堆元组的 TID。这只有在可见性映射显示该 TID 位于一个全部可见的页面时才能避免 I/O；否则必须访问堆元组来检查 MVCC 可见性。但是这就不用访问方法操心了。
+  </P
+><P
+>   除了使用<CODE
+CLASS="FUNCTION"
+>amgettuple</CODE
+>，一个索引扫描可以通过<CODE
+CLASS="FUNCTION"
+>amgetbitmap</CODE
+>在一次调用中取得所有元组来完成。这样做可能会比<CODE
+CLASS="FUNCTION"
+>amgettuple</CODE
+>有显著的效率提升，因为它可以避免在访问方法内的加锁/解锁循环。原则上<CODE
+CLASS="FUNCTION"
+>amgetbitmap</CODE
+>应该和重复调用<CODE
+CLASS="FUNCTION"
+>amgettuple</CODE
+>的效果相同， 不过我们强加了一些限制来简化这件事。首先，<CODE
+CLASS="FUNCTION"
+>amgetbitmap</CODE
+>一次返回 所有元组并且标记并且不支持标记或恢复扫描位置。第二，在一个位图中返回的元组没有任何指定的顺序，这也是为什么<CODE
+CLASS="FUNCTION"
+>amgetbitmap</CODE
+>没有一个<TT
+CLASS="LITERAL"
+>direction</TT
+>参数的原因（排序操作符也将永远不会提供给这种扫描）。还有，对于使用<CODE
+CLASS="FUNCTION"
+>amgetbitmap</CODE
+>的只用索引扫描没有规定，因为没有办法返回索引元组的内容。最后，如<A
+HREF="index-locking.html"
+>第 59.4 &#33410;</A
+>中所说的，<CODE
+CLASS="FUNCTION"
+>amgetbitmap</CODE
+>不保证被返回元组上的任何锁。
+  </P
+><P
+>   注意如果访问方法的内部实现不适合一个 API 或其他 API，允许一个访问方法只实现<CODE
+CLASS="FUNCTION"
+>amgetbitmap</CODE
+>而不实现<CODE
+CLASS="FUNCTION"
+>amgettuple</CODE
+>，或者反过来。
+  </P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="index-functions.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="index-locking.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>索引访问方法函数</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="indexam.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>索引锁定考虑</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

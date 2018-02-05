@@ -1,0 +1,209 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>数据库配置</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="管理数据库"
+HREF="managing-databases.html"><LINK
+REL="PREVIOUS"
+TITLE="模板数据库"
+HREF="manage-ag-templatedbs.html"><LINK
+REL="NEXT"
+TITLE="销毁一个数据库"
+HREF="manage-ag-dropdb.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/manage-ag.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="模板数据库"
+HREF="manage-ag-templatedbs.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="managing-databases.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#31456; 22. 管理数据库</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="销毁一个数据库"
+HREF="manage-ag-dropdb.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="MANAGE-AG-CONFIG"
+>22.4. 数据库配置</A
+></H1
+><P
+>   回顾一下<A
+HREF="runtime-config.html"
+>第 19 &#31456;</A
+>，<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>服务器提供了大量的运行时配置变量。你可以为其中的许多设置数据库相关的默认值。
+  </P
+><P
+>   例如，如果由于某种原因，你想禁用指定数据库上的<ACRONYM
+CLASS="ACRONYM"
+>GEQO</ACRONYM
+>优化器，正常情况下你不得不对 所有数据库禁用它，或者确保每个连接的客户端小心地发出了<TT
+CLASS="LITERAL"
+>SET geqo TO off</TT
+>。要令这个设置在一个特定数据库中成为默认值，你可以执行下面的命令：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>ALTER DATABASE mydb SET geqo TO off;</PRE
+><P>
+   这样将保存该设置（但不是立即设置它）。在后续建立的到该数据库的连接中它将表现得像在会话开始后马上调用<TT
+CLASS="LITERAL"
+>SET geqo TO off;</TT
+>。注意用户仍然可以在该会话中更改这个设置，它只是默认值。要撤消这样的设置，使用<TT
+CLASS="LITERAL"
+>ALTER DATABASE <TT
+CLASS="REPLACEABLE"
+><I
+>dbname</I
+></TT
+> RESET
+   <TT
+CLASS="REPLACEABLE"
+><I
+>varname</I
+></TT
+></TT
+>。
+  </P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="manage-ag-templatedbs.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="manage-ag-dropdb.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>模板数据库</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="managing-databases.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>销毁一个数据库</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

@@ -1,0 +1,1280 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>资源消耗</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="服务器配置"
+HREF="runtime-config.html"><LINK
+REL="PREVIOUS"
+TITLE="连接和认证"
+HREF="runtime-config-connection.html"><LINK
+REL="NEXT"
+TITLE="预写式日志"
+HREF="runtime-config-wal.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/config.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="连接和认证"
+HREF="runtime-config-connection.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="runtime-config.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#31456; 19. 服务器配置</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="预写式日志"
+HREF="runtime-config-wal.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="RUNTIME-CONFIG-RESOURCE"
+>19.4. 资源消耗</A
+></H1
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="RUNTIME-CONFIG-RESOURCE-MEMORY"
+>19.4.1. 内存</A
+></H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><A
+NAME="GUC-SHARED-BUFFERS"
+></A
+><TT
+CLASS="VARNAME"
+>shared_buffers</TT
+> (<TT
+CLASS="TYPE"
+>integer</TT
+>)
+      </DT
+><DD
+><P
+>        设置数据库服务器将使用的共享内存缓冲区量。默认通常是 128 兆字节（<TT
+CLASS="LITERAL"
+>128MB</TT
+>），但是如果你的内核设置不支持（在<SPAN
+CLASS="APPLICATION"
+>initdb</SPAN
+>时决定），那么可以会更少。这个设置必须至少为 128 千字节（<TT
+CLASS="SYMBOL"
+>BLCKSZ</TT
+>的非默认值将改变最小值）。不过为了更好的性能，通常会使用明显高于最小值的设置。
+       </P
+><P
+>        如果有一个专用的 1GB 或更多内存的数据库服务器，
+        一个合理的<TT
+CLASS="VARNAME"
+>shared_buffers</TT
+>开始值是系统内存的 25%。
+        即使很大的<TT
+CLASS="VARNAME"
+>shared_buffers</TT
+>有效，
+        也会造成一些工作负载， 
+        但因为<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>同样依赖操作系统的高速缓冲区，
+        将<TT
+CLASS="VARNAME"
+>shared_buffers</TT
+>设置为超过 40% 
+        的RAM不太可能比一个小点值工作得更好。
+        为了能把对写大量新的或改变的数据的处理分布在一个较长的时间段内，
+        <TT
+CLASS="VARNAME"
+>shared_buffers</TT
+>更大的
+        设置通常要求对<TT
+CLASS="VARNAME"
+>max_wal_size</TT
+>也做相应增加。
+       </P
+><P
+>        如果系统内存小于 1GB，一个较小的 RAM 百分数是合适的，这样可以为操作系统留下足够的空间。 同时，在 Windows 上，<TT
+CLASS="VARNAME"
+>shared_buffers</TT
+>设置得较大也不一定有效。你会发现保持相对低的设置并且更多使用操作系统高速缓存会得到更好的结果。Windows 上可用的<TT
+CLASS="VARNAME"
+>shared_buffers</TT
+>值通常是从 64MB 到 512 MB。
+       </P
+></DD
+><DT
+><A
+NAME="GUC-HUGE-PAGES"
+></A
+><TT
+CLASS="VARNAME"
+>huge_pages</TT
+> (<TT
+CLASS="TYPE"
+>enum</TT
+>)
+      </DT
+><DD
+><P
+>        启用/禁用巨型内存页面的使用。可用的值是
+        <TT
+CLASS="LITERAL"
+>try</TT
+>（默认）、<TT
+CLASS="LITERAL"
+>on</TT
+>、
+        和<TT
+CLASS="LITERAL"
+>off</TT
+>。
+       </P
+><P
+>        当前，只有 Linux 上支持这个特性。在其他系统上这个参数被设置为
+        <TT
+CLASS="LITERAL"
+>try</TT
+>时，它会被忽略。
+       </P
+><P
+>        巨型页面的使用会导致更小的页面表以及花费在内存管理上的 CPU 时间更少，从而提高性能。
+        详见<A
+HREF="kernel-resources.html#LINUX-HUGE-PAGES"
+>第 18.4.4 &#33410;</A
+>。
+       </P
+><P
+>        当<TT
+CLASS="VARNAME"
+>huge_pages</TT
+>被设置为<TT
+CLASS="LITERAL"
+>try</TT
+>时，服务器将
+        尝试使用巨型页面，如果失败则会转回去使用正常的分配。如果设置为
+        <TT
+CLASS="LITERAL"
+>on</TT
+>，使用巨型页面失败会阻止服务器启动。如果设置为
+        <TT
+CLASS="LITERAL"
+>off</TT
+>，则不会使用巨型页面。
+       </P
+></DD
+><DT
+><A
+NAME="GUC-TEMP-BUFFERS"
+></A
+><TT
+CLASS="VARNAME"
+>temp_buffers</TT
+> (<TT
+CLASS="TYPE"
+>integer</TT
+>)
+      </DT
+><DD
+><P
+>        设置每个数据库会话使用的临时缓冲区的最大数目。这些都是会话的本地缓冲区，只用于访问临时表。默认是 8 兆字节（<TT
+CLASS="LITERAL"
+>8MB</TT
+>）。这个设置可以在独立的会话内部被改变，但是只有在会话第一次使用临时表之前才能改变； 在会话中随后企图改变该值是无效的。
+       </P
+><P
+>        一个会话将按照<TT
+CLASS="VARNAME"
+>temp_buffers</TT
+>给出的限制根据需要分配临时缓冲区。如果在一个并不需要大量临时缓冲区的会话里设置一个大的数值， 其开销只是一个缓冲区描述符，或者说<TT
+CLASS="VARNAME"
+>temp_buffers</TT
+>每增加一则增加大概 64 字节。不过，如果一个缓冲区被实际使用，那么它就会额外消耗 8192 字节（或者<TT
+CLASS="SYMBOL"
+>BLCKSZ</TT
+>字节）。
+       </P
+></DD
+><DT
+><A
+NAME="GUC-MAX-PREPARED-TRANSACTIONS"
+></A
+><TT
+CLASS="VARNAME"
+>max_prepared_transactions</TT
+> (<TT
+CLASS="TYPE"
+>integer</TT
+>)
+      </DT
+><DD
+><P
+>        设置可以同时处于<SPAN
+CLASS="QUOTE"
+>"prepared"</SPAN
+>状态的事务的最大数目（见<A
+HREF="sql-prepare-transaction.html"
+>PREPARE TRANSACTION</A
+>）。把这个参数设置 为零（这是默认设置）将禁用预备事务特性。这个参数只能在服务器启动时设置。
+       </P
+><P
+>        如果你不打算使用预备事务，可以把这个参数设置为零来防止意外创建预备事务。如果你正在使用预备事务，你将希望把<TT
+CLASS="VARNAME"
+>max_prepared_transactions</TT
+>至少设置为<A
+HREF="runtime-config-connection.html#GUC-MAX-CONNECTIONS"
+>max_connections</A
+>一样大，因此每一个会话可以有一个预备事务待处理。
+       </P
+><P
+>        当运行一个后备服务器时，这个参数必须至少与主服务器上的一样大。否则，后备服务器上将不会执行查询。
+       </P
+></DD
+><DT
+><A
+NAME="GUC-WORK-MEM"
+></A
+><TT
+CLASS="VARNAME"
+>work_mem</TT
+> (<TT
+CLASS="TYPE"
+>integer</TT
+>)
+      </DT
+><DD
+><P
+>        指定在写到临时磁盘文件之前被内部排序操作和哈希表使用的内存量。该值默认为四兆字节（<TT
+CLASS="LITERAL"
+>4MB</TT
+>）。注意对于一个复杂查询， 可能会并行运行好几个排序或者哈希操作；每个操作都会被允许使用这个参数指定的内存量，然后才会开始写数据到临时文件。同样，几个正在运行的会话可能并发进行这样的操作。因此被使用的总内存可能是<TT
+CLASS="VARNAME"
+>work_mem</TT
+>值的好几倍，在选择这个值时一定要记住这一点。<TT
+CLASS="LITERAL"
+>ORDER BY</TT
+>、<TT
+CLASS="LITERAL"
+>DISTINCT</TT
+>和归并连接都要用到排序操作。哈希连接、基于哈希的聚集以及基于哈希的<TT
+CLASS="LITERAL"
+>IN</TT
+>子查询处理中都要用到哈希表。
+       </P
+></DD
+><DT
+><A
+NAME="GUC-MAINTENANCE-WORK-MEM"
+></A
+><TT
+CLASS="VARNAME"
+>maintenance_work_mem</TT
+> (<TT
+CLASS="TYPE"
+>integer</TT
+>)
+      </DT
+><DD
+><P
+>        指定在维护性操作（例如<TT
+CLASS="COMMAND"
+>VACUUM</TT
+>、<TT
+CLASS="COMMAND"
+>CREATE INDEX</TT
+>和<TT
+CLASS="COMMAND"
+>ALTER TABLE ADD FOREIGN KEY</TT
+>）中使用的 最大的内存量。其默认值是 64 兆字节（<TT
+CLASS="LITERAL"
+>64MB</TT
+>）。因为在一个数据库会话中，一个时刻只有一个这样的操作可以被执行，并且一个数据库安装通常不会有太多这样的操作并发执行， 把这个数值设置得比<TT
+CLASS="VARNAME"
+>work_mem</TT
+>大很多是安全的。 更大的设置可以改进清理和恢复数据库转储的性能。
+       </P
+><P
+>        注意当自动清理运行时，可能会分配最高达这个内存的
+        <A
+HREF="runtime-config-autovacuum.html#GUC-AUTOVACUUM-MAX-WORKERS"
+>autovacuum_max_workers</A
+>倍，
+        因此要小心不要把该默认值设置得太高。
+        通过独立地设置<A
+HREF="runtime-config-resource.html#GUC-AUTOVACUUM-WORK-MEM"
+>autovacuum_work_mem</A
+>
+        可能会对控制这种情况有所帮助。 
+       </P
+></DD
+><DT
+><A
+NAME="GUC-REPLACEMENT-SORT-TUPLES"
+></A
+><TT
+CLASS="VARNAME"
+>replacement_sort_tuples</TT
+> (<TT
+CLASS="TYPE"
+>integer</TT
+>)
+      </DT
+><DD
+><P
+>        当要被排序的元组数比这个数字小时，排序将会使用替换选择而不是快速排序
+        来产生其第一个输出。在内存受限的环境中这可能会有用，
+        这种环境中被输入到大型排序操作中的元组具有很强的物理逻辑关联。注意，
+        这不包括具有<SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>逆</I
+></SPAN
+>相关的输入元组。
+        替换选择算法可能会产生一次不需要合并的长时间运行，
+        其中使用默认策略会导致很多次运行并且必须被合并来产生最终的有序输出。
+        这可以允许排序操作更快完成。 
+       </P
+><P
+>        默认是 150,000 个元组。注意，更高的值通常不会更有效，并且可能产生反效果，
+        因为优先队列对于可用的 CPU 高速缓存的尺寸很敏感，
+        然而默认策略会使用一种<I
+CLASS="FIRSTTERM"
+>高速缓存透明</I
+>算法运行。
+        这种性质允许默认的排序策略自动且透明地利用可用的 CPU 高速缓存。
+       </P
+><P
+>        把<TT
+CLASS="VARNAME"
+>maintenance_work_mem</TT
+>设置为其默认值通常会阻止工具命令外部排序
+        （例如<TT
+CLASS="COMMAND"
+>CREATE INDEX</TT
+>用来构建 B-树索引的排序）使用替换选择排序，
+        除非外部元组非常宽。 
+       </P
+></DD
+><DT
+><A
+NAME="GUC-AUTOVACUUM-WORK-MEM"
+></A
+><TT
+CLASS="VARNAME"
+>autovacuum_work_mem</TT
+> (<TT
+CLASS="TYPE"
+>integer</TT
+>)
+      </DT
+><DD
+><P
+>        指定每个自动清理工作者进程能使用的最大内存量。其默认值为 -1，表示转而使用
+        <A
+HREF="runtime-config-resource.html#GUC-MAINTENANCE-WORK-MEM"
+>maintenance_work_mem</A
+>的值。当运行在其他上下文环境中时，
+        这个设置对<TT
+CLASS="COMMAND"
+>VACUUM</TT
+>的行为没有影响。
+       </P
+></DD
+><DT
+><A
+NAME="GUC-MAX-STACK-DEPTH"
+></A
+><TT
+CLASS="VARNAME"
+>max_stack_depth</TT
+> (<TT
+CLASS="TYPE"
+>integer</TT
+>)
+      </DT
+><DD
+><P
+>        指定服务器的执行堆栈的最大安全深度。这个参数的理想设置是由内核强制的实际栈尺寸限制（<TT
+CLASS="LITERAL"
+>ulimit -s</TT
+>所设置的或者本地等价物），减去大约一兆字节的安全边缘。需要这个安全边缘是因为在服务器中并非所有例程都检查栈深度，只是在关键的可能递规的例程（例如表达式计算）中才进行检查。默认设置是两兆字节（<TT
+CLASS="LITERAL"
+>2MB</TT
+>），这个值相对比较小并且不可能导致崩溃。但是，这个值可能太小了，以至于无法执行复杂的函数。只有超级用户可以修改这个设置。
+       </P
+><P
+>        把<TT
+CLASS="VARNAME"
+>max_stack_depth</TT
+>参数设置得高于实际的内核限制将意味着一个失控的递归函数可能会导致一个独立的后端进程崩溃。 在<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>能够检测内核限制的平台上， 服务器将不允许把这个参数设置为一个不安全的值。不过，并非所有平台都能提供该信息，所以我们还是建议你在选择值时要小心。
+       </P
+></DD
+><DT
+><A
+NAME="GUC-DYNAMIC-SHARED-MEMORY-TYPE"
+></A
+><TT
+CLASS="VARNAME"
+>dynamic_shared_memory_type</TT
+> (<TT
+CLASS="TYPE"
+>enum</TT
+>)
+      </DT
+><DD
+><P
+>        指定服务器应该使用的动态共享内存实现。可能的值是<TT
+CLASS="LITERAL"
+>posix</TT
+>（用于使用
+        <TT
+CLASS="LITERAL"
+>shm_open</TT
+>分配的 POSIX 共享内存）、<TT
+CLASS="LITERAL"
+>sysv</TT
+>
+        （用于通过<TT
+CLASS="LITERAL"
+>shmget</TT
+>分配的 System V 共享内存）、
+        <TT
+CLASS="LITERAL"
+>windows</TT
+>（用于 Windows 共享内存）、<TT
+CLASS="LITERAL"
+>mmap</TT
+>
+        （使用存储在数据目录中的内存映射文件模拟共享内存）以及<TT
+CLASS="LITERAL"
+>none</TT
+>（禁用
+        这个特性）。并非所有平台上都支持所有值，平台上第一个支持的选项就是其默认值。
+        在任何平台上<TT
+CLASS="LITERAL"
+>mmap</TT
+>选项都不是默认值，通常不鼓励使用它，因为操作系统会
+        反复地把修改过的页面写回到磁盘上，从而增加了系统的I/O负载。不过当
+        <TT
+CLASS="LITERAL"
+>pg_dynshmem</TT
+>目录被存储在一个 RAM 盘时或者没有其他共享内存功能可用时，
+        它还是有用的。
+       </P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="RUNTIME-CONFIG-RESOURCE-DISK"
+>19.4.2. 磁盘</A
+></H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><A
+NAME="GUC-TEMP-FILE-LIMIT"
+></A
+><TT
+CLASS="VARNAME"
+>temp_file_limit</TT
+> (<TT
+CLASS="TYPE"
+>integer</TT
+>)
+      </DT
+><DD
+><P
+>        指定一个会话能用于临时文件（如排序和哈希临时文件，或者用于保持游标的存储文件）的最大磁盘空间量。一个试图超过这个限制的事务将被取消。这个值以千字节计，并且<TT
+CLASS="LITERAL"
+>-1</TT
+>（默认值）意味着没有限制。只有超级用户能够修改这个设置。
+       </P
+><P
+>        这个设置约束着一个给定<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>会话在任何瞬间所使用的所有临时文件的总空间。应该注意的是，与在查询执行中在幕后使用的临时文件相反，显式临时表所用的磁盘空间<SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>不</I
+></SPAN
+>被这个设置所限制。
+       </P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="RUNTIME-CONFIG-RESOURCE-KERNEL"
+>19.4.3. 内核资源使用</A
+></H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><A
+NAME="GUC-MAX-FILES-PER-PROCESS"
+></A
+><TT
+CLASS="VARNAME"
+>max_files_per_process</TT
+> (<TT
+CLASS="TYPE"
+>integer</TT
+>)
+      </DT
+><DD
+><P
+>        设置每个服务器子进程允许同时打开的最大文件数目。默认是 1000 个文件。如果内核强制一个安全的针对每个进程的限制，那么你不用操心这个设置。但是在 一些平台上（特别是大多数 BSD 系统），如果很多进程都尝试打开很多文件，内核将允许独立进程打开比个系统真正可以支持的数目大得多得文件数。如果你发现自己看到了<SPAN
+CLASS="QUOTE"
+>"Too many open files"</SPAN
+>这样的失败，可尝试减小这个设置。这个参数只能在服务器启动时设置。
+       </P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="RUNTIME-CONFIG-RESOURCE-VACUUM-COST"
+>19.4.4. 基于代价的清理延迟</A
+></H2
+><P
+>      在<A
+HREF="sql-vacuum.html"
+>VACUUM</A
+>和<A
+HREF="sql-analyze.html"
+>ANALYZE</A
+>命令的执行过程中，系统维持着一个内部计数器来跟踪各种被执行的I/O操作的估算开销。当累计的代价达到一个限制（由<TT
+CLASS="VARNAME"
+>vacuum_cost_limit</TT
+>指定），执行这些操作的进程将按照<TT
+CLASS="VARNAME"
+>vacuum_cost_delay</TT
+>所指定的休眠一小段时间。然后它将重置计数器并继续执行。
+     </P
+><P
+>      这个特性的出发点是允许管理员降低这些命令对并发的数据库活动产生的I/O影响。在很多情况下，<TT
+CLASS="COMMAND"
+>VACUUM</TT
+>和<TT
+CLASS="COMMAND"
+>ANALYZE</TT
+>等维护命令能否快速完成并不重要，而非常重要的是这些命令不会对系统执行其他数据库操作的能力产生显著的影响。基于代价的清理延迟提供了一种方式让管理员能够保证这一点。
+     </P
+><P
+>      对于手动发出的<TT
+CLASS="COMMAND"
+>VACUUM</TT
+>命令，该特性默认被禁用。要启用它，只要把<TT
+CLASS="VARNAME"
+>vacuum_cost_delay</TT
+>变量设为一个非零值。
+     </P
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><A
+NAME="GUC-VACUUM-COST-DELAY"
+></A
+><TT
+CLASS="VARNAME"
+>vacuum_cost_delay</TT
+> (<TT
+CLASS="TYPE"
+>integer</TT
+>)
+       </DT
+><DD
+><P
+>         进程超过代价限制后将休眠的时间长度，以毫秒计。其默认值为0，这将禁用基于代价的清理延迟特性。正值将启用基于代价的清理。注意在很多系统上，实际的休眠延迟单位是10毫秒，将<TT
+CLASS="VARNAME"
+>vacuum_cost_delay</TT
+>设置成不为10的倍数的值和将它设置为比该值大的10的倍数的效果相同。
+        </P
+><P
+>         在使用基于代价的清理时，<TT
+CLASS="VARNAME"
+>vacuum_cost_delay</TT
+>的合适值通常很小，也许是10或20毫秒。调整清理时资源消耗最好的方法是调整其他清理代价参数。
+        </P
+></DD
+><DT
+><A
+NAME="GUC-VACUUM-COST-PAGE-HIT"
+></A
+><TT
+CLASS="VARNAME"
+>vacuum_cost_page_hit</TT
+> (<TT
+CLASS="TYPE"
+>integer</TT
+>)
+       </DT
+><DD
+><P
+>         清理一个在共享缓存中找到的缓冲区的估计代价。它表示锁住缓冲池、查找共享哈希表和扫描页内容的代价。默认值为1。
+        </P
+></DD
+><DT
+><A
+NAME="GUC-VACUUM-COST-PAGE-MISS"
+></A
+><TT
+CLASS="VARNAME"
+>vacuum_cost_page_miss</TT
+> (<TT
+CLASS="TYPE"
+>integer</TT
+>)
+       </DT
+><DD
+><P
+>         清理一个必须从磁盘上读取的缓冲区的代价。它表示锁住缓冲池、查找共享哈希表、从磁盘读取需要的块以及扫描其内容的代价。默认值为10。        
+        </P
+></DD
+><DT
+><A
+NAME="GUC-VACUUM-COST-PAGE-DIRTY"
+></A
+><TT
+CLASS="VARNAME"
+>vacuum_cost_page_dirty</TT
+> (<TT
+CLASS="TYPE"
+>integer</TT
+>)
+       </DT
+><DD
+><P
+>         当清理修改一个之前干净的块时需要花费的估计代价。它表示再次把脏块刷出到磁盘所需要的额外I/O。默认值为20。
+        </P
+></DD
+><DT
+><A
+NAME="GUC-VACUUM-COST-LIMIT"
+></A
+><TT
+CLASS="VARNAME"
+>vacuum_cost_limit</TT
+> (<TT
+CLASS="TYPE"
+>integer</TT
+>)
+       </DT
+><DD
+><P
+>         将导致清理进程休眠的累计代价。默认值为200。
+        </P
+></DD
+></DL
+></DIV
+><DIV
+CLASS="NOTE"
+><BLOCKQUOTE
+CLASS="NOTE"
+><P
+><B
+>&#27880;&#24847;: </B
+>       有些操作会保持关键性的锁，这样可以尽快完成。基于代价的清理延迟在这类操作期间不会发生。因此有可能代价会累计至大大超过指定的限制。为了防止在这种情况下的无意义的长时间延迟，实际延迟的计算方式是<TT
+CLASS="VARNAME"
+>vacuum_cost_delay</TT
+> *
+       <TT
+CLASS="VARNAME"
+>accumulated_balance</TT
+> /
+       <TT
+CLASS="VARNAME"
+>vacuum_cost_limit</TT
+>，且最大值是<TT
+CLASS="VARNAME"
+>vacuum_cost_delay</TT
+> * 4。
+      </P
+></BLOCKQUOTE
+></DIV
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="RUNTIME-CONFIG-RESOURCE-BACKGROUND-WRITER"
+>19.4.5. 后台写入器</A
+></H2
+><P
+>      有一个独立的服务器进程，叫做<I
+CLASS="FIRSTTERM"
+>后台写入器</I
+>，它的功能就是发出写<SPAN
+CLASS="QUOTE"
+>"脏"</SPAN
+>（新的或修改过的）共享缓冲区的命令。它写出共享缓冲区，这样让处理用户查询的服务器进程很少或者永不等待写动作的发生。不过，后台写入器确实会增加 I/O 的总负荷，因为虽然在每个检查点间隔中一个重复弄脏的页面可能只会写出一次，但在同一个间隔中后台写入器可能会把它写出好几次。在这一小节讨论的参数可以被用于调节本地需求的行为。
+     </P
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><A
+NAME="GUC-BGWRITER-DELAY"
+></A
+><TT
+CLASS="VARNAME"
+>bgwriter_delay</TT
+> (<TT
+CLASS="TYPE"
+>integer</TT
+>)
+       </DT
+><DD
+><P
+>         指定后台写入器活动轮次之间的延迟。在每个轮次中，写入器都会为一定数量的脏缓冲区发出写操作（可以用下面的参数控制）。然后它就休眠 <TT
+CLASS="VARNAME"
+>bgwriter_delay</TT
+>毫秒， 然后重复动作。默认值是 200 毫秒（<TT
+CLASS="LITERAL"
+>200ms</TT
+>）。注意在许多系统上，休眠延迟的有效解析度是 10 毫秒；因此，为<TT
+CLASS="VARNAME"
+>bgwriter_delay</TT
+>设置一个 不是 10 的倍数的值与把它设置为下一个更高的 10 的倍数是一样的效果。这个选项只能在服务器命令行上或者在<TT
+CLASS="FILENAME"
+>postgresql.conf</TT
+>文件中设置。
+        </P
+></DD
+><DT
+><A
+NAME="GUC-BGWRITER-LRU-MAXPAGES"
+></A
+><TT
+CLASS="VARNAME"
+>bgwriter_lru_maxpages</TT
+> (<TT
+CLASS="TYPE"
+>integer</TT
+>)
+       </DT
+><DD
+><P
+>         在每个轮次中，不超过这么多个缓冲区将被后台写入器写出。把这个参数设置为零可禁用后台写出（注意被一个独立、专用辅助进程管理的检查点不受影响）。默认值是 100 个缓冲区。这个参数只能在<TT
+CLASS="FILENAME"
+>postgresql.conf</TT
+>文件中或在服务器命令行上设置。
+        </P
+></DD
+><DT
+><A
+NAME="GUC-BGWRITER-LRU-MULTIPLIER"
+></A
+><TT
+CLASS="VARNAME"
+>bgwriter_lru_multiplier</TT
+> (<TT
+CLASS="TYPE"
+>floating point</TT
+>)
+       </DT
+><DD
+><P
+>         每一轮次要写的脏缓冲区的数目基于最近几个轮次中服务器进程需要的新缓冲区的数目。 最近所需的平均值乘以<TT
+CLASS="VARNAME"
+>bgwriter_lru_multiplier</TT
+>可以估算下一轮次中将会需要的缓冲区数目。脏缓冲区将被写出直到有很多干净可重用的缓冲区（然而，每一轮次中写出的缓冲区数不超过<TT
+CLASS="VARNAME"
+>bgwriter_lru_maxpages</TT
+>）。 因此，设置为 1.0 表示一种<SPAN
+CLASS="QUOTE"
+>"刚刚好的"</SPAN
+>策略，这种策略会写出正好符合预测值的数目的缓冲区。 更大大的值可以为需求高峰提供某种缓冲，而更小的值则需要服务进程来处理一些写出操作。默认值是 2.0。这个参数只能在<TT
+CLASS="FILENAME"
+>postgresql.conf</TT
+>文件中或在服务器命令行上设置。
+        </P
+></DD
+><DT
+><A
+NAME="GUC-BGWRITER-FLUSH-AFTER"
+></A
+><TT
+CLASS="VARNAME"
+>bgwriter_flush_after</TT
+> (<TT
+CLASS="TYPE"
+>integer</TT
+>)
+       </DT
+><DD
+><P
+>         不管何时 bgwriter 写入了超过<TT
+CLASS="VARNAME"
+>bgwriter_flush_after</TT
+>字节，
+         尝试强制 OS 把这些写发送到底层存储上。这样做将限制内核页缓存中脏数据的量，
+         降低了在检查点末尾发出一个 fsync 时或者 OS 在后台大批量写回数据时卡住的可能性。
+         那常常会导致大幅度压缩的事务延迟，但是也有一些情况（特别是负载超过
+         <A
+HREF="runtime-config-resource.html#GUC-SHARED-BUFFERS"
+>shared_buffers</A
+>但小于 OS 页面高速缓存）的性能会降低。
+         这种设置可能会在某些平台上没有效果。合法的范围在<TT
+CLASS="LITERAL"
+>0</TT
+>
+         （禁用受控写回）和<TT
+CLASS="LITERAL"
+>2MB</TT
+>之间。Linux 上的默认值是
+         <TT
+CLASS="LITERAL"
+>512kB</TT
+>，其他平台上是<TT
+CLASS="LITERAL"
+>0</TT
+>（非默认的<TT
+CLASS="SYMBOL"
+>BLCKSZ</TT
+>
+         值会改变默认值和最大值）。这个参数只能在<TT
+CLASS="FILENAME"
+>postgresql.conf</TT
+>
+         文件中或者服务器命令行上设置。
+        </P
+></DD
+></DL
+></DIV
+><P
+>      较小的<TT
+CLASS="VARNAME"
+>bgwriter_lru_maxpages</TT
+>和<TT
+CLASS="VARNAME"
+>bgwriter_lru_multiplier</TT
+>可以降低由后台写入器造成的额外 I/O 开销。但更可能的是，服务器进程将必须自己发出写入操作，这会延迟交互式查询。
+     </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="RUNTIME-CONFIG-RESOURCE-ASYNC-BEHAVIOR"
+>19.4.6. 异步行为</A
+></H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><A
+NAME="GUC-EFFECTIVE-IO-CONCURRENCY"
+></A
+><TT
+CLASS="VARNAME"
+>effective_io_concurrency</TT
+> (<TT
+CLASS="TYPE"
+>integer</TT
+>)
+       </DT
+><DD
+><P
+>         设置<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>可以同时被执行的并发磁盘 I/O 操作的数量。
+         调高这个值，可以增加任何单个<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>会话试图并行发起的
+         I/O 操作的数目。 允许的范围是 1 到 1000，或 0 表示禁用异步 I/O 请求。
+         当前这个设置仅影响位图堆扫描。
+        </P
+><P
+>         对于磁盘驱动器，这个设置的一个很好的出发点是组成一个被用于该数据库的 RAID 0 
+         条带或 RAID 1 镜像的独立驱动器数量（对 RAID 5 而言，校验驱动器不计入）。
+         但是， 如果数据库经常忙于在并发会话中发出的多个查询，
+         较低的值可能足以使磁盘阵列繁忙。比保持磁盘繁忙所需的值更高的值只会造成额外的 
+         CPU 开销。SSD 以及其他基于内存的存储常常能处理很多并发请求，
+         因此它们的最佳值可能是数百。 
+        </P
+><P
+>         异步 I/O 依赖于一个有效的<CODE
+CLASS="FUNCTION"
+>posix_fadvise</CODE
+>函数
+         （一些操作系统可能没有）。 如果不存在这个函数，将这个参数设置为除 0 
+         之外的任何东西将导致错误。在一些操作系统上（如Solaris）
+         虽然提供了这个函数，但它不会做任何事情。 
+        </P
+><P
+>         支持的系统上缺省为1，否则为0。对于一个特定表空间中的表，
+         可以通过设定该表空间的同名参数（见<A
+HREF="sql-altertablespace.html"
+>ALTER TABLESPACE</A
+>）
+         可以覆盖这个值。 
+        </P
+></DD
+><DT
+><A
+NAME="GUC-MAX-WORKER-PROCESSES"
+></A
+><TT
+CLASS="VARNAME"
+>max_worker_processes</TT
+> (<TT
+CLASS="TYPE"
+>integer</TT
+>)
+       </DT
+><DD
+><P
+>         设置系统能够支持的后台进程的最大数量。这个参数只能在服务器启动时设置。
+         默认值为 8。 
+        </P
+><P
+>         在运行一个后备服务器时，你必须把这个参数设置为等于或者高于主控服务器上的值。否则，
+         后备服务器上可能不会允许查询。
+        </P
+></DD
+><DT
+><A
+NAME="GUC-MAX-PARALLEL-WORKERS-PER-GATHER"
+></A
+><TT
+CLASS="VARNAME"
+>max_parallel_workers_per_gather</TT
+> (<TT
+CLASS="TYPE"
+>integer</TT
+>)
+       </DT
+><DD
+><P
+>         设置单个<TT
+CLASS="LITERAL"
+>Gather</TT
+>节点能够开始的工作者的最大数量。
+         并行工作者会从<A
+HREF="runtime-config-resource.html#GUC-MAX-WORKER-PROCESSES"
+>max_worker_processes</A
+>建立的进程池中取得。
+         注意所要求的工作者数量在运行时可能实际无法被满足。如果这种事情发生，
+         该计划将会以比预期更少的工作者运行，这可能会不太高效。
+         把这个值设置为 0（默认值）将会禁用并行查询执行。
+        </P
+><P
+>         注意并行查询可能消耗比非并行查询更多的资源，
+         因为每一个工作者进程时一个完全独立的进程，
+         它对系统产生的影响大致和一个额外的用户会话相同。在为这个设置选择值时，
+         以及配置其他控制资源利用的设置（例如<A
+HREF="runtime-config-resource.html#GUC-WORK-MEM"
+>work_mem</A
+>）时，
+         应该把这个因素考虑在内。<TT
+CLASS="VARNAME"
+>work_mem</TT
+>
+         之类的资源限制会被独立地应用于每一个工作者，
+         这意味着所有进程的总资源利用可能会比单个进程时高得多。例如，
+         一个使用 4 个工作者的并行查询使用的 CPU 时间、内存、I/O 
+         带宽可能是不使用工作者时的 5 倍之多。 
+        </P
+><P
+>         并行查询的更多信息请见
+         <A
+HREF="parallel-query.html"
+>第 15 &#31456;</A
+>.
+        </P
+></DD
+><DT
+><A
+NAME="GUC-BACKEND-FLUSH-AFTER"
+></A
+><TT
+CLASS="VARNAME"
+>backend_flush_after</TT
+> (<TT
+CLASS="TYPE"
+>integer</TT
+>)
+       </DT
+><DD
+><P
+>         只要一个后端写入了超过<TT
+CLASS="VARNAME"
+>backend_flush_after</TT
+>字节，
+         就会尝试强制 OS 把这些写发送到底层存储。
+         这样做将会限制内核页高速缓存中的脏数据数量，
+         降低在检查点末尾发出 fsync 时或者 OS 在后台大批写回数据时卡住的可能性。
+         这常常会导致极大降低的事务延迟，但是也有一些情况中
+         （特别是负载超过<A
+HREF="runtime-config-resource.html#GUC-SHARED-BUFFERS"
+>shared_buffers</A
+>但低于 OS 的页面高速缓存时），
+         性能可能会下降。这个设置可能在某些平台上没有效果。合法的范围位于<TT
+CLASS="LITERAL"
+>0</TT
+>
+         （禁用受控写回）和<TT
+CLASS="LITERAL"
+>2MB</TT
+>之间。默认是<TT
+CLASS="LITERAL"
+>0</TT
+>（即没有刷写控制）。
+         （<TT
+CLASS="SYMBOL"
+>BLCKSZ</TT
+>的非默认值会更改最大值）。
+        </P
+></DD
+><DT
+><A
+NAME="GUC-OLD-SNAPSHOT-THRESHOLD"
+></A
+><TT
+CLASS="VARNAME"
+>old_snapshot_threshold</TT
+> (<TT
+CLASS="TYPE"
+>integer</TT
+>)
+       </DT
+><DD
+><P
+>         设置在使用快照时，一个快照可以被使用而没有发生<TT
+CLASS="LITERAL"
+>snapshot too old</TT
+>
+         错误风险的最小时间。这个参数只能在服务器启动时设置。 
+        </P
+><P
+>         如果超过该阈值，旧数据将被清理掉。这可以有助于阻止长时间使用的快照造成的快照膨胀。
+         为了阻止由于本来对该快照可见的数据被清理导致的不正确结果，
+         当快照比这个阈值更旧并且该快照被用来读取一个该快照建立以来被修改过的页面时，
+         将会产生一个错误。 
+        </P
+><P
+>         值为<TT
+CLASS="LITERAL"
+>-1</TT
+>会禁用这个特性，并且这个值是默认值。
+         对于生产工作有用的值可能从几个小时到几天。该设置将被转换成分钟粒度，
+         并且小数字（例如<TT
+CLASS="LITERAL"
+>0</TT
+>或者<TT
+CLASS="LITERAL"
+>1min</TT
+>）
+         被允许只是因为它们有时对于测试有用。虽然允许高达<TT
+CLASS="LITERAL"
+>60d</TT
+>的设置，
+         但是请注意很多负载情况下，很短的时间帧里就可能发生极大的膨胀或者事务 ID 回卷。
+        </P
+><P
+>         当这个特性被启用时，关系末尾的被清出的空间不能被释放给操作系统，
+         因为那可能会移除用于检测<TT
+CLASS="LITERAL"
+>snapshot too old</TT
+>情况所需的信息。
+         所有分配给关系的空间还将与该关系关联在一起便于重用，
+         除非它们被显式地释放（例如，用<TT
+CLASS="COMMAND"
+>VACUUM FULL</TT
+>）。 
+        </P
+><P
+>         这个设置不会尝试保证在任何特殊情况下都会生成错误。事实上，如果（例如）
+         可以从一个已经物化了一个结果集的游标中生成正确的结果，
+         即便被引用表中的底层行已经被清理掉也不会生成错误。
+         某些表不能被过早地安全清除，并且因此将不受这个设置的影响。
+         例子包括系统目录以及任何具有哈希索引的表。对于这些表，
+         这个设置将不能降低膨胀，也不能降低在扫描时产生
+         <TT
+CLASS="LITERAL"
+>snapshot too old</TT
+>错误的可能性。
+        </P
+></DD
+></DL
+></DIV
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="runtime-config-connection.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="runtime-config-wal.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>连接和认证</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="runtime-config.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>预写式日志</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

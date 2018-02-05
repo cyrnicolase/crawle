@@ -1,0 +1,259 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>口令文件</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="libpq - C 库"
+HREF="libpq.html"><LINK
+REL="PREVIOUS"
+TITLE="环境变量"
+HREF="libpq-envars.html"><LINK
+REL="NEXT"
+TITLE="连接服务文件"
+HREF="libpq-pgservice.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/libpq.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="环境变量"
+HREF="libpq-envars.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="libpq.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#31456; 32. <SPAN
+CLASS="APPLICATION"
+>libpq</SPAN
+> - C 库</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="连接服务文件"
+HREF="libpq-pgservice.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="LIBPQ-PGPASS"
+>32.15. 口令文件</A
+></H1
+><P
+>   一个用户主目录中的<TT
+CLASS="FILENAME"
+>.pgpass</TT
+>文件或者被<TT
+CLASS="ENVAR"
+>PGPASSFILE</TT
+>引用的文件可能包含在连接需要时使用的口令（并且其他情况不会指定口令）。在微软的 Windows 上该文件被命名为<TT
+CLASS="FILENAME"
+>%APPDATA%\postgresql\pgpass.conf</TT
+>（其中<TT
+CLASS="FILENAME"
+>%APPDATA%</TT
+>指的是用户配置中的应用数据子目录）。
+  </P
+><P
+>   这个文件应该包含下列格式的行：
+</P><PRE
+CLASS="SYNOPSIS"
+><TT
+CLASS="REPLACEABLE"
+><I
+>hostname</I
+></TT
+>:<TT
+CLASS="REPLACEABLE"
+><I
+>port</I
+></TT
+>:<TT
+CLASS="REPLACEABLE"
+><I
+>database</I
+></TT
+>:<TT
+CLASS="REPLACEABLE"
+><I
+>username</I
+></TT
+>:<TT
+CLASS="REPLACEABLE"
+><I
+>password</I
+></TT
+></PRE
+><P>
+   （你可以向该文件增加一个提醒：把上面的行复制到该文件并且在前面加上<TT
+CLASS="LITERAL"
+>#</TT
+>）。前四个域的每一个都可以是文字值或者匹配任何东西的<TT
+CLASS="LITERAL"
+>*</TT
+>。第一个匹配当前连接参数的行中的口令域将被使用（因此，在使用通配符时把更特殊的项放在前面）。如果一个条目需要包含<TT
+CLASS="LITERAL"
+>:</TT
+>或者<TT
+CLASS="LITERAL"
+>\</TT
+>，用<TT
+CLASS="LITERAL"
+>\</TT
+>对该字符转义。一个<TT
+CLASS="LITERAL"
+>localhost</TT
+>主机名匹配来自本地机器的 TCP （主机名<TT
+CLASS="LITERAL"
+>localhost</TT
+>）和 Unix 域套接字（<TT
+CLASS="LITERAL"
+>pghost</TT
+>为空或者默认套接字目录）连接。在一台后备服务器上，一个名为<TT
+CLASS="LITERAL"
+>replication</TT
+>的数据库名匹配到主控服务器的流复制连接。<TT
+CLASS="LITERAL"
+>database</TT
+>域的用途有限，因为用户对同一个集簇中所有数据库都有相同的口令。
+  </P
+><P
+>   在 Unix 系统上，<TT
+CLASS="FILENAME"
+>.pgpass</TT
+>上的权限必须不允许所有人或组内访问，可以用命令<TT
+CLASS="COMMAND"
+>chmod 0600 ~/.pgpass</TT
+>实现。如果权限没有这么严格，该文件将被忽略。在微软 Windows 上，该文件被假定存储在一个安全的目录中，因此不会进行特别的权限检查。
+  </P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="libpq-envars.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="libpq-pgservice.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>环境变量</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="libpq.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>连接服务文件</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

@@ -1,0 +1,410 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>版本 8.4.19</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="版本说明"
+HREF="release.html"><LINK
+REL="PREVIOUS"
+TITLE="版本 8.4.20"
+HREF="release-8-4-20.html"><LINK
+REL="NEXT"
+TITLE="版本8.4.18"
+HREF="release-8-4-18.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/release-8.4.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="版本 8.4.20"
+HREF="release-8-4-20.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="release.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#38468;&#24405; E. 版本说明</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="版本8.4.18"
+HREF="release-8-4-18.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="RELEASE-8-4-19"
+>E.102. 版本 8.4.19</A
+></H1
+><DIV
+CLASS="NOTE"
+><BLOCKQUOTE
+CLASS="NOTE"
+><P
+><B
+>发布日期: </B
+>2013-12-05</P
+></BLOCKQUOTE
+></DIV
+><P
+>   这个版本包含各种自8.4.18以来的修复。关于8.4主版本的新特性信息，
+   请查看<A
+HREF="release-8-4.html"
+>第 E.121 &#33410;</A
+>。
+  </P
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN153223"
+>E.102.1. 迁移到版本 8.4.19</A
+></H2
+><P
+>    运行8.4.X的用户不需要转储/恢复。
+   </P
+><P
+>    这个版本纠正了一个潜在的数据损坏问题。参阅下面的第一条修改日志项，
+    找出您的安装是否受到了影响，和如果受到了影响应该采取什么步骤。
+   </P
+><P
+>    另外，如果你是从早于8.4.17的版本升级而来，请参阅
+    <A
+HREF="release-8-4-17.html"
+>第 E.104 &#33410;</A
+>。
+   </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN153229"
+>E.102.2. 修改列表</A
+></H2
+><P
+></P
+><UL
+><LI
+><P
+>      修复<TT
+CLASS="COMMAND"
+>VACUUM</TT
+>的测试，查看它是否可以更新
+      <TT
+CLASS="STRUCTFIELD"
+>relfrozenxid</TT
+> (Andres Freund)
+     </P
+><P
+>      在<TT
+CLASS="COMMAND"
+>VACUUM</TT
+>（手动或自动）的某些情况下，会错误的增加一个表的
+      <TT
+CLASS="STRUCTFIELD"
+>relfrozenxid</TT
+>值，允许元组逃离冻结，导致一旦过去2^31个事务，
+      这些行就变得不可见了。数据丢失的可能性要低的多，因为在数据真正的丢失之前，
+      需要多个不正确的进展，但也不是没有。从8.4.8或更早版本升级而来的用户没有受到影响，
+      但是所有随后的版本都包含了这个错误。
+     </P
+><P
+>      这个问题可以通过升级、在<A
+HREF="runtime-config-client.html#GUC-VACUUM-FREEZE-TABLE-AGE"
+><TT
+CLASS="VARNAME"
+>vacuum_freeze_table_age</TT
+></A
+>
+      设置为零的情况下清理所有数据库中的表来改善。这可以修复任何潜在的损坏，
+      但是不能修复所有已经存在的数据错误。不过，如果一个安装已经执行的更新事务少于2^31
+      （使用<TT
+CLASS="LITERAL"
+>SELECT txid_current() &#60; 2^31</TT
+>检查），
+      那么可以假设在执行清理之后该安装是安全的。
+     </P
+></LI
+><LI
+><P
+>      修复GIN索引发布树页面删除中的竞态条件 (Heikki Linnakangas)
+     </P
+><P
+>      这会导致短暂的错误回复或查询失败。
+     </P
+></LI
+><LI
+><P
+>      避免展开一个<TT
+CLASS="LITERAL"
+>SELECT</TT
+>列表的子<TT
+CLASS="LITERAL"
+>SELECT</TT
+>
+      中包含易变函数的查询 (Tom Lane)
+     </P
+><P
+>      这避免了由于额外的计算易变函数而导致意想不到的结果。
+     </P
+></LI
+><LI
+><P
+>      修复规划器对非简单变量子查询输出嵌套在外连接中的处理 (Tom Lane)
+     </P
+><P
+>      这个错误会导致对<TT
+CLASS="LITERAL"
+>JOIN</TT
+>语法中包含多级别子查询的查询的错误规划。
+     </P
+></LI
+><LI
+><P
+>      修复过早删除临时文件 (Andres Freund)
+     </P
+></LI
+><LI
+><P
+>      修复规则输出中可能的读取过去的内存 (Peter Eisentraut)
+     </P
+></LI
+><LI
+><P
+>      修复<TT
+CLASS="TYPE"
+>int2vector</TT
+>和<TT
+CLASS="TYPE"
+>oidvector</TT
+>值的数组切片 (Tom Lane)
+     </P
+><P
+>      这种形式的表达式现在隐式的提升为正规的<TT
+CLASS="TYPE"
+>int2</TT
+>或
+      <TT
+CLASS="TYPE"
+>oid</TT
+>数组。
+     </P
+></LI
+><LI
+><P
+>      修复使用SQL标准、简单的GMT偏移时区时的错误行为 (Tom Lane)
+     </P
+><P
+>      在某些情况下，当系统应该使用常规的时区设置（在选择简单偏移之前它就盛行了）时，
+      系统使用了简单GMT偏移值。这个修改也导致<CODE
+CLASS="FUNCTION"
+>timeofday</CODE
+>
+      函数遵守简单GMT偏移时区。
+     </P
+></LI
+><LI
+><P
+>      阻止记录Windows错误代码的翻译时可能的错误行为 (Tom Lane)
+     </P
+></LI
+><LI
+><P
+>      正确的引用<SPAN
+CLASS="APPLICATION"
+>pg_ctl</SPAN
+>中生成的命令行 (Naoya Anzai and Tom Lane)
+     </P
+><P
+>      该修复仅适用于Windows。
+     </P
+></LI
+><LI
+><P
+>      修复<SPAN
+CLASS="APPLICATION"
+>pg_dumpall</SPAN
+>，使其在源数据库通过<TT
+CLASS="COMMAND"
+>ALTER DATABASE SET</TT
+>
+      设置<A
+HREF="runtime-config-client.html#GUC-DEFAULT-TRANSACTION-READ-ONLY"
+><TT
+CLASS="VARNAME"
+>default_transaction_read_only</TT
+></A
+>
+      时也能工作 (Kevin Grittner)
+     </P
+><P
+>      以前，生成的脚本在恢复期间会失败。
+     </P
+></LI
+><LI
+><P
+>      修复<SPAN
+CLASS="APPLICATION"
+>ecpg</SPAN
+>对<TT
+CLASS="TYPE"
+>varchar</TT
+>声明的变量列表的处理
+      (Zolt&aacute;n B&ouml;sz&ouml;rm&eacute;nyi)
+     </P
+></LI
+><LI
+><P
+>      让<TT
+CLASS="FILENAME"
+>contrib/lo</TT
+>防卫不正确的触发器定义 (Marc Cousin)
+     </P
+></LI
+><LI
+><P
+>      更新时区数据文件到<SPAN
+CLASS="APPLICATION"
+>tzdata</SPAN
+>版本2013h，
+      因为DST规律在Argentina、Brazil、Jordan、Libya、
+      Liechtenstein、Morocco和Palestine发生了改变。
+      还有，Indonesia的新的时区缩写WIB、WIT、WITA。
+     </P
+></LI
+></UL
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="release-8-4-20.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="release-8-4-18.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>版本 8.4.20</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="release.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>版本8.4.18</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

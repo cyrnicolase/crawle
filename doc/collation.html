@@ -1,0 +1,513 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>排序规则支持</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="本地化"
+HREF="charset.html"><LINK
+REL="PREVIOUS"
+TITLE="区域支持"
+HREF="locale.html"><LINK
+REL="NEXT"
+TITLE="字符集支持"
+HREF="multibyte.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/charset.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="区域支持"
+HREF="locale.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="charset.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#31456; 23. 本地化</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="字符集支持"
+HREF="multibyte.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="COLLATION"
+>23.2. 排序规则支持</A
+></H1
+><P
+>   排序规则特性允许指定每一列甚至每一个操作的数据的排序顺序和字符分类行为。这放松了数据库的<TT
+CLASS="SYMBOL"
+>LC_COLLATE</TT
+>和<TT
+CLASS="SYMBOL"
+>LC_CTYPE</TT
+>设置自创建以后就不能更改这一限制。
+  </P
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN38418"
+>23.2.1. 概念</A
+></H2
+><P
+>    在概念上，一种可排序数据类型的每一种表达式都有一个排序规则（内建的可排序数据类型是<TT
+CLASS="TYPE"
+>text</TT
+>、<TT
+CLASS="TYPE"
+>varchar</TT
+>和<TT
+CLASS="TYPE"
+>char</TT
+>。用户定义的基础类型也可以被标记为可排序的，并且在一种可排序数据类型上的域也是可排序的）。如果该表达式是一个列引用，该表达式的排序规则就是列所定义的排序规则。如果该表达式是一个常量，排序规则就是该常量数据类型的默认排序规则。更复杂表达式的排序规则根据其输入的排序规则得来，如下所述：
+   </P
+><P
+>    一个表达式的排序规则可以是<SPAN
+CLASS="QUOTE"
+>"默认"</SPAN
+>排序规则，它表示数据库的区域设置。一个表达式的排序规则也可能是不确定的。在这种情况下，排序操作和其他需要知道排序规则的操作会失败。
+   </P
+><P
+>    当数据库系统必须要执行一次排序或者字符分类时，它使用输入表达式的排序规则。这会在使用例如<TT
+CLASS="LITERAL"
+>ORDER BY</TT
+>子句以及函数或操作符调用（如<TT
+CLASS="LITERAL"
+>&lt;</TT
+>）时发生。应用于<TT
+CLASS="LITERAL"
+>ORDER BY</TT
+>子句的排序规则就是排序键的排序规则。应用于函数或操作符调用的排序规则从它们的参数得来，具体如下文所述。除比较操作符之外，在大小写字母之间转换的函数会考虑排序规则，例如<CODE
+CLASS="FUNCTION"
+>lower</CODE
+>、<CODE
+CLASS="FUNCTION"
+>upper</CODE
+>和<CODE
+CLASS="FUNCTION"
+>initcap</CODE
+>。模式匹配操作符和<CODE
+CLASS="FUNCTION"
+>to_char</CODE
+>及相关函数也会考虑排序规则。
+   </P
+><P
+>    对于一个函数或操作符调用，其排序规则通过检查在执行指定操作时参数的排序规则来获得。如果该函数或操作符调用的结果是一种可排序的数据类型，万一有外围表达式要求函数或操作符表达式的排序规则，在解析时结果的排序规则也会被用作函数或操作符表达式的排序规则。
+   </P
+><P
+>    一个表达式的<I
+CLASS="FIRSTTERM"
+>排序规则派生</I
+>可以是显式或隐式。该区别会影响多个不同的排序规则出现在同一个表达式中时如何组合它们。当使用一个<TT
+CLASS="LITERAL"
+>COLLATE</TT
+>子句时，将发生显式排序规则派生。所有其他排序规则派生都是隐式的。当多个排序规则需要被组合时（例如在一个函数调用中），将使用下面的规则：
+
+    <P
+></P
+></P><OL
+TYPE="1"
+><LI
+><P
+>       如果任何一个输入表达式具有一个显式排序规则派生，则在输入表达式之间的所有显式派生的排序规则必须相同，否则将产生一个错误。如果任何一个显式派生的排序规则存在，它就是排序规则组合的结果。
+      </P
+></LI
+><LI
+><P
+>       否则，所有输入表达式必须具有相同的隐式排序规则派生或默认排序规则。如果任何一个非默认排序规则存在，它就是排序规则组合的结果。否则，结果是默认排序规则。
+      </P
+></LI
+><LI
+><P
+>       如果在输入表达式之间存在冲突的非默认隐式排序规则，则组合被认为是具有不确定排序规则。这并非一种错误情况，除非被调用的特定函数要求提供排序规则的知识。如果它确实这样做，运行时将发生一个错误。
+      </P
+></LI
+></OL
+><P>
+
+    例如，考虑这个表定义：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>CREATE TABLE test1 (
+    a text COLLATE "de_DE",
+    b text COLLATE "es_ES",
+    ...
+);</PRE
+><P>
+
+    然后在
+</P><PRE
+CLASS="PROGRAMLISTING"
+>SELECT a &lt; 'foo' FROM test1;</PRE
+><P>
+    中，<TT
+CLASS="LITERAL"
+>&lt;</TT
+>比较被根据<TT
+CLASS="LITERAL"
+>de_DE</TT
+>规则执行，因为表达式组合了一个隐式派生的排序规则和默认排序规则。但是在
+</P><PRE
+CLASS="PROGRAMLISTING"
+>SELECT a &lt; ('foo' COLLATE "fr_FR") FROM test1;</PRE
+><P>
+    中，比较被使用<TT
+CLASS="LITERAL"
+>fr_FR</TT
+>规则执行，因为显式排序规则派生重载了隐式排序规则。更进一步，给定
+</P><PRE
+CLASS="PROGRAMLISTING"
+>SELECT a &lt; b FROM test1;</PRE
+><P>
+    解析器不能确定要应用哪个排序规则，因为<TT
+CLASS="STRUCTFIELD"
+>a</TT
+>列和<TT
+CLASS="STRUCTFIELD"
+>b</TT
+>列具有冲突的隐式排序规则。由于<TT
+CLASS="LITERAL"
+>&lt;</TT
+>操作符不需要知道到底使用哪一个排序规则，这将会导致一个错误。该错误可以通过在一个输入表达式上附加一个显式排序规则说明符来解决，因此：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>SELECT a &lt; b COLLATE "de_DE" FROM test1;</PRE
+><P>
+    或者等效的
+</P><PRE
+CLASS="PROGRAMLISTING"
+>SELECT a COLLATE "de_DE" &lt; b FROM test1;</PRE
+><P>
+    在另一方面，结构相似的情况
+</P><PRE
+CLASS="PROGRAMLISTING"
+>SELECT a || b FROM test1;</PRE
+><P>
+    不会导致一个错误，因为<TT
+CLASS="LITERAL"
+>||</TT
+>操作符不关心排序规则：不管排序规则怎样它的结果都相同。
+   </P
+><P
+>    如果一个函数或操作符发送一个具有可排序数据类型的结果，分配给该函数或操作符的组合输入表达式的排序规则也被考虑应用在函数或操作符的结果。因此，在
+</P><PRE
+CLASS="PROGRAMLISTING"
+>SELECT * FROM test1 ORDER BY a || 'foo';</PRE
+><P>
+    中排序将根据<TT
+CLASS="LITERAL"
+>de_DE</TT
+>规则完成。但这个查询：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>SELECT * FROM test1 ORDER BY a || b;</PRE
+><P>
+    会导致一个错误，因为即使<TT
+CLASS="LITERAL"
+>||</TT
+>操作符不需要知道排序规则，但<TT
+CLASS="LITERAL"
+>ORDER BY</TT
+>子句需要。按照以前，冲突可以通过使用一个显式排序规则说明符来解决：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>SELECT * FROM test1 ORDER BY a || b COLLATE "fr_FR";</PRE
+><P>
+   </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN38466"
+>23.2.2. 管理排序规则</A
+></H2
+><P
+>    一个排序规则是一个SQL模式对象，它将一个SQL名字映射到一个操作系统区域。特别地，它映射到一个<TT
+CLASS="SYMBOL"
+>LC_COLLATE</TT
+> 和<TT
+CLASS="SYMBOL"
+>LC_CTYPE</TT
+>的组合（正如其名字所说的，一个排序规则的主要目的是设置<TT
+CLASS="SYMBOL"
+>LC_COLLATE</TT
+>它控制排序顺序。但是在实际中很少有必要有一个不同于<TT
+CLASS="SYMBOL"
+>LC_COLLATE</TT
+>的<TT
+CLASS="SYMBOL"
+>LC_CTYPE</TT
+>设置，因此通过一个概念来收集这些信息比为了设置每一个表达式的<TT
+CLASS="SYMBOL"
+>LC_CTYPE</TT
+>而创建另一种架构要更加方便）。此外，一个排序规则是和一个字符集编码（见<A
+HREF="multibyte.html"
+>第 23.3 &#33410;</A
+>）绑定在一起的。相同的排序规则名字可能存在于不同的编码中。
+   </P
+><P
+>    在所有的平台上，名为<TT
+CLASS="LITERAL"
+>default</TT
+>、<TT
+CLASS="LITERAL"
+>C</TT
+>和<TT
+CLASS="LITERAL"
+>POSIX</TT
+>的排序规则都可用。附加的排序规则是否可用取决于操作系统的支持。<TT
+CLASS="LITERAL"
+>default</TT
+>排序规则选择在数据库创建时指定的<TT
+CLASS="SYMBOL"
+>LC_COLLATE</TT
+>和<TT
+CLASS="SYMBOL"
+>LC_CTYPE</TT
+>值。<TT
+CLASS="LITERAL"
+>C</TT
+>和<TT
+CLASS="LITERAL"
+>POSIX</TT
+>排序规则都指定了<SPAN
+CLASS="QUOTE"
+>"传统的C"</SPAN
+>行为，在其中只有ASCII字母<SPAN
+CLASS="QUOTE"
+>"<TT
+CLASS="LITERAL"
+>A</TT
+>"</SPAN
+>到<SPAN
+CLASS="QUOTE"
+>"<TT
+CLASS="LITERAL"
+>Z</TT
+>"</SPAN
+>被视为字母，并且排序严格地按照字符编码的字节值完成。
+   </P
+><P
+>    如果操作系统支持在一个程序中使用多个区域（<CODE
+CLASS="FUNCTION"
+>newlocale</CODE
+>和相关函数），那么在一个数据集簇被初始化时，<TT
+CLASS="COMMAND"
+>initdb</TT
+>将以它在操作系统上能找到的所有区域为基础在系统目录<TT
+CLASS="LITERAL"
+>pg_collation</TT
+>中填充排序规则。例如，操作系统可能会提供一个名为<TT
+CLASS="LITERAL"
+>de_DE.utf8</TT
+>的区域。<TT
+CLASS="COMMAND"
+>initdb</TT
+>则会创建一个用于编码<TT
+CLASS="LITERAL"
+>UTF8</TT
+>的名为<TT
+CLASS="LITERAL"
+>de_DE.utf8</TT
+>的排序规则，在其中<TT
+CLASS="SYMBOL"
+>LC_COLLATE</TT
+>和<TT
+CLASS="SYMBOL"
+>LC_CTYPE</TT
+>都被设置为<TT
+CLASS="LITERAL"
+>de_DE.utf8</TT
+>。它也会创建一个具有去掉名称的<TT
+CLASS="LITERAL"
+>.utf8</TT
+>标签的排序规则。这样你也可以使用名字<TT
+CLASS="LITERAL"
+>de_DE</TT
+>来使用该排序规则，这写起来更简单并且使得名字更加独立于编码。不过要注意，最初的排序规则名称的集合是平台依赖的。
+   </P
+><P
+>    万一所需要的一个排序规则具有和<TT
+CLASS="SYMBOL"
+>LC_COLLATE</TT
+>及<TT
+CLASS="SYMBOL"
+>LC_CTYPE</TT
+>不同的值，可以使用<A
+HREF="sql-createcollation.html"
+>CREATE COLLATION</A
+>命令创建一个新的排序规则。该命令也可以被用于从一个现有的排序规则创建一个新的排序规则，这样对于可以在应用中使用操作系统独立的排序规则名很有用。
+   </P
+><P
+>    在任何特定的数据库中，只有使用数据库编码的排序规则是令人感兴趣的。其他<TT
+CLASS="LITERAL"
+>pg_collation</TT
+>中的项会被忽略。因此，一个如<TT
+CLASS="LITERAL"
+>de_DE</TT
+>的被剥离的排序规则名在一个给定数据库中可以被认为是唯一的，即使它在全局上并不唯一。我们推荐使用被剥离的排序规则名，因为在你决定要更改到另一个数据库编码时需要做的事情更少。但是要注意<TT
+CLASS="LITERAL"
+>default</TT
+>、<TT
+CLASS="LITERAL"
+>C</TT
+>和<TT
+CLASS="LITERAL"
+>POSIX</TT
+>排序规则在使用时可以不考虑数据库编码。
+   </P
+><P
+>    <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>在碰到具有相同属性的不同排序规则对象时会认为它们是不兼容的。因此对于例子：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>SELECT a COLLATE "C" &lt; b COLLATE "POSIX" FROM test1;</PRE
+><P>
+    将会得到一个错误，即使<TT
+CLASS="LITERAL"
+>C</TT
+>和<TT
+CLASS="LITERAL"
+>POSIX</TT
+>排序规则具有相同的行为。因此，我们不推荐混合使用被剥离的和非被剥离的排序规则名。
+   </P
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="locale.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="multibyte.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>区域支持</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="charset.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>字符集支持</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

@@ -1,0 +1,501 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>版本 9.5.1</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="版本说明"
+HREF="release.html"><LINK
+REL="PREVIOUS"
+TITLE="版本 9.5.2"
+HREF="release-9-5-2.html"><LINK
+REL="NEXT"
+TITLE="版本 9.5"
+HREF="release-9-5.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/release-9.5.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="版本 9.5.2"
+HREF="release-9-5-2.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="release.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#38468;&#24405; E. 版本说明</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="版本 9.5"
+HREF="release-9-5.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="RELEASE-9-5-1"
+>E.5. 版本 9.5.1</A
+></H1
+><DIV
+CLASS="NOTE"
+><BLOCKQUOTE
+CLASS="NOTE"
+><P
+><B
+>发布日期: </B
+>2016-02-11</P
+></BLOCKQUOTE
+></DIV
+><P
+>   这个版本包含各种自9.5.0以来的修复。关于9.5主版本的新特性信息，
+   请查看<A
+HREF="release-9-5.html"
+>第 E.6 &#33410;</A
+>。
+  </P
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN132049"
+>E.5.1. 迁移到版本 9.5.1</A
+></H2
+><P
+>    运行9.5.X版本的用户不需要转储/恢复。
+   </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN132052"
+>E.5.2. 修改列表</A
+></H2
+><P
+></P
+><UL
+><LI
+><P
+>      修复正则表达式中无限循环和缓冲区溢出问题
+      (Tom Lane)
+     </P
+><P
+>      在某些情况下，括号表达式中非常大的字符范围可能会导致无限循环，
+      并且在其他情况下内存会覆盖。 (CVE-2016-0773)
+     </P
+></LI
+><LI
+><P
+>      修复一个疏忽，导致散列连接在极少数情况下错过加入内部关系的一些元组 
+      (Tomas Vondra, Tom Lane)
+     </P
+></LI
+><LI
+><P
+>      当使用分组集时，避免下推<TT
+CLASS="LITERAL"
+>HAVING</TT
+>子句 (Andrew Gierth)
+     </P
+></LI
+><LI
+><P
+>      修复对<TT
+CLASS="LITERAL"
+>ON CONFLICT</TT
+> arbiter <TT
+CLASS="LITERAL"
+>WHERE</TT
+>子句的解析 (Peter Geoghegan)
+     </P
+></LI
+><LI
+><P
+>      让<TT
+CLASS="VARNAME"
+>log_line_prefix</TT
+>中的<TT
+CLASS="LITERAL"
+>%h</TT
+>
+      和<TT
+CLASS="LITERAL"
+>%r</TT
+>转义可用于<TT
+CLASS="VARNAME"
+>log_connections</TT
+>
+      发出的消息 (Tom Lane)
+     </P
+><P
+>      以前，<TT
+CLASS="LITERAL"
+>%h</TT
+>/<TT
+CLASS="LITERAL"
+>%r</TT
+>仅在新会话发出<SPAN
+CLASS="QUOTE"
+>"connection received"</SPAN
+>
+      日志消息后开始工作；现在它们也用于该消息。
+     </P
+></LI
+><LI
+><P
+>      避免在SSPI认证期间泄露令牌句柄
+      (Christian Ullrich)
+     </P
+></LI
+><LI
+><P
+>      修复<SPAN
+CLASS="APPLICATION"
+>psql</SPAN
+>的<TT
+CLASS="LITERAL"
+>\det</TT
+>命令，
+      与其他<TT
+CLASS="LITERAL"
+>\d</TT
+>命令潜在模式限定模式相同的方式解释其模式参数 (Reece Hart)
+     </P
+></LI
+><LI
+><P
+>      在Windows上的<SPAN
+CLASS="APPLICATION"
+>pg_ctl</SPAN
+>中，检查服务器状态以决定输出发送到哪里，
+      而不是检查标准输出是否是终端 (Michael Paquier)
+     </P
+></LI
+><LI
+><P
+>      修复<SPAN
+CLASS="APPLICATION"
+>pg_dump</SPAN
+>处理扩展成员对象中的各种极端错误 (Tom Lane)
+     </P
+></LI
+><LI
+><P
+>      修复<SPAN
+CLASS="APPLICATION"
+>pg_dump</SPAN
+>中对域约束名的不正确引用 (Elvis Pranskevichus)
+     </P
+></LI
+><LI
+><P
+>      让<SPAN
+CLASS="APPLICATION"
+>pg_dump</SPAN
+>标记一个视图的触发器需要在其规则之后处理，
+      以阻止并行<SPAN
+CLASS="APPLICATION"
+>pg_restore</SPAN
+>期间可能的失败 (Tom Lane)
+     </P
+></LI
+><LI
+><P
+>      在评估脚本指定的除法或模运算符期间，在<SPAN
+CLASS="APPLICATION"
+>pgbench</SPAN
+>
+      中安装保护防止极端溢出条件 (Fabien Coelho, Michael Paquier)
+     </P
+></LI
+><LI
+><P
+>      当<SPAN
+CLASS="APPLICATION"
+>pg_receivexlog</SPAN
+>连接到9.4之前的服务器时，
+      禁止无用的警告消息 (Marco Nenciarini)
+     </P
+></LI
+><LI
+><P
+>      在使用<SPAN
+CLASS="APPLICATION"
+>plpython2</SPAN
+>和<SPAN
+CLASS="APPLICATION"
+>plpython3</SPAN
+>
+      时，避免转储/重载问题 (Tom Lane)
+     </P
+><P
+>      原则上，两个版本的<SPAN
+CLASS="APPLICATION"
+>PL/Python</SPAN
+>可以在同一个数据库中使用，
+      虽然不在同一个会话中（因为<SPAN
+CLASS="APPLICATION"
+>libpython</SPAN
+>的两个版本不能安全地同时使用）。
+      然而，<SPAN
+CLASS="APPLICATION"
+>pg_restore</SPAN
+>和<SPAN
+CLASS="APPLICATION"
+>pg_upgrade</SPAN
+>
+      两者做的事情会使同一个会话限制冲突。通过改变检查的时间来解决。
+     </P
+></LI
+><LI
+><P
+>      修复<SPAN
+CLASS="APPLICATION"
+>PL/Python</SPAN
+>回归测试以通过Python 3.5
+      (Peter Eisentraut)
+     </P
+></LI
+><LI
+><P
+>      阻止某些<SPAN
+CLASS="APPLICATION"
+>PL/Java</SPAN
+>参数被非超级用户设置 (Noah Misch)
+     </P
+><P
+>      此更改通过将这些参数标记为仅限超级用户来缓解<SPAN
+CLASS="APPLICATION"
+>PL/Java</SPAN
+>
+      安全性错误(CVE-2016-0766)，该错误在<SPAN
+CLASS="APPLICATION"
+>PL/Java</SPAN
+>中已修复。
+      为了修复<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>比<SPAN
+CLASS="APPLICATION"
+>PL/Java</SPAN
+>
+      更频繁更新的站点安全隐患，让核心代码也知道它们。
+     </P
+></LI
+><LI
+><P
+>      修复<SPAN
+CLASS="APPLICATION"
+>ecpg</SPAN
+>提供的头文件不包含从预处理器指令行继续到下一行的注释
+      (Michael Meskes)
+     </P
+><P
+>      这样的注释被<SPAN
+CLASS="APPLICATION"
+>ecpg</SPAN
+>拒绝。目前还不清楚是否应该更改
+      <SPAN
+CLASS="APPLICATION"
+>ecpg</SPAN
+>本身。
+     </P
+></LI
+><LI
+><P
+>      修复<CODE
+CLASS="FUNCTION"
+>hstore_to_json_loose()</CODE
+>，
+      测试<TT
+CLASS="TYPE"
+>hstore</TT
+>值是否可以转换为JSON数字 (Tom Lane)
+     </P
+><P
+>      以前，此函数可能被非字母数字的尾随字符欺骗，导致发出句法上无效的JSON。
+     </P
+></LI
+><LI
+><P
+>      在<TT
+CLASS="FILENAME"
+>contrib/postgres_fdw</TT
+>中，修复在数据修改命令中使用
+      <TT
+CLASS="LITERAL"
+>tableoid</TT
+>触发的错误 (Etsuro Fujita,
+      Robert Haas)
+     </P
+></LI
+><LI
+><P
+>      修正<TT
+CLASS="LITERAL"
+>NAMEDATALEN</TT
+>限制为小于256的不明智建议(Robert Haas, Tom Lane)
+     </P
+></LI
+><LI
+><P
+>      通过确保文件名以固定顺序提供给链接器来提高构建输出的可重复性 (Christoph Berg)
+     </P
+><P
+>      这避免了从一个构建到下一个构建生成的可执行文件的可能的逐位差异。
+     </P
+></LI
+><LI
+><P
+>      确保<TT
+CLASS="FILENAME"
+>dynloader.h</TT
+>包含在MSVC版本中安装的头文件中 
+      (Bruce Momjian, Michael Paquier)
+     </P
+></LI
+><LI
+><P
+>      将时区数据文件更新为<SPAN
+CLASS="APPLICATION"
+>tzdata</SPAN
+> release 2016a，
+      用于开曼群岛，Metlakatla和Trans-Baikal Territory（Zabaykalsky Krai）的DST法律变更，
+      以及巴基斯坦的历史修正。
+     </P
+></LI
+></UL
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="release-9-5-2.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="release-9-5.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>版本 9.5.2</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="release.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>版本 9.5</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

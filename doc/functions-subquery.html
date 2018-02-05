@@ -1,0 +1,731 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>子查询表达式</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="函数和操作符"
+HREF="functions.html"><LINK
+REL="PREVIOUS"
+TITLE="窗口函数"
+HREF="functions-window.html"><LINK
+REL="NEXT"
+TITLE="行和数组比较"
+HREF="functions-comparisons.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/func.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="窗口函数"
+HREF="functions-window.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="functions.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#31456; 9. 函数和操作符</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="行和数组比较"
+HREF="functions-comparisons.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="FUNCTIONS-SUBQUERY"
+>9.22. 子查询表达式</A
+></H1
+><P
+>   本节描述<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>中可用的<ACRONYM
+CLASS="ACRONYM"
+>SQL</ACRONYM
+>兼容的子查询表达式。所有本节中成文的表达式都返回布尔值（真/假）结果。
+  </P
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="FUNCTIONS-SUBQUERY-EXISTS"
+>9.22.1. <TT
+CLASS="LITERAL"
+>EXISTS</TT
+></A
+></H2
+><PRE
+CLASS="SYNOPSIS"
+>EXISTS (<TT
+CLASS="REPLACEABLE"
+><I
+>subquery</I
+></TT
+>)</PRE
+><P
+>   <TT
+CLASS="TOKEN"
+>EXISTS</TT
+>的参数是一个任意的<TT
+CLASS="COMMAND"
+>SELECT</TT
+>语句， 或者说<I
+CLASS="FIRSTTERM"
+>子查询</I
+>。系统对子查询进行运算以判断它是否返回行。如果它至少返回一行，那么<TT
+CLASS="TOKEN"
+>EXISTS</TT
+>的结果就为<SPAN
+CLASS="QUOTE"
+>"真"</SPAN
+>； 如果子查询没有返回行，那么<TT
+CLASS="TOKEN"
+>EXISTS</TT
+>的结果是<SPAN
+CLASS="QUOTE"
+>"假"</SPAN
+>。
+  </P
+><P
+>   子查询可以引用来自周围的查询的变量，这些变量在该子查询的任何一次计算中都起常量的作用。
+  </P
+><P
+>   这个子查询通常只是运行到能判断它是否可以返回至少一行为止， 而不是等到全部结束。在这里写任何有副作用的子查询都是不明智的（例如调用序列函数）；这些副作用是否发生是很难判断的。
+  </P
+><P
+>   因为结果只取决于是否会返回行，而不取决于这些行的内容， 所以这个子查询的输出列表通常是无关紧要的。一个常用的编码习惯是用<TT
+CLASS="LITERAL"
+>EXISTS(SELECT 1 WHERE ...)</TT
+>的形式写所有的<TT
+CLASS="LITERAL"
+>EXISTS</TT
+>测试。不过这条规则有例外，例如那些使用<TT
+CLASS="TOKEN"
+>INTERSECT</TT
+>的子查询。
+  </P
+><P
+>   下面这个简单的例子类似在<TT
+CLASS="LITERAL"
+>col2</TT
+>上的一次内联接，但是它为每个 <TT
+CLASS="LITERAL"
+>tab1</TT
+>的行生成最多一个输出，即使存在多个匹配<TT
+CLASS="LITERAL"
+>tab2</TT
+>的行也如此∶
+</P><PRE
+CLASS="SCREEN"
+>SELECT col1
+FROM tab1
+WHERE EXISTS (SELECT 1 FROM tab2 WHERE col2 = tab1.col2);</PRE
+><P>
+  </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="FUNCTIONS-SUBQUERY-IN"
+>9.22.2. <TT
+CLASS="LITERAL"
+>IN</TT
+></A
+></H2
+><PRE
+CLASS="SYNOPSIS"
+><TT
+CLASS="REPLACEABLE"
+><I
+>expression</I
+></TT
+> IN (<TT
+CLASS="REPLACEABLE"
+><I
+>subquery</I
+></TT
+>)</PRE
+><P
+>   右手边是一个圆括弧括起来的子查询， 它必须正好只返回一个列。左手边表达式将被计算并与子查询结果逐行进行比较。 如果找到任何等于子查询行的情况，那么<TT
+CLASS="TOKEN"
+>IN</TT
+>的结果就是<SPAN
+CLASS="QUOTE"
+>"真"</SPAN
+>。 如果没有找到相等行，那么结果是<SPAN
+CLASS="QUOTE"
+>"假"</SPAN
+>（包括子查询没有返回任何行的情况）。
+  </P
+><P
+>   请注意如果左手边表达式得到空值，或者没有相等的右手边值， 并且至少有一个右手边行得到空值，那么<TT
+CLASS="TOKEN"
+>IN</TT
+>结构的结果将是空值，而不是假。这个行为是遵照 SQL 处理空值的一般规则的。
+  </P
+><P
+>   和<TT
+CLASS="TOKEN"
+>EXISTS</TT
+>一样，假设子查询将被完成运行完全是不明智的。
+  </P
+><PRE
+CLASS="SYNOPSIS"
+><TT
+CLASS="REPLACEABLE"
+><I
+>row_constructor</I
+></TT
+> IN (<TT
+CLASS="REPLACEABLE"
+><I
+>subquery</I
+></TT
+>)</PRE
+><P
+>   这种形式的<TT
+CLASS="TOKEN"
+>IN</TT
+>的左手边是一个行构造器， 如<A
+HREF="sql-expressions.html#SQL-SYNTAX-ROW-CONSTRUCTORS"
+>第 4.2.13 &#33410;</A
+>中所述。 右手边是一个圆括弧子查询，它必须返回和左手边返回的行中表达式所构成的完全一样多的列。 左手边表达式将被计算并与子查询结果逐行进行比较。如果找到任意相等的子查询行，则<TT
+CLASS="TOKEN"
+>IN</TT
+>的结果为<SPAN
+CLASS="QUOTE"
+>"true"</SPAN
+>。如果没有找到相等行， 那么结果为<SPAN
+CLASS="QUOTE"
+>"假"</SPAN
+>（包括子查询不返回行的情况）。
+  </P
+><P
+>   通常，表达式或者子查询行里的空值是按照 SQL 布尔表达式的一般规则进行组合的。 如果两个行对应的成员都非空并且相等，那么认为这两行相等；如果任意对应成员为非空且不等，那么这两行不等； 否则这样的行比较的结果是未知（空值）。如果所有行的结果要么是不等， 要么是空值，并且至少有一个空值，那么<TT
+CLASS="TOKEN"
+>IN</TT
+>的结果是空值。
+  </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="FUNCTIONS-SUBQUERY-NOTIN"
+>9.22.3. <TT
+CLASS="LITERAL"
+>NOT IN</TT
+></A
+></H2
+><PRE
+CLASS="SYNOPSIS"
+><TT
+CLASS="REPLACEABLE"
+><I
+>expression</I
+></TT
+> NOT IN (<TT
+CLASS="REPLACEABLE"
+><I
+>subquery</I
+></TT
+>)</PRE
+><P
+>   右手边是一个用圆括弧包围的子查询，它必须返回正好一个列。左手边表达式将被计算并与子查询结果逐行进行比较。 如果只找到不相等的子查询行（包括子查询不返回行的情况），那么<TT
+CLASS="TOKEN"
+>NOT IN</TT
+>的结果是<SPAN
+CLASS="QUOTE"
+>"真"</SPAN
+>。 如果找到任何相等行，则结果为<SPAN
+CLASS="QUOTE"
+>"假"</SPAN
+>。
+  </P
+><P
+>   请注意如果左手边表达式得到空值，或者没有相等的右手边值， 并且至少有一个右手边行得到空值，那么<TT
+CLASS="TOKEN"
+>NOT IN</TT
+>结构的结果将是空值，而不是真。这个行为是遵照 SQL 处理空值的一般规则的。
+  </P
+><P
+>   和<TT
+CLASS="TOKEN"
+>EXISTS</TT
+>一样，假设子查询会完全结束是不明智的。
+  </P
+><PRE
+CLASS="SYNOPSIS"
+><TT
+CLASS="REPLACEABLE"
+><I
+>row_constructor</I
+></TT
+> NOT IN (<TT
+CLASS="REPLACEABLE"
+><I
+>subquery</I
+></TT
+>)</PRE
+><P
+>   这种形式的<TT
+CLASS="TOKEN"
+>NOT IN</TT
+>的左手边是一个行构造器， 如<A
+HREF="sql-expressions.html#SQL-SYNTAX-ROW-CONSTRUCTORS"
+>第 4.2.13 &#33410;</A
+>中所述。 右手边是一个圆括弧子查询，它必须返回和左手边返回的行中表达式所构成的完全一样多的列。 左手边表达式将被计算并与子查询结果逐行进行比较。如果找到不等于子查询行的行，则<TT
+CLASS="TOKEN"
+>NOT IN</TT
+>的结果为<SPAN
+CLASS="QUOTE"
+>"true"</SPAN
+>。如果找到相等行， 那么结果为<SPAN
+CLASS="QUOTE"
+>"假"</SPAN
+>（包括子查询不返回行的情况）。
+  </P
+><P
+>  通常，表达式或者子查询行里的空值是按照 SQL 布尔表达式的一般规则进行组合的。 如果两个行对应的成员都非空并且相等，那么认为这两行相等；如果任意对应成员为非空且不等，那么这两行不等； 否则这样的行比较的结果是未知（空值）。如果所有行的结果要么是不等， 要么是空值，并且至少有一个空值，那么<TT
+CLASS="TOKEN"
+>NOT IN</TT
+>的结果是空值。
+  </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="FUNCTIONS-SUBQUERY-ANY-SOME"
+>9.22.4. <TT
+CLASS="LITERAL"
+>ANY</TT
+>/<TT
+CLASS="LITERAL"
+>SOME</TT
+></A
+></H2
+><PRE
+CLASS="SYNOPSIS"
+><TT
+CLASS="REPLACEABLE"
+><I
+>expression</I
+></TT
+> <TT
+CLASS="REPLACEABLE"
+><I
+>operator</I
+></TT
+> ANY (<TT
+CLASS="REPLACEABLE"
+><I
+>subquery</I
+></TT
+>)
+<TT
+CLASS="REPLACEABLE"
+><I
+>expression</I
+></TT
+> <TT
+CLASS="REPLACEABLE"
+><I
+>operator</I
+></TT
+> SOME (<TT
+CLASS="REPLACEABLE"
+><I
+>subquery</I
+></TT
+>)</PRE
+><P
+>   这种形式的右手边是一个圆括弧括起来的子查询， 它必须返回正好一个列。左手边表达式将被计算并使用给出的 <TT
+CLASS="REPLACEABLE"
+><I
+>操作符</I
+></TT
+>对子查询结果逐行进行比较。如果获得任何真值结果，那么<TT
+CLASS="TOKEN"
+>ANY</TT
+>的结果就是<SPAN
+CLASS="QUOTE"
+>"真"</SPAN
+>。 如果没有找到真值结果，那么结果是<SPAN
+CLASS="QUOTE"
+>"假"</SPAN
+>（包括子查询没有返回任何行的情况）。
+  </P
+><P
+>   <TT
+CLASS="TOKEN"
+>SOME</TT
+>是<TT
+CLASS="TOKEN"
+>ANY</TT
+>的同义词。<TT
+CLASS="TOKEN"
+>IN</TT
+>等价于<TT
+CLASS="LITERAL"
+>= ANY</TT
+>。
+  </P
+><P
+>   请注意如果没有任何成功并且至少有一个右手边行为该操作符结果生成空值， 那么<TT
+CLASS="TOKEN"
+>ANY</TT
+>结构的结果将是空值，而不是假。 这个行为是遵照 SQL 处理空值布尔组合的一般规则制定的。
+  </P
+><P
+>   和<TT
+CLASS="TOKEN"
+>EXISTS</TT
+>一样，假设子查询将被完全运行是不明智的。
+  </P
+><PRE
+CLASS="SYNOPSIS"
+><TT
+CLASS="REPLACEABLE"
+><I
+>row_constructor</I
+></TT
+> <TT
+CLASS="REPLACEABLE"
+><I
+>operator</I
+></TT
+> ANY (<TT
+CLASS="REPLACEABLE"
+><I
+>subquery</I
+></TT
+>)
+<TT
+CLASS="REPLACEABLE"
+><I
+>row_constructor</I
+></TT
+> <TT
+CLASS="REPLACEABLE"
+><I
+>operator</I
+></TT
+> SOME (<TT
+CLASS="REPLACEABLE"
+><I
+>subquery</I
+></TT
+>)</PRE
+><P
+>   这种形式的左手边是一个行构造器，如<A
+HREF="sql-expressions.html#SQL-SYNTAX-ROW-CONSTRUCTORS"
+>第 4.2.13 &#33410;</A
+>所述。右手边是一个圆括弧括起来的子查询， 它必须返回和左手边列表给出的表达式一样多的列。左手边表达式将被计算并使用给出的<TT
+CLASS="REPLACEABLE"
+><I
+>操作符</I
+></TT
+>对子查询结果逐行进行比较。如果比较为任何子查询行返回真，则<TT
+CLASS="TOKEN"
+>ANY</TT
+>的结果为<SPAN
+CLASS="QUOTE"
+>"真"</SPAN
+>。如果比较对每一个子查询行都返回假，则结果为<SPAN
+CLASS="QUOTE"
+>"假"</SPAN
+>（包括子查询不返回行的情况）。如果比较不对任何行返回真并且至少对一行返回 NULL，则结果为 NULL。
+  </P
+><P
+>   关于行构造器比较的详细含义请见<A
+HREF="functions-comparisons.html#ROW-WISE-COMPARISON"
+>第 9.23.5 &#33410;</A
+>。
+  </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="FUNCTIONS-SUBQUERY-ALL"
+>9.22.5. <TT
+CLASS="LITERAL"
+>ALL</TT
+></A
+></H2
+><PRE
+CLASS="SYNOPSIS"
+><TT
+CLASS="REPLACEABLE"
+><I
+>expression</I
+></TT
+> <TT
+CLASS="REPLACEABLE"
+><I
+>operator</I
+></TT
+> ALL (<TT
+CLASS="REPLACEABLE"
+><I
+>subquery</I
+></TT
+>)</PRE
+><P
+>   ALL 的这种形式的右手边是一个圆括弧括起来的子查询， 它必须只返回一列。左手边表达式将被计算并使用给出的 <TT
+CLASS="REPLACEABLE"
+><I
+>操作符</I
+></TT
+>对子查询结果逐行进行比较。该操作符必须生成布尔结果。 如果所有行得到真（包括子查询没有返回任何行的情况），<TT
+CLASS="TOKEN"
+>ALL</TT
+>的结果就是<SPAN
+CLASS="QUOTE"
+>"真"</SPAN
+>。如果没有存在任何假值结果，那么结果是<SPAN
+CLASS="QUOTE"
+>"假"</SPAN
+>。如果比较为任何行都不返回假并且对至少一行返回 NULL，则结果为 NULL。
+  </P
+><P
+>   <TT
+CLASS="TOKEN"
+>NOT IN</TT
+>等价于<TT
+CLASS="LITERAL"
+>&lt;&gt; ALL</TT
+>。
+  </P
+><P
+>   和<TT
+CLASS="TOKEN"
+>EXISTS</TT
+>一样，假设子查询将被完全运行是不明智的。
+  </P
+><PRE
+CLASS="SYNOPSIS"
+><TT
+CLASS="REPLACEABLE"
+><I
+>row_constructor</I
+></TT
+> <TT
+CLASS="REPLACEABLE"
+><I
+>operator</I
+></TT
+> ALL (<TT
+CLASS="REPLACEABLE"
+><I
+>subquery</I
+></TT
+>)</PRE
+><P
+>   <TT
+CLASS="TOKEN"
+>ALL</TT
+>的这种形式的左手边是一个行构造器，如<A
+HREF="sql-expressions.html#SQL-SYNTAX-ROW-CONSTRUCTORS"
+>第 4.2.13 &#33410;</A
+>所述。 右手边是一个圆括弧括起来的子查询，它必须返回和左手边行中表达式一样多的列。 左手边表达式将被计算并使用给出的 <TT
+CLASS="REPLACEABLE"
+><I
+>操作符</I
+></TT
+>对子查询结果逐行进行比较。如果对所有子查询行该比较都返回真，那么<TT
+CLASS="TOKEN"
+>ALL</TT
+>的结果就是<SPAN
+CLASS="QUOTE"
+>"真"</SPAN
+>（包括子查询没有返回任何行的情况）。如果对任何子查询行比较返回假，则结果为<SPAN
+CLASS="QUOTE"
+>"假"</SPAN
+>。如果比较对任何子查询行都不返回假并且对至少一行返回 NULL，则结果为 NULL。
+  </P
+><P
+>   关于行构造器比较的详细含义请见<A
+HREF="functions-comparisons.html#ROW-WISE-COMPARISON"
+>第 9.23.5 &#33410;</A
+>。
+  </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN20861"
+>9.22.6. 单一行比较</A
+></H2
+><PRE
+CLASS="SYNOPSIS"
+><TT
+CLASS="REPLACEABLE"
+><I
+>row_constructor</I
+></TT
+> <TT
+CLASS="REPLACEABLE"
+><I
+>operator</I
+></TT
+> (<TT
+CLASS="REPLACEABLE"
+><I
+>subquery</I
+></TT
+>)</PRE
+><P
+>   左手边是一个行构造器，如<A
+HREF="sql-expressions.html#SQL-SYNTAX-ROW-CONSTRUCTORS"
+>第 4.2.13 &#33410;</A
+>所述。 右手边是一个圆括弧括起来的子查询，该查询必须返回和左手边行中表达式数目完全一样的列。 另外，该子查询不能返回超过一行的数量（如果它返回零行，那么结果就是空值）。 左手边被计算并逐行与右手边的子查询结果行比较。
+  </P
+><P
+>   关于行构造器比较的详细含义请见<A
+HREF="functions-comparisons.html#ROW-WISE-COMPARISON"
+>第 9.23.5 &#33410;</A
+>。
+  </P
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="functions-window.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="functions-comparisons.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>窗口函数</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="functions.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>行和数组比较</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

@@ -1,0 +1,374 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>日期/时间输入解释</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="日期/时间支持"
+HREF="datetime-appendix.html"><LINK
+REL="PREVIOUS"
+TITLE="日期/时间支持"
+HREF="datetime-appendix.html"><LINK
+REL="NEXT"
+TITLE="日期/时间关键词"
+HREF="datetime-keywords.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/datetime.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="日期/时间支持"
+HREF="datetime-appendix.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="datetime-appendix.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#38468;&#24405; B. 日期/时间支持</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="日期/时间关键词"
+HREF="datetime-keywords.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="DATETIME-INPUT-RULES"
+>B.1. 日期/时间输入解释</A
+></H1
+><P
+>    日期/时间类型输入都使用下面的过程解码。
+   </P
+><DIV
+CLASS="PROCEDURE"
+><OL
+TYPE="1"
+><LI
+CLASS="STEP"
+><P
+>      将输入字符串打断成记号并且把每一个记号分类为一个字符串、时间、时区或数字。
+     </P
+><OL
+CLASS="SUBSTEPS"
+TYPE="a"
+><LI
+CLASS="STEP"
+><P
+>        如果数字记号包含一个分号（<TT
+CLASS="LITERAL"
+>:</TT
+>），那么这是一个时间字符串。包括所有后续数位和分号。
+       </P
+></LI
+><LI
+CLASS="STEP"
+><P
+>        如果数字记号包含一个连字符（<TT
+CLASS="LITERAL"
+>-</TT
+>）、斜线（<TT
+CLASS="LITERAL"
+>/</TT
+>）或两个以上的句点（<TT
+CLASS="LITERAL"
+>.</TT
+>），那么这是一个日期字符串，它可能含有一个文本形式的月份。如果一个日期记号已经被看到，它会转而被解释为一个时区名（例如<TT
+CLASS="LITERAL"
+>America/New_York</TT
+>）。
+       </P
+></LI
+><LI
+CLASS="STEP"
+><P
+>        如果记号只是数字，那么它要么是一个单一域，要么是一个 ISO 8601 串连日期（例如 1999年1月13日是<TT
+CLASS="LITERAL"
+>19990113</TT
+>）或时间（例如 14:15:16 是<TT
+CLASS="LITERAL"
+>141516</TT
+>）。
+       </P
+></LI
+><LI
+CLASS="STEP"
+><P
+>        如果记号以一个加号（<TT
+CLASS="LITERAL"
+>+</TT
+>）或减号（<TT
+CLASS="LITERAL"
+>-</TT
+>）开始，那么它要么是一个数字的时区，要么是一个特殊域。
+       </P
+></LI
+></OL
+></LI
+><LI
+CLASS="STEP"
+><P
+>      如果记号是一个文本字符串，使之匹配可能的串：
+     </P
+><OL
+CLASS="SUBSTEPS"
+TYPE="a"
+><LI
+CLASS="STEP"
+><P
+>        对作为一个时区缩写的记号做一次二分法表查找。
+       </P
+></LI
+><LI
+CLASS="STEP"
+><P
+>        如果没有找到，做一次类似的二分法表查找来将该记号匹配为一个特殊串（例如<TT
+CLASS="LITERAL"
+>today</TT
+>）、日（例如<TT
+CLASS="LITERAL"
+>Thursday</TT
+>）、月（例如<TT
+CLASS="LITERAL"
+>January</TT
+>）或噪音词（例如<TT
+CLASS="LITERAL"
+>at</TT
+>、<TT
+CLASS="LITERAL"
+>on</TT
+>）。
+       </P
+></LI
+><LI
+CLASS="STEP"
+><P
+>        如果仍然没有找到，则抛出一个错误。
+       </P
+></LI
+></OL
+></LI
+><LI
+CLASS="STEP"
+><P
+>      当记号是一个数字或数字域时：
+     </P
+><OL
+CLASS="SUBSTEPS"
+TYPE="a"
+><LI
+CLASS="STEP"
+><P
+>        如果有 8 位或 6 位，并且之前没有读到其他日期域，那么解释为一个<SPAN
+CLASS="QUOTE"
+>"串连日期"</SPAN
+>（例如<TT
+CLASS="LITERAL"
+>19990118</TT
+>或<TT
+CLASS="LITERAL"
+>990118</TT
+>）。翻译是<TT
+CLASS="LITERAL"
+>YYYYMMDD</TT
+>或<TT
+CLASS="LITERAL"
+>YYMMDD</TT
+>。
+       </P
+></LI
+><LI
+CLASS="STEP"
+><P
+>        如果记号是 3 位并且已经读到了一个年域，那么解释为一年中的第几日。
+       </P
+></LI
+><LI
+CLASS="STEP"
+><P
+>        如果是 4 位或 6 位并且已经读到了一个年域，那么解释为一个时间域（<TT
+CLASS="LITERAL"
+>HHMM</TT
+>或<TT
+CLASS="LITERAL"
+>HHMMSS</TT
+>）。
+       </P
+></LI
+><LI
+CLASS="STEP"
+><P
+>        如果是 3 位或更多位并且还没有读到日期域，解释为一个年域（这会强制剩余日期域的 yy-mm-dd 顺序）。
+       </P
+></LI
+><LI
+CLASS="STEP"
+><P
+>        否则日期域顺序被假定为遵循<TT
+CLASS="VARNAME"
+>DateStyle</TT
+>设置：mm-dd-yy、dd-mm-yy 或 yy-mm-dd。如果一个月或日域被发现超过范围，则抛出一个错误。
+       </P
+></LI
+></OL
+></LI
+><LI
+CLASS="STEP"
+><P
+>      如果已经指定了 BC ，对年求反并且加一用于内部存储（在格里高利历中没有 0 年，因此数字的 1 BC 就是 0 年）。
+     </P
+></LI
+><LI
+CLASS="STEP"
+><P
+>      如果没有指定 BC ，并且如果该年域长度为两位，那么把该年域调整为四位。如果该域小于 70，则增加 2000，否则增加 1900。
+
+      <DIV
+CLASS="TIP"
+><BLOCKQUOTE
+CLASS="TIP"
+><P
+><B
+>&#25552;&#31034;: </B
+>        格里高利年 AD 1-99 可以使用带有前导零的 4 位形式录入（例如<TT
+CLASS="LITERAL"
+>0099</TT
+>是 AD 99）。
+       </P
+></BLOCKQUOTE
+></DIV
+>
+     </P
+></LI
+></OL
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="datetime-appendix.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="datetime-keywords.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>日期/时间支持</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="datetime-appendix.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>日期/时间关键词</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

@@ -1,0 +1,556 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>CREATE SCHEMA</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="SQL 命令"
+HREF="sql-commands.html"><LINK
+REL="PREVIOUS"
+TITLE="CREATE RULE"
+HREF="sql-createrule.html"><LINK
+REL="NEXT"
+TITLE="CREATE SEQUENCE"
+HREF="sql-createsequence.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="REFENTRY"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/ref/create_schema.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="CREATE RULE"
+HREF="sql-createrule.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="CREATE SEQUENCE"
+HREF="sql-createsequence.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="SQL-CREATESCHEMA"
+></A
+>CREATE SCHEMA</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN81443"
+></A
+><H2
+>&#21517;&#31216;</H2
+>CREATE SCHEMA&nbsp;--&nbsp;定义一个新模式</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN81446"
+></A
+><H2
+>&#22823;&#32434;</H2
+><PRE
+CLASS="SYNOPSIS"
+>CREATE SCHEMA <TT
+CLASS="REPLACEABLE"
+><I
+>schema_name</I
+></TT
+> [ AUTHORIZATION <TT
+CLASS="REPLACEABLE"
+><I
+>role_specification</I
+></TT
+> ] [ <TT
+CLASS="REPLACEABLE"
+><I
+>schema_element</I
+></TT
+> [ ... ] ]
+CREATE SCHEMA AUTHORIZATION <TT
+CLASS="REPLACEABLE"
+><I
+>role_specification</I
+></TT
+> [ <TT
+CLASS="REPLACEABLE"
+><I
+>schema_element</I
+></TT
+> [ ... ] ]
+CREATE SCHEMA IF NOT EXISTS <TT
+CLASS="REPLACEABLE"
+><I
+>schema_name</I
+></TT
+> [ AUTHORIZATION <TT
+CLASS="REPLACEABLE"
+><I
+>role_specification</I
+></TT
+> ]
+CREATE SCHEMA IF NOT EXISTS AUTHORIZATION <TT
+CLASS="REPLACEABLE"
+><I
+>role_specification</I
+></TT
+>
+
+<SPAN
+CLASS="phrase"
+><SPAN
+CLASS="PHRASE"
+>其中 <TT
+CLASS="REPLACEABLE"
+><I
+>role_specification</I
+></TT
+> 可以是：</SPAN
+></SPAN
+>
+
+    [ GROUP ] <TT
+CLASS="REPLACEABLE"
+><I
+>user_name</I
+></TT
+>
+  | CURRENT_USER
+  | SESSION_USER</PRE
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN81459"
+></A
+><H2
+>描述</H2
+><P
+>   <TT
+CLASS="COMMAND"
+>CREATE SCHEMA</TT
+>输入一个新模式到当前数据库中。
+   该模式名必须与当前数据库中任何现有模式的名称不同。
+  </P
+><P
+>   一个模式本质上是一个名字空间：它包含命令对象（表、数据类型、函数以及操作符），
+   对象可以与在其他模式中存在的对象重名。可以通过用模式名作为一个前缀
+   <SPAN
+CLASS="QUOTE"
+>"限定"</SPAN
+>命名对象的名称来访问它们，或者通过把要求的模式包括
+   在搜索路径中来访问命名对象。一个指定非限定对象名的
+   <TT
+CLASS="LITERAL"
+>CREATE</TT
+>命令在当前模式（搜索路径中的第一个模式，由函数
+   <CODE
+CLASS="FUNCTION"
+>current_schema</CODE
+>决定）中创建对象。
+  </P
+><P
+>   <TT
+CLASS="COMMAND"
+>CREATE SCHEMA</TT
+>中可以选择包括子命令用以在
+   新模式中创建对象。这些子命令实际被当做独立的在创建该模式后被发出的命令
+   一样，除非使用<TT
+CLASS="LITERAL"
+>AUTHORIZATION</TT
+>子句，所有被创建的对象都会
+   由该用户拥有。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN81470"
+></A
+><H2
+>参数</H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>schema_name</I
+></TT
+></DT
+><DD
+><P
+>        要创建的一个模式名。如果省略，
+        <TT
+CLASS="REPLACEABLE"
+><I
+>user_name</I
+></TT
+>将被用作模式名。
+        该名称不能以<TT
+CLASS="LITERAL"
+>pg_</TT
+>开始，因为这样的名称是用作系统模式的。
+       </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>user_name</I
+></TT
+></DT
+><DD
+><P
+>        将拥有新模式的用户的角色名。如果省略，默认为执行该命令的用户。要
+        创建由另一个角色拥有的角色，你必须是那个角色的一个直接或者间接成员，
+        或者是一个超级用户。
+       </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>schema_element</I
+></TT
+></DT
+><DD
+><P
+>        要在该模式中创建的对象的定义 SQL 语句。当前，只有<TT
+CLASS="COMMAND"
+>CREATE
+        TABLE</TT
+>、<TT
+CLASS="COMMAND"
+>CREATE VIEW</TT
+>、<TT
+CLASS="COMMAND"
+>CREATE
+        INDEX</TT
+>、<TT
+CLASS="COMMAND"
+>CREATE SEQUENCE</TT
+>、<TT
+CLASS="COMMAND"
+>CREATE
+        TRIGGER</TT
+>以及<TT
+CLASS="COMMAND"
+>GRANT</TT
+>被接受为
+        <TT
+CLASS="COMMAND"
+>CREATE SCHEMA</TT
+>中的子句。其他类型的对象可以在模式被
+        创建之后用单独的命令创建。
+       </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>IF NOT EXISTS</TT
+></DT
+><DD
+><P
+>        如果一个具有同名的模式已经存在，则什么也不做（不过发出一个提示）。
+        使用这个选项时不能包括
+        <TT
+CLASS="REPLACEABLE"
+><I
+>schema_element</I
+></TT
+>子命令。
+       </P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN81503"
+></A
+><H2
+>注解</H2
+><P
+>   要创建一个模式，调用用户必须拥有当前数据库的<TT
+CLASS="LITERAL"
+>CREATE</TT
+>
+   特权（当然，超级用户可以绕过这种检查）。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN81507"
+></A
+><H2
+>示例</H2
+><P
+>   创建一个模式：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>CREATE SCHEMA myschema;</PRE
+><P>
+  </P
+><P
+>   为用户<TT
+CLASS="LITERAL"
+>joe</TT
+>创建一个模式，该模式也将被命名为
+   <TT
+CLASS="LITERAL"
+>joe</TT
+>：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>CREATE SCHEMA AUTHORIZATION joe;</PRE
+><P>
+  </P
+><P
+>   创建一个被用户<TT
+CLASS="LITERAL"
+>joe</TT
+>拥有的名为<TT
+CLASS="LITERAL"
+>test</TT
+>的模式，
+   除非已经有一个名为<TT
+CLASS="LITERAL"
+>test</TT
+>的模式（不管<TT
+CLASS="LITERAL"
+>joe</TT
+>
+   是否拥有该已经存在的模式）。
+</P><PRE
+CLASS="PROGRAMLISTING"
+>CREATE SCHEMA IF NOT EXISTS test AUTHORIZATION joe;</PRE
+><P>
+  </P
+><P
+>   创建一个模式并且在其中创建一个表和视图：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>CREATE SCHEMA hollywood
+    CREATE TABLE films (title text, release date, awards text[])
+    CREATE VIEW winners AS
+        SELECT title, release FROM films WHERE awards IS NOT NULL;</PRE
+><P>
+   注意子命令不以分号结束。
+  </P
+><P
+>   下面是达到相同结果的等效的方法：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>CREATE SCHEMA hollywood;
+CREATE TABLE hollywood.films (title text, release date, awards text[]);
+CREATE VIEW hollywood.winners AS
+    SELECT title, release FROM hollywood.films WHERE awards IS NOT NULL;</PRE
+><P></P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN81525"
+></A
+><H2
+>兼容性</H2
+><P
+>   SQL 标准允许在<TT
+CLASS="COMMAND"
+>CREATE SCHEMA</TT
+>中有一个
+   <TT
+CLASS="LITERAL"
+>DEFAULT CHARACTER SET</TT
+>子句，以及当前
+   <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>接受的更多子命令类型。
+  </P
+><P
+>   SQL 标准制定<TT
+CLASS="COMMAND"
+>CREATE SCHEMA</TT
+>中的子命令
+   可以以任何顺序出现。当前的
+   <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>实现不能处理子命令中
+   所有情况的向前引用。有时候可能有必要对子命令进行重排序以避免向前
+   引用。
+  </P
+><P
+>   根据 SQL 标准，模式的拥有者总是拥有其中的所有对象。
+   <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>允许模式包含非模式
+   拥有者所拥有的对象。只有模式拥有者把其模式上的<TT
+CLASS="LITERAL"
+>CREATE</TT
+>
+   特权授予给了其他人或者一个超级用户选择在该模式中创建对象时才会
+   发生这种事情。
+  </P
+><P
+>   <TT
+CLASS="LITERAL"
+>IF NOT EXISTS</TT
+>选项是一种
+   <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>扩展。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN81540"
+></A
+><H2
+>另见</H2
+><A
+HREF="sql-alterschema.html"
+>ALTER SCHEMA</A
+>, <A
+HREF="sql-dropschema.html"
+>DROP SCHEMA</A
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-createrule.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="sql-createsequence.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>CREATE RULE</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>CREATE SEQUENCE</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

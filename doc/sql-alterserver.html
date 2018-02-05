@@ -1,0 +1,416 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>ALTER SERVER</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="SQL 命令"
+HREF="sql-commands.html"><LINK
+REL="PREVIOUS"
+TITLE="ALTER SEQUENCE"
+HREF="sql-altersequence.html"><LINK
+REL="NEXT"
+TITLE="ALTER SYSTEM"
+HREF="sql-altersystem.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="REFENTRY"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/ref/alter_server.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="ALTER SEQUENCE"
+HREF="sql-altersequence.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="ALTER SYSTEM"
+HREF="sql-altersystem.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="SQL-ALTERSERVER"
+></A
+>ALTER SERVER</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN74891"
+></A
+><H2
+>&#21517;&#31216;</H2
+>ALTER SERVER&nbsp;--&nbsp;更改一个外部服务器的定义</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN74894"
+></A
+><H2
+>&#22823;&#32434;</H2
+><PRE
+CLASS="SYNOPSIS"
+>ALTER SERVER <TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+> [ VERSION '<TT
+CLASS="REPLACEABLE"
+><I
+>new_version</I
+></TT
+>' ]
+    [ OPTIONS ( [ ADD | SET | DROP ] <TT
+CLASS="REPLACEABLE"
+><I
+>option</I
+></TT
+> ['<TT
+CLASS="REPLACEABLE"
+><I
+>value</I
+></TT
+>'] [, ... ] ) ]
+ALTER SERVER <TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+> OWNER TO { <TT
+CLASS="REPLACEABLE"
+><I
+>new_owner</I
+></TT
+> | CURRENT_USER | SESSION_USER }
+ALTER SERVER <TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+> RENAME TO <TT
+CLASS="REPLACEABLE"
+><I
+>new_name</I
+></TT
+></PRE
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN74904"
+></A
+><H2
+>描述</H2
+><P
+>   <TT
+CLASS="COMMAND"
+>ALTER SERVER</TT
+>更改一个外部服务器的定义。
+   第一种形式更改该服务器的版本字符串或者该服务器的一般选项（至少要求
+   一个子句）。第二种形式更改该服务器的拥有者。
+  </P
+><P
+>   要修改该服务器，你必须是它的拥有者。此外为了修改拥有者，你必须拥有
+   该服务器并且是新拥有角色的一个直接或者间接成员，并且你必须具有该服
+   务器的外部数据包装器上的<TT
+CLASS="LITERAL"
+>USAGE</TT
+>特权（注意超级用户自动
+   满足所有这些政策）。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN74910"
+></A
+><H2
+>参数</H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+></DT
+><DD
+><P
+>      一个现有服务器的名称。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>new_version</I
+></TT
+></DT
+><DD
+><P
+>      新的服务器版本。
+     </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>OPTIONS ( [ ADD | SET | DROP ] <TT
+CLASS="REPLACEABLE"
+><I
+>option</I
+></TT
+> ['<TT
+CLASS="REPLACEABLE"
+><I
+>value</I
+></TT
+>'] [, ... ] )</TT
+></DT
+><DD
+><P
+>      更改该服务器的选项。<TT
+CLASS="LITERAL"
+>ADD</TT
+>、<TT
+CLASS="LITERAL"
+>SET</TT
+>和
+      <TT
+CLASS="LITERAL"
+>DROP</TT
+>指定要执行的动作。如果没有显式地指定操作，
+      将会假定为<TT
+CLASS="LITERAL"
+>ADD</TT
+>。选项名称必须唯一，名称和值也会
+      使用该服务器的外部数据包装器库进行验证。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>new_owner</I
+></TT
+></DT
+><DD
+><P
+>      该外部服务器的新拥有者的用户名。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>new_name</I
+></TT
+></DT
+><DD
+><P
+>      该外部服务器的新名称。
+     </P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN74944"
+></A
+><H2
+>示例</H2
+><P
+>   修改服务器<TT
+CLASS="LITERAL"
+>foo</TT
+>，增加连接选项：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>ALTER SERVER foo OPTIONS (host 'foo', dbname 'foodb');</PRE
+><P>
+  </P
+><P
+>   修改服务器<TT
+CLASS="LITERAL"
+>foo</TT
+>，更改版本、更改<TT
+CLASS="LITERAL"
+>host</TT
+>选项：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>ALTER SERVER foo VERSION '8.4' OPTIONS (SET host 'baz');</PRE
+><P></P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN74953"
+></A
+><H2
+>兼容性</H2
+><P
+>   <TT
+CLASS="COMMAND"
+>ALTER SERVER</TT
+>符合 ISO/IEC 9075-9 (SQL/MED)。
+   <TT
+CLASS="LITERAL"
+>OWNER TO</TT
+>和<TT
+CLASS="LITERAL"
+>RENAME</TT
+>形式是
+   PostgreSQL 扩展。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN74959"
+></A
+><H2
+>另见</H2
+><A
+HREF="sql-createserver.html"
+>CREATE SERVER</A
+>, <A
+HREF="sql-dropserver.html"
+>DROP SERVER</A
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-altersequence.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="sql-altersystem.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>ALTER SEQUENCE</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>ALTER SYSTEM</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

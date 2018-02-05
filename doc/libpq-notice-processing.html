@@ -1,0 +1,279 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>通知处理</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="libpq - C 库"
+HREF="libpq.html"><LINK
+REL="PREVIOUS"
+TITLE="杂项函数"
+HREF="libpq-misc.html"><LINK
+REL="NEXT"
+TITLE="事件系统"
+HREF="libpq-events.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/libpq.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="杂项函数"
+HREF="libpq-misc.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="libpq.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#31456; 32. <SPAN
+CLASS="APPLICATION"
+>libpq</SPAN
+> - C 库</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="事件系统"
+HREF="libpq-events.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="LIBPQ-NOTICE-PROCESSING"
+>32.12. 通知处理</A
+></H1
+><P
+>   服务器产生的通知和警告消息不会被查询执行函数返回，因为它们不代表查询失败。它们可以被传递给一个通知处理函数，并且在处理者返回后执行会继续正常进行。默认的处理函数会把消息打印在<TT
+CLASS="FILENAME"
+>stderr</TT
+>上，但是应用可以通过提供它自己的处理函数来重载这种行为。
+  </P
+><P
+>   由于历史原因，通知处理有两个级别，称为通知接收器和通知处理器。通知接收器的默认行为是格式化通知并且将一个字符串传递给通知处理器来打印。不过，如果一个应用选择提供自己的通知接收器，它通常会忽略通知处理器层并且在通知接收器中完成所有工作。
+  </P
+><P
+>   函数<CODE
+CLASS="FUNCTION"
+>PQsetNoticeReceiver</CODE
+>
+   
+   为一个连接对象设置或者检查当前的通知接收器。相似地，
+   <CODE
+CLASS="FUNCTION"
+>PQsetNoticeProcessor</CODE
+>
+   
+   设置或检查当前的通知处理器。
+
+</P><PRE
+CLASS="SYNOPSIS"
+>typedef void (*PQnoticeReceiver) (void *arg, const PGresult *res);
+
+PQnoticeReceiver
+PQsetNoticeReceiver(PGconn *conn,
+                    PQnoticeReceiver proc,
+                    void *arg);
+
+typedef void (*PQnoticeProcessor) (void *arg, const char *message);
+
+PQnoticeProcessor
+PQsetNoticeProcessor(PGconn *conn,
+                     PQnoticeProcessor proc,
+                     void *arg);</PRE
+><P>
+
+   这些函数中的每一个会返回之前的通知接收器或处理器函数指针，并且设置新值。如果你提供了一个空函数指针，将不会采取任何动作，只会返回当前指针。
+  </P
+><P
+>   当接收到一个服务器产生的或者<SPAN
+CLASS="APPLICATION"
+>libpq</SPAN
+>内部产生的通知或警告消息，通知接收器函数会被调用。它会以一种<TT
+CLASS="SYMBOL"
+>PGRES_NONFATAL_ERROR</TT
+> <TT
+CLASS="STRUCTNAME"
+>PGresult</TT
+>的形式传递该消息（这允许接收器使用<CODE
+CLASS="FUNCTION"
+>PQresultErrorField</CODE
+>抽取个别的域，或者使用<CODE
+CLASS="FUNCTION"
+>PQresultErrorMessage</CODE
+>完成预格式化的消息）。被传递给<CODE
+CLASS="FUNCTION"
+>PQsetNoticeReceiver</CODE
+>的同一个空指针也被传递（必要时，这个指针可以被用来访问应用相关的状态）。
+  </P
+><P
+>   默认的通知接收器会简单地抽取消息（使用<CODE
+CLASS="FUNCTION"
+>PQresultErrorMessage</CODE
+>）并且将它传递给通知处理器。
+  </P
+><P
+>   通知处理器负责处理一个以文本形式给出的通知或警告消息。该消息的字符串文本（包括一个收尾的新行）被传递给通知处理器，外加一个同时被传递给<CODE
+CLASS="FUNCTION"
+>PQsetNoticeProcessor</CODE
+>的空指针（必要时，这个指针可以被用来访问应用相关的状态）。
+  </P
+><P
+>   默认的通知处理器很简单：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>static void
+defaultNoticeProcessor(void *arg, const char *message)
+{
+    fprintf(stderr, "%s", message);
+}</PRE
+><P>
+  </P
+><P
+>   一旦你设定了一个通知接收器或处理器，你应该期待只要<TT
+CLASS="STRUCTNAME"
+>PGconn</TT
+>对象或者从它构造出的<TT
+CLASS="STRUCTNAME"
+>PGresult</TT
+>对象存在，该函数就应该能被调用。在一个<TT
+CLASS="STRUCTNAME"
+>PGresult</TT
+>创建时，<TT
+CLASS="STRUCTNAME"
+>PGconn</TT
+>的当前通知处理指针被复制到<TT
+CLASS="STRUCTNAME"
+>PGresult</TT
+>中，以备类似<CODE
+CLASS="FUNCTION"
+>PQgetvalue</CODE
+>的函数使用。
+  </P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="libpq-misc.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="libpq-events.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>杂项函数</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="libpq.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>事件系统</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

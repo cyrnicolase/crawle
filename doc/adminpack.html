@@ -1,0 +1,494 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>adminpack</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="额外提供的模块"
+HREF="contrib.html"><LINK
+REL="PREVIOUS"
+TITLE="额外提供的模块"
+HREF="contrib.html"><LINK
+REL="NEXT"
+TITLE="auth_delay"
+HREF="auth-delay.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/adminpack.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="额外提供的模块"
+HREF="contrib.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="contrib.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#38468;&#24405; F. 额外提供的模块</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="auth_delay"
+HREF="auth-delay.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="ADMINPACK"
+>F.1. adminpack</A
+></H1
+><P
+>  <TT
+CLASS="FILENAME"
+>adminpack</TT
+>提供了一些支持函数，<SPAN
+CLASS="APPLICATION"
+>pgAdmin</SPAN
+>和其他管理工具会用这些函数来提供额外的功能，例如服务器日志文件的远程管理。只有超级用户才能使用全部这些函数。
+ </P
+><P
+>  <A
+HREF="adminpack.html#FUNCTIONS-ADMINPACK-TABLE"
+>&#34920; F-1</A
+>中展示的函数提供了向运行
+  着服务器的机器上的文件进行写入的途径（另见
+  <A
+HREF="functions-admin.html#FUNCTIONS-ADMIN-GENFILE-TABLE"
+>&#34920; 9-86</A
+>中的函数，它们提供了
+  只读的访问途径）。只有位于数据库集簇目录中的文件才能被访问，不过相对
+  路径和绝对路径都可以使用。
+ </P
+><DIV
+CLASS="TABLE"
+><A
+NAME="FUNCTIONS-ADMINPACK-TABLE"
+></A
+><P
+><B
+>&#34920; F-1. <TT
+CLASS="FILENAME"
+>adminpack</TT
+> 函数</B
+></P
+><TABLE
+BORDER="1"
+CLASS="CALSTABLE"
+><COL><COL><COL><THEAD
+><TR
+><TH
+>名称</TH
+><TH
+>返回类型</TH
+><TH
+>描述</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+><CODE
+CLASS="FUNCTION"
+>pg_catalog.pg_file_write(filename text, data text, append boolean)</CODE
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>bigint</TT
+></TD
+><TD
+>      向一个文本文件写入或者追加
+     </TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="FUNCTION"
+>pg_catalog.pg_file_rename(oldname text, newname text [<SPAN
+CLASS="OPTIONAL"
+>, archivename text</SPAN
+>])</CODE
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>boolean</TT
+></TD
+><TD
+>      重命名一个文件
+     </TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="FUNCTION"
+>pg_catalog.pg_file_unlink(filename text)</CODE
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>boolean</TT
+></TD
+><TD
+>      移除一个文件
+     </TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="FUNCTION"
+>pg_catalog.pg_logdir_ls()</CODE
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>setof record</TT
+></TD
+><TD
+>      列出在<TT
+CLASS="VARNAME"
+>log_directory</TT
+>目录中的日志文件
+     </TD
+></TR
+></TBODY
+></TABLE
+></DIV
+><P
+>  <CODE
+CLASS="FUNCTION"
+>pg_file_write</CODE
+>把指定的<TT
+CLASS="PARAMETER"
+>data</TT
+>写入到由
+  <TT
+CLASS="PARAMETER"
+>filename</TT
+>命名的文件中。如果<TT
+CLASS="PARAMETER"
+>append</TT
+>
+  为假，文件不能已经存在。如果<TT
+CLASS="PARAMETER"
+>append</TT
+>为真，该文件
+  可能已经存在，并且如果存在就会被追加。这个函数返回写入的字节数。
+ </P
+><P
+>  <CODE
+CLASS="FUNCTION"
+>pg_file_rename</CODE
+>重命名一个文件。如果
+  <TT
+CLASS="PARAMETER"
+>archivename</TT
+>被省略或者为 NULL，它简单地把
+  <TT
+CLASS="PARAMETER"
+>oldname</TT
+>重命名为<TT
+CLASS="PARAMETER"
+>newname</TT
+>（不能
+  已经存在）。如果提供了<TT
+CLASS="PARAMETER"
+>archivename</TT
+>，该函数首先把
+  <TT
+CLASS="PARAMETER"
+>newname</TT
+>重命名为<TT
+CLASS="PARAMETER"
+>archivename</TT
+>（不
+  能已经存在），然后把<TT
+CLASS="PARAMETER"
+>oldname</TT
+>重命名为
+  <TT
+CLASS="PARAMETER"
+>newname</TT
+>。当第二次重命名失败时，这个函数会在报告
+  错误之前尝试把<TT
+CLASS="PARAMETER"
+>archivename</TT
+>重命名成
+  <TT
+CLASS="PARAMETER"
+>newname</TT
+>。成功时函数返回真，如果源文件不存在或者
+  不可写则返回假，其他情况下会抛出错误。
+ </P
+><P
+>  <CODE
+CLASS="FUNCTION"
+>pg_file_unlink</CODE
+>移除指定的文件。成功时函数返回真，
+  如果指定的文件不存在或者<CODE
+CLASS="FUNCTION"
+>unlink()</CODE
+>调用失败则返回
+  假，其他情况下会抛出错误。
+ </P
+><P
+>  <CODE
+CLASS="FUNCTION"
+>pg_logdir_ls</CODE
+>返回<A
+HREF="runtime-config-logging.html#GUC-LOG-DIRECTORY"
+>log_directory</A
+>
+  目录中所有日志文件的开始时间戳以及路径名。要使用这个函数，
+  <A
+HREF="runtime-config-logging.html#GUC-LOG-FILENAME"
+>log_filename</A
+>参数必须具有其默认设置（
+  <TT
+CLASS="LITERAL"
+>postgresql-%Y-%m-%d_%H%M%S.log</TT
+>）。
+ </P
+><P
+>  The functions shown
+  in 
+  <A
+HREF="adminpack.html#FUNCTIONS-ADMINPACK-DEPRECATED-TABLE"
+>&#34920; F-2</A
+>中展示的函数
+  已经被废弃，新的应用不应该使用它们，而是使用
+  <A
+HREF="functions-admin.html#FUNCTIONS-ADMIN-SIGNAL-TABLE"
+>&#34920; 9-77</A
+>和
+  <A
+HREF="functions-admin.html#FUNCTIONS-ADMIN-GENFILE-TABLE"
+>&#34920; 9-86</A
+>中所示的那些函数。在
+  <TT
+CLASS="FILENAME"
+>adminpack</TT
+>中提供这些函数只是为了兼容旧版本的
+  <SPAN
+CLASS="APPLICATION"
+>pgAdmin</SPAN
+>。
+ </P
+><DIV
+CLASS="TABLE"
+><A
+NAME="FUNCTIONS-ADMINPACK-DEPRECATED-TABLE"
+></A
+><P
+><B
+>&#34920; F-2. 废弃的 <TT
+CLASS="FILENAME"
+>adminpack</TT
+> 函数</B
+></P
+><TABLE
+BORDER="1"
+CLASS="CALSTABLE"
+><COL><COL><COL><THEAD
+><TR
+><TH
+>名称</TH
+><TH
+>返回类型</TH
+><TH
+>描述</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+><CODE
+CLASS="FUNCTION"
+>pg_catalog.pg_file_read(filename text, offset bigint, nbytes bigint)</CODE
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>text</TT
+></TD
+><TD
+>      <CODE
+CLASS="FUNCTION"
+>pg_read_file()</CODE
+>的另一个名字
+     </TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="FUNCTION"
+>pg_catalog.pg_file_length(filename text)</CODE
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>bigint</TT
+></TD
+><TD
+>      和<CODE
+CLASS="FUNCTION"
+>pg_stat_file()</CODE
+>返回的<TT
+CLASS="STRUCTFIELD"
+>size</TT
+>列一样
+     </TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="FUNCTION"
+>pg_catalog.pg_logfile_rotate()</CODE
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>integer</TT
+></TD
+><TD
+>      Alternate name for 
+      <CODE
+CLASS="FUNCTION"
+>pg_rotate_logfile()</CODE
+>的另一个名字，但是要注意它返回
+      整数 0 或者 1 而不是布尔值
+     </TD
+></TR
+></TBODY
+></TABLE
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="contrib.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="auth-delay.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>额外提供的模块</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="contrib.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>auth_delay</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

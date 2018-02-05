@@ -1,0 +1,288 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>数据库角色</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="数据库角色"
+HREF="user-manag.html"><LINK
+REL="PREVIOUS"
+TITLE="数据库角色"
+HREF="user-manag.html"><LINK
+REL="NEXT"
+TITLE="角色属性"
+HREF="role-attributes.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/user-manag.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="数据库角色"
+HREF="user-manag.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="user-manag.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#31456; 21. 数据库角色</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="角色属性"
+HREF="role-attributes.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="DATABASE-ROLES"
+>21.1. 数据库角色</A
+></H1
+><P
+>   数据库角色在概念上已经完全与操作系统用户独立开来。事实上可能维护一个对应关系会比较方便，但是这并非必需。数据库角色在一个数据库集簇安装范围内是全局的（而不是独立数据库内）。要创建一个角色，可使用<A
+HREF="sql-createrole.html"
+>CREATE ROLE</A
+> SQL 命令：
+</P><PRE
+CLASS="SYNOPSIS"
+>CREATE ROLE <TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+>;</PRE
+><P>
+   <TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+>遵循 SQL 标识符的规则：或是未经装饰没有特殊字符，或是用双引号包围（实际上，你将总是给该命令要加上额外选项，例如<TT
+CLASS="LITERAL"
+>LOGIN</TT
+>。更多细节可见下文）。要移除一个已有的角色，使用相似的<A
+HREF="sql-droprole.html"
+>DROP ROLE</A
+>命令：
+</P><PRE
+CLASS="SYNOPSIS"
+>DROP ROLE <TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+>;</PRE
+><P>
+  </P
+><P
+>   为了方便，<A
+HREF="app-createuser.html"
+><SPAN
+CLASS="APPLICATION"
+>createuser</SPAN
+></A
+>和<A
+HREF="app-dropuser.html"
+><SPAN
+CLASS="APPLICATION"
+>dropuser</SPAN
+></A
+>程序被提供作为这些 SQL 命令的包装器，它们可以从 shell 命令行调用：
+</P><PRE
+CLASS="SYNOPSIS"
+>createuser <TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+>
+dropuser <TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+></PRE
+><P>
+  </P
+><P
+>   要决定现有角色的集合，检查<TT
+CLASS="STRUCTNAME"
+>pg_roles</TT
+>系统目录，例如：
+</P><PRE
+CLASS="SYNOPSIS"
+>SELECT rolname FROM pg_roles;</PRE
+><P>
+   <A
+HREF="app-psql.html"
+><SPAN
+CLASS="APPLICATION"
+>psql</SPAN
+></A
+>程序的<TT
+CLASS="LITERAL"
+>\du</TT
+>元命令也可以用来列出现有角色。
+  </P
+><P
+>   为了引导数据库系统，一个刚刚被初始化好的系统总是包含一个预定义角色。这个角色总是一个<SPAN
+CLASS="QUOTE"
+>"superuser"</SPAN
+>，并且默认情况下（除非在运行<TT
+CLASS="COMMAND"
+>initdb</TT
+>时修改）它的名字和初始化数据库集簇的操作系统用户相同。习惯上，这个角色将被命名为<TT
+CLASS="LITERAL"
+>postgres</TT
+>。为了创建更多角色，你首先必须以初始角色的身份连接。
+  </P
+><P
+>   每一个到数据库服务器的连接都是使用某个特定角色名建立的，并且这个角色决定发起连接的命令的初始访问权限。要使用一个特定数据库连接的角色名由客户端指示，该客户端以一种应用相关的风格发起连接请求。例如，<TT
+CLASS="COMMAND"
+>psql</TT
+>程序使用<TT
+CLASS="OPTION"
+>-U</TT
+>命令行选项来指定要以哪个角色连接。很多应用假定该名字默认是当前操作系统用户（包括<TT
+CLASS="COMMAND"
+>createuser</TT
+>和<TT
+CLASS="COMMAND"
+>psql</TT
+>）。因此在角色和操作系统用户之间维护一个名字对应关系通常是很方便的。
+  </P
+><P
+>   一个给定客户端连接能够用来连接的数据库角色的集合由该客户端的认证设置决定，这些在<A
+HREF="client-authentication.html"
+>第 20 &#31456;</A
+>中有解释（因此，一个客户端不止限于以匹配其操作系统用户的角色连接，就像一个人的登录名不需要匹配她的真实名字一样）。因为角色身份决定一个已连接客户端可用的权限集合，在设置一个多用户环境时要小心地配置权限。
+  </P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="user-manag.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="role-attributes.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>数据库角色</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="user-manag.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>角色属性</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

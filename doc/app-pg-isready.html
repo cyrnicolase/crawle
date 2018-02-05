@@ -1,0 +1,585 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>pg_isready</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="PostgreSQL 客户端应用"
+HREF="reference-client.html"><LINK
+REL="PREVIOUS"
+TITLE="pg_dumpall"
+HREF="app-pg-dumpall.html"><LINK
+REL="NEXT"
+TITLE="pg_receivexlog"
+HREF="app-pgreceivexlog.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="REFENTRY"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/ref/pg_isready.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="pg_dumpall"
+HREF="app-pg-dumpall.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="reference-client.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="pg_receivexlog"
+HREF="app-pgreceivexlog.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="APP-PG-ISREADY"
+></A
+><SPAN
+CLASS="APPLICATION"
+>pg_isready</SPAN
+></H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN96961"
+></A
+><H2
+>&#21517;&#31216;</H2
+>pg_isready&nbsp;--&nbsp;检查一个<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>服务器的连接状态</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN96965"
+></A
+><H2
+>&#22823;&#32434;</H2
+><P
+><TT
+CLASS="COMMAND"
+>pg_isready</TT
+> [<TT
+CLASS="REPLACEABLE"
+><I
+>connection-option</I
+></TT
+>...] [<TT
+CLASS="REPLACEABLE"
+><I
+>option</I
+></TT
+>...]</P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="APP-PG-ISREADY-DESCRIPTION"
+></A
+><H2
+>描述</H2
+><P
+>   <SPAN
+CLASS="APPLICATION"
+>pg_isready</SPAN
+>是一个用来检查一个<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>数据库服务器的连接状态的工具。其退出状态指定了连接检查的结果。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="APP-PG-ISREADY-OPTIONS"
+></A
+><H2
+>选项</H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="OPTION"
+>-d <TT
+CLASS="REPLACEABLE"
+><I
+>dbname</I
+></TT
+></TT
+><BR><TT
+CLASS="OPTION"
+>--dbname=<TT
+CLASS="REPLACEABLE"
+><I
+>dbname</I
+></TT
+></TT
+></DT
+><DD
+><P
+>       指定要连接的数据库名。
+      </P
+><P
+>       如果这个参数包含一个<TT
+CLASS="SYMBOL"
+>=</TT
+>记号或者以一个合法的<ACRONYM
+CLASS="ACRONYM"
+>URI</ACRONYM
+>前缀（<TT
+CLASS="LITERAL"
+>postgresql://</TT
+>或<TT
+CLASS="LITERAL"
+>postgres://</TT
+>）开始，它会被当作一个<TT
+CLASS="PARAMETER"
+>conninfo</TT
+>字符串。详见<A
+HREF="libpq-connect.html#LIBPQ-CONNSTRING"
+>第 32.1.1 &#33410;</A
+>。
+      </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-h <TT
+CLASS="REPLACEABLE"
+><I
+>hostname</I
+></TT
+></TT
+><BR><TT
+CLASS="OPTION"
+>--host=<TT
+CLASS="REPLACEABLE"
+><I
+>hostname</I
+></TT
+></TT
+></DT
+><DD
+><P
+>       指定运行服务器的机器的主机名。如果该值以一个斜线开始，它被用作 Unix 域套接字的目录。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-p <TT
+CLASS="REPLACEABLE"
+><I
+>port</I
+></TT
+></TT
+><BR><TT
+CLASS="OPTION"
+>--port=<TT
+CLASS="REPLACEABLE"
+><I
+>port</I
+></TT
+></TT
+></DT
+><DD
+><P
+>       指定服务器正在监听连接的 TCP 端口或本地 Unix 域套接字文件扩展。默认值取自<TT
+CLASS="ENVAR"
+>PGPORT</TT
+>环境变量。如果环境变量没有设置，则默认值使用编译时指定的端口（通常是 5432）。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-q</TT
+><BR><TT
+CLASS="OPTION"
+>--quiet</TT
+></DT
+><DD
+><P
+>        不显示状态消息。当脚本编程时有用。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-t <TT
+CLASS="REPLACEABLE"
+><I
+>seconds</I
+></TT
+></TT
+><BR><TT
+CLASS="OPTION"
+>--timeout=<TT
+CLASS="REPLACEABLE"
+><I
+>seconds</I
+></TT
+></TT
+></DT
+><DD
+><P
+>        尝试连接时，在返回服务器不响应之前等待的最大秒数。设置为 0 则禁用。默认值是 3 秒。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-U <TT
+CLASS="REPLACEABLE"
+><I
+>username</I
+></TT
+></TT
+><BR><TT
+CLASS="OPTION"
+>--username=<TT
+CLASS="REPLACEABLE"
+><I
+>username</I
+></TT
+></TT
+></DT
+><DD
+><P
+>       作为用户<TT
+CLASS="REPLACEABLE"
+><I
+>username</I
+></TT
+>连接数据库，而不是用默认用户。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-V</TT
+><BR><TT
+CLASS="OPTION"
+>--version</TT
+></DT
+><DD
+><P
+>         打印<SPAN
+CLASS="APPLICATION"
+>pg_isready</SPAN
+>版本并退出。
+        </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-?</TT
+><BR><TT
+CLASS="OPTION"
+>--help</TT
+></DT
+><DD
+><P
+>        显示有关<SPAN
+CLASS="APPLICATION"
+>pg_isready</SPAN
+>命令行参数的帮助并退出。
+       </P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN97057"
+></A
+><H2
+>退出状态</H2
+><P
+>   如果服务器正常接受连接，<SPAN
+CLASS="APPLICATION"
+>pg_isready</SPAN
+>返回<TT
+CLASS="LITERAL"
+>0</TT
+>给 shell；如果服务器拒绝连接（例如处于启动阶段）则返回<TT
+CLASS="LITERAL"
+>1</TT
+>；如果连接尝试没有被相应则返回<TT
+CLASS="LITERAL"
+>2</TT
+>；如果没有尝试（例如由于非法参数）则返回<TT
+CLASS="LITERAL"
+>3</TT
+>。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN97065"
+></A
+><H2
+>环境</H2
+><P
+>   和大部分其他<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>工具相似，<TT
+CLASS="COMMAND"
+>pg_isready</TT
+>也使用<SPAN
+CLASS="APPLICATION"
+>libpq</SPAN
+>（见<A
+HREF="libpq-envars.html"
+>第 32.14 &#33410;</A
+>）支持的环境变量。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="APP-PG-ISREADY-NOTES"
+></A
+><H2
+>注解</H2
+><P
+>   要获得服务器状态，不一定需要提供正确的用户名、口令或数据库名。
+   不过，如果提供了不正确的值，服务器将会记录一次失败的连接尝试。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="APP-PG-ISREADY-EXAMPLES"
+></A
+><H2
+>例子</H2
+><P
+>   标准用法：
+</P><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>$</SAMP
+> <KBD
+CLASS="USERINPUT"
+>pg_isready</KBD
+>
+<SAMP
+CLASS="COMPUTEROUTPUT"
+>/tmp:5432 - accepting connections</SAMP
+>
+<SAMP
+CLASS="PROMPT"
+>$</SAMP
+> <KBD
+CLASS="USERINPUT"
+>echo $?</KBD
+>
+<SAMP
+CLASS="COMPUTEROUTPUT"
+>0</SAMP
+></PRE
+><P>
+  </P
+><P
+>   使用连接参数运行连接到处于启动中的<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>集簇：
+</P><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>$ </SAMP
+><KBD
+CLASS="USERINPUT"
+>pg_isready -h localhost -p 5433</KBD
+>
+<SAMP
+CLASS="COMPUTEROUTPUT"
+>localhost:5433 - rejecting connections</SAMP
+>
+<SAMP
+CLASS="PROMPT"
+>$</SAMP
+> <KBD
+CLASS="USERINPUT"
+>echo $?</KBD
+>
+<SAMP
+CLASS="COMPUTEROUTPUT"
+>1</SAMP
+></PRE
+><P>
+  </P
+><P
+>   使用连接参数运行连接到无响应的<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>集簇：
+</P><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>$ </SAMP
+><KBD
+CLASS="USERINPUT"
+>pg_isready -h someremotehost</KBD
+>
+<SAMP
+CLASS="COMPUTEROUTPUT"
+>someremotehost:5432 - no response</SAMP
+>
+<SAMP
+CLASS="PROMPT"
+>$</SAMP
+> <KBD
+CLASS="USERINPUT"
+>echo $?</KBD
+>
+<SAMP
+CLASS="COMPUTEROUTPUT"
+>2</SAMP
+></PRE
+><P>
+  </P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="app-pg-dumpall.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="app-pgreceivexlog.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><SPAN
+CLASS="APPLICATION"
+>pg_dumpall</SPAN
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="reference-client.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>pg_receivexlog</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

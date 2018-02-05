@@ -1,0 +1,836 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>CREATE SEQUENCE</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="SQL 命令"
+HREF="sql-commands.html"><LINK
+REL="PREVIOUS"
+TITLE="CREATE SCHEMA"
+HREF="sql-createschema.html"><LINK
+REL="NEXT"
+TITLE="CREATE SERVER"
+HREF="sql-createserver.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="REFENTRY"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/ref/create_sequence.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="CREATE SCHEMA"
+HREF="sql-createschema.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="CREATE SERVER"
+HREF="sql-createserver.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="SQL-CREATESEQUENCE"
+></A
+>CREATE SEQUENCE</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN81554"
+></A
+><H2
+>&#21517;&#31216;</H2
+>CREATE SEQUENCE&nbsp;--&nbsp;定义一个新的序列发生器</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN81557"
+></A
+><H2
+>&#22823;&#32434;</H2
+><PRE
+CLASS="SYNOPSIS"
+>CREATE [ TEMPORARY | TEMP ] SEQUENCE [ IF NOT EXISTS ] <TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+> [ INCREMENT [ BY ] <TT
+CLASS="REPLACEABLE"
+><I
+>increment</I
+></TT
+> ]
+    [ MINVALUE <TT
+CLASS="REPLACEABLE"
+><I
+>minvalue</I
+></TT
+> | NO MINVALUE ] [ MAXVALUE <TT
+CLASS="REPLACEABLE"
+><I
+>maxvalue</I
+></TT
+> | NO MAXVALUE ]
+    [ START [ WITH ] <TT
+CLASS="REPLACEABLE"
+><I
+>start</I
+></TT
+> ] [ CACHE <TT
+CLASS="REPLACEABLE"
+><I
+>cache</I
+></TT
+> ] [ [ NO ] CYCLE ]
+    [ OWNED BY { <TT
+CLASS="REPLACEABLE"
+><I
+>table_name</I
+></TT
+>.<TT
+CLASS="REPLACEABLE"
+><I
+>column_name</I
+></TT
+> | NONE } ]</PRE
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN81567"
+></A
+><H2
+>描述</H2
+><P
+>   <TT
+CLASS="COMMAND"
+>CREATE SEQUENCE</TT
+>创建一个新的序列数
+   发生器。这涉及到用名称<TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+>创建并且初始化
+   一个新的特殊的单行表。该发生器将由发出该命令的用户所拥有。
+  </P
+><P
+>   如果给出一个模式名称，则该序列将将被创建在指定的模式中。否则它会被
+   创建在当前模式中。临时序列存在于一个特殊的模式中，因此在创建临时序列
+   时不能给出模式名。序列名称必须与同一模式中任何其他序列、表、索引、
+   视图或者外部表的名称不同。
+  </P
+><P
+>   在序列被创建后，可以使用函数
+   <CODE
+CLASS="FUNCTION"
+>nextval</CODE
+>、
+   <CODE
+CLASS="FUNCTION"
+>currval</CODE
+>以及
+   <CODE
+CLASS="FUNCTION"
+>setval</CODE
+>来操作该序列。这些函数在
+   <A
+HREF="functions-sequence.html"
+>第 9.16 &#33410;</A
+>中有介绍。
+  </P
+><P
+>   尽管无法直接更新一个序列，可以使用这样的查询：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>SELECT * FROM <TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+>;</PRE
+><P>
+
+   来检查一个序列的参数以及当前状态。特别地，序列的
+   <TT
+CLASS="LITERAL"
+>last_value</TT
+>域显示被任意会话最后一次取得的值（当然，
+   在被打印时该值可能已经过时了，因为可能有其他会话正在执行
+   <CODE
+CLASS="FUNCTION"
+>nextval</CODE
+>调用）。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN81583"
+></A
+><H2
+>参数</H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="LITERAL"
+>TEMPORARY</TT
+> or <TT
+CLASS="LITERAL"
+>TEMP</TT
+></DT
+><DD
+><P
+>      如果被指定，只会为这个会话创建序列对象，并且在会话退出时自动
+      删除它。当临时序列存在时，已有的同名永久序列（在这个会话中）
+      会变得不可见，不过可以用模式限定的名称来引用同名永久序列。
+     </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>IF NOT EXISTS</TT
+></DT
+><DD
+><P
+>      如果已经存在一个同名的关系时不要抛出错误。这种情况下会发出一个
+      提示。注意这不保证现有的关系与即将创建的序列相似 -- 它甚至可能
+      都不是一个序列。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+></DT
+><DD
+><P
+>      要创建的序列的名称（可以是模式限定的）。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>increment</I
+></TT
+></DT
+><DD
+><P
+>      可选的子句<TT
+CLASS="LITERAL"
+>INCREMENT BY <TT
+CLASS="REPLACEABLE"
+><I
+>increment</I
+></TT
+></TT
+>指定为了
+      创建新值会把哪个值加到当前序列值上。一个正值将会创造一个上升
+      序列，负值会创造一个下降序列。默认值是 1。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>minvalue</I
+></TT
+><BR><TT
+CLASS="LITERAL"
+>NO MINVALUE</TT
+></DT
+><DD
+><P
+>      可选的子句<TT
+CLASS="LITERAL"
+>MINVALUE <TT
+CLASS="REPLACEABLE"
+><I
+>minvalue</I
+></TT
+></TT
+>决定一个序列
+      能产生的最小值。如果没有提供这个子句或者指定了
+      <TT
+CLASS="OPTION"
+>NO MINVALUE</TT
+>，那么会使用默认值。对上升序列
+      和下降序列来说，默认值分别是 1 和 -2<SUP
+>63</SUP
+>-1。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>maxvalue</I
+></TT
+><BR><TT
+CLASS="LITERAL"
+>NO MAXVALUE</TT
+></DT
+><DD
+><P
+>      可选的子句<TT
+CLASS="LITERAL"
+>MAXVALUE <TT
+CLASS="REPLACEABLE"
+><I
+>maxvalue</I
+></TT
+></TT
+>决定该序列
+      的最大值。如果没有提供这个子句或者指定了
+      <TT
+CLASS="OPTION"
+>NO MAXVALUE</TT
+>，那么将会使用默认值。对上升序列
+      和下降序列来说，默认值分别是 2<SUP
+>63</SUP
+>-1 和 -1。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>start</I
+></TT
+></DT
+><DD
+><P
+>      可选的子句<TT
+CLASS="LITERAL"
+>START WITH <TT
+CLASS="REPLACEABLE"
+><I
+>start</I
+></TT
+> </TT
+>允许序列从任何
+      地方开始。对于上升序列和下降序列来说，默认的开始值分别是
+      <TT
+CLASS="REPLACEABLE"
+><I
+>minvalue</I
+></TT
+>和
+      <TT
+CLASS="REPLACEABLE"
+><I
+>maxvalue</I
+></TT
+>。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>cache</I
+></TT
+></DT
+><DD
+><P
+>      可选的子句<TT
+CLASS="LITERAL"
+>CACHE <TT
+CLASS="REPLACEABLE"
+><I
+>cache</I
+></TT
+></TT
+>指定要预分配多少
+      个序列数并且把它们放在内存中以便快速访问。最小值为 1 （一次只生成
+      一个值，即没有缓存），默认值也是 1。
+     </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>CYCLE</TT
+><BR><TT
+CLASS="LITERAL"
+>NO CYCLE</TT
+></DT
+><DD
+><P
+>      对于上升序列和下降序列，<TT
+CLASS="LITERAL"
+>CYCLE</TT
+>选项允许序列
+      在分别达到<TT
+CLASS="REPLACEABLE"
+><I
+>maxvalue</I
+></TT
+>和<TT
+CLASS="REPLACEABLE"
+><I
+>minvalue</I
+></TT
+>时回卷。如果达到
+      该限制，下一个产生的数字将分别是<TT
+CLASS="REPLACEABLE"
+><I
+>minvalue</I
+></TT
+>和<TT
+CLASS="REPLACEABLE"
+><I
+>maxvalue</I
+></TT
+>。
+     </P
+><P
+>      如果指定了<TT
+CLASS="LITERAL"
+>NO CYCLE</TT
+>，当序列到达其最大值
+      后任何<CODE
+CLASS="FUNCTION"
+>nextval</CODE
+>调用将返回一个错误。如果
+      <TT
+CLASS="LITERAL"
+>CYCLE</TT
+>和<TT
+CLASS="LITERAL"
+>NO CYCLE</TT
+>都没有
+      被指定，则默认为<TT
+CLASS="LITERAL"
+>NO CYCLE</TT
+>。
+     </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>OWNED BY</TT
+> <TT
+CLASS="REPLACEABLE"
+><I
+>table_name</I
+></TT
+>.<TT
+CLASS="REPLACEABLE"
+><I
+>column_name</I
+></TT
+><BR><TT
+CLASS="LITERAL"
+>OWNED BY NONE</TT
+></DT
+><DD
+><P
+>      <TT
+CLASS="LITERAL"
+>OWNED BY</TT
+>选项导致序列被与一个特定的表列关联
+      在一起，这样如果该列（或者整个表）被删除，该序列也将被自动删除。
+      指定的表必须和序列具有相同的拥有者并且在同一个模式中。默认选项
+      <TT
+CLASS="LITERAL"
+>OWNED BY NONE</TT
+>指定该序列不与某个列关联。
+     </P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN81676"
+></A
+><H2
+>注解</H2
+><P
+>   使用<TT
+CLASS="COMMAND"
+>DROP SEQUENCE</TT
+>移除一个序列。
+  </P
+><P
+>   序列是基于<TT
+CLASS="TYPE"
+>bigint</TT
+>算法的，因此范围是不能超过一个八字节
+   整数的范围（-9223372036854775808 到 9223372036854775807）。
+  </P
+><P
+>   由于<CODE
+CLASS="FUNCTION"
+>nextval</CODE
+>和<CODE
+CLASS="FUNCTION"
+>setval</CODE
+>调用绝不会回滚，
+   如果需要序数的<SPAN
+CLASS="QUOTE"
+>"无间隙"</SPAN
+>分配，则不能使用序列对象。可以
+   通过在一个只包含一个计数器的表上使用排他锁来构建无间隙的分配，
+   但是这种方案比序列对象开销更大，特别是当有很多事务并发请求序数
+   时。
+  </P
+><P
+>   如果对一个将由多个会话并发使用的序列对象使用了大于 1 的<TT
+CLASS="REPLACEABLE"
+><I
+>cache</I
+></TT
+>设置，可能会得到意想不到的结果。
+   每个会话会在访问该序列对象时分配并且缓存后续的序列值，并且相应地增加
+   该序列对象的<TT
+CLASS="LITERAL"
+>last_value</TT
+>。然后，在该会话中下一次
+   <CODE
+CLASS="FUNCTION"
+>nextval</CODE
+>会做
+   <TT
+CLASS="REPLACEABLE"
+><I
+>cache</I
+></TT
+>-1，并且简单地
+   返回预分配的值而不修改序列对象。因此，任何已分配但没有在会话中使用的
+   数字将会在该会话结束时丢失，导致该序列中的<SPAN
+CLASS="QUOTE"
+>"空洞"</SPAN
+>。
+  </P
+><P
+>   进一步，尽管多个会话能分配到不同的序列值，这些值可能会在所有会话都被
+   考虑时生成出来。例如，
+   <TT
+CLASS="REPLACEABLE"
+><I
+>cache</I
+></TT
+>的设置为 10，会话
+   A 可能储存值 1..10 并且返回<CODE
+CLASS="FUNCTION"
+>nextval</CODE
+>=1，然后会话 
+   B 可能储存值 11..20 并且在 A 生成<TT
+CLASS="LITERAL"
+>nextval</TT
+>=2 之前返回
+   <CODE
+CLASS="FUNCTION"
+>nextval</CODE
+>=11。因此，如果
+   <TT
+CLASS="REPLACEABLE"
+><I
+>cache</I
+></TT
+>设置为 1，可以
+   安全地假设<CODE
+CLASS="FUNCTION"
+>nextval</CODE
+>值被顺序地生成。如果<TT
+CLASS="REPLACEABLE"
+><I
+>cache</I
+></TT
+>设置大于 1，就只能假定
+   <CODE
+CLASS="FUNCTION"
+>nextval</CODE
+>值都是可区分的，但不能保证它们被完全地顺序生成。
+   还有，<TT
+CLASS="LITERAL"
+>last_value</TT
+>将反映服务于任意会话的最后一个值，不管它
+   是否已经被<CODE
+CLASS="FUNCTION"
+>nextval</CODE
+>返回过。
+  </P
+><P
+>   另一个考虑是，在这样一个序列上执行的<CODE
+CLASS="FUNCTION"
+>setval</CODE
+>将不会通知
+   其他会话，直到它们用尽了任何已缓存的预分配值。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN81705"
+></A
+><H2
+>示例</H2
+><P
+>   创建一个称作<TT
+CLASS="LITERAL"
+>serial</TT
+>的上升序列，从 101 开始：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>CREATE SEQUENCE serial START 101;</PRE
+><P>
+  </P
+><P
+>   从这个序列中选取下一个数字：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>SELECT nextval('serial');
+
+ nextval
+---------
+     101</PRE
+><P>
+  </P
+><P
+>   再从这个序列中选取下一个数字：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>SELECT nextval('serial');
+
+ nextval
+---------
+     102</PRE
+><P>
+  </P
+><P
+>   在一个<TT
+CLASS="COMMAND"
+>INSERT</TT
+>命令中使用这个序列：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>INSERT INTO distributors VALUES (nextval('serial'), 'nothing');</PRE
+><P>
+  </P
+><P
+>   在一次<TT
+CLASS="COMMAND"
+>COPY FROM</TT
+>后更新新列值：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>BEGIN;
+COPY distributors FROM 'input_file';
+SELECT setval('serial', max(id)) FROM distributors;
+END;</PRE
+><P></P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN81720"
+></A
+><H2
+>兼容性</H2
+><P
+>   <TT
+CLASS="COMMAND"
+>CREATE SEQUENCE</TT
+>符合<ACRONYM
+CLASS="ACRONYM"
+>SQL</ACRONYM
+>
+   标准，不过下列除外：
+   <P
+></P
+></P><UL
+><LI
+><P
+>      不支持标准中的<TT
+CLASS="LITERAL"
+>AS <TT
+CLASS="REPLACEABLE"
+><I
+>data_type</I
+></TT
+></TT
+>表达式。
+     </P
+></LI
+><LI
+><P
+>      使用<CODE
+CLASS="FUNCTION"
+>nextval()</CODE
+>而不是标准的<TT
+CLASS="COMMAND"
+>NEXT VALUE FOR</TT
+>
+      表达式获取下一个值。
+     </P
+></LI
+><LI
+><P
+>      <TT
+CLASS="LITERAL"
+>OWNED BY</TT
+>子句是一种<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>扩展。
+     </P
+></LI
+></UL
+><P></P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN81738"
+></A
+><H2
+>另见</H2
+><A
+HREF="sql-altersequence.html"
+>ALTER SEQUENCE</A
+>, <A
+HREF="sql-dropsequence.html"
+>DROP SEQUENCE</A
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-createschema.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="sql-createserver.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>CREATE SCHEMA</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>CREATE SERVER</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

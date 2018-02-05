@@ -1,0 +1,487 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>file_fdw</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="额外提供的模块"
+HREF="contrib.html"><LINK
+REL="PREVIOUS"
+TITLE="earthdistance"
+HREF="earthdistance.html"><LINK
+REL="NEXT"
+TITLE="fuzzystrmatch"
+HREF="fuzzystrmatch.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/file-fdw.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="earthdistance"
+HREF="earthdistance.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="contrib.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#38468;&#24405; F. 额外提供的模块</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="fuzzystrmatch"
+HREF="fuzzystrmatch.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="FILE-FDW"
+>F.14. file_fdw</A
+></H1
+><P
+>  <TT
+CLASS="FILENAME"
+>file_fdw</TT
+>模块提供外部数据包装器<CODE
+CLASS="FUNCTION"
+>file_fdw</CODE
+>，它能被用来访问服务器的文件系统中的数据文件。数据文件必须是能够被<TT
+CLASS="COMMAND"
+>COPY FROM</TT
+>读取的格式，详见<A
+HREF="sql-copy.html"
+>COPY</A
+>。当前只能读取这种数据文件。
+ </P
+><P
+>  用这个包装器创建的一个外部表可以有下列选项：
+ </P
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="LITERAL"
+>filename</TT
+></DT
+><DD
+><P
+>     指定要被读取的文件。必须。必须是一个绝对路径名。
+    </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>format</TT
+></DT
+><DD
+><P
+>     指定文件的格式，和<TT
+CLASS="COMMAND"
+>COPY</TT
+>的<TT
+CLASS="LITERAL"
+>FORMAT</TT
+>选项相同。
+    </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>header</TT
+></DT
+><DD
+><P
+>     指定该文件是否具有一个头部行，和<TT
+CLASS="COMMAND"
+>COPY</TT
+>的<TT
+CLASS="LITERAL"
+>HEADER</TT
+>选项相同。
+    </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>delimiter</TT
+></DT
+><DD
+><P
+>     指定该文件的定界符字符，和<TT
+CLASS="COMMAND"
+>COPY</TT
+>的<TT
+CLASS="LITERAL"
+>DELIMITER</TT
+>选项相同。
+    </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>quote</TT
+></DT
+><DD
+><P
+>     指定该文件的引用字符，和<TT
+CLASS="COMMAND"
+>COPY</TT
+>的<TT
+CLASS="LITERAL"
+>QUOTE</TT
+>选项相同。
+    </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>escape</TT
+></DT
+><DD
+><P
+>     指定该文件的转义字符，和<TT
+CLASS="COMMAND"
+>COPY</TT
+>的<TT
+CLASS="LITERAL"
+>ESCAPE</TT
+>选项相同。
+    </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>null</TT
+></DT
+><DD
+><P
+>     指定该文件的空字符串，和<TT
+CLASS="COMMAND"
+>COPY</TT
+>的<TT
+CLASS="LITERAL"
+>NULL</TT
+>选项相同。
+    </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>encoding</TT
+></DT
+><DD
+><P
+>     指定该文件的编码，和<TT
+CLASS="COMMAND"
+>COPY</TT
+>的<TT
+CLASS="LITERAL"
+>ENCODING</TT
+>选项相同。
+    </P
+></DD
+></DL
+></DIV
+><P
+>  注意虽然<TT
+CLASS="COMMAND"
+>COPY</TT
+>允许诸如 OIDS 和 HEADER 的选项不用一个相应的值指定，但是外部数据包装器语法要求在所有情况下都出现一个值。要激活通常不提供值的<TT
+CLASS="COMMAND"
+>COPY</TT
+>选项，你可以传递值 TRUE。
+ </P
+><P
+>  使用这个包装器创建的表的一列可以具有下列选项：
+ </P
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="LITERAL"
+>force_not_null</TT
+></DT
+><DD
+><P
+>     这是一个布尔选项。如果为真，它指定该列的值不应该与空字符串匹配（也就是文件级别的<TT
+CLASS="LITERAL"
+>null</TT
+>选项）。这和把该列放在<TT
+CLASS="COMMAND"
+>COPY</TT
+>的<TT
+CLASS="LITERAL"
+>FORCE_NOT_NULL</TT
+>选项中具有相同的效果。
+    </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>force_null</TT
+></DT
+><DD
+><P
+>     这是一个布尔选项。如果为真，它指定匹配空值字符串的列值会被返回为<TT
+CLASS="LITERAL"
+>NULL</TT
+>，
+     即使该值被引号引用。如果没有这个选项，只有匹配空值字符串的未被引用的值会被返回为
+     <TT
+CLASS="LITERAL"
+>NULL</TT
+>。这和在<TT
+CLASS="COMMAND"
+>COPY</TT
+>的<TT
+CLASS="LITERAL"
+>FORCE_NULL</TT
+>
+     选项中列出该列有同样的效果。
+    </P
+></DD
+></DL
+></DIV
+><P
+>  <TT
+CLASS="COMMAND"
+>COPY</TT
+>的<TT
+CLASS="LITERAL"
+>OIDS</TT
+>和<TT
+CLASS="LITERAL"
+>FORCE_QUOTE</TT
+>选项当前不被<TT
+CLASS="LITERAL"
+>file_fdw</TT
+>支持。
+ </P
+><P
+>  这些选项只能为一个外部表及其列指定，而不能在<TT
+CLASS="LITERAL"
+>file_fdw</TT
+>外部数据包装器的选项中指定，也不能在使用该包装器的服务器或者用户映射的选项中指定。
+ </P
+><P
+>  出于安全原因，改变表级别的选项要求超级用户特权：只有超级用户能够判断读取哪个文件。原则上非超级用户可以被允许改变其它选项，但是当前还不支持这样做。
+ </P
+><P
+>  对于一个使用<TT
+CLASS="LITERAL"
+>file_fdw</TT
+>的外部表，<TT
+CLASS="COMMAND"
+>EXPLAIN</TT
+>显示要被读取的文件名。除非指定<TT
+CLASS="LITERAL"
+>COSTS OFF</TT
+>，文件尺寸（以字节计）也会被显示。
+ </P
+><DIV
+CLASS="EXAMPLE"
+><A
+NAME="AEN176546"
+></A
+><P
+><B
+>&#20363; F-1. 为 PostgreSQL CSV 日志创建一个外部表</B
+></P
+><P
+>   一种<TT
+CLASS="LITERAL"
+>file_fdw</TT
+>的用法是把可用的 PostgreSQL 活动日志变成一个表用于查询。要这样做，首先你必须正在将日志记录到一个 CSV 文件，这里我们称其为<TT
+CLASS="LITERAL"
+>pglog.csv</TT
+>。首先，将<TT
+CLASS="LITERAL"
+>file_fdw</TT
+>安装为一个扩展：
+  </P
+><PRE
+CLASS="PROGRAMLISTING"
+>CREATE EXTENSION file_fdw;</PRE
+><P
+>   然后创建一个外部服务器：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>CREATE SERVER pglog FOREIGN DATA WRAPPER file_fdw;</PRE
+><P>
+  </P
+><P
+>   现在你已经准备好创建外部数据表。使用<TT
+CLASS="COMMAND"
+>CREATE FOREIGN TABLE</TT
+>命令，你将需要为该表定义列、CSV 文件名以及格式：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>CREATE FOREIGN TABLE pglog (
+  log_time timestamp(3) with time zone,
+  user_name text,
+  database_name text,
+  process_id integer,
+  connection_from text,
+  session_id text,
+  session_line_num bigint,
+  command_tag text,
+  session_start_time timestamp with time zone,
+  virtual_transaction_id text,
+  transaction_id bigint,
+  error_severity text,
+  sql_state_code text,
+  message text,
+  detail text,
+  hint text,
+  internal_query text,
+  internal_query_pos integer,
+  context text,
+  query text,
+  query_pos integer,
+  location text,
+  application_name text
+) SERVER pglog
+OPTIONS ( filename '/home/josh/9.1/data/pg_log/pglog.csv', format 'csv' );</PRE
+><P>
+  </P
+><P
+>   就是这样了 &mdash; 现在你能够直接查询你的日志了。当然，在生产中你会需要定义一些方法来处理日志轮转。
+  </P
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="earthdistance.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="fuzzystrmatch.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>earthdistance</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="contrib.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>fuzzystrmatch</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

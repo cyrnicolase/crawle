@@ -1,0 +1,295 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>btree_gin</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="额外提供的模块"
+HREF="contrib.html"><LINK
+REL="PREVIOUS"
+TITLE="bloom"
+HREF="bloom.html"><LINK
+REL="NEXT"
+TITLE="btree_gist"
+HREF="btree-gist.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/btree-gin.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="bloom"
+HREF="bloom.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="contrib.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#38468;&#24405; F. 额外提供的模块</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="btree_gist"
+HREF="btree-gist.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="BTREE-GIN"
+>F.5. btree_gin</A
+></H1
+><P
+>  <TT
+CLASS="FILENAME"
+>btree_gin</TT
+>提供了一个为数据类型
+  <TT
+CLASS="TYPE"
+>int2</TT
+>、<TT
+CLASS="TYPE"
+>int4</TT
+>、<TT
+CLASS="TYPE"
+>int8</TT
+>、<TT
+CLASS="TYPE"
+>float4</TT
+>、
+  <TT
+CLASS="TYPE"
+>float8</TT
+>、<TT
+CLASS="TYPE"
+>timestamp with time zone</TT
+>、
+  <TT
+CLASS="TYPE"
+>timestamp without time zone</TT
+>、<TT
+CLASS="TYPE"
+>time with time zone</TT
+>、
+  <TT
+CLASS="TYPE"
+>time without time zone</TT
+>、<TT
+CLASS="TYPE"
+>date</TT
+>、<TT
+CLASS="TYPE"
+>interval</TT
+>、
+  <TT
+CLASS="TYPE"
+>oid</TT
+>、<TT
+CLASS="TYPE"
+>money</TT
+>、<TT
+CLASS="TYPE"
+>"char"</TT
+>、
+  <TT
+CLASS="TYPE"
+>varchar</TT
+>、<TT
+CLASS="TYPE"
+>text</TT
+>、<TT
+CLASS="TYPE"
+>bytea</TT
+>、<TT
+CLASS="TYPE"
+>bit</TT
+>、
+  <TT
+CLASS="TYPE"
+>varbit</TT
+>、<TT
+CLASS="TYPE"
+>macaddr</TT
+>、<TT
+CLASS="TYPE"
+>inet</TT
+>和<TT
+CLASS="TYPE"
+>cidr</TT
+>实现 B 树等价行为的 GIN 操作符类例子。
+ </P
+><P
+>  通常，这些操作符类不会比等效的标准 B 树索引方法更好，并且它们缺少标准 B 树代码的一个主要特性：强制一致性的能力。但是，它们有助于 GIN 测试并且有助于作为开发其他 GIN 操作符类的基础。另外，对于测试一个 GIN 可索引的列和一个 B 树可索引的列的查询，创建一个使用这些操作符类之一的多列 GIN 索引要比创建必须通过位图 AND 组合在一起的两个独立索引要更有效。
+ </P
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN174760"
+>F.5.1. 用法示例</A
+></H2
+><PRE
+CLASS="PROGRAMLISTING"
+>CREATE TABLE test (a int4);
+-- create index
+CREATE INDEX testidx ON test USING GIN (a);
+-- query
+SELECT * FROM test WHERE a &lt; 10;</PRE
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN174763"
+>F.5.2. 作者</A
+></H2
+><P
+>   Teodor Sigaev（<CODE
+CLASS="EMAIL"
+>&#60;<A
+HREF="mailto:teodor@stack.net"
+>teodor@stack.net</A
+>&#62;</CODE
+>）和 Oleg Bartunov（<CODE
+CLASS="EMAIL"
+>&#60;<A
+HREF="mailto:oleg@sai.msu.su"
+>oleg@sai.msu.su</A
+>&#62;</CODE
+>）。更多信息请见<A
+HREF="http://www.sai.msu.su/~megera/oddmuse/index.cgi/Gin"
+TARGET="_top"
+>http://www.sai.msu.su/~megera/oddmuse/index.cgi/Gin</A
+>。
+  </P
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="bloom.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="btree-gist.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>bloom</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="contrib.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>btree_gist</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

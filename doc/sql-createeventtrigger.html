@@ -1,0 +1,420 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>CREATE EVENT TRIGGER</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="SQL 命令"
+HREF="sql-commands.html"><LINK
+REL="PREVIOUS"
+TITLE="CREATE DOMAIN"
+HREF="sql-createdomain.html"><LINK
+REL="NEXT"
+TITLE="CREATE EXTENSION"
+HREF="sql-createextension.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="REFENTRY"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/ref/create_event_trigger.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="CREATE DOMAIN"
+HREF="sql-createdomain.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="CREATE EXTENSION"
+HREF="sql-createextension.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="SQL-CREATEEVENTTRIGGER"
+></A
+>CREATE EVENT TRIGGER</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN78866"
+></A
+><H2
+>&#21517;&#31216;</H2
+>CREATE EVENT TRIGGER&nbsp;--&nbsp;定义一个新的事件触发器</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN78869"
+></A
+><H2
+>&#22823;&#32434;</H2
+><PRE
+CLASS="SYNOPSIS"
+>CREATE EVENT TRIGGER <TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+>
+    ON <TT
+CLASS="REPLACEABLE"
+><I
+>event</I
+></TT
+>
+    [ WHEN <TT
+CLASS="REPLACEABLE"
+><I
+>filter_variable</I
+></TT
+> IN (filter_value [, ... ]) [ AND ... ] ]
+    EXECUTE PROCEDURE <TT
+CLASS="REPLACEABLE"
+><I
+>function_name</I
+></TT
+>()</PRE
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN78875"
+></A
+><H2
+>描述</H2
+><P
+>   <TT
+CLASS="COMMAND"
+>CREATE EVENT TRIGGER</TT
+>创建一个新的事件触发器。
+   只要指定的事件发生并且与该触发器相关的<TT
+CLASS="LITERAL"
+>WHEN</TT
+>条件（如果有）被
+   满足，该触发器的函数将被执行。关于事件触发器的一般性介绍可见
+   <A
+HREF="event-triggers.html"
+>第 38 &#31456;</A
+>。创建事件触发器的用户会成为它的拥有者。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN78881"
+></A
+><H2
+>参数</H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+></DT
+><DD
+><P
+>      给新触发器的名称。在该数据库中这个名称必须唯一。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>event</I
+></TT
+></DT
+><DD
+><P
+>      会触发对给定函数调用的事件名称。更多事件名称的信息请见
+      <A
+HREF="event-trigger-definition.html"
+>第 38.1 &#33410;</A
+>。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>filter_variable</I
+></TT
+></DT
+><DD
+><P
+>      用来过滤事件的变量名称。这可以用来限制触发器只为它支持的那一部分
+      情况引发。当前唯一支持的
+      <TT
+CLASS="REPLACEABLE"
+><I
+>filter_variable</I
+></TT
+>
+      是<TT
+CLASS="LITERAL"
+>TAG</TT
+>。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>filter_value</I
+></TT
+></DT
+><DD
+><P
+>      与该触发器要为其引发的
+      <TT
+CLASS="REPLACEABLE"
+><I
+>filter_variable</I
+></TT
+>相关联
+      的一个值列表。对于<TT
+CLASS="LITERAL"
+>TAG</TT
+>，这表示一个命令标签列表（例如
+      <TT
+CLASS="LITERAL"
+>'DROP FUNCTION'</TT
+>）。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>function_name</I
+></TT
+></DT
+><DD
+><P
+>      一个用户提供的函数，它被声明为没有参数并且返回类型
+      <TT
+CLASS="LITERAL"
+>event_trigger</TT
+>。
+     </P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="SQL-CREATEEVENTTRIGGER-NOTES"
+></A
+><H2
+>注解</H2
+><P
+>   只有超级用户能创建事件触发器。
+  </P
+><P
+>   在单用户模式（见<A
+HREF="app-postgres.html"
+><SPAN
+CLASS="APPLICATION"
+>postgres</SPAN
+></A
+>）中事件触发器被禁用。
+   如果一个错误的事件触发器禁用了数据库让你甚至无法删除它，可以重启到
+   单用户模式，这样你就能删除它。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="SQL-CREATEEVENTTRIGGER-EXAMPLES"
+></A
+><H2
+>示例</H2
+><P
+>   禁止执行任何<A
+HREF="ddl.html"
+>DDL</A
+>命令：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>CREATE OR REPLACE FUNCTION abort_any_command()
+  RETURNS event_trigger
+ LANGUAGE plpgsql
+  AS $$
+BEGIN
+  RAISE EXCEPTION 'command % is disabled', tg_tag;
+END;
+$$;
+
+CREATE EVENT TRIGGER abort_ddl ON ddl_command_start
+   EXECUTE PROCEDURE abort_any_command();</PRE
+><P></P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="SQL-CREATEEVENTTRIGGER-COMPATIBILITY"
+></A
+><H2
+>兼容性</H2
+><P
+>   在 SQL 标准中没有
+   <TT
+CLASS="COMMAND"
+>CREATE EVENT TRIGGER</TT
+>语句。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN78930"
+></A
+><H2
+>另见</H2
+><A
+HREF="sql-altereventtrigger.html"
+>ALTER EVENT TRIGGER</A
+>, <A
+HREF="sql-dropeventtrigger.html"
+>DROP EVENT TRIGGER</A
+>, <A
+HREF="sql-createfunction.html"
+>CREATE FUNCTION</A
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-createdomain.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="sql-createextension.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>CREATE DOMAIN</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>CREATE EXTENSION</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

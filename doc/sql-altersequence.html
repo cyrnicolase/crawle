@@ -1,0 +1,814 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>ALTER SEQUENCE</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="SQL 命令"
+HREF="sql-commands.html"><LINK
+REL="PREVIOUS"
+TITLE="ALTER SCHEMA"
+HREF="sql-alterschema.html"><LINK
+REL="NEXT"
+TITLE="ALTER SERVER"
+HREF="sql-alterserver.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="REFENTRY"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/ref/alter_sequence.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="ALTER SCHEMA"
+HREF="sql-alterschema.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="ALTER SERVER"
+HREF="sql-alterserver.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="SQL-ALTERSEQUENCE"
+></A
+>ALTER SEQUENCE</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN74693"
+></A
+><H2
+>&#21517;&#31216;</H2
+>ALTER SEQUENCE&nbsp;--&nbsp;   更改一个序列发生器的定义
+  </DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN74696"
+></A
+><H2
+>&#22823;&#32434;</H2
+><PRE
+CLASS="SYNOPSIS"
+>ALTER SEQUENCE [ IF EXISTS ] <TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+> [ INCREMENT [ BY ] <TT
+CLASS="REPLACEABLE"
+><I
+>increment</I
+></TT
+> ]
+    [ MINVALUE <TT
+CLASS="REPLACEABLE"
+><I
+>minvalue</I
+></TT
+> | NO MINVALUE ] [ MAXVALUE <TT
+CLASS="REPLACEABLE"
+><I
+>maxvalue</I
+></TT
+> | NO MAXVALUE ]
+    [ START [ WITH ] <TT
+CLASS="REPLACEABLE"
+><I
+>start</I
+></TT
+> ]
+    [ RESTART [ [ WITH ] <TT
+CLASS="REPLACEABLE"
+><I
+>restart</I
+></TT
+> ] ]
+    [ CACHE <TT
+CLASS="REPLACEABLE"
+><I
+>cache</I
+></TT
+> ] [ [ NO ] CYCLE ]
+    [ OWNED BY { <TT
+CLASS="REPLACEABLE"
+><I
+>table_name</I
+></TT
+>.<TT
+CLASS="REPLACEABLE"
+><I
+>column_name</I
+></TT
+> | NONE } ]
+ALTER SEQUENCE [ IF EXISTS ] <TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+> OWNER TO { <TT
+CLASS="REPLACEABLE"
+><I
+>new_owner</I
+></TT
+> | CURRENT_USER | SESSION_USER }
+ALTER SEQUENCE [ IF EXISTS ] <TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+> RENAME TO <TT
+CLASS="REPLACEABLE"
+><I
+>new_name</I
+></TT
+>
+ALTER SEQUENCE [ IF EXISTS ] <TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+> SET SCHEMA <TT
+CLASS="REPLACEABLE"
+><I
+>new_schema</I
+></TT
+></PRE
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN74713"
+></A
+><H2
+>描述</H2
+><P
+>   <TT
+CLASS="COMMAND"
+>ALTER SEQUENCE</TT
+>更改一个现有序列发生器的参数。
+   任何没有在<TT
+CLASS="COMMAND"
+>ALTER SEQUENCE</TT
+>命令中明确设置的参数
+   保持它们之前的设置。
+  </P
+><P
+>   要使用<TT
+CLASS="COMMAND"
+>ALTER SEQUENCE</TT
+>，你必须拥有该序列。要更改一个序列
+   的模式，你还必须拥有新模式上的<TT
+CLASS="LITERAL"
+>CREATE</TT
+>特权。要更改拥有者，你还必须
+   是新拥有角色的一个直接或者间接成员，并且该角色必须具有该域的模式上的
+   <TT
+CLASS="LITERAL"
+>CREATE</TT
+>特权（这些限制强制修改拥有者不能做一些通过删除和重
+   建该序列做不到的事情。不过，一个超级用户怎么都能更改任何序列的所有权。）。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN74722"
+></A
+><H2
+>参数</H2
+><P
+>    <P
+></P
+></P><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+></DT
+><DD
+><P
+>        要修改的序列的名称（可以是模式限定的）。
+       </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>IF EXISTS</TT
+></DT
+><DD
+><P
+>        在序列不存在时不要抛出一个错误。这种情况下会发出一个提示。
+       </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>increment</I
+></TT
+></DT
+><DD
+><P
+>        子句<TT
+CLASS="LITERAL"
+>INCREMENT BY <TT
+CLASS="REPLACEABLE"
+><I
+>increment</I
+></TT
+></TT
+>是可选的。
+        一个正值将产生一个上升序列，一个负值会产生一个下降序列。如果
+        没有指定，旧的增量值将被保持。
+       </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>minvalue</I
+></TT
+><BR><TT
+CLASS="LITERAL"
+>NO MINVALUE</TT
+></DT
+><DD
+><P
+>        可选的子句<TT
+CLASS="LITERAL"
+>MINVALUE <TT
+CLASS="REPLACEABLE"
+><I
+>minvalue</I
+></TT
+></TT
+>决定一个序列
+        能产生的最小值。如果指定了<TT
+CLASS="LITERAL"
+>NO
+        MINVALUE</TT
+>，上升序列和下降序列的默认值分别是 1 和
+        -2<SUP
+>63</SUP
+>-1。如果这些选项都没有被指定，将保持当前的
+        最小值。
+       </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>maxvalue</I
+></TT
+><BR><TT
+CLASS="LITERAL"
+>NO MAXVALUE</TT
+></DT
+><DD
+><P
+>        可选的子句<TT
+CLASS="LITERAL"
+>MAXVALUE <TT
+CLASS="REPLACEABLE"
+><I
+>maxvalue</I
+></TT
+></TT
+>决定一个序列
+        能产生的最大值。如果指定了<TT
+CLASS="LITERAL"
+>NO
+        MAXVALUE</TT
+>，上升序列和下降序列的默认值分别是
+         2<SUP
+>63</SUP
+>-1 和 -1。如果这些选项都没有被指定，将保持当前的
+        最大值。
+       </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>start</I
+></TT
+></DT
+><DD
+><P
+>        可选的子句<TT
+CLASS="LITERAL"
+>START WITH <TT
+CLASS="REPLACEABLE"
+><I
+>start</I
+></TT
+></TT
+>更改该序列被记录的开始值。
+        这对于<SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>当前</I
+></SPAN
+>序列值没有影响，它会简单地设置
+        未来<TT
+CLASS="COMMAND"
+>ALTER SEQUENCE RESTART</TT
+>命令将会使用的值。
+       </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>restart</I
+></TT
+></DT
+><DD
+><P
+>        可选的子句<TT
+CLASS="LITERAL"
+>RESTART [ WITH <TT
+CLASS="REPLACEABLE"
+><I
+>restart</I
+></TT
+> ]</TT
+>更改该序列的
+        当前值。这等效于用<TT
+CLASS="LITERAL"
+>is_called</TT
+> = <TT
+CLASS="LITERAL"
+>false</TT
+>
+        调用<CODE
+CLASS="FUNCTION"
+>setval</CODE
+>函数：被指定的值将会被
+        <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>下一次</I
+></SPAN
+><CODE
+CLASS="FUNCTION"
+>nextval</CODE
+>调用返回。写上没有
+        <TT
+CLASS="REPLACEABLE"
+><I
+>restart</I
+></TT
+>值的
+        <TT
+CLASS="LITERAL"
+>RESTART</TT
+>等效于提供被
+        <TT
+CLASS="COMMAND"
+>CREATE SEQUENCE</TT
+>记录的或者上一次被
+        <TT
+CLASS="COMMAND"
+>ALTER SEQUENCE START WITH</TT
+>设置的开始值。
+       </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>cache</I
+></TT
+></DT
+><DD
+><P
+>        子句<TT
+CLASS="LITERAL"
+>CACHE <TT
+CLASS="REPLACEABLE"
+><I
+>cache</I
+></TT
+></TT
+>使得序列数字被预先
+        分配并且保存在内存中以便更快的访问。最小值是 1（每次只产生一个值，即
+        无缓存）。如果没有指定，旧的缓冲值将被保持。
+       </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>CYCLE</TT
+></DT
+><DD
+><P
+>        可选的<TT
+CLASS="LITERAL"
+>CYCLE</TT
+>关键词可以被用来允许该序列在达到
+        <TT
+CLASS="REPLACEABLE"
+><I
+>maxvalue</I
+></TT
+>（上升序列）或
+        <TT
+CLASS="REPLACEABLE"
+><I
+>minvalue</I
+></TT
+>（下降序列）时
+        回卷。如果到达该限制，下一个被产生的数字将分别是
+        <TT
+CLASS="REPLACEABLE"
+><I
+>minvalue</I
+></TT
+>或者
+        <TT
+CLASS="REPLACEABLE"
+><I
+>maxvalue</I
+></TT
+>。
+       </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>NO CYCLE</TT
+></DT
+><DD
+><P
+>        如果指定了可选的<TT
+CLASS="LITERAL"
+>NO CYCLE</TT
+>关键词，任何在该
+        序列到达其最大值后的<CODE
+CLASS="FUNCTION"
+>nextval</CODE
+>调用将会返回
+        一个错误。如果既没有指定<TT
+CLASS="LITERAL"
+>CYCLE</TT
+>也没有指定
+        <TT
+CLASS="LITERAL"
+>NO CYCLE</TT
+>，旧的循环行为将被保持。
+       </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>OWNED BY</TT
+> <TT
+CLASS="REPLACEABLE"
+><I
+>table_name</I
+></TT
+>.<TT
+CLASS="REPLACEABLE"
+><I
+>column_name</I
+></TT
+><BR><TT
+CLASS="LITERAL"
+>OWNED BY NONE</TT
+></DT
+><DD
+><P
+>      <TT
+CLASS="LITERAL"
+>OWNED BY</TT
+>选项导致该序列与一个特定的表列相关联，
+      这样如果该列（或者整个表）被删除，该序列也会被自动删除。如果指定，
+      这种关联会替代之前为该序列指定的任何关联。被指定的表必须具有相同的
+      拥有者并且与该序列在同一个模式中。指定
+      <TT
+CLASS="LITERAL"
+>OWNED BY NONE</TT
+>可以移除任何现有的关联，让该序列
+      <SPAN
+CLASS="QUOTE"
+>"自立"</SPAN
+>。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>new_owner</I
+></TT
+></DT
+><DD
+><P
+>      该序列的新拥有者的用户名。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>new_name</I
+></TT
+></DT
+><DD
+><P
+>      该序列的新名称。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>new_schema</I
+></TT
+></DT
+><DD
+><P
+>      该序列的新模式。
+     </P
+></DD
+></DL
+></DIV
+><P>
+   </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN74843"
+></A
+><H2
+>注解</H2
+><P
+>   为了避免从同一个序列获得数字的并发事务阻塞，
+   <TT
+CLASS="COMMAND"
+>ALTER SEQUENCE</TT
+>在该序列生成参数上的效果永远不会
+   被回滚，那些更改立刻生效并且无法逆转。不过，<TT
+CLASS="LITERAL"
+>OWNED BY</TT
+>、
+   <TT
+CLASS="LITERAL"
+>OWNER TO</TT
+>、<TT
+CLASS="LITERAL"
+>RENAME TO</TT
+>和<TT
+CLASS="LITERAL"
+>SET SCHEMA</TT
+>
+   子句会导致普通目录被更新并且无法被回滚。
+  </P
+><P
+>   <TT
+CLASS="COMMAND"
+>ALTER SEQUENCE</TT
+>将不会立即影响除当前后端外
+   其他后端中的<CODE
+CLASS="FUNCTION"
+>nextval</CODE
+>结果，因为它们有预分配（缓存）的序列
+   值。在注意到序列生成参数被更改之前它们将用尽所有缓存的值。当前后端将被
+   立刻影响。
+  </P
+><P
+>   <TT
+CLASS="COMMAND"
+>ALTER SEQUENCE</TT
+>不会影响该序列的
+   <CODE
+CLASS="FUNCTION"
+>currval</CODE
+>状态（在
+   <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+> 8.3 之前有时会影响）。
+  </P
+><P
+>   由于历史原因，<TT
+CLASS="COMMAND"
+>ALTER TABLE</TT
+>也可以被用于序列，
+   但是只有等效于上述形式的<TT
+CLASS="COMMAND"
+>ALTER TABLE</TT
+>变体才被
+   允许用于序列。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN74861"
+></A
+><H2
+>示例</H2
+><P
+>   在 105 重启一个被称为<TT
+CLASS="LITERAL"
+>serial</TT
+>的序列：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>ALTER SEQUENCE serial RESTART WITH 105;</PRE
+><P></P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN74866"
+></A
+><H2
+>兼容性</H2
+><P
+>   <TT
+CLASS="COMMAND"
+>ALTER SEQUENCE</TT
+>符合<ACRONYM
+CLASS="ACRONYM"
+>SQL</ACRONYM
+>
+   标准，不过<TT
+CLASS="LITERAL"
+>START WITH</TT
+>、
+   <TT
+CLASS="LITERAL"
+>OWNED BY</TT
+>、<TT
+CLASS="LITERAL"
+>OWNER TO</TT
+>、<TT
+CLASS="LITERAL"
+>RENAME TO</TT
+>
+   以及<TT
+CLASS="LITERAL"
+>SET SCHEMA</TT
+>子句是
+   <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>扩展。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN74877"
+></A
+><H2
+>另见</H2
+><A
+HREF="sql-createsequence.html"
+>CREATE SEQUENCE</A
+>, <A
+HREF="sql-dropsequence.html"
+>DROP SEQUENCE</A
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-alterschema.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="sql-alterserver.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>ALTER SCHEMA</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>ALTER SERVER</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

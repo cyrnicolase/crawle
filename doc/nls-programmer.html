@@ -1,0 +1,453 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>给编程者</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="本国语言支持"
+HREF="nls.html"><LINK
+REL="PREVIOUS"
+TITLE="给翻译者"
+HREF="nls-translator.html"><LINK
+REL="NEXT"
+TITLE="编写一个过程语言处理器"
+HREF="plhandler.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/nls.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="给翻译者"
+HREF="nls-translator.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="nls.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#31456; 53. 本国语言支持</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="编写一个过程语言处理器"
+HREF="plhandler.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="NLS-PROGRAMMER"
+>53.2. 给编程者</A
+></H1
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="NLS-MECHANICS"
+>53.2.1. 技术</A
+></H2
+><P
+>   这一节描述如何在<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>发布中的一个程序或库中实现本地语言支持。当前，这些知识只适用于 C 程序。
+  </P
+><DIV
+CLASS="PROCEDURE"
+><P
+><B
+>为一个程序增加 NLS 支持</B
+></P
+><OL
+TYPE="1"
+><LI
+CLASS="STEP"
+><P
+>     将这里的代码插入到该程序的启动序列中：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>#ifdef ENABLE_NLS
+#include &lt;locale.h&gt;
+#endif
+
+...
+
+#ifdef ENABLE_NLS
+setlocale(LC_ALL, "");
+bindtextdomain("<TT
+CLASS="REPLACEABLE"
+><I
+>progname</I
+></TT
+>", LOCALEDIR);
+textdomain("<TT
+CLASS="REPLACEABLE"
+><I
+>progname</I
+></TT
+>");
+#endif</PRE
+><P>
+     （<TT
+CLASS="REPLACEABLE"
+><I
+>程序名</I
+></TT
+>实际上可以自由选择）。
+    </P
+></LI
+><LI
+CLASS="STEP"
+><P
+>     不管在哪里找到一个可被翻译的消息，需要插入一个<CODE
+CLASS="FUNCTION"
+>gettext()</CODE
+>调用，例如：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>fprintf(stderr, "panic level %d\n", lvl);</PRE
+><P>
+     将被改成：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>fprintf(stderr, gettext("panic level %d\n"), lvl);</PRE
+><P>
+     （如果 NLS 支持没有被配置，<TT
+CLASS="SYMBOL"
+>gettext</TT
+>被定义为一个空操作）。
+    </P
+><P
+>     这容易增加很多混乱。一种常用的捷径是：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>#define _(x) gettext(x)</PRE
+><P>
+     如果该程序通过一个或几个函数（例如后端中的<CODE
+CLASS="FUNCTION"
+>ereport()</CODE
+>）完成他的大部分通信，则有另一种可行的解决方案。那么你可以在所有输入字符串上都内部调用这个函数<CODE
+CLASS="FUNCTION"
+>gettext</CODE
+>。
+    </P
+></LI
+><LI
+CLASS="STEP"
+><P
+>     在程序源码的目录中增加一个文件<TT
+CLASS="FILENAME"
+>nls.mk</TT
+>。这个文件将被读作一个 makefile。其中要创建下列变量赋值：
+
+     <P
+></P
+></P><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="VARNAME"
+>CATALOG_NAME</TT
+></DT
+><DD
+><P
+>         程序名，如<CODE
+CLASS="FUNCTION"
+>textdomain()</CODE
+>调用中所提供的。
+        </P
+></DD
+><DT
+><TT
+CLASS="VARNAME"
+>AVAIL_LANGUAGES</TT
+></DT
+><DD
+><P
+>         提供的翻译列表 &mdash; 初始为空。
+        </P
+></DD
+><DT
+><TT
+CLASS="VARNAME"
+>GETTEXT_FILES</TT
+></DT
+><DD
+><P
+>         包含可翻译字符串的文件列表，即那些被用<CODE
+CLASS="FUNCTION"
+>gettext</CODE
+>或另一种替代方案标记的文件。最终，这将包括该程序近乎所有的源文件。如果这个列表太长你可以让第一个<SPAN
+CLASS="QUOTE"
+>"file"</SPAN
+>变成一个<TT
+CLASS="LITERAL"
+>+</TT
+>并且第二个词变成一个包含那些文件名的文件，第二个词指向的文件中每个文件名一行。
+        </P
+></DD
+><DT
+><TT
+CLASS="VARNAME"
+>GETTEXT_TRIGGERS</TT
+></DT
+><DD
+><P
+>         为翻译者产生在其上工作的消息目录的工具需要知道，哪些函数调用包含可翻译的字符串。默认情况下，只有<CODE
+CLASS="FUNCTION"
+>gettext()</CODE
+>调用是已知的。如果你使用<CODE
+CLASS="FUNCTION"
+>_</CODE
+>或其他标识符，你需要在这里列出它们。如果可翻译的字符串不是第一个参数，该条目需要是形式<TT
+CLASS="LITERAL"
+>func:2</TT
+>（用于第二个参数）。如果你有一个支持复数消息的函数，该条目应该看起来像<TT
+CLASS="LITERAL"
+>func:1,2</TT
+>（标识单数和复数消息参数）。
+        </P
+></DD
+></DL
+></DIV
+><P>
+    </P
+></LI
+></OL
+></DIV
+><P
+>   构建系统将自动处理消息目录的编译和安装。
+  </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="NLS-GUIDELINES"
+>53.2.2. 消息书写指南</A
+></H2
+><P
+>   下面是一些书写已于翻译的消息的指南。
+
+   <P
+></P
+></P><UL
+><LI
+><P
+>      不要在运行时构建句子，如：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>printf("Files were %s.\n", flag ? "copied" : "removed");</PRE
+><P>
+      该句子中的词序可能在其他语言中完全不同。同样，即使你记得在每一个片段上调用<CODE
+CLASS="FUNCTION"
+>gettext()</CODE
+>，片段也可能不会被独立翻译得很好。更好的方式是复制一点代码，这样每个消息将被以一个整体被翻译。只有数字、文件名和这样的运行时变量才应该被在运行时插入到一个消息文本中。
+     </P
+></LI
+><LI
+><P
+>      由于类似的原因，下面的例子也不会工作：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>printf("copied %d file%s", n, n!=1 ? "s" : "");</PRE
+><P>
+      因为它假定了复数形式。如果你发现了这个问题，你可以这样解决它：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>if (n==1)
+    printf("copied 1 file");
+else
+    printf("copied %d files", n):</PRE
+><P>
+      然后会失望。某些语言有多于两种形式，使用某些古怪的规则。通常最好设计消息来避免一次性避免该问题，例如像这样：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>printf("number of copied files: %d", n);</PRE
+><P>
+     </P
+><P
+>      如果你真的想要构建一个正确的复数消息，有对此的支持，但是有点笨拙。当在<CODE
+CLASS="FUNCTION"
+>ereport()</CODE
+>中产生一个主要或细节错误消息时，你可以这样写一些东西：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>errmsg_plural("copied %d file",
+              "copied %d files",
+              n,
+              n)</PRE
+><P>
+      第一个参数是适用于英语单数形式的格式字符串，第二个参数是适用于英语复数形式的格式字符串，并且第三个参数是控制使用哪种复数形式的整数。后续参数针对每个格式字符串按照常规被格式化（通常，复数控制值也将是要被格式化的值之一，因此它必须被写两次）。在英语中只有<TT
+CLASS="REPLACEABLE"
+><I
+>n</I
+></TT
+>是否唯一有关系，但是在其他语言中可以有多种不同的复数形式。翻译者将两种英语形式看成一组并且有机会提供多个替补字符串，基于<TT
+CLASS="REPLACEABLE"
+><I
+>n</I
+></TT
+>的运行时值会选择其中合适的那一个。
+     </P
+><P
+>      如果你需要复数化一个不直接进入到<CODE
+CLASS="FUNCTION"
+>errmsg</CODE
+>或<CODE
+CLASS="FUNCTION"
+>errdetail</CODE
+>报告的消息，你必须使用底层函数<CODE
+CLASS="FUNCTION"
+>ngettext</CODE
+>。见 gettext 文档。
+     </P
+></LI
+><LI
+><P
+>      如果你想要与翻译者沟通（例如关于一个消息如何在其他输出上对齐），在该字符串出现的地方之前放上一个以<TT
+CLASS="LITERAL"
+>translator</TT
+>开始的注释，例如：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>/* translator: This message is not what it seems to be. */</PRE
+><P>
+      这些注释被复制到消息目录文件中，这样翻译者可以看到它们。
+     </P
+></LI
+></UL
+><P>
+  </P
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="nls-translator.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="plhandler.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>给翻译者</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="nls.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>编写一个过程语言处理器</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

@@ -1,0 +1,794 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>xml2</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="额外提供的模块"
+HREF="contrib.html"><LINK
+REL="PREVIOUS"
+TITLE="uuid-ossp"
+HREF="uuid-ossp.html"><LINK
+REL="NEXT"
+TITLE="额外提供的程序"
+HREF="contrib-prog.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/xml2.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="uuid-ossp"
+HREF="uuid-ossp.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="contrib.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#38468;&#24405; F. 额外提供的模块</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="额外提供的程序"
+HREF="contrib-prog.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="XML2"
+>F.46. xml2</A
+></H1
+><P
+>  <TT
+CLASS="FILENAME"
+>xml2</TT
+>模块提供 XPath 查询和 XSLT 功能。
+ </P
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN182398"
+>F.46.1. 废弃公告</A
+></H2
+><P
+>   从<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+> 8.3 开始，在核心服务器中就已经有基于 SQL/XML 标准的 XML 相关功能。那些功能覆盖了 XML 语法检查和 XPath 查询，这些本模块也能做，但是其 API 并不是完全兼容。这个模块已经有计划将从 PostgreSQL 的一个未来版本中移除，因此我们鼓励你尝试转换你的应用。如果你发现这个模块的某些功能在更新的 API 中没有合适的形式相对应，请向<CODE
+CLASS="EMAIL"
+>&#60;<A
+HREF="mailto:pgsql-hackers@postgresql.org"
+>pgsql-hackers@postgresql.org</A
+>&#62;</CODE
+>表达你的问题，这样该缺点会被进行改进。
+  </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN182403"
+>F.46.2. 函数的描述</A
+></H2
+><P
+>   <A
+HREF="xml2.html#XML2-FUNCTIONS-TABLE"
+>&#34920; F-35</A
+>展示了这个模块提供的函数。这些函数提供了直接的 XML 解析和 XPath 查询。所有参数都是<TT
+CLASS="TYPE"
+>text</TT
+>类型，因此为了简洁都没有被显示。
+  </P
+><DIV
+CLASS="TABLE"
+><A
+NAME="XML2-FUNCTIONS-TABLE"
+></A
+><P
+><B
+>&#34920; F-35. 函数</B
+></P
+><TABLE
+BORDER="1"
+CLASS="CALSTABLE"
+><COL><COL><COL><THEAD
+><TR
+><TH
+>函数</TH
+><TH
+>返回</TH
+><TH
+>描述</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+>       <CODE
+CLASS="FUNCTION"
+>        xml_is_well_formed(document)
+       </CODE
+>
+      </TD
+><TD
+>       <TT
+CLASS="TYPE"
+>bool</TT
+>
+      </TD
+><TD
+>       <P
+>        这个函数解析其参数中的文档文本并且在该文档是一个结构良好的 XML 时返回真（注意，在 PostgreSQL 8.2 之前，这个函数被称为<CODE
+CLASS="FUNCTION"
+>xml_valid()</CODE
+>。这是错误的名称，因为在 XML 中有效性和结构良好性具有不同的含义。旧的名称仍然有效，但是已被启用。）。
+       </P
+>
+      </TD
+></TR
+><TR
+><TD
+>        <CODE
+CLASS="FUNCTION"
+>         xpath_string(document, query)
+        </CODE
+>
+      </TD
+><TD
+>       <TT
+CLASS="TYPE"
+>text</TT
+>
+      </TD
+><TD
+ROWSPAN="3"
+>       <P
+>        这些函数在提供的文档上计算 XPath 查询，并且将结果造型为指定的类型。
+       </P
+>
+      </TD
+></TR
+><TR
+><TD
+>       <CODE
+CLASS="FUNCTION"
+>        xpath_number(document, query)
+       </CODE
+>
+      </TD
+><TD
+>       <TT
+CLASS="TYPE"
+>float4</TT
+>
+      </TD
+></TR
+><TR
+><TD
+>       <CODE
+CLASS="FUNCTION"
+>        xpath_bool(document, query)
+       </CODE
+>
+      </TD
+><TD
+>       <TT
+CLASS="TYPE"
+>bool</TT
+>
+      </TD
+></TR
+><TR
+><TD
+>        <CODE
+CLASS="FUNCTION"
+>         xpath_nodeset(document, query, toptag, itemtag)
+        </CODE
+>
+      </TD
+><TD
+>       <TT
+CLASS="TYPE"
+>text</TT
+>
+      </TD
+><TD
+>       <P
+>       这个函数在文档上计算查询并且把结果包装在 XML 标签中。如果结果是多值的，输出看起来是这样：
+</P><PRE
+CLASS="SYNOPSIS"
+>&lt;toptag&gt;
+&lt;itemtag&gt;Value 1 which could be an XML fragment&lt;/itemtag&gt;
+&lt;itemtag&gt;Value 2....&lt;/itemtag&gt;
+&lt;/toptag&gt;</PRE
+><P>
+        如果<TT
+CLASS="LITERAL"
+>toptag</TT
+>或者<TT
+CLASS="LITERAL"
+>itemtag</TT
+>是一个空字符串，相关的标签会被忽略。
+       </P
+>
+      </TD
+></TR
+><TR
+><TD
+>        <CODE
+CLASS="FUNCTION"
+>         xpath_nodeset(document, query)
+        </CODE
+>
+      </TD
+><TD
+>       <TT
+CLASS="TYPE"
+>text</TT
+>
+      </TD
+><TD
+>       <P
+>        与<CODE
+CLASS="FUNCTION"
+>xpath_nodeset(document, query, toptag, itemtag)</CODE
+>相似但是结果忽略两种标签。
+       </P
+>
+      </TD
+></TR
+><TR
+><TD
+>        <CODE
+CLASS="FUNCTION"
+>         xpath_nodeset(document, query, itemtag)
+        </CODE
+>
+      </TD
+><TD
+>       <TT
+CLASS="TYPE"
+>text</TT
+>
+      </TD
+><TD
+>       <P
+>        与<CODE
+CLASS="FUNCTION"
+>xpath_nodeset(document, query, toptag, itemtag)</CODE
+>相似但是结果忽略<TT
+CLASS="LITERAL"
+>toptag</TT
+>。
+       </P
+>
+      </TD
+></TR
+><TR
+><TD
+>        <CODE
+CLASS="FUNCTION"
+>         xpath_list(document, query, separator)
+        </CODE
+>
+      </TD
+><TD
+>       <TT
+CLASS="TYPE"
+>text</TT
+>
+      </TD
+><TD
+>       <P
+>        这个函数返回多个值，并且用指定的分隔符分隔，例如分隔符是<TT
+CLASS="LITERAL"
+>,</TT
+>，结果就是<TT
+CLASS="LITERAL"
+>Value 1,Value 2,Value 3</TT
+>。
+       </P
+>
+      </TD
+></TR
+><TR
+><TD
+>        <CODE
+CLASS="FUNCTION"
+>         xpath_list(document, query)
+        </CODE
+>
+      </TD
+><TD
+>       <TT
+CLASS="TYPE"
+>text</TT
+>
+      </TD
+><TD
+>       这是上面函数的一个包装器，它用<TT
+CLASS="LITERAL"
+>,</TT
+>作为分隔符。
+      </TD
+></TR
+></TBODY
+></TABLE
+></DIV
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN182485"
+>F.46.3. <TT
+CLASS="LITERAL"
+>xpath_table</TT
+></A
+></H2
+><PRE
+CLASS="SYNOPSIS"
+>xpath_table(text key, text document, text relation, text xpaths, text criteria) returns setof record</PRE
+><P
+>   <CODE
+CLASS="FUNCTION"
+>xpath_table</CODE
+>是一个表函数，它在一组文档中的每一个上计算一组 XPath 查询，并且将结果作为一个表返回。来自原始文档表的主键域被返回为结果的第一列，这样结果集可以被用于连接。其参数在<A
+HREF="xml2.html#XML2-XPATH-TABLE-PARAMETERS"
+>&#34920; F-36</A
+>中描述。
+  </P
+><DIV
+CLASS="TABLE"
+><A
+NAME="XML2-XPATH-TABLE-PARAMETERS"
+></A
+><P
+><B
+>&#34920; F-36. <CODE
+CLASS="FUNCTION"
+>xpath_table</CODE
+> 参数</B
+></P
+><TABLE
+BORDER="1"
+CLASS="CALSTABLE"
+><COL><COL><THEAD
+><TR
+><TH
+>参数</TH
+><TH
+>描述</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+><TT
+CLASS="PARAMETER"
+>key</TT
+></TD
+><TD
+>       <P
+>        <SPAN
+CLASS="QUOTE"
+>"key"</SPAN
+>域的名称 &mdash; 这只是被用作输出表中第一列的域，即它标识每一个输出行是来自于哪个记录（见下面有关多个值的注解）
+       </P
+>
+      </TD
+></TR
+><TR
+><TD
+><TT
+CLASS="PARAMETER"
+>document</TT
+></TD
+><TD
+>       <P
+>        包含 XML 文档的域的名称
+       </P
+>
+      </TD
+></TR
+><TR
+><TD
+><TT
+CLASS="PARAMETER"
+>relation</TT
+></TD
+><TD
+>       <P
+>        包含文档的表或视图的名称
+       </P
+>
+      </TD
+></TR
+><TR
+><TD
+><TT
+CLASS="PARAMETER"
+>xpaths</TT
+></TD
+><TD
+>       <P
+>        一个或多个 XPath 表达式，用<TT
+CLASS="LITERAL"
+>|</TT
+>分隔
+       </P
+>
+      </TD
+></TR
+><TR
+><TD
+><TT
+CLASS="PARAMETER"
+>criteria</TT
+></TD
+><TD
+>       <P
+>        WHERE 子句的内容。这不能被忽略，因此如果你想要处理关系中的所有行，可以使用<TT
+CLASS="LITERAL"
+>true</TT
+>或<TT
+CLASS="LITERAL"
+>1=1</TT
+>
+       </P
+>
+      </TD
+></TR
+></TBODY
+></TABLE
+></DIV
+><P
+>   这些参数（除了 XPath 字符串）只是会被替换到一个纯粹的 SQL SELECT 语句中，因此你有一些灵活性 &mdash; 该语句是
+  </P
+><P
+>   <TT
+CLASS="LITERAL"
+>    SELECT &lt;key&gt;, &lt;document&gt; FROM &lt;relation&gt; WHERE &lt;criteria&gt;
+   </TT
+>
+  </P
+><P
+>   因此那些参数可以是那些特定位置上合法的<SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>任何东西</I
+></SPAN
+>。来自于这个 SELECT 的结果需要返回正好两列（它确实会这样，除非你尝试为键或文档列出多个域）。注意这种简单方法要求你验证任何用户提供的值来避免 SQL 注入攻击。
+  </P
+><P
+>   该函数必须被使用在一个<TT
+CLASS="LITERAL"
+>FROM</TT
+>表达式中，并带有一个<TT
+CLASS="LITERAL"
+>AS</TT
+>子句来指定输出列，例如
+</P><PRE
+CLASS="PROGRAMLISTING"
+>SELECT * FROM
+xpath_table('article_id',
+            'article_xml',
+            'articles',
+            '/article/author|/article/pages|/article/title',
+            'date_entered &#62; ''2003-01-01'' ')
+AS t(article_id integer, author text, page_count integer, title text);</PRE
+><P>
+   <TT
+CLASS="LITERAL"
+>AS</TT
+>子句定义了输出表中列的名称和类型。第一个是<SPAN
+CLASS="QUOTE"
+>"key"</SPAN
+>域并且剩下的对应于 XPath 查询。如果 XPath 查询比结果列多，额外的查询将被忽略。如果结果列比 XPath 查询多，额外的列将是 NULL。
+  </P
+><P
+>   注意这个例子定义<TT
+CLASS="STRUCTNAME"
+>page_count</TT
+>结果列为一个整数。该函数在内部处理字符串表达，因此当你在输出中想要一个整数时，它将采用 XPath 结果的字符串表达并且使用 PostgreSQL 输入函数来把它转换成一个整数（或者<TT
+CLASS="TYPE"
+>AS</TT
+>子句要求的任何类型）。如果它无法做到这一点将会导致一个错误 &mdash; 例如结果是空 &mdash; 因此如果你认为你的数据有任何问题，你可能希望坚持用<TT
+CLASS="TYPE"
+>text</TT
+>作为列类型。
+  </P
+><P
+>   调用的<TT
+CLASS="COMMAND"
+>SELECT</TT
+>语句不必只是 <TT
+CLASS="LITERAL"
+>SELECT *</TT
+> &mdash; 它可以用名称引用输出列或者将它们连接到其他表。该函数会产生一个虚拟表，你可以在其上执行任何所需的操作（例如聚集、连接、排序等）。因此我们也可以有：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>SELECT t.title, p.fullname, p.email
+FROM xpath_table('article_id', 'article_xml', 'articles',
+                 '/article/title|/article/author/@id',
+                 'xpath_string(article_xml,''/article/@date'') &#62; ''2003-03-20'' ')
+       AS t(article_id integer, title text, author_id integer),
+     tblPeopleInfo AS p
+WHERE t.author_id = p.person_id;</PRE
+><P>
+   作为一个更复杂的例子。当然，为了便利你也可以把所有这些包装在一个视图中。
+  </P
+><DIV
+CLASS="SECT3"
+><H3
+CLASS="SECT3"
+><A
+NAME="AEN182551"
+>F.46.3.1. 多值结果</A
+></H3
+><P
+>    <CODE
+CLASS="FUNCTION"
+>xpath_table</CODE
+>函数假定每一个 XPath 查询的结果可能是多值的，因此该函数返回的行数可能与输入文档的数目不同。被返回的第一行包含来自每一个查询的第一个结果，第二行则是来自每一个查询的第二个结果。如果其中一个查询的值比其他查询少，则会为它返回空值。
+   </P
+><P
+>    在某些情况下，一个用户将知道一个给定的 XPath 查询将只返回一个单一结果（可能是一个唯一文档标识符） &mdash; 如果和一个返回多值的 XPath 查询一起使用，单值结果将只出现在结果的第一行中。对于这种情况的解决方案是使用键域作为针对一个更简单 XPath 查询的连接的一部分。一个例子：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>CREATE TABLE test (
+    id int PRIMARY KEY,
+    xml text
+);
+
+INSERT INTO test VALUES (1, '&lt;doc num="C1"&gt;
+&lt;line num="L1"&gt;&lt;a&gt;1&lt;/a&gt;&lt;b&gt;2&lt;/b&gt;&lt;c&gt;3&lt;/c&gt;&lt;/line&gt;
+&lt;line num="L2"&gt;&lt;a&gt;11&lt;/a&gt;&lt;b&gt;22&lt;/b&gt;&lt;c&gt;33&lt;/c&gt;&lt;/line&gt;
+&lt;/doc&gt;');
+
+INSERT INTO test VALUES (2, '&lt;doc num="C2"&gt;
+&lt;line num="L1"&gt;&lt;a&gt;111&lt;/a&gt;&lt;b&gt;222&lt;/b&gt;&lt;c&gt;333&lt;/c&gt;&lt;/line&gt;
+&lt;line num="L2"&gt;&lt;a&gt;111&lt;/a&gt;&lt;b&gt;222&lt;/b&gt;&lt;c&gt;333&lt;/c&gt;&lt;/line&gt;
+&lt;/doc&gt;');
+
+SELECT * FROM
+  xpath_table('id','xml','test',
+              '/doc/@num|/doc/line/@num|/doc/line/a|/doc/line/b|/doc/line/c',
+              'true')
+  AS t(id int, doc_num varchar(10), line_num varchar(10), val1 int, val2 int, val3 int)
+WHERE id = 1 ORDER BY doc_num, line_num
+
+ id | doc_num | line_num | val1 | val2 | val3
+----+---------+----------+------+------+------
+  1 | C1      | L1       |    1 |    2 |    3
+  1 |         | L2       |   11 |   22 |   33</PRE
+><P>
+   </P
+><P
+>    要在每一行上得到<TT
+CLASS="LITERAL"
+>doc_num</TT
+>，解决方案是使用<CODE
+CLASS="FUNCTION"
+>xpath_table</CODE
+>的两个调用并且连接结果：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>SELECT t.*,i.doc_num FROM
+  xpath_table('id', 'xml', 'test',
+              '/doc/line/@num|/doc/line/a|/doc/line/b|/doc/line/c',
+              'true')
+    AS t(id int, line_num varchar(10), val1 int, val2 int, val3 int),
+  xpath_table('id', 'xml', 'test', '/doc/@num', 'true')
+    AS i(id int, doc_num varchar(10))
+WHERE i.id=t.id AND i.id=1
+ORDER BY doc_num, line_num;
+
+ id | line_num | val1 | val2 | val3 | doc_num
+----+----------+------+------+------+---------
+  1 | L1       |    1 |    2 |    3 | C1
+  1 | L2       |   11 |   22 |   33 | C1
+(2 rows)</PRE
+><P>
+   </P
+></DIV
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN182561"
+>F.46.4. XSLT 函数</A
+></H2
+><P
+>   如果安装了 libxslt，那么可以使用下列函数：
+  </P
+><DIV
+CLASS="SECT3"
+><H3
+CLASS="SECT3"
+><A
+NAME="AEN182564"
+>F.46.4.1. <TT
+CLASS="LITERAL"
+>xslt_process</TT
+></A
+></H3
+><PRE
+CLASS="SYNOPSIS"
+>xslt_process(text document, text stylesheet, text paramlist) returns text</PRE
+><P
+>    这个函数将 XSL 样式表应用于文档并且返回转换过的结果。<TT
+CLASS="LITERAL"
+>paramlist</TT
+>是一个被用在转换中的参数赋值列表，以<TT
+CLASS="LITERAL"
+>a=1,b=2</TT
+>的形式指定。注意参数解析是非常天真的：参数值不能包含逗号！
+   </P
+><P
+>    还有一个双参数版本的<CODE
+CLASS="FUNCTION"
+>xslt_process</CODE
+>，它不会向转换传递任何参数。
+   </P
+></DIV
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN182575"
+>F.46.5. 作者</A
+></H2
+><P
+>   John Gray <CODE
+CLASS="EMAIL"
+>&#60;<A
+HREF="mailto:jgray@azuli.co.uk"
+>jgray@azuli.co.uk</A
+>&#62;</CODE
+>
+  </P
+><P
+>   这个模块的开发由 Torchbox Ltd. (www.torchbox.com) 赞助。它使用了和 PostgreSQL 相同的 BSD 许可证。
+  </P
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="uuid-ossp.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="contrib-prog.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>uuid-ossp</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="contrib.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>额外提供的程序</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

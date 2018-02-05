@@ -1,0 +1,339 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>创建一个数据库</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="管理数据库"
+HREF="managing-databases.html"><LINK
+REL="PREVIOUS"
+TITLE="概述"
+HREF="manage-ag-overview.html"><LINK
+REL="NEXT"
+TITLE="模板数据库"
+HREF="manage-ag-templatedbs.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/manage-ag.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="概述"
+HREF="manage-ag-overview.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="managing-databases.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#31456; 22. 管理数据库</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="模板数据库"
+HREF="manage-ag-templatedbs.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="MANAGE-AG-CREATEDB"
+>22.2. 创建一个数据库</A
+></H1
+><P
+>   为了创建一个数据库，<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>服务器必须启动并运行（见<A
+HREF="server-start.html"
+>第 18.3 &#33410;</A
+>）。
+  </P
+><P
+>   数据库用 SQL 命令<A
+HREF="sql-createdatabase.html"
+>CREATE DATABASE</A
+>创建：
+</P><PRE
+CLASS="SYNOPSIS"
+>CREATE DATABASE <TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+>;</PRE
+><P>
+   其中<TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+>遵循<ACRONYM
+CLASS="ACRONYM"
+>SQL</ACRONYM
+>标识符的一般规则。当前角色自动成为该新数据库的拥有者。以后删除这个数据库也是该拥有者的特权（同时还会删除其中的所有对象，即使那些对象有不同的拥有者）。
+  </P
+><P
+>   创建数据库是一个受限的操作。如何授权请见<A
+HREF="role-attributes.html"
+>第 21.2 &#33410;</A
+>。
+  </P
+><P
+>   因为你需要连接到数据库服务器来执行<TT
+CLASS="COMMAND"
+>CREATE DATABASE</TT
+>命令， 那么还有一个问题是任意给定站点的<SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>第一个</I
+></SPAN
+>数据库是怎样创建的？第一个数据库总是由<TT
+CLASS="COMMAND"
+>initdb</TT
+>命令在初始化数据存储区域时创建的（见<A
+HREF="creating-cluster.html"
+>第 18.2 &#33410;</A
+>）。这个数据库被称为<TT
+CLASS="LITERAL"
+>postgres</TT
+>。因此要创建第一个<SPAN
+CLASS="QUOTE"
+>"普通"</SPAN
+>数据库时，你可以连接到<TT
+CLASS="LITERAL"
+>postgres</TT
+>。
+  </P
+><P
+>   在数据库集簇初始化期间也会创建第二个数据库<TT
+CLASS="LITERAL"
+>template1</TT
+>,。当在集簇中创建一个新数据库时，实际上就是克隆了<TT
+CLASS="LITERAL"
+>template1</TT
+>。这就意味着你对<TT
+CLASS="LITERAL"
+>template1</TT
+>所做的任 何修改都会体现在所有随后创建的数据库中。因此应避免在<TT
+CLASS="LITERAL"
+>template1</TT
+>中创建对象，除非你想把它们传播到每一个新创建的数据库中。详见<A
+HREF="manage-ag-templatedbs.html"
+>第 22.3 &#33410;</A
+>。
+  </P
+><P
+>   为了方便，你还可以用一个程序来创建新数据库：
+   <TT
+CLASS="COMMAND"
+>createdb</TT
+>。
+
+</P><PRE
+CLASS="SYNOPSIS"
+>createdb <TT
+CLASS="REPLACEABLE"
+><I
+>dbname</I
+></TT
+></PRE
+><P>
+
+   <TT
+CLASS="COMMAND"
+>createdb</TT
+>没什么神奇的。它连接到<TT
+CLASS="LITERAL"
+>postgres</TT
+>数据库并且发出<TT
+CLASS="COMMAND"
+>CREATE DATABASE</TT
+>命令，和前面介绍的完全一样。<A
+HREF="app-createdb.html"
+><SPAN
+CLASS="APPLICATION"
+>createdb</SPAN
+></A
+>参考页包含了调用细节。注意不带任何参数的<TT
+CLASS="COMMAND"
+>createdb</TT
+>将创建一个使用当前用户名的数据库。
+  </P
+><DIV
+CLASS="NOTE"
+><BLOCKQUOTE
+CLASS="NOTE"
+><P
+><B
+>&#27880;&#24847;: </B
+>     <A
+HREF="client-authentication.html"
+>第 20 &#31456;</A
+>包含有关如何限制谁能连接到一个给定数据库的信息。
+   </P
+></BLOCKQUOTE
+></DIV
+><P
+>   有时候你想为其他人创建一个数据库，并且使其成为新数据库的拥有者，
+   这样他们就可以自己配置和管理这个数据库。要实现这个目标，使用下列命令之一：
+   用于 SQL 环境的
+</P><PRE
+CLASS="PROGRAMLISTING"
+>CREATE DATABASE <TT
+CLASS="REPLACEABLE"
+><I
+>dbname</I
+></TT
+> OWNER <TT
+CLASS="REPLACEABLE"
+><I
+>rolename</I
+></TT
+>;</PRE
+><P>
+   或者用于 shell 的
+</P><PRE
+CLASS="PROGRAMLISTING"
+>createdb -O <TT
+CLASS="REPLACEABLE"
+><I
+>rolename</I
+></TT
+> <TT
+CLASS="REPLACEABLE"
+><I
+>dbname</I
+></TT
+></PRE
+><P>
+   只有超级用户才被允许为其他人（即为一个你不是其成员的角色）创建一个数据库。
+  </P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="manage-ag-overview.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="manage-ag-templatedbs.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>概述</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="managing-databases.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>模板数据库</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

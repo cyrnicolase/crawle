@@ -1,0 +1,1083 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>CREATE POLICY</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="SQL 命令"
+HREF="sql-commands.html"><LINK
+REL="PREVIOUS"
+TITLE="CREATE OPERATOR FAMILY"
+HREF="sql-createopfamily.html"><LINK
+REL="NEXT"
+TITLE="CREATE ROLE"
+HREF="sql-createrole.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="REFENTRY"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/ref/create_policy.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="CREATE OPERATOR FAMILY"
+HREF="sql-createopfamily.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="CREATE ROLE"
+HREF="sql-createrole.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="SQL-CREATEPOLICY"
+></A
+>CREATE POLICY</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN80723"
+></A
+><H2
+>&#21517;&#31216;</H2
+>CREATE POLICY&nbsp;--&nbsp;为一个表定义一条新的行级安全性策略</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN80726"
+></A
+><H2
+>&#22823;&#32434;</H2
+><PRE
+CLASS="SYNOPSIS"
+>CREATE POLICY <TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+> ON <TT
+CLASS="REPLACEABLE"
+><I
+>table_name</I
+></TT
+>
+    [ FOR { ALL | SELECT | INSERT | UPDATE | DELETE } ]
+    [ TO { <TT
+CLASS="REPLACEABLE"
+><I
+>role_name</I
+></TT
+> | PUBLIC | CURRENT_USER | SESSION_USER } [, ...] ]
+    [ USING ( <TT
+CLASS="REPLACEABLE"
+><I
+>using_expression</I
+></TT
+> ) ]
+    [ WITH CHECK ( <TT
+CLASS="REPLACEABLE"
+><I
+>check_expression</I
+></TT
+> ) ]</PRE
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN80733"
+></A
+><H2
+>描述</H2
+><P
+>   <TT
+CLASS="COMMAND"
+>CREATE POLICY</TT
+>为一个表定义一条行级
+   安全性策略。注意为了应用已被创建的策略，在表上必须启用行级安全
+   性（使用<TT
+CLASS="COMMAND"
+>ALTER TABLE ... ENABLE ROW LEVEL
+   SECURITY</TT
+>）。
+  </P
+><P
+>   一条策略授予权限以选择、插入、更新或者删除匹配相关策略表达式的行。
+   现有的表行会按照<TT
+CLASS="LITERAL"
+>USING</TT
+>中指定的表达式进行检查，
+   而将要通过<TT
+CLASS="LITERAL"
+>INSERT</TT
+>或<TT
+CLASS="LITERAL"
+>UPDATE</TT
+>创建
+   的新行会按照<TT
+CLASS="LITERAL"
+>WITH CHECK</TT
+>中指定的表达式进行检查。
+   当<TT
+CLASS="LITERAL"
+>USING</TT
+>表达式对于一个给定行返回真时，该行对用户
+   可见，而返回假或空时该行不可见。当一个<TT
+CLASS="LITERAL"
+>WITH CHECK</TT
+>
+   表达式对一行返回真时，该行会被插入或更新，而如果返回假或空时会发生
+   一个错误。
+  </P
+><P
+>   对于<TT
+CLASS="COMMAND"
+>INSERT</TT
+>和
+   <TT
+CLASS="COMMAND"
+>UPDATE</TT
+>语句，在<TT
+CLASS="LITERAL"
+>BEFORE</TT
+>
+   触发器被引发后并且在任何数据修改真正发生之前，
+   <TT
+CLASS="LITERAL"
+>WITH CHECK</TT
+>表达式会被强制。因此，
+   一个<TT
+CLASS="LITERAL"
+>BEFORE ROW</TT
+>触发器可以修改要被插入的数据，
+   从而影响安全性策略检查的结果。<TT
+CLASS="LITERAL"
+>WITH CHECK</TT
+>表达式
+   在任何其他约束之前被强制。
+  </P
+><P
+>   策略名称是针对每个表的。因此，一个策略名称可以被用于很多个不同的表
+   并且对于不同的表呈现适合于该表的定义。
+  </P
+><P
+>   策略可以被应用于特定的命令或者特定的角色。除非特别指定，新创建的策略
+   的默认行为是适用于所有命令和角色。如果多条策略适用于一个给定的语句，
+   将用 OR 把它们组合起来（不过<TT
+CLASS="LITERAL"
+>ON CONFLICT DO
+   UPDATE</TT
+> 和 <TT
+CLASS="LITERAL"
+>INSERT</TT
+>策略不用这种方式组合，而是在
+   <TT
+CLASS="LITERAL"
+>ON CONFLICT</TT
+>执行的每一个阶段进行强制）。
+  </P
+><P
+>   对同时具有<TT
+CLASS="LITERAL"
+>USING</TT
+>和<TT
+CLASS="LITERAL"
+>WITH CHECK</TT
+>
+   策略（<TT
+CLASS="LITERAL"
+>ALL</TT
+>和<TT
+CLASS="LITERAL"
+>UPDATE</TT
+>）的命令，
+   如果没有定义<TT
+CLASS="LITERAL"
+>WITH CHECK</TT
+>策略，那么
+   <TT
+CLASS="LITERAL"
+>USING</TT
+>策略将被用于决定哪些行可见（普通
+   <TT
+CLASS="LITERAL"
+>USING</TT
+>情况）以及允许哪些行被增加（
+   <TT
+CLASS="LITERAL"
+>WITH CHECK</TT
+>情况）。
+  </P
+><P
+>   如果为一个表启用了行级安全性但是没有适用的策略存在，将假定为一种
+   <SPAN
+CLASS="QUOTE"
+>"默认否定"</SPAN
+>策略，这样任何行都不可见也不可更新。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN80768"
+></A
+><H2
+>参数</H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+></DT
+><DD
+><P
+>      要创建的策略的名称。这必须和该表上已有的任何其他策略名称相区分。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>table_name</I
+></TT
+></DT
+><DD
+><P
+>      该策略适用的表的名称（可以被模式限定）。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>command</I
+></TT
+></DT
+><DD
+><P
+>      该策略适用的命令。合法的选项是
+      <TT
+CLASS="COMMAND"
+>ALL</TT
+>、<TT
+CLASS="COMMAND"
+>SELECT</TT
+>、
+      <TT
+CLASS="COMMAND"
+>INSERT</TT
+>、<TT
+CLASS="COMMAND"
+>UPDATE</TT
+>
+      以及<TT
+CLASS="COMMAND"
+>DELETE</TT
+>。
+      <TT
+CLASS="COMMAND"
+>ALL</TT
+>为默认。有关这些策略如何被应用的
+      细节见下文。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>role_name</I
+></TT
+></DT
+><DD
+><P
+>      该策略适用的角色。默认是<TT
+CLASS="LITERAL"
+>PUBLIC</TT
+>，它将把策略应用
+      到所有的角色。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>using_expression</I
+></TT
+></DT
+><DD
+><P
+>      任意的<ACRONYM
+CLASS="ACRONYM"
+>SQL</ACRONYM
+>条件表达式（返回
+      <TT
+CLASS="TYPE"
+>boolean</TT
+>）。该条件表达式不能包含任何聚集或者窗口
+      函数。如果行级安全性被启用，这个表达式将被增加到引用该表的查询。
+      让这个表达式返回真的行将可见。让这个表达式返回假或者空的任何行
+      将对用户不可见（在<TT
+CLASS="COMMAND"
+>SELECT</TT
+>中）并且将对修改不可用（
+      在<TT
+CLASS="COMMAND"
+>UPDATE</TT
+>或<TT
+CLASS="COMMAND"
+>DELETE</TT
+>中）。这类行
+      会被悄悄地禁止而不会报告错误。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>check_expression</I
+></TT
+></DT
+><DD
+><P
+>      任意的<ACRONYM
+CLASS="ACRONYM"
+>SQL</ACRONYM
+>条件表达式（返回
+      <TT
+CLASS="TYPE"
+>boolean</TT
+>）。该条件表达式不能包含任何聚集或者窗口
+      函数。如果行级安全性被启用，这个表达式将被用在该表上的
+      <TT
+CLASS="COMMAND"
+>INSERT</TT
+>以及
+      <TT
+CLASS="COMMAND"
+>UPDATE</TT
+>查询中。只有让该表达式计算为真
+      的行才被允许。如果任何被插入的记录或者跟新后的记录导致该表达式计
+      算为假或者空，则会抛出一个错误。注意
+      <TT
+CLASS="REPLACEABLE"
+><I
+>check_expression</I
+></TT
+>
+      是根据行的新内容而不是原始内容计算的。
+     </P
+></DD
+></DL
+></DIV
+><DIV
+CLASS="REFSECT2"
+><A
+NAME="AEN80818"
+></A
+><H3
+>针对每种命令的策略</H3
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><A
+NAME="SQL-CREATEPOLICY-ALL"
+></A
+><TT
+CLASS="LITERAL"
+>ALL</TT
+></DT
+><DD
+><P
+>         为一条策略使用<TT
+CLASS="LITERAL"
+>ALL</TT
+>表示它将适用于所有命令，
+         不管命令的类型如何。如果存在一条<TT
+CLASS="LITERAL"
+>ALL</TT
+>策略
+         以及更多特定的策略，则<TT
+CLASS="LITERAL"
+>ALL</TT
+>策略和那些策略
+         会被 OR 组合在一起，就像重叠策略一样。此外，
+         <TT
+CLASS="LITERAL"
+>ALL</TT
+>策略将同时适用于一个查询的选择端和修
+         改端，如果只定义了一个<TT
+CLASS="LITERAL"
+>USING</TT
+>表达式则将
+         该<TT
+CLASS="LITERAL"
+>USING</TT
+>表达式用于两种情况。
+       </P
+><P
+>         例如，如果发出一个<TT
+CLASS="LITERAL"
+>UPDATE</TT
+>，那么
+         <TT
+CLASS="LITERAL"
+>ALL</TT
+>策略将同时影响<TT
+CLASS="LITERAL"
+>UPDATE</TT
+>
+         能更新哪些行（应用<TT
+CLASS="LITERAL"
+>USING</TT
+>表达式）以及更新后
+         的行是否被允许加入到表中（如果定义了<TT
+CLASS="LITERAL"
+>WITH CHECK</TT
+>
+         表达式，则应用之；否则使用<TT
+CLASS="LITERAL"
+>USING</TT
+>表达式）。
+         如果一条<TT
+CLASS="COMMAND"
+>INSERT</TT
+>
+         或者<TT
+CLASS="COMMAND"
+>UPDATE</TT
+>命令尝试增加行到表中，
+         但行没有通过<TT
+CLASS="LITERAL"
+>ALL</TT
+>策略的
+         <TT
+CLASS="LITERAL"
+>WITH CHECK</TT
+>表达式，则整个语句将会中断。
+       </P
+></DD
+><DT
+><A
+NAME="SQL-CREATEPOLICY-SELECT"
+></A
+><TT
+CLASS="LITERAL"
+>SELECT</TT
+></DT
+><DD
+><P
+>         对一条策略使用<TT
+CLASS="LITERAL"
+>SELECT</TT
+>表示它将适用于
+         <TT
+CLASS="LITERAL"
+>SELECT</TT
+>查询，并且无论何时都要求该约束所在的关系上
+         的<TT
+CLASS="LITERAL"
+>SELECT</TT
+>权限。其结果是在一次
+         <TT
+CLASS="LITERAL"
+>SELECT</TT
+>查询期间，只有该关系中那些通过了
+         <TT
+CLASS="LITERAL"
+>SELECT</TT
+>策略的记录才将被返回，并且查询要求
+         <TT
+CLASS="LITERAL"
+>SELECT</TT
+>权限，例如
+         <TT
+CLASS="LITERAL"
+>UPDATE</TT
+>也将只能看到那些
+         <TT
+CLASS="LITERAL"
+>SELECT</TT
+>策略允许的行。一条
+         <TT
+CLASS="LITERAL"
+>SELECT</TT
+>策略不能具有<TT
+CLASS="LITERAL"
+>WITH
+         CHECK</TT
+>表达式，因为它只适用于正在从关系中检索记录的情况。
+       </P
+></DD
+><DT
+><A
+NAME="SQL-CREATEPOLICY-INSERT"
+></A
+><TT
+CLASS="LITERAL"
+>INSERT</TT
+></DT
+><DD
+><P
+>         为一条策略使用<TT
+CLASS="LITERAL"
+>INSERT</TT
+>表示它适用于
+         <TT
+CLASS="LITERAL"
+>INSERT</TT
+>命令。没有通过这种策略的正在被插入的行
+         会导致策略违背错误，并且整个<TT
+CLASS="LITERAL"
+>INSERT</TT
+>命令将会中止。
+         一条<TT
+CLASS="LITERAL"
+>INSERT</TT
+>策略不能具有<TT
+CLASS="LITERAL"
+>USING</TT
+>
+         表达式，因为它只适用于正在向关系增加记录的情况。
+       </P
+><P
+>         注意在带有<TT
+CLASS="LITERAL"
+>ON CONFLICT DO
+         UPDATE</TT
+>的<TT
+CLASS="LITERAL"
+>INSERT</TT
+>中，只有对通过
+         <TT
+CLASS="LITERAL"
+>INSERT</TT
+>路径追加到关系的行才会检查
+         <TT
+CLASS="LITERAL"
+>INSERT</TT
+>策略的<TT
+CLASS="LITERAL"
+>WITH CHECK</TT
+>
+         表达式。
+       </P
+></DD
+><DT
+><A
+NAME="SQL-CREATEPOLICY-UPDATE"
+></A
+><TT
+CLASS="LITERAL"
+>UPDATE</TT
+></DT
+><DD
+><P
+>         为一条策略使用<TT
+CLASS="LITERAL"
+>UPDATE</TT
+>表示它适用于
+         <TT
+CLASS="LITERAL"
+>UPDATE</TT
+>命令（或者<TT
+CLASS="LITERAL"
+>INSERT</TT
+>
+         命令的<TT
+CLASS="LITERAL"
+>ON CONFLICT DO UPDATE</TT
+>子句）。因为
+         <TT
+CLASS="LITERAL"
+>UPDATE</TT
+>涉及到取出一个现有的记录然后对该记录
+         的某个部分（可能不是全部）作出更改，<TT
+CLASS="LITERAL"
+>UPDATE</TT
+>
+         策略同时接受<TT
+CLASS="LITERAL"
+>USING</TT
+>表达式和
+         <TT
+CLASS="LITERAL"
+>WITH CHECK</TT
+>表达式。<TT
+CLASS="LITERAL"
+>USING</TT
+>
+         表达式决定<TT
+CLASS="LITERAL"
+>UPDATE</TT
+>命令将能看到哪些要对其操作
+         的记录，而<TT
+CLASS="LITERAL"
+>WITH CHECK</TT
+>表达式定义哪些被修改的
+         行被允许存回到关系中。
+       </P
+><P
+>         当一个<TT
+CLASS="LITERAL"
+>UPDATE</TT
+>命令使用了
+         <TT
+CLASS="LITERAL"
+>WHERE</TT
+>子句或者<TT
+CLASS="LITERAL"
+>RETURNING</TT
+>
+         子句时，也要求在被更新的关系上的<TT
+CLASS="LITERAL"
+>SELECT</TT
+>权限，
+         并且合适的<TT
+CLASS="LITERAL"
+>SELECT</TT
+>以及<TT
+CLASS="LITERAL"
+>ALL</TT
+>策略
+         将用 AND 和 <TT
+CLASS="LITERAL"
+>UPDATE</TT
+>策略的
+         <TT
+CLASS="LITERAL"
+>USING</TT
+>子句组合在一起（找到的任何重叠的
+         <TT
+CLASS="LITERAL"
+>SELECT</TT
+>相关策略之间用 OR 组合）。因此，为了一个
+         用户能<TT
+CLASS="LITERAL"
+>UPDATE</TT
+>特定的行，该用户必须能通过一条
+         <TT
+CLASS="LITERAL"
+>SELECT</TT
+>或者<TT
+CLASS="LITERAL"
+>ALL</TT
+>策略
+         访问那些行并且那些行必须能通过该<TT
+CLASS="LITERAL"
+>UPDATE</TT
+>策略的
+         <TT
+CLASS="LITERAL"
+>USING</TT
+>表达式。
+       </P
+><P
+>         任何更新后的值无法通过<TT
+CLASS="LITERAL"
+>WITH CHECK</TT
+>表达式的行
+         将会导致错误，并且整个命令将被中止。如果只指定了一个
+         <TT
+CLASS="LITERAL"
+>USING</TT
+>子句，那么该子句将被用于
+         <TT
+CLASS="LITERAL"
+>USING</TT
+>和<TT
+CLASS="LITERAL"
+>WITH CHECK</TT
+>两种情况。
+       </P
+><P
+>         不过要注意的是，带有<TT
+CLASS="LITERAL"
+>ON CONFLICT DO UPDATE</TT
+>
+         的<TT
+CLASS="LITERAL"
+>INSERT</TT
+>要求一个<TT
+CLASS="LITERAL"
+>UPDATE</TT
+>策略的
+         <TT
+CLASS="LITERAL"
+>USING</TT
+>表达式总是被作为一个
+         <TT
+CLASS="LITERAL"
+>WITH CHECK</TT
+>表达式来强制。当采用
+         <TT
+CLASS="LITERAL"
+>UPDATE</TT
+>路径时，<TT
+CLASS="LITERAL"
+>UPDATE</TT
+>策略必须
+         总是能通过。任何迫使采用<TT
+CLASS="LITERAL"
+>UPDATE</TT
+>路径的现有行必须
+         能通过（<TT
+CLASS="LITERAL"
+>UPDATE</TT
+>或<TT
+CLASS="LITERAL"
+>ALL</TT
+>的）
+         <TT
+CLASS="LITERAL"
+>USING</TT
+>条件（用 OR 组合），在这种环境中这些条件总是
+         被作为<TT
+CLASS="LITERAL"
+>WITH CHECK</TT
+>选项来强制（
+         <TT
+CLASS="LITERAL"
+>UPDATE</TT
+>路径将<SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>永不</I
+></SPAN
+>可能被避免，而是
+         会抛出一个错误）。最后，被追加到关系中的最终行必须通过任何
+         常见的<TT
+CLASS="LITERAL"
+>UPDATE</TT
+>被要求通过的
+         <TT
+CLASS="LITERAL"
+>WITH CHECK</TT
+>选项。
+       </P
+></DD
+><DT
+><A
+NAME="SQL-CREATEPOLICY-DELETE"
+></A
+><TT
+CLASS="LITERAL"
+>DELETE</TT
+></DT
+><DD
+><P
+>         为一条策略使用<TT
+CLASS="LITERAL"
+>DELETE</TT
+>表示它适用于
+         <TT
+CLASS="LITERAL"
+>DELETE</TT
+>命令。只有通过这条策略的行才将能被
+         <TT
+CLASS="LITERAL"
+>DELETE</TT
+>命令所看到。如果有的行不能通过该
+         <TT
+CLASS="LITERAL"
+>DELETE</TT
+>策略的<TT
+CLASS="LITERAL"
+>USING</TT
+>表达式，则
+         它们可以通过<TT
+CLASS="LITERAL"
+>SELECT</TT
+>看到但不能被删除。
+       </P
+><P
+>         当一个<TT
+CLASS="LITERAL"
+>DELETE</TT
+>命令使用了
+         <TT
+CLASS="LITERAL"
+>WHERE</TT
+>子句或者<TT
+CLASS="LITERAL"
+>RETURNING</TT
+>子句时，
+         也要求在被更新的关系上的<TT
+CLASS="LITERAL"
+>SELECT</TT
+>权限，
+         并且合适的<TT
+CLASS="LITERAL"
+>SELECT</TT
+>以及<TT
+CLASS="LITERAL"
+>ALL</TT
+>策略
+         将用 AND 和 <TT
+CLASS="LITERAL"
+>DELETE</TT
+>策略的
+         <TT
+CLASS="LITERAL"
+>USING</TT
+>子句组合在一起（找到的任何重叠的
+         <TT
+CLASS="LITERAL"
+>SELECT</TT
+>相关策略之间用 OR 组合）。
+         因此，为了一个
+         用户能<TT
+CLASS="LITERAL"
+>DELETE</TT
+>特定的行，该用户必须能通过一条
+         <TT
+CLASS="LITERAL"
+>SELECT</TT
+>或者<TT
+CLASS="LITERAL"
+>ALL</TT
+>策略
+         访问那些行并且那些行必须能通过该<TT
+CLASS="LITERAL"
+>DELETE</TT
+>策略的
+         <TT
+CLASS="LITERAL"
+>USING</TT
+>表达式。
+       </P
+><P
+>         <TT
+CLASS="LITERAL"
+>DELETE</TT
+>策略不能具有<TT
+CLASS="LITERAL"
+>WITH
+         CHECK</TT
+>表达式，因为它只适用于正在从关系中删除记录的情况，
+         所以没有新行需要检查。
+       </P
+></DD
+></DL
+></DIV
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN80956"
+></A
+><H2
+>注解</H2
+><P
+>   要为一个表创建或者修改策略，你必须是该表的拥有者。
+  </P
+><P
+>   虽然策略将被应用于针对数据库中表的显式查询上，但当系统正在执行
+   内部引用完整性检查或者验证约束时不会应用它们。这意味着有间接的
+   方法来决定一个给定的值是否存在。一个例子是向一个作为主键或者拥
+   有唯一约束的列中尝试插入重复值。如果插入失败则用户可以推导出该
+   值已经存在（这个例子假设用户被策略允许插入他们看不到的记录）。
+   另一个例子是一个用户被允许向一个引用了其他表的表中插入，然而另
+   一个表是隐藏表。通过用户向引用表中插入值可以判断存在性，
+   成功表示该值存在于被引用表中。为了解决这些问题，应该仔细地制作
+   策略以完全阻止用户插入、删除或者更新那些可能指示他们不能看到的
+   值的记录，或者使用生成的值（例如代理键）来代替具有外部含义的键。
+  </P
+><P
+>   通常，系统将在应用用户查询中出现的条件之前先强制由安全性策略施
+   加的过滤条件，这是为了防止无意中把受保护的数据暴露给可能不可信
+   的用户定义函数。不过，被系统（或者系统管理员）标记为
+   <TT
+CLASS="LITERAL"
+>LEAKPROOF</TT
+>的函数和操作符可以在策略表达式之前
+   被计算，因为它们已经被假定为可信。
+  </P
+><P
+>   因为策略表达式会被直接加到用户查询上，它们将使用运行整个查询的用户的
+   权限运行。因此，使用一条给定策略的用户必须能够访问表达式中引用的任何
+   表或函数，否则在尝试查询启用了行级安全性的表时，他们将简单地收到一条
+   没有权限的错误。不过，这不会改变视图的工作方式。就普通查询和视图来说，
+   权限检查和视图所引用的表的策略将使用视图拥有者的权限以及任何适用于视
+   图拥有者的策略。
+  </P
+><P
+>   在<A
+HREF="ddl-rowsecurity.html"
+>第 5.7 &#33410;</A
+>中可以找到额外的讨论和实际的例子。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN80965"
+></A
+><H2
+>兼容性</H2
+><P
+>   <TT
+CLASS="COMMAND"
+>CREATE POLICY</TT
+>是一种<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>扩展。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN80970"
+></A
+><H2
+>另见</H2
+><A
+HREF="sql-alterpolicy.html"
+>ALTER POLICY</A
+>, <A
+HREF="sql-droppolicy.html"
+>DROP POLICY</A
+>, <A
+HREF="sql-altertable.html"
+>ALTER TABLE</A
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-createopfamily.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="sql-createrole.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>CREATE OPERATOR FAMILY</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>CREATE ROLE</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

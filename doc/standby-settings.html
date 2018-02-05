@@ -1,0 +1,375 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>后备服务器设置</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="恢复配置"
+HREF="recovery-config.html"><LINK
+REL="PREVIOUS"
+TITLE="恢复目标设置"
+HREF="recovery-target-settings.html"><LINK
+REL="NEXT"
+TITLE="监控数据库活动"
+HREF="monitoring.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/recovery-config.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="恢复目标设置"
+HREF="recovery-target-settings.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="recovery-config.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#31456; 27. 恢复配置</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="监控数据库活动"
+HREF="monitoring.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="STANDBY-SETTINGS"
+>27.3. 后备服务器设置</A
+></H1
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><A
+NAME="STANDBY-MODE"
+></A
+><TT
+CLASS="VARNAME"
+>standby_mode</TT
+> (<TT
+CLASS="TYPE"
+>boolean</TT
+>)
+        </DT
+><DD
+><P
+>          指定是否将<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>服务器作为一个后备服务器启动。如果这个参数为<TT
+CLASS="LITERAL"
+>on</TT
+>，当到达已归档 WAL 末尾时该服务器将不会停止恢复，但是将通过使用<TT
+CLASS="VARNAME"
+>restore_command</TT
+>获得新的 WAL 段以及/或者通过使用<TT
+CLASS="VARNAME"
+>primary_conninfo</TT
+>设置连接到主服务器来尝试继续恢复。
+         </P
+></DD
+><DT
+><A
+NAME="PRIMARY-CONNINFO"
+></A
+><TT
+CLASS="VARNAME"
+>primary_conninfo</TT
+> (<TT
+CLASS="TYPE"
+>string</TT
+>)
+        </DT
+><DD
+><P
+>          指定后备服务器用来连接主服务器的连接字符串。这个字符串的格式在<A
+HREF="libpq-connect.html#LIBPQ-CONNSTRING"
+>第 32.1.1 &#33410;</A
+>中描述。如果在这个字符串中有任何选项未被指定，那么将检查相应的环境变量（见<A
+HREF="libpq-envars.html"
+>第 32.14 &#33410;</A
+>）。如果环境变量也没有被设置，则使用默认值。
+         </P
+><P
+>          连接字符串应当指定主服务器的主机名（或地址），以及端口号（如果它和后备服务器的默认端口不同）。还要指定对应于主服务器上合适权限角色的用户名（见<A
+HREF="warm-standby.html#STREAMING-REPLICATION-AUTHENTICATION"
+>第 26.2.5.1 &#33410;</A
+>）。如果主服务器要求口令认证，还需要提供一个口令。它可以在<TT
+CLASS="VARNAME"
+>primary_conninfo</TT
+>字符串中提供，或者在后备服务器（使用<TT
+CLASS="LITERAL"
+>replication</TT
+>作为数据库名）的一个单独<TT
+CLASS="FILENAME"
+>~/.pgpass</TT
+>文件中提供。不要在<TT
+CLASS="VARNAME"
+>primary_conninfo</TT
+>字符串中指定一个数据库名。
+         </P
+><P
+>          如果<TT
+CLASS="VARNAME"
+>standby_mode</TT
+>为<TT
+CLASS="LITERAL"
+>off</TT
+>，这个设置没有效果。
+         </P
+></DD
+><DT
+><A
+NAME="PRIMARY-SLOT-NAME"
+></A
+><TT
+CLASS="VARNAME"
+>primary_slot_name</TT
+> (<TT
+CLASS="TYPE"
+>string</TT
+>)
+        </DT
+><DD
+><P
+>          有选择地指定通过流复制连接到主服务器时使用一个现有的复制槽来控制上游节点上的资源移除（见<A
+HREF="warm-standby.html#STREAMING-REPLICATION-SLOTS"
+>第 26.2.6 &#33410;</A
+>）。如果没有设置<TT
+CLASS="VARNAME"
+>primary_conninfo</TT
+>则这个设置无效。
+         </P
+></DD
+><DT
+><A
+NAME="TRIGGER-FILE"
+></A
+><TT
+CLASS="VARNAME"
+>trigger_file</TT
+> (<TT
+CLASS="TYPE"
+>string</TT
+>)
+        </DT
+><DD
+><P
+>          指定一个触发器文件，该文件的存在会结束后备机中的恢复。即使这个值没有被设置，你也能够使用<TT
+CLASS="COMMAND"
+>pg_ctl promote</TT
+>来提升后备机。如果<TT
+CLASS="VARNAME"
+>standby_mode</TT
+>为<TT
+CLASS="LITERAL"
+>off</TT
+>，这个设置没有效果。
+         </P
+></DD
+><DT
+><A
+NAME="RECOVERY-MIN-APPLY-DELAY"
+></A
+><TT
+CLASS="VARNAME"
+>recovery_min_apply_delay</TT
+> (<TT
+CLASS="TYPE"
+>integer</TT
+>)
+      </DT
+><DD
+><P
+>        某人情况下，一个后备服务器会尽快恢复来自于主服务器的 WAL 记录。有一份数据的延时拷贝是有用的，它能提供机会纠正数据丢失错误。这个参数允许你将恢复延迟一段固定的时间，如果没有指定单位则以毫秒为单位。例如，如果你设置这个参数为<TT
+CLASS="LITERAL"
+>5min</TT
+>，对于一个事务提交，只有当后备机上的系统时钟超过主服务器报告的提交时间至少 5分钟时，后备机才会重放该事务。
+       </P
+><P
+>        有可能服务器之间的复制延迟会超过这个参数的值，在这种情况下则不会增加延迟。注意延迟是根据主服务器上写 WAL 的时间戳以及后备机上的当前时间来计算。由于网络延迟或者级联复制配置导致的传输延迟可能会显著地减少实际等待时间。如果主服务器和后备机上的系统时钟不同步，这会导致恢复比预期的更早应用记录。但这不是一个主要问题，因为这个参数有用的设置比服务器之间的典型事件偏差要大得多。
+       </P
+><P
+>        只有在事务提交的 WAL 记录上才会发生延迟。其他记录还是会被尽可能快地重放，这不会成为问题，因为 MVCC 可见性规则确保了在对应的提交记录被应用之前它们的效果不会被看到。
+       </P
+><P
+>        一旦恢复中的数据库已经达到一致状态，延迟就会产生，直到后备机被提升或者触发。在那之后，后备机将会结束恢复并且不再等待。
+       </P
+><P
+>        这个参数的目的是和流复制部署一起使用，但是，如果指定了该参数，所有的情况下都会遵守它。使用这个特性也会让<TT
+CLASS="VARNAME"
+>hot_standby_feedback</TT
+>被延迟，这可能导致主服务器的膨胀，两者一起使用时要小心。
+        
+        <DIV
+CLASS="WARNING"
+><P
+></P
+><TABLE
+CLASS="WARNING"
+BORDER="1"
+WIDTH="90%"
+><TR
+><TD
+ALIGN="CENTER"
+><B
+>&#35686;&#21578;</B
+></TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+><P
+>          当<TT
+CLASS="VARNAME"
+>synchronous_commit</TT
+>被设置为<TT
+CLASS="LITERAL"
+>remote_apply</TT
+>时，同步复制会受到这个设置的影响，每一个<TT
+CLASS="LITERAL"
+>COMMIT</TT
+>都需要等待被应用。
+         </P
+></TD
+></TR
+></TABLE
+></DIV
+>
+       </P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="recovery-target-settings.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="monitoring.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>恢复目标设置</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="recovery-config.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>监控数据库活动</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

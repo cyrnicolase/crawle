@@ -1,0 +1,1067 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>连接和认证</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="服务器配置"
+HREF="runtime-config.html"><LINK
+REL="PREVIOUS"
+TITLE="文件位置"
+HREF="runtime-config-file-locations.html"><LINK
+REL="NEXT"
+TITLE="资源消耗"
+HREF="runtime-config-resource.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/config.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="文件位置"
+HREF="runtime-config-file-locations.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="runtime-config.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#31456; 19. 服务器配置</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="资源消耗"
+HREF="runtime-config-resource.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="RUNTIME-CONFIG-CONNECTION"
+>19.3. 连接和认证</A
+></H1
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="RUNTIME-CONFIG-CONNECTION-SETTINGS"
+>19.3.1. 连接设置</A
+></H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><A
+NAME="GUC-LISTEN-ADDRESSES"
+></A
+><TT
+CLASS="VARNAME"
+>listen_addresses</TT
+> (<TT
+CLASS="TYPE"
+>string</TT
+>)
+      </DT
+><DD
+><P
+>         指定服务器在哪些 TCP/IP 地址上监听客户端连接。值的形式是一个逗号分隔的主机名和/或数字 IP 地址列表。特殊项<TT
+CLASS="LITERAL"
+>*</TT
+>对应所有可用 IP 接口。项<TT
+CLASS="LITERAL"
+>0.0.0.0</TT
+>允许监听所有 IPv4 地址并且<TT
+CLASS="LITERAL"
+>::</TT
+>允许监听所有 IPv6 地址。如果列表为空，服务器将根本不会监听任何 IP 接口，在这种情况中只能使用 Unix 域套接字来连接它。默认值是<SPAN
+CLASS="SYSTEMITEM"
+>localhost</SPAN
+>，它只允许建立本地 TCP/IP <SPAN
+CLASS="QUOTE"
+>"环回"</SPAN
+>连接。虽然客户端认证（<A
+HREF="client-authentication.html"
+>第 20 &#31456;</A
+>）允许细粒度地控制谁能访问服务器，<TT
+CLASS="VARNAME"
+>listen_addresses</TT
+>控制哪些接口接受连接尝试，这能帮助在不安全网络接口上阻止重复的恶意连接请求。这个参数只能在服务器启动时设置。
+       </P
+></DD
+><DT
+><A
+NAME="GUC-PORT"
+></A
+><TT
+CLASS="VARNAME"
+>port</TT
+> (<TT
+CLASS="TYPE"
+>integer</TT
+>)
+      </DT
+><DD
+><P
+>        服务器监听的 TCP 端口；默认是 5432 。请注意服务器会同一个端口号监听所有的 IP 地址。这个参数只能在服务器启动时设置。
+       </P
+></DD
+><DT
+><A
+NAME="GUC-MAX-CONNECTIONS"
+></A
+><TT
+CLASS="VARNAME"
+>max_connections</TT
+> (<TT
+CLASS="TYPE"
+>integer</TT
+>)
+      </DT
+><DD
+><P
+>        决定数据库的最大并发连接数。默认值通常是 100 个连接，但是如果内核设置不支持（<SPAN
+CLASS="APPLICATION"
+>initdb</SPAN
+>时决定），可能会比这个 数少。这个参数只能在服务器启动时设置。
+       </P
+><P
+>        当运行一个后备服务器时，你必须设置这个参数等于或大于主服务器上的参数。否则，后备服务器上可能无法允许查询。
+       </P
+></DD
+><DT
+><A
+NAME="GUC-SUPERUSER-RESERVED-CONNECTIONS"
+></A
+><TT
+CLASS="VARNAME"
+>superuser_reserved_connections</TT
+>
+      (<TT
+CLASS="TYPE"
+>integer</TT
+>)
+      </DT
+><DD
+><P
+>        决定为<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>超级用户连接而保留的连接<SPAN
+CLASS="QUOTE"
+>"槽"</SPAN
+>数。 同时活跃的并发连接最多<A
+HREF="runtime-config-connection.html#GUC-MAX-CONNECTIONS"
+>max_connections</A
+>个。任何时候，活跃的并发连接数最多为<TT
+CLASS="VARNAME"
+>max_connections</TT
+>减去 <TT
+CLASS="VARNAME"
+>superuser_reserved_connections</TT
+>，新连接就只能由超级用户发起了，并且不会有新的复制连接被接受。
+       </P
+><P
+>        默认值是 3 。这个值必须小于<TT
+CLASS="VARNAME"
+>max_connections</TT
+>的值。 这个参数只能在服务器启动时设置。
+       </P
+></DD
+><DT
+><A
+NAME="GUC-UNIX-SOCKET-DIRECTORIES"
+></A
+><TT
+CLASS="VARNAME"
+>unix_socket_directories</TT
+> (<TT
+CLASS="TYPE"
+>string</TT
+>)
+      </DT
+><DD
+><P
+>        指定服务器用于监听来自客户端应用的连接的 Unix 域套接字目录。通过列出用逗号分隔的多个目录可以建立多个套接字。项之间的空白被忽略，如果你需要在名字中包括空白或逗号，在目录名周围放上双引号。一个空值指定在任何 Unix 域套接字上都不监听，在这种情况中只能使用 TCP/IP 套接字来连接到服务器。默认值通常是<TT
+CLASS="FILENAME"
+>/tmp</TT
+>，但是在编译时可以被改变。这个参数只能在服务器启动时设置。
+       </P
+><P
+>        除了套接字文件本身（名为<TT
+CLASS="LITERAL"
+>.s.PGSQL.<TT
+CLASS="REPLACEABLE"
+><I
+>nnnn</I
+></TT
+></TT
+>，其中<TT
+CLASS="REPLACEABLE"
+><I
+>nnnn</I
+></TT
+>是服务器的端口号），一个名为<TT
+CLASS="LITERAL"
+>.s.PGSQL.<TT
+CLASS="REPLACEABLE"
+><I
+>nnnn</I
+></TT
+>.lock</TT
+>的普通文件会在每一个<TT
+CLASS="VARNAME"
+>unix_socket_directories</TT
+>目录中被创建。任何一个都不应该被手工移除。
+       </P
+><P
+>        Windows下没有 Unix 域套接字，因此这个参数与 Windows 无关。
+       </P
+></DD
+><DT
+><A
+NAME="GUC-UNIX-SOCKET-GROUP"
+></A
+><TT
+CLASS="VARNAME"
+>unix_socket_group</TT
+> (<TT
+CLASS="TYPE"
+>string</TT
+>)
+      </DT
+><DD
+><P
+>        设置 Unix 域套接字的所属组（套接字的所属用户总是启动服务器的用户）。可以与选项<TT
+CLASS="VARNAME"
+>unix_socket_permissions</TT
+>一起用于对 Unix域连接进行访问控制。默认是一个空字符串，表示服务器用户的默认组。这个参数只能在服务器启动时设置。
+       </P
+><P
+>        Windows 下没有 Unix 域套接字，因此这个参数与 Windows 无关。
+       </P
+></DD
+><DT
+><A
+NAME="GUC-UNIX-SOCKET-PERMISSIONS"
+></A
+><TT
+CLASS="VARNAME"
+>unix_socket_permissions</TT
+> (<TT
+CLASS="TYPE"
+>integer</TT
+>)
+      </DT
+><DD
+><P
+>        设置 Unix 域套接字的访问权限。Unix 域套接字使用普通的 Unix 文件系统权限集。这个参数值应该是数字的形式，也就是系统调用<CODE
+CLASS="FUNCTION"
+>chmod</CODE
+>和<CODE
+CLASS="FUNCTION"
+>umask</CODE
+>接受的 形式（如果使用自定义的八进制格式，数字必须以一个<TT
+CLASS="LITERAL"
+>0</TT
+>（零）开头）。
+       </P
+><P
+>        默认的权限是<TT
+CLASS="LITERAL"
+>0777</TT
+>，意思是任何人都可以连接。合理的候选是<TT
+CLASS="LITERAL"
+>0770</TT
+>（只有用户和同组的人可以访问， 又见<TT
+CLASS="VARNAME"
+>unix_socket_group</TT
+>）和<TT
+CLASS="LITERAL"
+>0700</TT
+>（只有用户自己可以访问）（请注意，对于 Unix 域套接字，只有写权限有麻烦，因此没有对读取和执行权限的设置和收回）。
+       </P
+><P
+>        这个访问控制机制与<A
+HREF="client-authentication.html"
+>第 20 &#31456;</A
+>中的用户认证没有关系。
+       </P
+><P
+>        这个参数只能在服务器启动时设置。
+       </P
+><P
+>        这个参数与完全忽略套接字权限的系统无关，尤其是自版本10以上的Solaris。
+        在那些系统上，可以通过把<TT
+CLASS="VARNAME"
+>unix_socket_directories</TT
+>指向一个把搜索权限
+        限制给指定用户的目录来实现相似的效果。
+        因为 Windows 下没有 Unix 域套接字，因此这个参数也与 Windows 无关。
+       </P
+></DD
+><DT
+><A
+NAME="GUC-BONJOUR"
+></A
+><TT
+CLASS="VARNAME"
+>bonjour</TT
+> (<TT
+CLASS="TYPE"
+>boolean</TT
+>)
+      </DT
+><DD
+><P
+>        通过<SPAN
+CLASS="PRODUCTNAME"
+>Bonjour</SPAN
+>广告服务器的存在。默认值是关闭。
+        这个参数只能在服务器启动时设置。
+       </P
+></DD
+><DT
+><A
+NAME="GUC-BONJOUR-NAME"
+></A
+><TT
+CLASS="VARNAME"
+>bonjour_name</TT
+> (<TT
+CLASS="TYPE"
+>string</TT
+>)
+      </DT
+><DD
+><P
+>        指定<SPAN
+CLASS="PRODUCTNAME"
+>Bonjour</SPAN
+>服务名称。空字符串<TT
+CLASS="LITERAL"
+>''</TT
+>（默认值）表示使用计算机名。 如果编译时没有打开<SPAN
+CLASS="PRODUCTNAME"
+>Bonjour</SPAN
+>支持那么将忽略这个参数。这个参数只能在服务器启动时设置。
+       </P
+></DD
+><DT
+><A
+NAME="GUC-TCP-KEEPALIVES-IDLE"
+></A
+><TT
+CLASS="VARNAME"
+>tcp_keepalives_idle</TT
+> (<TT
+CLASS="TYPE"
+>integer</TT
+>)
+      </DT
+><DD
+><P
+>        指定不活动多少秒之后通过 TCP 向客户端发送一个 keepalive 消息。 0 值表示使用默认值。这个参数只有在支持<TT
+CLASS="SYMBOL"
+>TCP_KEEPIDLE</TT
+>或<TT
+CLASS="SYMBOL"
+>TCP_KEEPALIVE</TT
+>符号的系统或 Windows 上才可以使用。在其他系统上，它必须为零。在通过 Unix 域套接字连接的会话中，这个参数被忽略并且总是读作零。
+       </P
+><DIV
+CLASS="NOTE"
+><BLOCKQUOTE
+CLASS="NOTE"
+><P
+><B
+>&#27880;&#24847;: </B
+>         在 Windows 上，值若为 0，系统会将该参数设置为 2 小时，因为 Windows 不支持读取系统默认值。
+        </P
+></BLOCKQUOTE
+></DIV
+></DD
+><DT
+><A
+NAME="GUC-TCP-KEEPALIVES-INTERVAL"
+></A
+><TT
+CLASS="VARNAME"
+>tcp_keepalives_interval</TT
+> (<TT
+CLASS="TYPE"
+>integer</TT
+>)
+      </DT
+><DD
+><P
+>        指定在多少秒之后重发一个还没有被客户端告知已收到的 TCP keepalive 消息。0 值表示使用系统默认值。这个参数只有在支持<TT
+CLASS="SYMBOL"
+>TCP_KEEPINTVL</TT
+>符号的系统或 Windows 上才可以使用。在其他系统上，必须为零。在通过 Unix域套接字连接的会话中，这个参数被忽略并总被读作零。
+       </P
+><DIV
+CLASS="NOTE"
+><BLOCKQUOTE
+CLASS="NOTE"
+><P
+><B
+>&#27880;&#24847;: </B
+>         在 Windows 上，值若为 0，系统会将该参数设置为 1 秒，因为 Windows 不支持读取系统默认值。
+        </P
+></BLOCKQUOTE
+></DIV
+></DD
+><DT
+><A
+NAME="GUC-TCP-KEEPALIVES-COUNT"
+></A
+><TT
+CLASS="VARNAME"
+>tcp_keepalives_count</TT
+> (<TT
+CLASS="TYPE"
+>integer</TT
+>)
+      </DT
+><DD
+><P
+>        指定与客户端的服务器连接被认为死掉之前允许丢失的 TCP keepalive 数量。0 值表示使用系统默认值。这个参数只有在支持<TT
+CLASS="SYMBOL"
+>TCP_KEEPCNT</TT
+>符号的系统上才可以使用。在其他系统上，必须为零。在通过 Unix 域套接字连接的会话中，这个参数被忽略并总被读作零。
+       </P
+><DIV
+CLASS="NOTE"
+><BLOCKQUOTE
+CLASS="NOTE"
+><P
+><B
+>&#27880;&#24847;: </B
+>         Windows 不支持该参数，且必须为零。
+        </P
+></BLOCKQUOTE
+></DIV
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="RUNTIME-CONFIG-CONNECTION-SECURITY"
+>19.3.2. 安全和认证</A
+></H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><A
+NAME="GUC-AUTHENTICATION-TIMEOUT"
+></A
+><TT
+CLASS="VARNAME"
+>authentication_timeout</TT
+> (<TT
+CLASS="TYPE"
+>integer</TT
+>)
+      
+      
+      </DT
+><DD
+><P
+>        完成客户端认证的最长时间，以秒计。如果一个客户端没有在这段时间里完成 认证协议，服务器将关闭连接。这样就避免了出问题的客户端无限制地占有一个连接。默认值是 1分钟（<TT
+CLASS="LITERAL"
+>1m</TT
+>）。这个参数只能在服务器命令行上或者在<TT
+CLASS="FILENAME"
+>postgresql.conf</TT
+>文件中设置。
+       </P
+></DD
+><DT
+><A
+NAME="GUC-SSL"
+></A
+><TT
+CLASS="VARNAME"
+>ssl</TT
+> (<TT
+CLASS="TYPE"
+>boolean</TT
+>)
+      </DT
+><DD
+><P
+>        启用<ACRONYM
+CLASS="ACRONYM"
+>SSL</ACRONYM
+>连接。请在使用这个参数之前阅读<A
+HREF="ssl-tcp.html"
+>第 18.9 &#33410;</A
+>。默认是<TT
+CLASS="LITERAL"
+>off</TT
+>。 这个选项只能在服务器启动时设置。<ACRONYM
+CLASS="ACRONYM"
+>SSL</ACRONYM
+>通信只能和 TCP/IP 连接一起使用。
+       </P
+></DD
+><DT
+><A
+NAME="GUC-SSL-CA-FILE"
+></A
+><TT
+CLASS="VARNAME"
+>ssl_ca_file</TT
+> (<TT
+CLASS="TYPE"
+>string</TT
+>)
+      </DT
+><DD
+><P
+>        指定包含 SSL 服务器证书颁发机构（CA）的文件名。默认值为空，表示不载入 CA 文件，并且不执行客户端证书验证（在之前的 PostgreSQL 发布中，这个文件的名字被硬编码成<TT
+CLASS="FILENAME"
+>root.crt</TT
+>）。相对路径是相对于数据目录。这个参数只能在服务器启动时设置。
+       </P
+></DD
+><DT
+><A
+NAME="GUC-SSL-CERT-FILE"
+></A
+><TT
+CLASS="VARNAME"
+>ssl_cert_file</TT
+> (<TT
+CLASS="TYPE"
+>string</TT
+>)
+      </DT
+><DD
+><P
+>        指定包含 SSL 服务器证书的文件名。默认值是<TT
+CLASS="FILENAME"
+>server.crt</TT
+>。相对路径是相对于数据目录的。这个参数只能在服务器启动时设置。
+       </P
+></DD
+><DT
+><A
+NAME="GUC-SSL-CRL-FILE"
+></A
+><TT
+CLASS="VARNAME"
+>ssl_crl_file</TT
+> (<TT
+CLASS="TYPE"
+>string</TT
+>)
+      </DT
+><DD
+><P
+>        指定包含 SSL 服务器证书撤销列表（CRL）的文件名。默认值为空，意味着不载入 CRL 文件（在之前的 PostgreSQL 发布中，这个文件的名称被硬编码为<TT
+CLASS="FILENAME"
+>root.crl</TT
+>）。相对路径是相对于数据目录。这个参数只能在服务器启动时设置。
+       </P
+></DD
+><DT
+><A
+NAME="GUC-SSL-KEY-FILE"
+></A
+><TT
+CLASS="VARNAME"
+>ssl_key_file</TT
+> (<TT
+CLASS="TYPE"
+>string</TT
+>)
+      </DT
+><DD
+><P
+>        指定包含 SSL 服务器私钥的文件名。默认值为<TT
+CLASS="FILENAME"
+>server.key</TT
+>。  相对路径是相对于数据目录。这个参数只能在服务器启动时设置。
+       </P
+></DD
+><DT
+><A
+NAME="GUC-SSL-CIPHERS"
+></A
+><TT
+CLASS="VARNAME"
+>ssl_ciphers</TT
+> (<TT
+CLASS="TYPE"
+>string</TT
+>)
+      </DT
+><DD
+><P
+>        指定一个<ACRONYM
+CLASS="ACRONYM"
+>SSL</ACRONYM
+>密码列表，用于安全连接。这个设置的语法和所支持的值列表可以
+        参见<SPAN
+CLASS="APPLICATION"
+>OpenSSL</SPAN
+>包中的
+        <SPAN
+CLASS="CITEREFENTRY"
+><SPAN
+CLASS="REFENTRYTITLE"
+>ciphers</SPAN
+></SPAN
+>手册页。默认值是
+        <TT
+CLASS="LITERAL"
+>HIGH:MEDIUM:+3DES:!aNULL</TT
+>。它通常是合理的，除非你有特别的安全性需求。
+       </P
+><P
+>        默认值的解释：
+        <P
+></P
+></P><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="LITERAL"
+>HIGH</TT
+></DT
+><DD
+><P
+>            使用来自<TT
+CLASS="LITERAL"
+>HIGH</TT
+>组的密码的密码组（例如 AES, Camellia, 3DES）
+           </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>MEDIUM</TT
+></DT
+><DD
+><P
+>            使用来自<TT
+CLASS="LITERAL"
+>MEDIUM</TT
+>组的密码的密码组（例如 RC4, SEED）
+           </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>+3DES</TT
+></DT
+><DD
+><P
+>            OpenSSL 对<TT
+CLASS="LITERAL"
+>HIGH</TT
+>的默认排序是有问题的，因为它认为 3DES 比
+            AES128 更高。这是错误的，因为 3DES 提供的安全性比 AES128 低，并且它也更加慢。
+            <TT
+CLASS="LITERAL"
+>+3DES</TT
+>把它重新排序在所有其他<TT
+CLASS="LITERAL"
+>HIGH</TT
+>和
+            <TT
+CLASS="LITERAL"
+>MEDIUM</TT
+>密码之后。
+           </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>!aNULL</TT
+></DT
+><DD
+><P
+>            禁用不做认证的匿名密码组。这类密码组容易收到中间人攻击，因此不应被使用。
+           </P
+></DD
+></DL
+></DIV
+><P>
+       </P
+><P
+>        可用的密码组细节可能会随着 OpenSSL 版本变化。可使用命令
+        <TT
+CLASS="LITERAL"
+>openssl ciphers -v 'HIGH:MEDIUM:+3DES:!aNULL'</TT
+>来查看
+        当前安装的<SPAN
+CLASS="APPLICATION"
+>OpenSSL</SPAN
+>版本的实际细节。注意这个列表是根据服务器密钥类型
+        在运行时过滤过的。
+       </P
+></DD
+><DT
+><A
+NAME="GUC-SSL-PREFER-SERVER-CIPHERS"
+></A
+><TT
+CLASS="VARNAME"
+>ssl_prefer_server_ciphers</TT
+> (<TT
+CLASS="TYPE"
+>bool</TT
+>)
+      </DT
+><DD
+><P
+>        指定是否使用服务器的 SSL 密码首选项，而不是用客户端的。默认为真。
+       </P
+><P
+>        老的PostgreSQL版本没有这个设置并且总是使用客户端的首选项。这个设置主要用于与那些版本
+        的向后兼容性。使用服务器的首选项通常会更好，因为服务器更可能会被合适地配置。
+       </P
+></DD
+><DT
+><A
+NAME="GUC-SSL-ECDH-CURVE"
+></A
+><TT
+CLASS="VARNAME"
+>ssl_ecdh_curve</TT
+> (<TT
+CLASS="TYPE"
+>string</TT
+>)
+      </DT
+><DD
+><P
+>        指定用在<ACRONYM
+CLASS="ACRONYM"
+>ECDH</ACRONYM
+>密钥交换中的曲线名称。它需要被所有连接的客户端支持。
+        它不需要与服务器椭圆曲线密钥使用的曲线相同。默认值是<TT
+CLASS="LITERAL"
+>prime256v1</TT
+>。
+       </P
+><P
+>        OpenSSL 命名了最常见的曲线：
+        <TT
+CLASS="LITERAL"
+>prime256v1</TT
+> (NIST P-256)、
+        <TT
+CLASS="LITERAL"
+>secp384r1</TT
+> (NIST P-384)、
+        <TT
+CLASS="LITERAL"
+>secp521r1</TT
+> (NIST P-521)。
+       </P
+><P
+>        <TT
+CLASS="COMMAND"
+>openssl ecparam -list_curves</TT
+>命令可以显示可用曲线的完
+        整列表。不过并不是所有的都在<ACRONYM
+CLASS="ACRONYM"
+>TLS</ACRONYM
+>中可用。
+       </P
+></DD
+><DT
+><A
+NAME="GUC-PASSWORD-ENCRYPTION"
+></A
+><TT
+CLASS="VARNAME"
+>password_encryption</TT
+> (<TT
+CLASS="TYPE"
+>boolean</TT
+>)
+      </DT
+><DD
+><P
+>        当在<A
+HREF="sql-createuser.html"
+>CREATE USER</A
+>或<A
+HREF="sql-alterrole.html"
+>ALTER ROLE</A
+>中指定了一个密码，而没有写<TT
+CLASS="LITERAL"
+>ENCRYPTED</TT
+>或<TT
+CLASS="LITERAL"
+>UNENCRYPTED</TT
+>时，这个参数决定是否密码会被加密。默认值是<TT
+CLASS="LITERAL"
+>on</TT
+>（加密密码）。
+       </P
+></DD
+><DT
+><A
+NAME="GUC-KRB-SERVER-KEYFILE"
+></A
+><TT
+CLASS="VARNAME"
+>krb_server_keyfile</TT
+> (<TT
+CLASS="TYPE"
+>string</TT
+>)
+      </DT
+><DD
+><P
+>        设置 Kerberos 服务器密钥文件的位置。详见<A
+HREF="auth-methods.html#GSSAPI-AUTH"
+>第 20.3.3 &#33410;</A
+>。这个参数只能在 <TT
+CLASS="FILENAME"
+>postgresql.conf</TT
+>文件中或服务器命令行上进行设置。
+       </P
+></DD
+><DT
+><A
+NAME="GUC-KRB-CASEINS-USERS"
+></A
+><TT
+CLASS="VARNAME"
+>krb_caseins_users</TT
+> (<TT
+CLASS="TYPE"
+>boolean</TT
+>)
+      </DT
+><DD
+><P
+>        设置 Kerberos 和 GSSAPI 用户名是否应区分大小写。默认是<TT
+CLASS="LITERAL"
+>off</TT
+>（区分大小写）。这个参数只能在 <TT
+CLASS="FILENAME"
+>postgresql.conf</TT
+>文件中或服务器命令行上进行设置。
+       </P
+></DD
+><DT
+><A
+NAME="GUC-DB-USER-NAMESPACE"
+></A
+><TT
+CLASS="VARNAME"
+>db_user_namespace</TT
+> (<TT
+CLASS="TYPE"
+>boolean</TT
+>)
+      </DT
+><DD
+><P
+>        允许针对每个数据库的用户名。默认是关闭的。这个参数只能在 <TT
+CLASS="FILENAME"
+>postgresql.conf</TT
+>文件中或服务器命令行上进行设置。
+       </P
+><P
+>        如果打开这个参数，你应该以<TT
+CLASS="LITERAL"
+>username@dbname</TT
+>的方式创建用户。 当一个<TT
+CLASS="LITERAL"
+>username</TT
+>被连接着的客户端传递时，<TT
+CLASS="LITERAL"
+>@</TT
+>和数据库名被增加到用户名中并且那个数据库相关的用户名会被服务器查找。注意，当你在 SQL 环境里创建包含<TT
+CLASS="LITERAL"
+>@</TT
+>的用户名时， 你需要用引号包围用户名。
+       </P
+><P
+>        打开这个参数之后，你还是能够创建普通的全局用户。只要在客户端指定用户名时附加一个<TT
+CLASS="LITERAL"
+>@</TT
+>，例如<TT
+CLASS="LITERAL"
+>joe@</TT
+>。 在服务器查找这个用户名之前，这个<TT
+CLASS="LITERAL"
+>@</TT
+>会被剥除。
+       </P
+><P
+>        <TT
+CLASS="VARNAME"
+>db_user_namespace</TT
+>导致客户端和服务器的用户名表示变得不同。 认证检查总是使用服务器用户名来完成，因此认证方法必须为服务器的用户名配置，而不是客户端的用户名。因为在客户端和服务器上<TT
+CLASS="LITERAL"
+>md5</TT
+>都使用用户名作为盐粒，<TT
+CLASS="LITERAL"
+>md5</TT
+>不能和<TT
+CLASS="VARNAME"
+>db_user_namespace</TT
+>一起使用。
+       </P
+><DIV
+CLASS="NOTE"
+><BLOCKQUOTE
+CLASS="NOTE"
+><P
+><B
+>&#27880;&#24847;: </B
+>         这个特性只是一种临时方法，直到找到一个完全的解决方案。那个时候， 这个选项将被删除。
+        </P
+></BLOCKQUOTE
+></DIV
+></DD
+></DL
+></DIV
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="runtime-config-file-locations.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="runtime-config-resource.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>文件位置</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="runtime-config.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>资源消耗</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

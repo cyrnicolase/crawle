@@ -1,0 +1,347 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>DECLARE</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="嵌入式 SQL 命令"
+HREF="ecpg-sql-commands.html"><LINK
+REL="PREVIOUS"
+TITLE="DEALLOCATE DESCRIPTOR"
+HREF="ecpg-sql-deallocate-descriptor.html"><LINK
+REL="NEXT"
+TITLE="DESCRIBE"
+HREF="ecpg-sql-describe.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="REFENTRY"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/ecpg.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="DEALLOCATE DESCRIPTOR"
+HREF="ecpg-sql-deallocate-descriptor.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="ecpg-sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="DESCRIBE"
+HREF="ecpg-sql-describe.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="ECPG-SQL-DECLARE"
+></A
+>DECLARE</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN52239"
+></A
+><H2
+>&#21517;&#31216;</H2
+>DECLARE&nbsp;--&nbsp;定义一个游标</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN52242"
+></A
+><H2
+>&#22823;&#32434;</H2
+><PRE
+CLASS="SYNOPSIS"
+>DECLARE <TT
+CLASS="REPLACEABLE"
+><I
+>cursor_name</I
+></TT
+> [ BINARY ] [ INSENSITIVE ] [ [ NO ] SCROLL ] CURSOR [ { WITH | WITHOUT } HOLD ] FOR <TT
+CLASS="REPLACEABLE"
+><I
+>prepared_name</I
+></TT
+>
+DECLARE <TT
+CLASS="REPLACEABLE"
+><I
+>cursor_name</I
+></TT
+> [ BINARY ] [ INSENSITIVE ] [ [ NO ] SCROLL ] CURSOR [ { WITH | WITHOUT } HOLD ] FOR <TT
+CLASS="REPLACEABLE"
+><I
+>query</I
+></TT
+></PRE
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN52248"
+></A
+><H2
+>描述</H2
+><P
+>     <TT
+CLASS="COMMAND"
+>DECLARE</TT
+>声明一个游标用来在一个预备语句的结果集上迭代。这个命令与直接的 SQL 命令<TT
+CLASS="COMMAND"
+>DECLARE</TT
+>在语义上有一点点区别：后者会执行一个查询并且准备结果集用于检索，而这个嵌入式 SQL 命令仅仅声明一个名称作为<SPAN
+CLASS="QUOTE"
+>"循环变量"</SPAN
+>用于在一个查询的结果集上迭代，实际的执行在游标被<TT
+CLASS="COMMAND"
+>OPEN</TT
+>命令打开时才发生。
+    </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN52255"
+></A
+><H2
+>参数</H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>cursor_name</I
+></TT
+></DT
+><DD
+><P
+>        一个游标名称，大小写敏感。这可以是一个 SQL 标识符或者一个主变量。
+       </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>prepared_name</I
+></TT
+></DT
+><DD
+><P
+>        一个预备查询的名称，可以是一个 SQL 标识符或者一个主变量。
+       </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>query</I
+></TT
+></DT
+><DD
+><P
+>        一个提供游标要返回的行的<A
+HREF="sql-select.html"
+>SELECT</A
+>或者<A
+HREF="sql-values.html"
+>VALUES</A
+>命令。
+       </P
+></DD
+></DL
+></DIV
+><P
+>     游标选项的含义请见<A
+HREF="sql-declare.html"
+>DECLARE</A
+>。
+    </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN52277"
+></A
+><H2
+>例子</H2
+><P
+>     为一个查询声明一个游标的例子：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>EXEC SQL DECLARE C CURSOR FOR SELECT * FROM My_Table;
+EXEC SQL DECLARE C CURSOR FOR SELECT Item1 FROM T;
+EXEC SQL DECLARE cur1 CURSOR FOR SELECT version();</PRE
+><P>
+    </P
+><P
+>     为一个预备语句声明一个游标的例子：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>EXEC SQL PREPARE stmt1 AS SELECT version();
+EXEC SQL DECLARE cur1 CURSOR FOR stmt1;</PRE
+><P>
+    </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN52283"
+></A
+><H2
+>兼容性</H2
+><P
+>     SQL 标准中说明了<TT
+CLASS="COMMAND"
+>DECLARE</TT
+>。
+    </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN52287"
+></A
+><H2
+>参见</H2
+><A
+HREF="ecpg-sql-open.html"
+>OPEN</A
+>, <A
+HREF="sql-close.html"
+>CLOSE</A
+>, <A
+HREF="sql-declare.html"
+>DECLARE</A
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="ecpg-sql-deallocate-descriptor.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="ecpg-sql-describe.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>DEALLOCATE DESCRIPTOR</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="ecpg-sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>DESCRIBE</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

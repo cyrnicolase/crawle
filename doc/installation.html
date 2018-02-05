@@ -1,0 +1,266 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>  从源代码安装</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="服务器管理"
+HREF="admin.html"><LINK
+REL="PREVIOUS"
+TITLE="服务器管理"
+HREF="admin.html"><LINK
+REL="NEXT"
+TITLE="简单版"
+HREF="install-short.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="CHAPTER"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/installation.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="服务器管理"
+HREF="admin.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="admin.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="简单版"
+HREF="install-short.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="CHAPTER"
+><H1
+><A
+NAME="INSTALLATION"
+></A
+>&#31456; 16.   从源代码安装</H1
+><DIV
+CLASS="TOC"
+><DL
+><DT
+><B
+>&#30446;&#24405;</B
+></DT
+><DT
+>16.1. <A
+HREF="install-short.html"
+>简单版</A
+></DT
+><DT
+>16.2. <A
+HREF="install-requirements.html"
+>要求</A
+></DT
+><DT
+>16.3. <A
+HREF="install-getsource.html"
+>获取源码</A
+></DT
+><DT
+>16.4. <A
+HREF="install-procedure.html"
+>安装过程</A
+></DT
+><DT
+>16.5. <A
+HREF="install-post.html"
+>安装后设置</A
+></DT
+><DD
+><DL
+><DT
+>16.5.1. <A
+HREF="install-post.html#AEN30039"
+>共享库</A
+></DT
+><DT
+>16.5.2. <A
+HREF="install-post.html#AEN30090"
+>环境变量</A
+></DT
+></DL
+></DD
+><DT
+>16.6. <A
+HREF="supported-platforms.html"
+>平台支持</A
+></DT
+><DT
+>16.7. <A
+HREF="installation-platform-notes.html"
+>平台相关的说明</A
+></DT
+><DD
+><DL
+><DT
+>16.7.1. <A
+HREF="installation-platform-notes.html#INSTALLATION-NOTES-AIX"
+>AIX</A
+></DT
+><DT
+>16.7.2. <A
+HREF="installation-platform-notes.html#INSTALLATION-NOTES-CYGWIN"
+>Cygwin</A
+></DT
+><DT
+>16.7.3. <A
+HREF="installation-platform-notes.html#INSTALLATION-NOTES-HPUX"
+>HP-UX</A
+></DT
+><DT
+>16.7.4. <A
+HREF="installation-platform-notes.html#INSTALLATION-NOTES-MINGW"
+>MinGW/原生 Windows</A
+></DT
+><DT
+>16.7.5. <A
+HREF="installation-platform-notes.html#INSTALLATION-NOTES-SCO"
+>SCO OpenServer 和 SCO UnixWare</A
+></DT
+><DT
+>16.7.6. <A
+HREF="installation-platform-notes.html#INSTALLATION-NOTES-SOLARIS"
+>Solaris</A
+></DT
+></DL
+></DD
+></DL
+></DIV
+><P
+>  本章的内容描述从源代码发布安装<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>（如果你安装的是打包好的版本如RPM或Debian包，那么请略过这一章并且阅读打包者的指导）。
+ </P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="admin.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="install-short.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>服务器管理</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="admin.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>简单版</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

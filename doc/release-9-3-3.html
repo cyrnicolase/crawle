@@ -1,0 +1,1029 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>版本 9.3.3</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="版本说明"
+HREF="release.html"><LINK
+REL="PREVIOUS"
+TITLE="版本 9.3.4"
+HREF="release-9-3-4.html"><LINK
+REL="NEXT"
+TITLE="版本 9.3.2"
+HREF="release-9-3-2.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/release-9.3.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="版本 9.3.4"
+HREF="release-9-3-4.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="release.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#38468;&#24405; E. 版本说明</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="版本 9.3.2"
+HREF="release-9-3-2.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="RELEASE-9-3-3"
+>E.28. 版本 9.3.3</A
+></H1
+><DIV
+CLASS="NOTE"
+><BLOCKQUOTE
+CLASS="NOTE"
+><P
+><B
+>发布日期: </B
+>2014-02-20</P
+></BLOCKQUOTE
+></DIV
+><P
+>   这个版本包含各种自9.3.2以来的修复，关于9.3主版本的新特性信息，
+   请查看<A
+HREF="release-9-3.html"
+>第 E.31 &#33410;</A
+>。
+  </P
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN138091"
+>E.28.1. 迁移到版本 9.3.3</A
+></H2
+><P
+>    运行9.3.X的用户不需要转储/恢复。
+   </P
+><P
+>不过，在这个版本中纠正的几个问题会导致外键约束的损坏；也就是，
+有可能引用行现在在被引用的表中没有匹配的行。
+在安装这个更新之后重新检查这样的约束是值得的。
+最简单的方式是删除然后重建每个可疑的约束；不过，
+这将需要在两个表上都获取一个排他锁，所以在生产数据库中是不可能接受的。
+可替代的，可以在两个表之间做手动连接查询，查找不匹配的行。</P
+><P
+>还需要注意在主服务器被升级之前，复制备用服务器被升级的需求。</P
+><P
+>还有，如果你是从一个早于9.3.2的版本升级而来，
+请查看<A
+HREF="release-9-3-2.html"
+>第 E.29 &#33410;</A
+>。</P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN138098"
+>E.28.2. 修改列表</A
+></H2
+><P
+></P
+><UL
+><LI
+><P
+>支持<TT
+CLASS="LITERAL"
+>GRANT ... WITH ADMIN OPTION</TT
+>约束 (Noah Misch)</P
+><P
+>授权一个没有<TT
+CLASS="LITERAL"
+>ADMIN OPTION</TT
+>的角色，应该阻止被授予者添加或删除授予角色的成员，
+但是这个限制很容易通过首先执行<TT
+CLASS="LITERAL"
+>SET ROLE</TT
+>绕开。
+安全影响主要是一个角色成员可以删除其他人的访问权限，
+违反它的授予者的意愿。未经允许的角色成员添加是较少关心的，
+因为一个不合作的角色成员可以通过创建视图或<TT
+CLASS="LITERAL"
+>SECURITY DEFINER</TT
+>
+函数提供他的大部分权限给其他人。 (CVE-2014-0060)</P
+></LI
+><LI
+><P
+>阻止通过手动调用PL验证器函数的权限提升 (Andres Freund)</P
+><P
+>在<TT
+CLASS="COMMAND"
+>CREATE FUNCTION</TT
+>期间，会隐含的调用PL验证器函数的主要角色，
+但是它们也是用户可以明确调用的普通SQL函数。
+在实际上以其他语言写的函数上调用验证器是不会检查的，
+并且会被利用来提升权限。该修复包括在每个验证器函数中添加一个对权限检查函数的调用。
+非核心过程语言也需要对它们自己的验证器函数做此修改，如果有的话。
+      (CVE-2014-0061)</P
+></LI
+><LI
+><P
+>避免表和索引DDL期间查找多个名字 (Robert Haas, Andres Freund)</P
+><P
+>如果名字查找由于并发活动而有不同的结论，
+我们可能会在一个不同的表上执行DDL的某些部分。至少在<TT
+CLASS="COMMAND"
+>CREATE INDEX</TT
+>
+的情况下，可以利用此来导致在一个不同的表上执行权限检查，
+而不是在创建索引的表上，允许权限逃逸攻击。 (CVE-2014-0062)</P
+></LI
+><LI
+><P
+>阻止长的日期时间字符串的缓冲区溢出 (Noah Misch)</P
+><P
+><TT
+CLASS="LITERAL"
+>MAXDATELEN</TT
+>常量对于类型<TT
+CLASS="TYPE"
+>interval</TT
+>的较长可能值来说太小了，
+允许<CODE
+CLASS="FUNCTION"
+>interval_out()</CODE
+>中的缓冲区溢出。
+尽管日期时间输入函数很小心的避免缓冲区溢出，
+但是该限制足够短，导致它们拒绝一些有效的输入，比如包含非常长的时区名的输入。
+<SPAN
+CLASS="APPLICATION"
+>ecpg</SPAN
+>库包含这些缺陷还有一些它自己的缺陷。
+      (CVE-2014-0063)</P
+></LI
+><LI
+><P
+>阻止由于尺寸计算中整数溢出而引起的缓冲区溢出 (Noah Misch, Heikki Linnakangas)</P
+><P
+>几个函数，大多数是类型输入函数，计算一个分配尺寸而不检查溢出。
+如果确实发生了溢出，将会分配一个很小的缓冲区然后写进去。
+      (CVE-2014-0064)</P
+></LI
+><LI
+><P
+>阻止固定尺寸缓冲区的溢出 (Peter Eisentraut, Jozef Mlich)</P
+><P
+>使用<CODE
+CLASS="FUNCTION"
+>strlcpy()</CODE
+>和相关的函数提供一个清楚的保证：
+固定大小的缓冲区不会溢出。不像之前的条款，不清楚这些情况是否真正代表实际问题，
+因为在大多数情况下，这好像是以前在输入字符串尺寸上的限制。
+不管怎样，关闭所有这种类型的Coverity警告看起来是明智的。
+      (CVE-2014-0065)</P
+></LI
+><LI
+><P
+>如果<CODE
+CLASS="FUNCTION"
+>crypt()</CODE
+>返回NULL，避免崩溃 (Honza Horak, Bruce Momjian)</P
+><P
+>有相对较少的情况<CODE
+CLASS="FUNCTION"
+>crypt()</CODE
+>会返回NULL，但是如果发生，
+<TT
+CLASS="FILENAME"
+>contrib/chkpass</TT
+>会崩溃。这是一个问题的一个实际案例是，
+如果<SPAN
+CLASS="APPLICATION"
+>libc</SPAN
+>配置为拒绝执行未经批准的哈希算法
+（如<SPAN
+CLASS="QUOTE"
+>"FIPS 模式"</SPAN
+>）。 (CVE-2014-0066)</P
+></LI
+><LI
+><P
+>在回归测试指令中记录<TT
+CLASS="LITERAL"
+>make check</TT
+>风险 (Noah Misch, Tom Lane)</P
+><P
+>因为<TT
+CLASS="LITERAL"
+>make check</TT
+>启动的临时服务器使用<SPAN
+CLASS="QUOTE"
+>"trust"</SPAN
+>认证，
+同一台机器上的另一个用户可以作为数据库超级用户连接到它，
+然后潜在的暴露启动该测试的操作系统用户的权限。
+将来的版本可能会在测试程序中包含修改，以阻止这个风险，
+但是首先需要一些公众讨论。所以目前为止，只是警告用户在相同的机器上有不受信任的用户时，
+不要使用<TT
+CLASS="LITERAL"
+>make check</TT
+>。 (CVE-2014-0067)</P
+></LI
+><LI
+><P
+>使元组冻结协议重新工作 (&Aacute;lvaro Herrera, Andres Freund)</P
+><P
+>一旦时间过去足够久，元组冻结的逻辑不能处理的一些情况，包括冻结
+<A
+HREF="routine-vacuuming.html#VACUUM-FOR-MULTIXACT-WRAPAROUND"
+><I
+CLASS="FIRSTTERM"
+>multixact</I
+> IDs</A
+>，
+还有共享的行级别锁的实践效果可能会被忘记。</P
+><P
+>为了元组冻结，修复这个需要改变WAL记录的格式。然后对于独立服务器来说这不是问题，
+当使用复制时，它意味着<SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>备用服务器必须在主服务器之前升级到9.3.3或更高版本</I
+></SPAN
+>。
+较老备用服务器将不能解释较新主服务器生成的冻结记录，
+并且将带有PANIC消息失败。（在这样的情况下，升级备用应该足够让它继续执行了。）</P
+></LI
+><LI
+><P
+>创建单独的GUC参数，以控制多行冻结 (&Aacute;lvaro Herrera)</P
+><P
+>在元组变得太老之前，9.3需要冻结multixact元组标签，
+用和某些时候冻结纯事务ID标签同样的方式。以前，
+事务ID冻结参数也用于multixact ID；但是因为事务ID和multixact ID的消耗量不同，
+所以它们运行情况并不是很好。介绍新的设置
+<A
+HREF="runtime-config-client.html#GUC-VACUUM-MULTIXACT-FREEZE-MIN-AGE"
+>vacuum_multixact_freeze_min_age</A
+>、
+<A
+HREF="runtime-config-client.html#GUC-VACUUM-MULTIXACT-FREEZE-TABLE-AGE"
+>vacuum_multixact_freeze_table_age</A
+>和
+<A
+HREF="runtime-config-autovacuum.html#GUC-AUTOVACUUM-MULTIXACT-FREEZE-MAX-AGE"
+>autovacuum_multixact_freeze_max_age</A
+>，
+控制何时冻结multixact。</P
+></LI
+><LI
+><P
+>解释本地更新传播的远端行锁定 (&Aacute;lvaro Herrera)</P
+><P
+>如果一行被事务A锁定，并且事务B更新了它，那么B创建的该行的新版本将被A锁定，
+目前仅对B可见。如果事务B再次更新了该行，将不会检查A的锁，
+因此可能允许B完成（此时不应该成功）。这个情况是9.3新增的，
+因为以前的版本没有任何行锁定的类型允许另外一个事务更新该行。</P
+><P
+>这个疏忽会允许参照完整性检查给出错误的正数（例如，允许删除已经被拒绝的）。
+使用新命令<TT
+CLASS="LITERAL"
+>SELECT FOR KEY SHARE</TT
+>和<TT
+CLASS="LITERAL"
+>SELECT FOR NO KEY UPDATE</TT
+>
+的应用可能也有这种类型的锁定错误。</P
+></LI
+><LI
+><P
+>当一个行锁的几个持有者中的一个中断时，阻止<SPAN
+CLASS="QUOTE"
+>"忘记"</SPAN
+>
+有效行锁 (&Aacute;lvaro Herrera)</P
+><P
+>这是至今为止会丢失一个共享行锁的另一个途径，
+因此可能允许应该已经被外键约束阻止的更新。</P
+></LI
+><LI
+><P
+>修复更新链锁期间不正确的逻辑 (&Aacute;lvaro Herrera)</P
+><P
+>这个错误会导致<TT
+CLASS="LITERAL"
+>REPEATABLE READ</TT
+>和<TT
+CLASS="LITERAL"
+>SERIALIZABLE</TT
+>
+事务隔离模式中，虚假的<SPAN
+CLASS="QUOTE"
+>"由于并发更新不能序列化访问"</SPAN
+>错误。</P
+></LI
+><LI
+><P
+>正确的处理<TT
+CLASS="FILENAME"
+>pg_multixact/members</TT
+>的扩展或截断期间的wraparound
+      (Andres Freund, &Aacute;lvaro Herrera)</P
+></LI
+><LI
+><P
+>修复<TT
+CLASS="FILENAME"
+>pg_multixact/members</TT
+>中5位数文件名的处理 (&Aacute;lvaro Herrera)</P
+><P
+>到了9.3，这些名字可以超过4位，但是路径清理代码忽略了这样的文件。</P
+></LI
+><LI
+><P
+>改善multixact缓存代码的性能 (&Aacute;lvaro Herrera)</P
+></LI
+><LI
+><P
+>最优化更新一个早已被相同事务锁定的行 (Andres Freund, &Aacute;lvaro Herrera)</P
+><P
+>这修复了9.3之前的版本中执行跟随着<TT
+CLASS="LITERAL"
+>UPDATE/DELETE</TT
+>
+的<TT
+CLASS="LITERAL"
+>SELECT FOR UPDATE</TT
+>时的性能退化。</P
+></LI
+><LI
+><P
+>在归档恢复期间，当拥有相同ID的WAL段同时存在于该归档和<TT
+CLASS="FILENAME"
+>pg_xlog/</TT
+>
+中时，更喜欢最高的时间线编号 (Kyotaro Horiguchi)</P
+><P
+>以前，在恢复期间会忽略还未归档的段。这在9.3.0中恢复了一个不可取的行为修改，
+返回了9.3以前的做法。</P
+></LI
+><LI
+><P
+>修复一个关系的某些段不是全尺寸时，WAL记录可能的错误重放 (Greg Stark, Tom Lane)</P
+><P
+>WAL更新可能会应用到错误的页面，可能会错过很多页面。除了损坏数据外，
+还观察到这个错误会导致备用服务器大大的<SPAN
+CLASS="QUOTE"
+>"膨胀"</SPAN
+>，
+因为应用的更新远远超出了文件的末尾。这个故障模式在崩溃恢复时不是一个重要风险，
+仅在初始化同步一个从快速更新的主服务器创建的基础备份创建备用服务器时很重要。</P
+></LI
+><LI
+><P
+>修复决定恢复何时达到一致的bug (Tomonari Katsumata, Heikki Linnakangas)</P
+><P
+>在某些情况下，在重放刚刚开始的时候，WAL重放会错误的推断数据库已经一致，
+因此可能会在数据库真正达到一致之前允许热备份查询。其他症状，比如
+<SPAN
+CLASS="QUOTE"
+>"PANIC: WAL contains references to invalid
+      pages"</SPAN
+>也是有可能的。</P
+></LI
+><LI
+><P
+>修复可见映射修改的WAL记录 (Heikki Linnakangas)</P
+></LI
+><LI
+><P
+>修复在热备份模式重放<TT
+CLASS="LITERAL"
+>VACUUM</TT
+>操作时，不适当的锁定btree索引页
+ (Andres Freund, Heikki Linnakangas, Tom Lane)</P
+><P
+>这个错误会导致<SPAN
+CLASS="QUOTE"
+>"PANIC: WAL contains references to
+      invalid pages"</SPAN
+>失败。</P
+></LI
+><LI
+><P
+>确保到非叶子GIN索引页的插入在合适时写入一个全页WAL记录 (Heikki Linnakangas)</P
+><P
+>以前的代码在系统崩溃期间部分页写入时会有索引损坏的风险。</P
+></LI
+><LI
+><P
+>当<TT
+CLASS="LITERAL"
+>pause_at_recovery_target</TT
+>和<TT
+CLASS="LITERAL"
+>recovery_target_inclusive</TT
+>
+都设置了时，确保目标记录在暂停之前应用 (Heikki Linnakangas)</P
+></LI
+><LI
+><P
+>确保walreceiver及时发送热备份反馈消息，即使是有持续的数据流时
+ (Andres Freund, Amit Kapila)</P
+></LI
+><LI
+><P
+>阻止超时中断拿走主线的代码的控制权，除非设置了
+<TT
+CLASS="VARNAME"
+>ImmediateInterruptOK</TT
+> (Andres Freund, Tom Lane)</P
+><P
+>这对于任何使用语句超时的应用是一个严重的问题，因为在超时发生之后，
+它会导致各种各样奇怪的失败。我们已经见过<SPAN
+CLASS="QUOTE"
+>"被卡住"</SPAN
+>的自旋锁的报告，
+意外的提升为PANIC的ERROR，杀不死的后端和其他错误行为。</P
+></LI
+><LI
+><P
+>修复服务器进程退出期间的竞态条件 (Robert Haas)</P
+><P
+>确保信号处理器在失效后，不再尝试使用进程的<TT
+CLASS="VARNAME"
+>MyProc</TT
+>指针。</P
+></LI
+><LI
+><P
+>修复walsender关闭逻辑和walreceiver SIGHUP信号处理器中的竞态条件 (Tom Lane)</P
+></LI
+><LI
+><P
+>修复错误报告逻辑中对<TT
+CLASS="VARNAME"
+>errno</TT
+>的不安全引用 (Christian Kruse)</P
+><P
+>这通常会导致奇怪的行为，比如丢失或不恰当的<TT
+CLASS="LITERAL"
+>HINT</TT
+>字段。</P
+></LI
+><LI
+><P
+>修复在服务器启动期间太早的使用<CODE
+CLASS="FUNCTION"
+>ereport()</CODE
+>时可能的崩溃 (Tom Lane)</P
+><P
+>在这块我们见到的主要情况就是如果服务器在一个它没有权限读取的目录中启动，
+那么会崩溃。</P
+></LI
+><LI
+><P
+>适当的清理OpenSSL套接字写函数中的重试标记 (Alexander Kukushkin)</P
+><P
+>这个疏忽会导致在意外的丢失SSL加密的连接之后服务器查找。</P
+></LI
+><LI
+><P
+>修复包含逃逸的Unicode标识符（<TT
+CLASS="LITERAL"
+>U&amp;"..."</TT
+>语法）长度检查 (Tom Lane)</P
+><P
+>如果标识符的逃逸格式太长，那么会打印一个虚假的截断警告，
+但是该标识符在解逃逸之后，实际上并不需要截断。</P
+></LI
+><LI
+><P
+>修复正好在命令字符串结尾或函数体之前的Unicode文字和标识符的解析 (Tom Lane)</P
+></LI
+><LI
+><P
+>允许类型名关键字在角色列表中使用 (Stephen Frost)</P
+><P
+>以前的一个补丁允许这样的关键字不加引用的在这样的地方比如角色标识符中使用；
+但是它忽略了角色标识符列表的情况，比如<TT
+CLASS="LITERAL"
+>DROP ROLE</TT
+>。</P
+></LI
+><LI
+><P
+>修复<TT
+CLASS="LITERAL"
+>EXISTS(SELECT * FROM zero_column_table)</TT
+>
+的解析器崩溃 (Tom Lane)</P
+></LI
+><LI
+><P
+>修复由于嵌套子查询的无效规划而引起的可能的崩溃，比如
+<TT
+CLASS="LITERAL"
+>WHERE (... x IN (SELECT ...) ...) IN (SELECT ...)</TT
+>
+      (Tom Lane)</P
+></LI
+><LI
+><P
+>修复<TT
+CLASS="LITERAL"
+>LATERAL</TT
+>子查询停止的<TT
+CLASS="LITERAL"
+>WHERE</TT
+>条件的错误处理 (Tom Lane)</P
+><P
+>这个bug的典型症状是一个<SPAN
+CLASS="QUOTE"
+>"JOIN qualification
+      cannot refer to other relations"</SPAN
+>错误，
+尽管创建规划中小的逻辑错误看起来也是可能的。</P
+></LI
+><LI
+><P
+>不允许<TT
+CLASS="LITERAL"
+>LATERAL</TT
+>提到<TT
+CLASS="LITERAL"
+>UPDATE/DELETE</TT
+>
+的目标表 (Tom Lane)</P
+><P
+>虽然这在一些未来版本中可能会被允许，但是在9.3中不行，
+并且完全不能正确工作。</P
+></LI
+><LI
+><P
+>修复拥有<TT
+CLASS="LITERAL"
+>UNION ALL</TT
+>子查询的继承目标表的
+<TT
+CLASS="LITERAL"
+>UPDATE/DELETE</TT
+> (Tom Lane)</P
+><P
+>没有这个修复，<TT
+CLASS="LITERAL"
+>UNION ALL</TT
+>子查询不能正确的插入到第一个继承子表之后的表的更新规划中，
+通常导致这些子表中没有更新发生。</P
+></LI
+><LI
+><P
+>修复<TT
+CLASS="COMMAND"
+>ANALYZE</TT
+>，在范围类型上的字段域上面不会失败 (Tom Lane)</P
+></LI
+><LI
+><P
+>确保<TT
+CLASS="COMMAND"
+>ANALYZE</TT
+>为表字段创建统计，即使它里面的所有值都<SPAN
+CLASS="QUOTE"
+>"太宽"</SPAN
+>
+ (Tom Lane)</P
+><P
+><TT
+CLASS="COMMAND"
+>ANALYZE</TT
+>故意的在它的直方图和大多数共同值计算中忽略非常宽的值，
+但是它忽视了要做一些扫描的情况，就是所有抽样数据都太宽的情况。</P
+></LI
+><LI
+><P
+>在<TT
+CLASS="LITERAL"
+>ALTER TABLE ... SET TABLESPACE</TT
+>中，
+允许不检查权限就使用数据库的缺省表空间 (Stephen Frost)</P
+><P
+><TT
+CLASS="LITERAL"
+>CREATE TABLE</TT
+>总是允许这样的用法，但是<TT
+CLASS="LITERAL"
+>ALTER TABLE</TT
+>不是。</P
+></LI
+><LI
+><P
+>修复对包含事件触发器的扩展的支持 (Tom Lane)</P
+></LI
+><LI
+><P
+>修复<TT
+CLASS="LITERAL"
+>CASE</TT
+>的一些分支返回一个集合而其他分支的不返回集合时的
+<SPAN
+CLASS="QUOTE"
+>"cannot accept a set"</SPAN
+>错误 (Tom Lane)</P
+></LI
+><LI
+><P
+>修复JSON函数中的内存泄露 (Craig Ringer)</P
+></LI
+><LI
+><P
+>在生成JSON输出时，正确的区分来自非数字的数字 (Andrew Dunstan)</P
+></LI
+><LI
+><P
+>修复pgstat函数中所有零客户端地址的检查 (Kevin Grittner)</P
+></LI
+><LI
+><P
+>修复文本搜索解析器对多字节字符可能的错误分类 (Tom Lane)</P
+><P
+>在使用C环境的多字节编码时，非ASCII字符可能会被错误分类。
+在Cygwin上，非C环境也有可能会失败。</P
+></LI
+><LI
+><P
+>修复<CODE
+CLASS="FUNCTION"
+>plainto_tsquery()</CODE
+>中可能的错误行为 (Heikki Linnakangas)</P
+><P
+>使用<CODE
+CLASS="FUNCTION"
+>memmove()</CODE
+>而不是<CODE
+CLASS="FUNCTION"
+>memcpy()</CODE
+>拷贝重复的内存区域。
+还没有这会实际导致问题的报告，但是它确实有风险。</P
+></LI
+><LI
+><P
+>修复<CODE
+CLASS="FUNCTION"
+>pg_start_backup()</CODE
+>和<CODE
+CLASS="FUNCTION"
+>pg_stop_backup()</CODE
+>
+中权限检查的定位 (Andres Freund, Magnus Hagander)</P
+><P
+>以前的代码可能会在不适当的时候尝试做目录访问。</P
+></LI
+><LI
+><P
+>接受<TT
+CLASS="LITERAL"
+>SHIFT_JIS</TT
+>作为本地检查目的的编码名 (Tatsuo Ishii)</P
+></LI
+><LI
+><P
+>修复SQL语言函数中命名参数的<TT
+CLASS="LITERAL"
+>*</TT
+>限制 (Tom Lane)</P
+><P
+>给出一个名为<TT
+CLASS="LITERAL"
+>foo</TT
+>的复合类型参数，<TT
+CLASS="LITERAL"
+>$1.*</TT
+>
+运行的很好，但是<TT
+CLASS="LITERAL"
+>foo.*</TT
+>不行。</P
+></LI
+><LI
+><P
+>修复Windows上<CODE
+CLASS="FUNCTION"
+>PQhost()</CODE
+>的错误行为 (Fujii Masao)</P
+><P
+>如果没有指定主机，它应该返回<TT
+CLASS="LITERAL"
+>localhost</TT
+>。</P
+></LI
+><LI
+><P
+>为<TT
+CLASS="LITERAL"
+>COPY TO STDOUT/FROM STDIN</TT
+>期间的失败，改善<SPAN
+CLASS="APPLICATION"
+>libpq</SPAN
+>
+和<SPAN
+CLASS="APPLICATION"
+>psql</SPAN
+>中的错误处理 (Tom Lane)</P
+><P
+>特别的，这修复了一个在9.2及更高版本中可能发生的无限循环，
+如果在<TT
+CLASS="LITERAL"
+>COPY FROM STDIN</TT
+>期间丢失服务器连接。
+这种情况的变体可能会在较老版本或其他客户端应用中发生。</P
+></LI
+><LI
+><P
+>修复一些<SPAN
+CLASS="APPLICATION"
+>psql</SPAN
+> <TT
+CLASS="LITERAL"
+>\d</TT
+>命令中不正确的翻译处理
+(Peter Eisentraut, Tom Lane)</P
+></LI
+><LI
+><P
+>确保退出<SPAN
+CLASS="APPLICATION"
+>pg_basebackup</SPAN
+>的前端进程时杀死它的后端进程 (Magnus Hagander)</P
+></LI
+><LI
+><P
+>修复<SPAN
+CLASS="APPLICATION"
+>pg_basebackup</SPAN
+>的冗长模式中，可能不正确的文件名输出 (Magnus Hagander)</P
+></LI
+><LI
+><P
+>避免在基础备份的PGDATA中包含表空间两次 (Dimitri Fontaine, Magnus Hagander)</P
+></LI
+><LI
+><P
+>修复<SPAN
+CLASS="APPLICATION"
+>ecpg</SPAN
+>中不整齐的描述符 (MauMau)</P
+></LI
+><LI
+><P
+>在<SPAN
+CLASS="APPLICATION"
+>ecpg</SPAN
+>中，正确的处理连接参数中主机名的缺少 (Michael Meskes)</P
+></LI
+><LI
+><P
+>修复<TT
+CLASS="FILENAME"
+>contrib/dblink</TT
+>连接启动中的性能回归 (Joe Conway)</P
+><P
+>当客户端和服务器编码匹配时，避免不必要的往返。</P
+></LI
+><LI
+><P
+>在<TT
+CLASS="FILENAME"
+>contrib/isn</TT
+>中，修复ISMN值的检查位的不正确计算 (Fabien Coelho)</P
+></LI
+><LI
+><P
+>修复<TT
+CLASS="FILENAME"
+>contrib/pgbench</TT
+>的进程登录，以避免比例系数很大时的溢出 (Tatsuo Ishii)</P
+></LI
+><LI
+><P
+>修复<TT
+CLASS="FILENAME"
+>contrib/pg_stat_statement</TT
+>对<TT
+CLASS="LITERAL"
+>CURRENT_DATE</TT
+>
+和相关构造的处理 (Kyotaro Horiguchi)</P
+></LI
+><LI
+><P
+>改善<TT
+CLASS="FILENAME"
+>contrib/postgres_fdw</TT
+>中丢失连接错误的处理 (Tom Lane)</P
+></LI
+><LI
+><P
+>确保仅客户端的编码安装程序像记录中那样运行 (Peter Eisentraut)</P
+></LI
+><LI
+><P
+>在Mingw和Cygwin建立中，在<TT
+CLASS="FILENAME"
+>bin</TT
+>目录下安装<SPAN
+CLASS="APPLICATION"
+>libpq</SPAN
+> DLL
+ (Andrew Dunstan)</P
+><P
+>这重复了MSVC建立很久以来的做法。它应该修复程序像<SPAN
+CLASS="APPLICATION"
+>psql</SPAN
+>
+未能启动的问题，因为它们不能找到该DLL。</P
+></LI
+><LI
+><P
+>避免在Cygwin建立中使用废弃的<TT
+CLASS="LITERAL"
+>dllwrap</TT
+>工具 (Marco Atzeri)</P
+></LI
+><LI
+><P
+>使其能够使用Visual Studio 2013编译 (Brar Piening)</P
+></LI
+><LI
+><P
+>不再生成纯文本<TT
+CLASS="FILENAME"
+>HISTORY</TT
+>和<TT
+CLASS="FILENAME"
+>src/test/regress/README</TT
+>文件 (Tom Lane)</P
+><P
+>这些文本文件重复了主要HTML和PDF文档格式。问题在于维护它们大大的超过了纯文本格式。
+发布包将仍然包含这些名字的文件，但是它们只是指导读者咨询主文档。
+将仍然维护纯文本<TT
+CLASS="FILENAME"
+>INSTALL</TT
+>文件，因为它可能有用户用例。</P
+></LI
+><LI
+><P
+>更新时区数据文件到<SPAN
+CLASS="APPLICATION"
+>tzdata</SPAN
+>版本2013i，
+因为DST规律在约旦发生了改变还有古巴的历史修改。</P
+><P
+>另外，时区<TT
+CLASS="LITERAL"
+>Asia/Riyadh87</TT
+>、<TT
+CLASS="LITERAL"
+>Asia/Riyadh88</TT
+>
+和<TT
+CLASS="LITERAL"
+>Asia/Riyadh89</TT
+>已经删除了，因为IANA不再维护它们了，
+并且不再代表实际民用计时。</P
+></LI
+></UL
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="release-9-3-4.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="release-9-3-2.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>版本 9.3.4</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="release.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>版本 9.3.2</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

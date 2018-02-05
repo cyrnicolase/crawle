@@ -1,0 +1,587 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>外部数据包装器查询规划</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="编写一个外部数据包装器"
+HREF="fdwhandler.html"><LINK
+REL="PREVIOUS"
+TITLE="外部数据包装器助手函数"
+HREF="fdw-helpers.html"><LINK
+REL="NEXT"
+TITLE="外部数据包装器中的行锁定"
+HREF="fdw-row-locking.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/fdwhandler.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="外部数据包装器助手函数"
+HREF="fdw-helpers.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="fdwhandler.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#31456; 55. 编写一个外部数据包装器</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="外部数据包装器中的行锁定"
+HREF="fdw-row-locking.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="FDW-PLANNING"
+>55.4. 外部数据包装器查询规划</A
+></H1
+><P
+>     FDW回调函数<CODE
+CLASS="FUNCTION"
+>GetForeignRelSize</CODE
+>、<CODE
+CLASS="FUNCTION"
+>GetForeignPaths</CODE
+>、<CODE
+CLASS="FUNCTION"
+>GetForeignPlan</CODE
+>、<CODE
+CLASS="FUNCTION"
+>PlanForeignModify</CODE
+>、<CODE
+CLASS="FUNCTION"
+>GetForeignJoinPaths</CODE
+>、<CODE
+CLASS="FUNCTION"
+>GetForeignUpperPaths</CODE
+>以及<CODE
+CLASS="FUNCTION"
+>PlanDirectModify</CODE
+>必须适合<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>规划器的工作。这里有一些关于它们必须做什么的注记。
+    </P
+><P
+>     <TT
+CLASS="LITERAL"
+>root</TT
+>和<TT
+CLASS="LITERAL"
+>baserel</TT
+>中的信息可以被用来减少必须从外部表获得的信息量（并且因此降低代价）。<TT
+CLASS="LITERAL"
+>baserel-&gt;baserestrictinfo</TT
+>是特别有趣的，因为它包含限制条件（<TT
+CLASS="LITERAL"
+>WHERE</TT
+>）子句，它应该被用来过滤要被获取的行（FDW本身并不要求强制这些条件，因为核心执行器可以检查它们）。<TT
+CLASS="LITERAL"
+>baserel-&gt;reltarget-&gt;exprs</TT
+>可以被用来决定哪些类需要被获取；但是注意它仅列出了<TT
+CLASS="STRUCTNAME"
+>ForeignScan</TT
+>计划节点所发出的列，不包含在条件计算中使用但并不被查询输出的列。
+    </P
+><P
+>     有多个私有域可以给FDW规划函数来保存信息。通常，不管你存储什么在FDW私有域中，它们都应该被palloc，这样它会在规划结束时被回收。    </P
+><P
+>     <TT
+CLASS="LITERAL"
+>baserel-&gt;fdw_private</TT
+>是一个<TT
+CLASS="TYPE"
+>void</TT
+>指针，它可以被FDW规划函数用来存储与特定外部表相关的信息。核心规划器不会碰它除非当<TT
+CLASS="LITERAL"
+>RelOptInfo</TT
+>节点被创建时把它初始化为NULL。它对从<CODE
+CLASS="FUNCTION"
+>GetForeignRelSize</CODE
+>传递信息给<CODE
+CLASS="FUNCTION"
+>GetForeignPaths</CODE
+>和/或从<CODE
+CLASS="FUNCTION"
+>GetForeignPaths</CODE
+>传递信息给<CODE
+CLASS="FUNCTION"
+>GetForeignPlan</CODE
+>非常有用，这样避免了重新计算。
+    </P
+><P
+>     <CODE
+CLASS="FUNCTION"
+>GetForeignPaths</CODE
+>可以通过在<TT
+CLASS="STRUCTNAME"
+>ForeignPath</TT
+>节点的<TT
+CLASS="STRUCTFIELD"
+>fdw_private</TT
+>域中存储私有信息来标识不同的访问路径。<TT
+CLASS="STRUCTFIELD"
+>fdw_private</TT
+>被声明为一个<TT
+CLASS="TYPE"
+>List</TT
+>指针，但是可能实际上包含任何东西，因为规划器不会触碰它。但是，最好是使用一种<CODE
+CLASS="FUNCTION"
+>nodeToString</CODE
+>可导出的形式，这样在后端可以用于调试支持。
+    </P
+><P
+>     <CODE
+CLASS="FUNCTION"
+>GetForeignPlan</CODE
+>可以检查选中的<TT
+CLASS="STRUCTNAME"
+>ForeignPath</TT
+>节点的<TT
+CLASS="STRUCTFIELD"
+>fdw_private</TT
+>域，并且可以生成被放置于<TT
+CLASS="STRUCTNAME"
+>ForeignPath</TT
+>计划节点中的<TT
+CLASS="STRUCTFIELD"
+>fdw_exprs</TT
+>和<TT
+CLASS="STRUCTFIELD"
+>fdw_private</TT
+>列表。这两个列表必须被表示为一种<CODE
+CLASS="FUNCTION"
+>copyObject</CODE
+>可复制的形式。<TT
+CLASS="STRUCTFIELD"
+>fdw_private</TT
+>列表没有任何其他限制并且不会被核心后端以任何形式解释。非 NIL 的<TT
+CLASS="STRUCTFIELD"
+>fdw_exprs</TT
+>应该包含表达式树，该树会在运行时被执行。这些树将由规划器在后期处理，以便让它们变成完全可执行的。
+    </P
+><P
+>     在<CODE
+CLASS="FUNCTION"
+>GetForeignPlan</CODE
+>中，通常被传入的目标列表可以被照样复制到计划节点中。被传入的<TT
+CLASS="LITERAL"
+>scan_clauses</TT
+> 列表包含和<TT
+CLASS="LITERAL"
+>baserel-&gt;baserestrictinfo</TT
+>相同的子句，但是可能为了更好的执行效率会被重新排序。在简单情况下，FDW可以只把<TT
+CLASS="STRUCTNAME"
+>RestrictInfo</TT
+>节点从<TT
+CLASS="LITERAL"
+>scan_clauses</TT
+> 列表剥离（使用<CODE
+CLASS="FUNCTION"
+>extract_actual_clauses</CODE
+>）并且把所有子句放到计划节点的条件列表中，这意味着所有子句将在运行时由执行器检查。更复杂的FDW可能可以在内部检查某些子句，着这种情况下哪些子句可以从计划节点的条件列表中删除，这样执行器就不用浪费时间去检查它们。
+    </P
+><P
+>     作为一个例子，FDW可以标识某些<TT
+CLASS="REPLACEABLE"
+><I
+>foreign_variable</I
+></TT
+> <TT
+CLASS="LITERAL"
+>=</TT
+>
+     <TT
+CLASS="REPLACEABLE"
+><I
+>sub_expression</I
+></TT
+>形式的限制子句，它决定哪些可以使用由<TT
+CLASS="REPLACEABLE"
+><I
+>sub_expression</I
+></TT
+>给出的本地计算值在远程服务器上被执行。这样一个子句的实际标识应该在<CODE
+CLASS="FUNCTION"
+>GetForeignPaths</CODE
+>期间发生，因为它可能会影响路径的代价估计。路径的<TT
+CLASS="STRUCTFIELD"
+>fdw_private</TT
+>域可能包括一个已标识的子句的<TT
+CLASS="STRUCTNAME"
+>RestrictInfo</TT
+>节点。然后<CODE
+CLASS="FUNCTION"
+>GetForeignPlan</CODE
+>将从<TT
+CLASS="LITERAL"
+>scan_clauses</TT
+> 中移除该子句，但是将<TT
+CLASS="REPLACEABLE"
+><I
+>sub_expression</I
+></TT
+>加到<TT
+CLASS="STRUCTFIELD"
+>fdw_exprs</TT
+>来保证它被揉成可执行的形式。它可能还将把控制信息放入到计划节点的<TT
+CLASS="STRUCTFIELD"
+>fdw_private</TT
+>域来告诉执行函数在运行时要做什么。传递给远程服务器的查询将涉及类似<TT
+CLASS="LITERAL"
+>WHERE <TT
+CLASS="REPLACEABLE"
+><I
+>foreign_variable</I
+></TT
+> = $1</TT
+>的东西，使用在运行时从<TT
+CLASS="STRUCTFIELD"
+>fdw_exprs</TT
+>表达式树获得的参数值。
+    </P
+><P
+>     任何从该计划节点的条件列表移除的子句必须被加入到<TT
+CLASS="LITERAL"
+>fdw_recheck_quals</TT
+>或者由<TT
+CLASS="LITERAL"
+>RecheckForeignScan</TT
+>重新检查以便确保在<TT
+CLASS="LITERAL"
+>READ COMMITTED</TT
+>隔离级别的正确行为。当查询中涉及的某个其他表上发生并发更新时，执行器可能需要验证原来的所有条件仍然对该元组满足（可能用一组不同的参数值）。使用<TT
+CLASS="LITERAL"
+>fdw_recheck_quals</TT
+>通常比在<TT
+CLASS="LITERAL"
+>RecheckForeignScan</TT
+>中实现检查要更容易，但是这种方法不足以应付外连接被下推的情况，因为那种情况下的连接元组可能会有一些域具有 NULL 但是不会导致整个元组被拒绝。
+    </P
+><P
+>     另一个可以由 FDW 填充的<TT
+CLASS="STRUCTNAME"
+>ForeignScan</TT
+>域是<TT
+CLASS="STRUCTFIELD"
+>fdw_scan_tlist</TT
+>，它描述 FDW 为这个计划节点返回的元组。对于简单的外部表扫描这可以设置为<TT
+CLASS="LITERAL"
+>NIL</TT
+>，表示返回的元组具有为外部表声明的行类型。非-<TT
+CLASS="SYMBOL"
+>NIL</TT
+>值必须是一个包含表示返回列的 Var 或表达式的目标列表（<TT
+CLASS="STRUCTNAME"
+>TargetEntry</TT
+>的列表）。例如，这可以被用来显示 FDW 省略了某些查询不需要的列。还有，如果 FDW 计算表达式比在本地计算代价更低，可以把那些表达式加入到<TT
+CLASS="STRUCTFIELD"
+>fdw_scan_tlist</TT
+>。注意连接计划（从<CODE
+CLASS="FUNCTION"
+>GetForeignJoinPaths</CODE
+>创建的路径得到）必须总是提供<TT
+CLASS="STRUCTFIELD"
+>fdw_scan_tlist</TT
+>来描述它们将返回的列集合。
+    </P
+><P
+>     FDW应该总是只依靠表的限制子句构建至少一个路径。在连接查询中，它可能还会选择依靠连接子句构建路径，例如<TT
+CLASS="REPLACEABLE"
+><I
+>foreign_variable</I
+></TT
+> <TT
+CLASS="LITERAL"
+>=</TT
+> <TT
+CLASS="REPLACEABLE"
+><I
+>local_variable</I
+></TT
+>。这样的子句将不会在<TT
+CLASS="LITERAL"
+>baserel-&gt;baserestrictinfo</TT
+>中找到，但是必须出现在关系的连接列表中。使用这样一个子句的路径被称为一个<SPAN
+CLASS="QUOTE"
+>"参数化路径"</SPAN
+>。它必须用一个合适的<TT
+CLASS="LITERAL"
+>param_info</TT
+>值来标识其他被使用在选中的连接子句中的关系；使用<CODE
+CLASS="FUNCTION"
+>get_baserel_parampathinfo</CODE
+>来计算该值。在<CODE
+CLASS="FUNCTION"
+>GetForeignPlan</CODE
+>中，连接子句的<TT
+CLASS="REPLACEABLE"
+><I
+>local_variable</I
+></TT
+>部分将被加到<TT
+CLASS="STRUCTFIELD"
+>fdw_exprs</TT
+>中，并且接着在运行时和一个普通限制子句一样工作。
+    </P
+><P
+>     如果一个 FDW 支持远程连接，<CODE
+CLASS="FUNCTION"
+>GetForeignJoinPaths</CODE
+>应该和<CODE
+CLASS="FUNCTION"
+>GetForeignPaths</CODE
+>对基本表所作的那样为潜在的远程连接产生<TT
+CLASS="STRUCTNAME"
+>ForeignPath</TT
+>。有关想要进行的连接的信息可以以上述相同的方式传递给<CODE
+CLASS="FUNCTION"
+>GetForeignPlan</CODE
+>。不过，<TT
+CLASS="STRUCTFIELD"
+>baserestrictinfo</TT
+>与连接关系无关，一个特定连接的相关连接子句将被作为一个独立的参数（<TT
+CLASS="LITERAL"
+>extra-&gt;restrictlist</TT
+>）被传递给<CODE
+CLASS="FUNCTION"
+>GetForeignJoinPaths</CODE
+>。
+    </P
+><P
+>     FDW 可能会额外地支持直接执行某些在扫描和连接层次之上的计划动作，例如分组或者聚集。为了提供这类选项，FDW 应该生成路径并且把它们插入到合适的<I
+CLASS="FIRSTTERM"
+>上层关系中</I
+>。例如，一条表示远程聚集的路径应该被使用<CODE
+CLASS="FUNCTION"
+>add_path</CODE
+>插入到<TT
+CLASS="LITERAL"
+>UPPERREL_GROUP_AGG</TT
+>关系中。这条路径的代价将会与通过读取外部关系的简单扫描路径的本地聚集（注意这样一条路径也必须被提供，否则规划时会有错误）进行比较。如果远程聚集路径胜出（通常是这样），它会被以通常的方式（调用<CODE
+CLASS="FUNCTION"
+>GetForeignPlan</CODE
+>）转化成计划。如果该查询的所有基本关系都来自于同一个 FDW，推荐在<CODE
+CLASS="FUNCTION"
+>GetForeignUpperPaths</CODE
+>回调函数中生成这种路径，该函数会为每一个上层关系被调用（即每一次扫描/连接后处理步骤）。
+    </P
+><P
+>     <A
+HREF="fdw-callbacks.html#FDW-CALLBACKS-UPDATE"
+>第 55.2.4 &#33410;</A
+>中描述的<CODE
+CLASS="FUNCTION"
+>PlanForeignModify</CODE
+>以及其他回调的设计是建立在这样一个假设之上：外部表将以通常的方式被扫描并且行更新将被一个本地<TT
+CLASS="LITERAL"
+>ModifyTable</TT
+>计划节点所驱动。这种方法对于更新需要读取本地表以及外部表的一般情况下是必要的。不过，如果操作可以完全由外部服务器执行，FDW 可以产生一个表示这种操作的计划并且把它插入到<TT
+CLASS="LITERAL"
+>UPPERREL_FINAL</TT
+>上层关系中，在其中它会与<TT
+CLASS="LITERAL"
+>ModifyTable</TT
+>方法竞争。这种方法还可以被用来实现远程<TT
+CLASS="LITERAL"
+>SELECT FOR UPDATE</TT
+>，而不使用<A
+HREF="fdw-callbacks.html#FDW-CALLBACKS-ROW-LOCKING"
+>第 55.2.5 &#33410;</A
+>中描述的行锁定回调。记住插入到<TT
+CLASS="LITERAL"
+>UPPERREL_FINAL</TT
+>中的路径负责实现查询的<SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>所有</I
+></SPAN
+>行为。
+    </P
+><P
+>     在规划一个<TT
+CLASS="COMMAND"
+>UPDATE</TT
+>或<TT
+CLASS="COMMAND"
+>DELETE</TT
+>时，<CODE
+CLASS="FUNCTION"
+>PlanForeignModify</CODE
+>和<CODE
+CLASS="FUNCTION"
+>PlanDirectModify</CODE
+>能为外部表查找<TT
+CLASS="STRUCTNAME"
+>RelOptInfo</TT
+>结构，并利用之前由扫描规划函数创建的<TT
+CLASS="LITERAL"
+>baserel-&gt;fdw_private</TT
+>数据。但是，在<TT
+CLASS="COMMAND"
+>INSERT</TT
+>中目标表不会被扫描，因此不会有它的<TT
+CLASS="STRUCTNAME"
+>RelOptInfo</TT
+>。由<CODE
+CLASS="FUNCTION"
+>PlanForeignModify</CODE
+>返回的<TT
+CLASS="STRUCTNAME"
+>List</TT
+>具有和<TT
+CLASS="STRUCTNAME"
+>ForeignScan</TT
+>计划节点的<TT
+CLASS="STRUCTFIELD"
+>fdw_private</TT
+>列表相同的限制，即它必须只包含<CODE
+CLASS="FUNCTION"
+>copyObject</CODE
+>知道怎么拷贝的结构。
+    </P
+><P
+>     带有一个<TT
+CLASS="LITERAL"
+>ON CONFLICT</TT
+>子句的<TT
+CLASS="COMMAND"
+>INSERT</TT
+>不支持指定冲突目标，因为本地不知道远程表上的唯一约束和排除约束的情况。然后这也意味着<TT
+CLASS="LITERAL"
+>ON CONFLICT DO UPDATE</TT
+>不被支持，因为该说明是强制性的。
+    </P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="fdw-helpers.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="fdw-row-locking.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>外部数据包装器助手函数</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="fdwhandler.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>外部数据包装器中的行锁定</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

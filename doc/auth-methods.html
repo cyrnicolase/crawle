@@ -1,0 +1,1632 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>认证方法</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="客户端认证"
+HREF="client-authentication.html"><LINK
+REL="PREVIOUS"
+TITLE="用户名映射"
+HREF="auth-username-maps.html"><LINK
+REL="NEXT"
+TITLE="认证问题"
+HREF="client-authentication-problems.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/client-auth.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="用户名映射"
+HREF="auth-username-maps.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="client-authentication.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#31456; 20. 客户端认证</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="认证问题"
+HREF="client-authentication-problems.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="AUTH-METHODS"
+>20.3. 认证方法</A
+></H1
+><P
+>   下列小节更详细地描述认证方法。
+  </P
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AUTH-TRUST"
+>20.3.1. 信任认证</A
+></H2
+><P
+>    当<TT
+CLASS="LITERAL"
+>trust</TT
+>认证被指定时，<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>假设任何可以连接到服务器的人都被授权使用他们指定的任何数据库用户名（即使是超级用户）访问数据库。当然，在<TT
+CLASS="LITERAL"
+>database</TT
+>和 <TT
+CLASS="LITERAL"
+>user</TT
+>列中设置的限制仍然适用。只有当在操作系统层对进入服务器的连接有足够保护时，才应该使用这种方法。
+   </P
+><P
+>    <TT
+CLASS="LITERAL"
+>trust</TT
+>认证对于单用户工作站的本地连接是非常合适和方便的。通常它本身<SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>不</I
+></SPAN
+>适用于一台多用户机器。不过，只要你利用文件系统权限限制了对服务器的 Unix 域套接字文件的访问，即使在多用户机器上，你也可以使用<TT
+CLASS="LITERAL"
+>trust</TT
+>。 要做这些限制，你可以设置<A
+HREF="runtime-config-connection.html"
+>第 19.3 &#33410;</A
+>中描述的<TT
+CLASS="VARNAME"
+>unix_socket_permissions</TT
+>配置参数（可能还有<TT
+CLASS="VARNAME"
+>unix_socket_group</TT
+>）。 或者你可以设置<TT
+CLASS="VARNAME"
+>unix_socket_directories</TT
+>配置参数来把 Unix 域套接字文件放在一个经过恰当限制的目录中。
+   </P
+><P
+>    设置文件系统权限只能有助于 Unix 套接字连接。本地 TCP/IP 连接不会被文件系统权限限制。因此，如果你想利用文件系统权限来控制本地安全，那么从<TT
+CLASS="FILENAME"
+>pg_hba.conf</TT
+>中移除<TT
+CLASS="LITERAL"
+>host ... 127.0.0.1 ...</TT
+>行，或者把它改为一个非<TT
+CLASS="LITERAL"
+>trust</TT
+>认证方法。
+   </P
+><P
+>    如果通过指定<TT
+CLASS="LITERAL"
+>trust</TT
+>的<TT
+CLASS="FILENAME"
+>pg_hba.conf</TT
+>行让你信任每一个被允许连接到服务器的机器上的用户，<TT
+CLASS="LITERAL"
+>trust</TT
+>认证只适合 TCP/IP 连接。为任何不是来自<SPAN
+CLASS="SYSTEMITEM"
+>localhost</SPAN
+>（127.0.0.1）的 TCP/IP 连接使用<TT
+CLASS="LITERAL"
+>trust</TT
+>很少是合理的。
+   </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AUTH-PASSWORD"
+>20.3.2. 口令认证</A
+></H2
+><P
+>    基于口令的认证方法是<TT
+CLASS="LITERAL"
+>md5</TT
+>和<TT
+CLASS="LITERAL"
+>password</TT
+>。这些方法操作上非常类似，只不过通过连接发送口令的方法不同：即分别是 MD5 哈希以及明文。
+   </P
+><P
+>    如果你担心口令<SPAN
+CLASS="QUOTE"
+>"嗅探"</SPAN
+>攻击，那么<TT
+CLASS="LITERAL"
+>md5</TT
+>比较合适。应总是尽量避免使用简单的<TT
+CLASS="LITERAL"
+>password</TT
+>。不过，<TT
+CLASS="LITERAL"
+>md5</TT
+>不能和<A
+HREF="runtime-config-connection.html#GUC-DB-USER-NAMESPACE"
+>db_user_namespace</A
+>特性一起使用。如果连接受 SSL 加密保护，那么<TT
+CLASS="LITERAL"
+>password</TT
+>可以被安全地使用（尽管如果在使用 SSL，SSL 证书认证可能是一种更好的选择）。
+   </P
+><P
+>    <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>数据库口令独立于操作系统用户口令。每个数据库用户的口令被存储在<TT
+CLASS="LITERAL"
+>pg_authid</TT
+>系统目录中。口令可以用 SQL 命令<A
+HREF="sql-createuser.html"
+>CREATE USER</A
+>和<A
+HREF="sql-alterrole.html"
+>ALTER ROLE</A
+>管理，例如<KBD
+CLASS="USERINPUT"
+>CREATE USER foo WITH PASSWORD 'secret'</KBD
+>。如果没有为一个用户设置口令，那么存储的口令为空并且对该用户的口令认证总会失败。
+   </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="GSSAPI-AUTH"
+>20.3.3. GSSAPI 认证</A
+></H2
+><P
+>    <SPAN
+CLASS="PRODUCTNAME"
+>GSSAPI</SPAN
+>是用于 RFC 2743 中定义的安全认证的一个工业标准协议。<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>根据 RFC 1964 支持带<SPAN
+CLASS="PRODUCTNAME"
+>Kerberos</SPAN
+>认证的<SPAN
+CLASS="PRODUCTNAME"
+>GSSAPI</SPAN
+>。<SPAN
+CLASS="PRODUCTNAME"
+>GSSAPI</SPAN
+>为支持它的系统提供自动认证（单点登录）。认证本身是安全的，但通过数据库连接发送的数据将不被加密，除非使用<ACRONYM
+CLASS="ACRONYM"
+>SSL</ACRONYM
+>。
+   </P
+><P
+>    当编译<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>时，GSSAPI 支持必须被启用，详见<A
+HREF="installation.html"
+>第 16 &#31456;</A
+>。
+   </P
+><P
+>    当<SPAN
+CLASS="PRODUCTNAME"
+>GSSAPI</SPAN
+>使用<SPAN
+CLASS="PRODUCTNAME"
+>Kerberos</SPAN
+>时，
+    它会使用格式为
+    <TT
+CLASS="LITERAL"
+><TT
+CLASS="REPLACEABLE"
+><I
+>servicename</I
+></TT
+>/<TT
+CLASS="REPLACEABLE"
+><I
+>hostname</I
+></TT
+>@<TT
+CLASS="REPLACEABLE"
+><I
+>realm</I
+></TT
+></TT
+>的标准 principal。
+    PostgreSQL服务器将接受该服务器所使用的 keytab 中包括的任何 principal，但是在从使用
+    <TT
+CLASS="LITERAL"
+>krbsrvname</TT
+>连接参数的客户端建立连接时要注意指定正确的 principal 细节（另见
+    <A
+HREF="libpq-connect.html#LIBPQ-PARAMKEYWORDS"
+>第 32.1.2 &#33410;</A
+>）。安装的默认值<TT
+CLASS="LITERAL"
+>postgres</TT
+>
+    可以在编译时使用
+    <TT
+CLASS="LITERAL"
+>./configure --with-krb-srvnam=</TT
+><TT
+CLASS="REPLACEABLE"
+><I
+>其他值</I
+></TT
+>修改。
+    在大部分的环境中，这个参数从不需要被更改。某些 Kerberos 实现可能要求一个不同的服务名，
+    例如 Microsoft Active Directory 要求服务名是大写形式（<TT
+CLASS="LITERAL"
+>POSTGRES</TT
+>）。
+   </P
+><P
+>    <TT
+CLASS="REPLACEABLE"
+><I
+>hostname</I
+></TT
+>是服务器机器的被完全限定的主机名。服务 principal 的 realm 
+    是该服务器机器的首选 realm。
+   </P
+><P
+>    客户端 principal 可以被通过<TT
+CLASS="FILENAME"
+>pg_ident.conf</TT
+>映射到不同的
+    <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>数据库用户名。例如，
+    <TT
+CLASS="LITERAL"
+>pgusername@realm</TT
+>可能会被映射到<TT
+CLASS="LITERAL"
+>pgusername</TT
+>。
+    或者，你可以使用完整的<TT
+CLASS="LITERAL"
+>username@realm</TT
+>当事人作为
+    <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>中的角色而无需任何映射。
+   </P
+><P
+>    <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>也支持一个参数把 realm 从 principal 中剥离。这种方法是为了向后兼容性，并且我们强烈反对使用它，因为这样就无法区分具有相同用户名却来自不同 realm 的不同用户了。要启用这种方法，可将<TT
+CLASS="LITERAL"
+>include_realm</TT
+>设置为 0。对于简单的单 realm 安装，这样做并且设置<TT
+CLASS="LITERAL"
+>krb_realm</TT
+>参数（这会检查 principal 的 realm 是否正好匹配<TT
+CLASS="LITERAL"
+>krb_realm</TT
+>中的参数）仍然是安全的。但比起在<TT
+CLASS="FILENAME"
+>pg_ident.conf</TT
+>中指定一个显式映射来说，这种方法的能力较低。
+   </P
+><P
+>    确认你的服务器的 keytab 文件是可以被<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>服务器帐
+    户读取的（最好是只读的） (又见<A
+HREF="postgres-user.html"
+>第 18.1 &#33410;</A
+>）。密钥文件的位置由配置
+    参数<A
+HREF="runtime-config-connection.html#GUC-KRB-SERVER-KEYFILE"
+>krb_server_keyfile</A
+>指定。默认是<TT
+CLASS="FILENAME"
+>/usr/local/pgsql/etc/krb5.keytab</TT
+>（或者任何在编译的时候作为<TT
+CLASS="VARNAME"
+>sysconfdir</TT
+>的目录）。
+    出于安全原因，推荐对<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>服务器使用一个独立
+    的 keytab而不是开放系统 keytab 文件的权限。
+   </P
+><P
+>    keytab 文件由 Kerberos 软件生成，详见 Kerberos 文档。下面是 MIT 兼容的 Kerberos 5 实现的例子：
+</P><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>kadmin% </SAMP
+><KBD
+CLASS="USERINPUT"
+>ank -randkey postgres/server.my.domain.org</KBD
+>
+<SAMP
+CLASS="PROMPT"
+>kadmin% </SAMP
+><KBD
+CLASS="USERINPUT"
+>ktadd -k krb5.keytab postgres/server.my.domain.org</KBD
+></PRE
+><P>
+   </P
+><P
+>    当连接到数据库时，确保你有一个匹配被请求数据库用户名的 principal 的票据。例如，对于数据库用户名<TT
+CLASS="LITERAL"
+>fred</TT
+>，principal  <TT
+CLASS="LITERAL"
+>fred@EXAMPLE.COM</TT
+>将能够连接。要也允许 principal <TT
+CLASS="LITERAL"
+>fred/users.example.com@EXAMPLE.COM</TT
+>，可使用一个用户名映射，如<A
+HREF="auth-username-maps.html"
+>第 20.2 &#33410;</A
+>中所述。
+   </P
+><P
+>    下列被支持的配置选项用于<SPAN
+CLASS="PRODUCTNAME"
+>GSSAPI</SPAN
+>：
+    <P
+></P
+></P><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="LITERAL"
+>include_realm</TT
+></DT
+><DD
+><P
+>        如果设置为 0，在通过用户名映射之前（<A
+HREF="auth-username-maps.html"
+>第 20.2 &#33410;</A
+>），来自已认证用户 principal 的 realm 名称会被剥离掉。我们不鼓励这样做，这种方法主要是为了向后兼容性而存在的，因为它在多 realm 环境中是不安全的（除非也使用 <TT
+CLASS="LITERAL"
+>krb_realm</TT
+>）。推荐用户让<TT
+CLASS="LITERAL"
+>include_realm</TT
+>设置为默认值（1）并且在<TT
+CLASS="FILENAME"
+>pg_ident.conf</TT
+>中提供一条显式的映射来把 principal 名称转换成<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>用户名。
+       </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>map</TT
+></DT
+><DD
+><P
+>        允许在系统和数据库用户名之间的映射。详见<A
+HREF="auth-username-maps.html"
+>第 20.2 &#33410;</A
+>。
+        对于一个 GSSAPI/Kerberos 原则，例如<TT
+CLASS="LITERAL"
+>username@EXAMPLE.COM</TT
+>
+        （或者更不常见的<TT
+CLASS="LITERAL"
+>username/hostbased@EXAMPLE.COM</TT
+>），
+        用于映射的用户名会是<TT
+CLASS="LITERAL"
+>username@EXAMPLE.COM</TT
+>（或者
+        <TT
+CLASS="LITERAL"
+>username/hostbased@EXAMPLE.COM</TT
+>，相应地），除非
+        <TT
+CLASS="LITERAL"
+>include_realm</TT
+>已经被设置为 0，在那种情况下
+        <TT
+CLASS="LITERAL"
+>username</TT
+>（或者<TT
+CLASS="LITERAL"
+>username/hostbased</TT
+>）是
+        映射时被视作系统用户名的东西。
+       </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>krb_realm</TT
+></DT
+><DD
+><P
+>        设置 realm 为对用户 principal 名进行匹配的范围。
+        如果这个参数被设置，只有那个 realm 的用户将被接受。
+        如果它没有被设置，任何 realm 的用户都能连接，服从任何已完成的用户名映射。
+       </P
+></DD
+></DL
+></DIV
+><P>
+   </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="SSPI-AUTH"
+>20.3.4. SSPI 认证</A
+></H2
+><P
+>    <SPAN
+CLASS="PRODUCTNAME"
+>SSPI</SPAN
+>是一种用于带单点登录的安全认证的<SPAN
+CLASS="PRODUCTNAME"
+>Windows</SPAN
+>技术。 <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>在<TT
+CLASS="LITERAL"
+>negotiate</TT
+>模式中将使用 SSPI，它在可能的情况下使用<SPAN
+CLASS="PRODUCTNAME"
+>Kerberos</SPAN
+>并在其他情况下自动降回到<SPAN
+CLASS="PRODUCTNAME"
+>NTLM</SPAN
+>。只有在服务器和客户端都运行着<SPAN
+CLASS="PRODUCTNAME"
+>Windows</SPAN
+>时，<SPAN
+CLASS="PRODUCTNAME"
+>SSPI</SPAN
+>才能工作。或者在非 Windows 平台上<SPAN
+CLASS="PRODUCTNAME"
+>GSSAPI</SPAN
+>可用时，<SPAN
+CLASS="PRODUCTNAME"
+>SSPI</SPAN
+>也能工作。
+   </P
+><P
+>    当使用<SPAN
+CLASS="PRODUCTNAME"
+>Kerberos</SPAN
+>认证时，<SPAN
+CLASS="PRODUCTNAME"
+>SSPI</SPAN
+>和<SPAN
+CLASS="PRODUCTNAME"
+>GSSAPI</SPAN
+>的工作方式相同，详见<A
+HREF="auth-methods.html#GSSAPI-AUTH"
+>第 20.3.3 &#33410;</A
+>。
+   </P
+><P
+>    下列被支持的配置选项用于<SPAN
+CLASS="PRODUCTNAME"
+>SSPI</SPAN
+>：
+    <P
+></P
+></P><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="LITERAL"
+>include_realm</TT
+></DT
+><DD
+><P
+>        如果设置为 0，在通过用户名映射之前（<A
+HREF="auth-username-maps.html"
+>第 20.2 &#33410;</A
+>），来自已认证用户 principal 的 realm 名称会被剥离掉。我们不鼓励这样做，这种方法主要是为了向后兼容性而存在的，因为它在多 realm 环境中是不安全的（除非也使用<TT
+CLASS="LITERAL"
+>krb_realm</TT
+>）。推荐用户让 include_realm 设置为默认值（1）并且在<TT
+CLASS="FILENAME"
+>pg_ident.conf</TT
+>中提供一条显式的映射来把 principal 名称转换成<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>用户名。
+       </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>compat_realm</TT
+></DT
+><DD
+><P
+>        如果被设置为 1，该域的 SAM 兼容名称（也被称为 NetBIOS 名称）被用于<TT
+CLASS="LITERAL"
+>include_realm</TT
+>选项。这是默认值。如果被设置为 0，会使用来自 Kerberos 用户主名的真实 realm 名称。
+       </P
+><P
+>        不要禁用这个选项，除非你的服务器运行在一个域账号（这包括一个域成员系统上的虚拟服务账号）下并且所有通过 SSPI 认证的所有客户端也在使用域账号，否则认证将会失败。
+       </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>upn_username</TT
+></DT
+><DD
+><P
+>        如果这个选项和<TT
+CLASS="LITERAL"
+>compat_realm</TT
+>一起被启用，来自 Kerberos UPN 的用户名会被用于认证。如果它被禁用（默认），会使用 SAM 兼容的用户名。默认情况下，对于新用户账号这两种名称是一样的。
+       </P
+><P
+>        注意如果没有显式指定用户名，<SPAN
+CLASS="APPLICATION"
+>libpq</SPAN
+>会使用 SAM 兼容的名称。如果你使用的是<SPAN
+CLASS="APPLICATION"
+>libpq</SPAN
+>或者基于它的驱动，你应该让这个选项保持禁用或者在连接字符串中显式指定用户名。
+       </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>map</TT
+></DT
+><DD
+><P
+>        允许在系统和数据库用户名之间的映射。详见<A
+HREF="auth-username-maps.html"
+>第 20.2 &#33410;</A
+>。
+        对于一个 GSSAPI/Kerberos 原则，例如<TT
+CLASS="LITERAL"
+>username@EXAMPLE.COM</TT
+>
+        （或者更不常见的<TT
+CLASS="LITERAL"
+>username/hostbased@EXAMPLE.COM</TT
+>），
+        用于映射的用户名会是<TT
+CLASS="LITERAL"
+>username@EXAMPLE.COM</TT
+>（或者
+        <TT
+CLASS="LITERAL"
+>username/hostbased@EXAMPLE.COM</TT
+>，相应地），除非
+        <TT
+CLASS="LITERAL"
+>include_realm</TT
+>已经被设置为 0，在那种情况下
+        <TT
+CLASS="LITERAL"
+>username</TT
+>（或者<TT
+CLASS="LITERAL"
+>username/hostbased</TT
+>）是
+        映射时被视作系统用户名的东西。
+       </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>krb_realm</TT
+></DT
+><DD
+><P
+>        设置领域为对用户 principal 名进行匹配的范围。如果这个参数被设置，只有那个领域的用户将被接受。如果它没有被设置，任何领域的用户都能连接，服从任何已完成的用户名映射。
+       </P
+></DD
+></DL
+></DIV
+><P>
+   </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AUTH-IDENT"
+>20.3.5. Ident 认证</A
+></H2
+><P
+>    ident 认证方法通过从一个 ident 服务器获得客户端的操作系统用户名并且用它作为被允许的数据库用户名（和可选的用户名映射）来工作。它只在 TCP/IP 连接上支持。
+   </P
+><DIV
+CLASS="NOTE"
+><BLOCKQUOTE
+CLASS="NOTE"
+><P
+><B
+>&#27880;&#24847;: </B
+>     当为一个本地（非 TCP/IP）连接指定 ident 时，将实际使用 peer 认证（见<A
+HREF="auth-methods.html#AUTH-PEER"
+>第 20.3.6 &#33410;</A
+>）。
+    </P
+></BLOCKQUOTE
+></DIV
+><P
+>    下列被支持的配置选项用于<SPAN
+CLASS="PRODUCTNAME"
+>ident</SPAN
+>：
+    <P
+></P
+></P><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="LITERAL"
+>map</TT
+></DT
+><DD
+><P
+>        允许系统和数据库用户名之间的映射。详见<A
+HREF="auth-username-maps.html"
+>第 20.2 &#33410;</A
+>。
+       </P
+></DD
+></DL
+></DIV
+><P>
+   </P
+><P
+>    <SPAN
+CLASS="QUOTE"
+>"Identification Protocol（标识协议）"</SPAN
+>在 RFC 1413 中描述。实际上每个类 Unix 操作系统都带着一个默认监听 TCP 113 端口的 ident 服务器。ident 服务器的基本功能是回答类似这样的问题：<SPAN
+CLASS="QUOTE"
+>"哪个用户从你的端口<TT
+CLASS="REPLACEABLE"
+><I
+>X</I
+></TT
+>发起了连接并且连到了我的端口<TT
+CLASS="REPLACEABLE"
+><I
+>Y</I
+></TT
+>？"</SPAN
+> 。因为当一个物理连接被建立后，<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>既知道<TT
+CLASS="REPLACEABLE"
+><I
+>X</I
+></TT
+>也知道<TT
+CLASS="REPLACEABLE"
+><I
+>Y</I
+></TT
+>， 所以它可以询问尝试连接的客户端主机上的 ident 服务器并且在理论上可以判断任意给定连接的操作系统用户。
+   </P
+><P
+>    这个过程的缺点是它依赖于客户端的完整性：如果客户端机器不可信或者被攻破，攻击者可能在 113 端口上运行任何程序并且返回他们选择的任何用户。因此这种认证方法只适用于封闭的网络， 这样的网络中的每台客户端机器都处于严密的控制下并且数据库和操作系统管理员操作时可以方便地联系。换句话说，你必须信任运行 ident 服务器的机器。注意这样的警告：
+    <A
+NAME="AEN37465"
+></A
+><TABLE
+BORDER="0"
+WIDTH="100%"
+CELLSPACING="0"
+CELLPADDING="0"
+CLASS="BLOCKQUOTE"
+><TR
+><TD
+WIDTH="10%"
+VALIGN="TOP"
+>&nbsp;</TD
+><TD
+VALIGN="TOP"
+><P
+>      标识协议的本意不是作为一种认证或访问控制协议。
+     </P
+></TD
+><TD
+WIDTH="10%"
+VALIGN="TOP"
+>&nbsp;</TD
+></TR
+><TR
+><TD
+COLSPAN="2"
+ALIGN="RIGHT"
+VALIGN="TOP"
+>--<SPAN
+CLASS="ATTRIBUTION"
+>RFC 1413</SPAN
+></TD
+><TD
+WIDTH="10%"
+>&nbsp;</TD
+></TR
+></TABLE
+>
+   </P
+><P
+>    有些 ident 服务器有一个非标准的选项，它导致返回的用户名是被加密的，使用的是只有原机器管理员知道的一个密钥。当与<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>配合使用 ident 服务器时，<SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>一定不要</I
+></SPAN
+>使用这个选项，因为<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>没有任何方法对返回的字符串进行解密以获取实际的用户名。
+   </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AUTH-PEER"
+>20.3.6. Peer 认证</A
+></H2
+><P
+>    Peer 认证方法通过从内核获得客户端的操作系统用户名并把它用作被允许的数据库用户名（和可选的用户名映射）来工作。这种方法只在本地连接上支持。
+   </P
+><P
+>    下列被支持的配置选项用于<SPAN
+CLASS="PRODUCTNAME"
+>peer</SPAN
+>：
+    <P
+></P
+></P><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="LITERAL"
+>map</TT
+></DT
+><DD
+><P
+>        允许在系统和数据库用户名之间的映射。详见<A
+HREF="auth-username-maps.html"
+>第 20.2 &#33410;</A
+>。
+       </P
+></DD
+></DL
+></DIV
+><P>
+   </P
+><P
+>    Peer 认证只在提供<CODE
+CLASS="FUNCTION"
+>getpeereid()</CODE
+>函数、<TT
+CLASS="SYMBOL"
+>SO_PEERCRED</TT
+>套接字参数或相似机制的操作系统上可用。这些 OS 当前包括<SPAN
+CLASS="SYSTEMITEM"
+>Linux</SPAN
+>、大部分的<SPAN
+CLASS="SYSTEMITEM"
+>BSD</SPAN
+>包括<SPAN
+CLASS="SYSTEMITEM"
+>OS X</SPAN
+>以及<SPAN
+CLASS="SYSTEMITEM"
+>Solaris</SPAN
+>。
+   </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AUTH-LDAP"
+>20.3.7. LDAP 认证</A
+></H2
+><P
+>    这种认证方法操作起来类似于<TT
+CLASS="LITERAL"
+>password</TT
+>， 只不过它使用 LDAP 作为密码验证方法。LDAP 只被用于验证用户名/口令对。因此，在使用 LDAP 进行认证之前，用户必须已经存在于数据库中。
+   </P
+><P
+>    LDAP 认证可以在两种模式下操作。在第一种模式中（我们将称之为简单绑定模式），服务器将绑定到构造成<TT
+CLASS="REPLACEABLE"
+><I
+>prefix</I
+></TT
+> <TT
+CLASS="REPLACEABLE"
+><I
+>username</I
+></TT
+> <TT
+CLASS="REPLACEABLE"
+><I
+>suffix</I
+></TT
+>的可区分名称。通常，<TT
+CLASS="REPLACEABLE"
+><I
+>prefix</I
+></TT
+>参数被用于指定 <TT
+CLASS="LITERAL"
+>cn=</TT
+>或者一个活动录环境中的<TT
+CLASS="REPLACEABLE"
+><I
+>DOMAIN</I
+></TT
+><TT
+CLASS="LITERAL"
+>\</TT
+>。<TT
+CLASS="REPLACEABLE"
+><I
+>suffix</I
+></TT
+>被用来指定非活动目录环境中的DN的剩余部分。
+   </P
+><P
+>    在第二种模式中（我们将称之为搜索与绑定模式），服务器首先用一个固定的用户名和密码（用<TT
+CLASS="REPLACEABLE"
+><I
+>ldapbinddn</I
+></TT
+>和<TT
+CLASS="REPLACEABLE"
+><I
+>ldapbindpasswd</I
+></TT
+>指定）绑定到 LDAP 目录 ，并为试图登入该数据库的用户执行一次搜索。如果没有配置用户名和密码， 将尝试一次匿名绑定到目录。搜索将在位于<TT
+CLASS="REPLACEABLE"
+><I
+>ldapbasedn</I
+></TT
+>的子树上被执行，并将尝试做一次<TT
+CLASS="REPLACEABLE"
+><I
+>ldapsearchattribute</I
+></TT
+>中指定属性的精确匹配。一旦在这次搜索中找到用户，服务器断开并且作为这个用户重新绑定到目录，使用由客户端指定的口令来验证登录是正确的。这种模式与在其他软件中的 LDAP 认证所使用的相同，例如 Apache <TT
+CLASS="LITERAL"
+>mod_authnz_ldap</TT
+> 和 <TT
+CLASS="LITERAL"
+>pam_ldap</TT
+>。这种方法允许位于目录中用户对象的更大灵活性，但是会导致建立两个到 LDAP 服务器的独立连接。
+   </P
+><P
+>    下列配置选项被用于两种模式：
+    <P
+></P
+></P><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="LITERAL"
+>ldapserver</TT
+></DT
+><DD
+><P
+>        要连接的 LDAP 服务器的名称或 IP 地址。可以指定多个服务器，用空格分隔。
+       </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>ldapport</TT
+></DT
+><DD
+><P
+>        要连接的 LDAP 服务器的端口号。如果没有指定端口，LDAP 库的默认端口设置将被使用。
+       </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>ldaptls</TT
+></DT
+><DD
+><P
+>        设置为 1 以使 PostgreSQL 和 LDAP 服务器之间的连接使用 TLS 加密。请注意，这里仅加密到 LDAP 服务器的流量 &mdash; 到客户端的连接将不被加密，除非使用 SSL。
+       </P
+></DD
+></DL
+></DIV
+><P>
+
+    下列选项只被用于简单绑定模式：
+    <P
+></P
+></P><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="LITERAL"
+>ldapprefix</TT
+></DT
+><DD
+><P
+>        当做简单绑定认证时，前置到用户名形成要用于绑定的 DN 的字符串。
+       </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>ldapsuffix</TT
+></DT
+><DD
+><P
+>        当做简单绑定认证时，前置到用户名形成要用于绑定的 DN 的字符串。
+       </P
+></DD
+></DL
+></DIV
+><P>
+
+    下列选项只被用于搜索与绑定模式：
+    <P
+></P
+></P><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="LITERAL"
+>ldapbasedn</TT
+></DT
+><DD
+><P
+>        当做搜索与绑定认证时，开始搜索用户的根 DN。
+       </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>ldapbinddn</TT
+></DT
+><DD
+><P
+>        当做搜索与绑定认证时，用户要绑定到目录开始执行搜索的 DN。
+       </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>ldapbindpasswd</TT
+></DT
+><DD
+><P
+>        当做搜索与绑定认证时，用户用于绑定到目录开始执行搜索的口令。
+       </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>ldapsearchattribute</TT
+></DT
+><DD
+><P
+>         当做搜索与绑定认证时，在搜索中用来与用户名匹配的属性。如果没有指定属性，将会使用<TT
+CLASS="LITERAL"
+>uid</TT
+>属性。
+        </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>ldapurl</TT
+></DT
+><DD
+><P
+>         一个 RFC 4516 LDAP URL。这是一种用更紧凑和标准的形式书写某些其他 LDAP 选项的可选方法。格式是
+</P><PRE
+CLASS="SYNOPSIS"
+>ldap://<TT
+CLASS="REPLACEABLE"
+><I
+>host</I
+></TT
+>[:<TT
+CLASS="REPLACEABLE"
+><I
+>port</I
+></TT
+>]/<TT
+CLASS="REPLACEABLE"
+><I
+>basedn</I
+></TT
+>[?[<TT
+CLASS="REPLACEABLE"
+><I
+>attribute</I
+></TT
+>][?[<TT
+CLASS="REPLACEABLE"
+><I
+>scope</I
+></TT
+>]]]</PRE
+><P>
+         <TT
+CLASS="REPLACEABLE"
+><I
+>scope</I
+></TT
+>必须是<TT
+CLASS="LITERAL"
+>base</TT
+>、<TT
+CLASS="LITERAL"
+>one</TT
+>、<TT
+CLASS="LITERAL"
+>sub</TT
+>之一，通常是后者。只有一个属性会被使用，并且某些标准 LDAP URL 的其他部件（如过滤器和扩展）不被支持。
+        </P
+><P
+>         对于非匿名绑定，<TT
+CLASS="LITERAL"
+>ldapbinddn</TT
+>和<TT
+CLASS="LITERAL"
+>ldapbindpasswd</TT
+>必须被指定为独立选项。
+        </P
+><P
+>         要使用加密的 LDAP 连接，在<TT
+CLASS="LITERAL"
+>ldapurl</TT
+>之外还必须使用<TT
+CLASS="LITERAL"
+>ldaptls</TT
+>选项。<TT
+CLASS="LITERAL"
+>ldaps</TT
+> URL 模式（直接 SSL 连接）不被支持。
+        </P
+><P
+>         LDAP URL 当前只支持 OpenLDAP，而不支持 Windows。
+        </P
+></DD
+></DL
+></DIV
+><P>
+   </P
+><P
+>    将简单绑定的选项中混合用于搜索与绑定的选项是一种错误。
+   </P
+><P
+>    这里是一个简单绑定 LDAP 配置的例子：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>host ... ldap ldapserver=ldap.example.net ldapprefix="cn=" ldapsuffix=", dc=example, dc=net"</PRE
+><P>
+    当请求一个作为数据库用户<TT
+CLASS="LITERAL"
+>someuser</TT
+>到数据库服务器的连接时，PostgreSQL 将尝试使用<TT
+CLASS="LITERAL"
+>cn=someuser, dc=example, dc=net</TT
+>和客户端提供的口令来绑定到 LDAP 服务器。如果那个连接成功，将被授予数据库访问。
+   </P
+><P
+>    这里是一个搜索与绑定配置的例子：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>host ... ldap ldapserver=ldap.example.net ldapbasedn="dc=example, dc=net" ldapsearchattribute=uid</PRE
+><P>
+    当请求一个作为数据库用户<TT
+CLASS="LITERAL"
+>someuser</TT
+>到数据库服务器的连接时，PostgreSQL 将尝试匿名绑定（因为没有指定<TT
+CLASS="LITERAL"
+>ldapbinddn</TT
+>）到 LDAP 服务器，在指定的基础 DN 下执行一次对于<TT
+CLASS="LITERAL"
+>(uid=someuser)</TT
+>的搜索。如果找到一个项，则它将尝试使用找到的信息和客户端提供的口令进行绑定。如果第二个连接成功，将被授予数据库访问。
+   </P
+><P
+>    这里是被写成一个 URL 的相同搜索与绑定配置：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>host ... ldap ldapurl="ldap://ldap.example.net/dc=example,dc=net?uid?sub"</PRE
+><P>
+    一些支持根据 LDAP 认证的其他软件使用相同的 URL 格式，因此很容易共享该配置。
+   </P
+><DIV
+CLASS="TIP"
+><BLOCKQUOTE
+CLASS="TIP"
+><P
+><B
+>&#25552;&#31034;: </B
+>     如例子中所示，由于 LDAP 通常使用逗号和空格来分割一个 DN 的不同部分，在配置 LDAP 选项时通常有必要使用双引号包围的参数值。
+    </P
+></BLOCKQUOTE
+></DIV
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AUTH-RADIUS"
+>20.3.8. RADIUS 认证</A
+></H2
+><P
+>    这种认证方法的操作类似于<TT
+CLASS="LITERAL"
+>password</TT
+>，不过它使用 RADIUS 作为密码验证方式。RADIUS 只被用于验证 用户名/密码对。因此，在 RADIUS 能被用于认证之前，用户必须已经存在于数据库中。
+   </P
+><P
+>    当使用 RADIUS 认证时，一个访问请求消息将被发送到配置好的 RADIUS 服务器。这一请求将是<TT
+CLASS="LITERAL"
+>Authenticate Only</TT
+>类型，并且包含参数<TT
+CLASS="LITERAL"
+>user name</TT
+>、<TT
+CLASS="LITERAL"
+>password</TT
+>（加密的）和<TT
+CLASS="LITERAL"
+>NAS Identifier</TT
+>。该请求将使用一个与服务器共享的密钥加密。RADIUS 服务器将对这个服务器响应<TT
+CLASS="LITERAL"
+>Access Accept</TT
+>或者<TT
+CLASS="LITERAL"
+>Access Reject</TT
+>。不支持RADIUS accounting。
+   </P
+><P
+>    下列被支持的配置选项用于 RADIUS：
+     <P
+></P
+></P><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="LITERAL"
+>radiusserver</TT
+></DT
+><DD
+><P
+>         连接到 RADIUS 服务器的名称或IP地址。此参数是必需的。
+        </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>radiussecret</TT
+></DT
+><DD
+><P
+>         和 RADIUS 服务器秘密交谈时会用到共享密钥。这在 PostgreSQL 和 RADIUS 服务器之间必须有完全相同的值。我们推荐用一个至少 16 个字符的字符串。这个参数是必需的。
+         </P><DIV
+CLASS="NOTE"
+><BLOCKQUOTE
+CLASS="NOTE"
+><P
+><B
+>&#27880;&#24847;: </B
+>          如果<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>编译为支持<SPAN
+CLASS="PRODUCTNAME"
+>OpenSSL</SPAN
+>，所用的加密向量将只是强密码。在其他情况下，到 RADIUS 服务器的传输应该被视为应该被视为被混淆的、不安全的。如有必要，应采用外部安全措施。
+         </P
+></BLOCKQUOTE
+></DIV
+><P>
+        </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>radiusport</TT
+></DT
+><DD
+><P
+>         用于连接到 RADIUS 服务器的端口号。如果没有指定端口，则使用默认端口<TT
+CLASS="LITERAL"
+>1812</TT
+>。
+        </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>radiusidentifier</TT
+></DT
+><DD
+><P
+>         在 RADIUS 请求中字符串被用作<TT
+CLASS="LITERAL"
+>NAS Identifier</TT
+>。 这个参数可以被用作第二个参数标识例如该用户试图以哪个数据库用户进行认证，它可以被用于 RADIUS 服务器上的策略匹配。如果没有指定标识符，默认使用<TT
+CLASS="LITERAL"
+>postgresql</TT
+>。
+        </P
+></DD
+></DL
+></DIV
+><P>
+   </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AUTH-CERT"
+>20.3.9. 证书认证</A
+></H2
+><P
+>    这种认证方法使用 SSL 客户端证书执行认证。因此，它只适用于 SSL 连接。当使用这种认证方法时，服务器将要求客户端提供一个有效的、可信的证书。不会有密码提示将被发送到客户端。证书的<TT
+CLASS="LITERAL"
+>cn</TT
+>（通用名）属性将与被请求的数据库用户名进行比较，并且如果匹配将允许登录。用户名映射可以被用来允许<TT
+CLASS="LITERAL"
+>cn</TT
+>与数据库用户名不同。
+   </P
+><P
+>    下列被支持的配置选项用于 SSL 证书认证：
+    <P
+></P
+></P><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="LITERAL"
+>map</TT
+></DT
+><DD
+><P
+>        允许在系统和数据库用户名之间的映射。详见<A
+HREF="auth-username-maps.html"
+>第 20.2 &#33410;</A
+>。
+       </P
+></DD
+></DL
+></DIV
+><P>
+   </P
+><P
+>    在一条指定证书认证的<TT
+CLASS="FILENAME"
+>pg_hba.conf</TT
+>记录中，认证选项<TT
+CLASS="LITERAL"
+>clientcert</TT
+>被假定为<TT
+CLASS="LITERAL"
+>1</TT
+>，并且它不能被关掉，因为这种方法中一个客户端证书是必需的。<TT
+CLASS="LITERAL"
+>cert</TT
+>方法对基本<TT
+CLASS="LITERAL"
+>clientcert</TT
+>证书验证测试所增加的东西是检查<TT
+CLASS="LITERAL"
+>cn</TT
+>属性是否匹配数据库用户名。
+   </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AUTH-PAM"
+>20.3.10. PAM 认证</A
+></H2
+><P
+>    这种认证方法操作起来类似<TT
+CLASS="LITERAL"
+>password</TT
+>， 只不过它使用 PAM （插入式验证模块）作为认证机制。默认的 PAM 服务名是<TT
+CLASS="LITERAL"
+>postgresql</TT
+>。PAM 只被用于验证用户名/口令对并且可以有选择地验证已连接的远程主机名或 IP 地址。因此，在使用 PAM 进行认证之前，用户必须已经存在于数据库中。有关 PAM 的更多信息，请阅读<A
+HREF="http://www.kernel.org/pub/linux/libs/pam/"
+TARGET="_top"
+>    <SPAN
+CLASS="PRODUCTNAME"
+>Linux-PAM</SPAN
+> 页面</A
+>.
+   </P
+><P
+>    下列被支持的配置选项用于 PAM：
+    <P
+></P
+></P><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="LITERAL"
+>pamservice</TT
+></DT
+><DD
+><P
+>        PAM服务名称。
+       </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>pam_use_hostname</TT
+></DT
+><DD
+><P
+>        判断是否通过<TT
+CLASS="SYMBOL"
+>PAM_RHOST</TT
+>项把远程 IP 地址或者主机名提供给 PAM 模块。默认情况下会使用 IP 地址。把这个选项设置为 1 可以使用解析过的主机名。主机名解析可能导致登录延迟（大部分的 PAM 配置不使用这些信息，因此只有使用为利用这种信息而特别创建的 PAM 配置时才需要考虑这个设置）。
+       </P
+></DD
+></DL
+></DIV
+><P>
+   </P
+><DIV
+CLASS="NOTE"
+><BLOCKQUOTE
+CLASS="NOTE"
+><P
+><B
+>&#27880;&#24847;: </B
+>     如果 PAM 被设置为读取<TT
+CLASS="FILENAME"
+>/etc/shadow</TT
+>，认证将会失败，因为 PostgreSQL 服务器是由一个非 root 用户启动 。然而，当 PAM 被配置为使用 LDAP 或其他认证验证方法时这就不是一个问题。
+    </P
+></BLOCKQUOTE
+></DIV
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AUTH-BSD"
+>20.3.11. BSD 认证</A
+></H2
+><P
+>    这种认证方法操作起来类似于<TT
+CLASS="LITERAL"
+>password</TT
+>，不过它使用 BSD 认证来验证口令。BSD 认证只被用来验证用户名/口令对。因此，在 BSD 认证可以被用于认证之前，用户的角色必须已经存在于数据库中。BSD 认证框架当前只在 OpenBSD 上可用。
+   </P
+><P
+>    <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>中的 BSD 认证使用<TT
+CLASS="LITERAL"
+>auth-postgresql</TT
+>登录类型，如果<TT
+CLASS="FILENAME"
+>login.conf</TT
+>中定义了<TT
+CLASS="LITERAL"
+>postgresql</TT
+>登录分类，就会用它来认证。默认情况下这种登录分类不存在，<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>将使用默认的登录分类。
+   </P
+><DIV
+CLASS="NOTE"
+><BLOCKQUOTE
+CLASS="NOTE"
+><P
+><B
+>&#27880;&#24847;: </B
+>     要使用 BSD 认证，PostgreSQL 用户账号（也就是运行服务器的操作系统用户）必须首先被加入到<TT
+CLASS="LITERAL"
+>auth</TT
+>组中。在 OpenBSD 系统上默认存在<TT
+CLASS="LITERAL"
+>auth</TT
+>组。
+    </P
+></BLOCKQUOTE
+></DIV
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="auth-username-maps.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="client-authentication-problems.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>用户名映射</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="client-authentication.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>认证问题</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

@@ -1,0 +1,253 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>WAL内部</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="可靠性和预写式日志"
+HREF="wal.html"><LINK
+REL="PREVIOUS"
+TITLE="WAL配置"
+HREF="wal-configuration.html"><LINK
+REL="NEXT"
+TITLE="回归测试"
+HREF="regress.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/wal.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="WAL配置"
+HREF="wal-configuration.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="wal.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#31456; 30. 可靠性和预写式日志</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="回归测试"
+HREF="regress.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="WAL-INTERNALS"
+>30.5. WAL内部</A
+></H1
+><P
+>   <ACRONYM
+CLASS="ACRONYM"
+>WAL</ACRONYM
+>是自动被启用的。除了做一些设置满足存放<ACRONYM
+CLASS="ACRONYM"
+>WAL</ACRONYM
+>日志的磁盘空间需求以及一些必要的调节以外（参阅<A
+HREF="wal-configuration.html"
+>第 30.4 &#33410;</A
+>），对管理员没有什么其他要求。
+  </P
+><P
+>   <ACRONYM
+CLASS="ACRONYM"
+>WAL</ACRONYM
+>日志被存放在数据目录的<TT
+CLASS="FILENAME"
+>pg_xlog</TT
+>目录里，它是作为一个文件段的集合存储的，通常每个段16MB大（但是可以在构建服务器时通过修改<TT
+CLASS="OPTION"
+>--with-wal-segsize</TT
+>配置选项来修改段的大小）。每个段分割成多个页，通常每个页为8K（该尺寸可以通过<TT
+CLASS="OPTION"
+>--with-wal-blocksize</TT
+>配置选项来修改）。日志记录头部在<TT
+CLASS="FILENAME"
+>access/xlogrecord.h</TT
+>里描述；日志内容取决于它记录的事件类型。段文件的名字是不断增长的数字，从<TT
+CLASS="FILENAME"
+>000000010000000000000000</TT
+>开始。目前这些数字不能回卷，不过要把所有可用的数字都用光也需要非常非常长的时间。
+  </P
+><P
+>   日志被放置在和主数据库文件不同的另外一个磁盘上会比较好。你可以通过把<TT
+CLASS="FILENAME"
+>pg_xlog</TT
+>目录移动到另外一个位置（当然在此期间服务器应当被关闭），然后在原来的位置上创建一个指向新位置的符号链接来实现重定位日志。
+  </P
+><P
+>   <ACRONYM
+CLASS="ACRONYM"
+>WAL</ACRONYM
+>的目的是确保在数据库记录被修改之前先写了日志，但是这可能会被那些谎称向内核写成功的破坏， 这时候它们实际上只是缓冲了数据而并未把数据存储到磁盘上。 这种情况下的电源失效仍然可能导致不可恢复的数据崩溃。 管理员应该确保保存<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>的<ACRONYM
+CLASS="ACRONYM"
+>WAL</ACRONYM
+>日志文件的磁盘不会做这种谎报（参见<A
+HREF="wal-reliability.html"
+>第 30.1 &#33410;</A
+>）。
+  </P
+><P
+>   在完成一个检查点并且刷写了日志文件之后，检查点的位置被保存在文件<TT
+CLASS="FILENAME"
+>pg_control</TT
+>里。因此在恢复的开始， 服务器首先读取<TT
+CLASS="FILENAME"
+>pg_control</TT
+>，然后读取检查点记录； 接着它通过从检查点记录里标识的日志位置开始向前扫描执行 REDO操作。 因为数据页的所有内容都保存在检查点之后的第一个页面修改的日志里（假设<A
+HREF="runtime-config-wal.html#GUC-FULL-PAGE-WRITES"
+>full_page_writes</A
+>没有被禁用）， 所以自检查点以来的所有变化的页都将被恢复到一个一致的状态。
+  </P
+><P
+>   为了处理<TT
+CLASS="FILENAME"
+>pg_control</TT
+>被损坏的情况， 我们应该支持对于现有日志段反向扫描的功能 &mdash; 从最新到最老 &mdash; 这样才能找到最后的检查点。但这些目前还没有被实现。<TT
+CLASS="FILENAME"
+>pg_control</TT
+>很小（比一个磁盘页小），因此它不会出现页断裂问题， 并且到目前为止还没有发现仅仅由于无法读取<TT
+CLASS="FILENAME"
+>pg_control</TT
+>本身导致数据库失败的报告。 因此，尽管这在理论上是一个薄弱环节，但是<TT
+CLASS="FILENAME"
+>pg_control</TT
+>看起来似乎并不是实际会发生的问题。
+  </P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="wal-configuration.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="regress.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><ACRONYM
+CLASS="ACRONYM"
+>WAL</ACRONYM
+>配置</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="wal.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>回归测试</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

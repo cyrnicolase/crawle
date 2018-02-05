@@ -1,0 +1,310 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>版本 8.4.21</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="版本说明"
+HREF="release.html"><LINK
+REL="PREVIOUS"
+TITLE="版本 8.4.22"
+HREF="release-8-4-22.html"><LINK
+REL="NEXT"
+TITLE="版本 8.4.20"
+HREF="release-8-4-20.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/release-8.4.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="版本 8.4.22"
+HREF="release-8-4-22.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="release.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#38468;&#24405; E. 版本说明</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="版本 8.4.20"
+HREF="release-8-4-20.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="RELEASE-8-4-21"
+>E.100. 版本 8.4.21</A
+></H1
+><DIV
+CLASS="NOTE"
+><BLOCKQUOTE
+CLASS="NOTE"
+><P
+><B
+>发布日期: </B
+>2014-03-20</P
+></BLOCKQUOTE
+></DIV
+><P
+>   这个版本包含各种自8.4.20以来的修复。关于8.4主版本的新特性信息，
+   请查看<A
+HREF="release-8-4.html"
+>第 E.121 &#33410;</A
+>。
+  </P
+><P
+>   <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>社区将在2014年7月停止发布8.4.X系列的更新。
+   建议用户尽快更新到最新版本。
+  </P
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN153013"
+>E.100.1. 迁移到版本 8.4.21</A
+></H2
+><P
+>    运行8.4.X的用户不需要转储/恢复。
+   </P
+><P
+>    如果你是从一个早于8.4.19的版本升级而来，请查看<A
+HREF="release-8-4-19.html"
+>第 E.102 &#33410;</A
+>。
+   </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN153018"
+>E.100.2. 修改列表</A
+></H2
+><P
+></P
+><UL
+><LI
+><P
+>      无条件的恢复GIN元页，以避免页面撕裂风险 (Heikki Linnakangas)
+     </P
+><P
+>      尽管理论上这个疏忽会导致索引损坏，但是在实际中它不可能导致任何问题，
+      因为GIN元页的活动部分远小于标准的512字节磁盘扇区。
+     </P
+></LI
+><LI
+><P
+>      允许正则表达式操作通过查询取消请求早早的终止 (Tom Lane)
+     </P
+><P
+>      这阻止了病态的正则表达式锁住服务器进程，使其长时间不可中断的情况。
+     </P
+></LI
+><LI
+><P
+>      删除尝试允许带有单元素行参数的<TT
+CLASS="LITERAL"
+>OVERLAPS</TT
+>的错误代码 (Joshua Yanovski)
+     </P
+><P
+>      这个代码从未正确工作过，并且因此该情况从未被SQL说明过也没有记录，
+      删除它看起来比修复它更好一些。
+     </P
+></LI
+><LI
+><P
+>      在反向解析一个规则或视图时，避免超过<TT
+CLASS="LITERAL"
+>AccessShareLock</TT
+> (Dean Rasheed)
+     </P
+><P
+>      这个疏忽导致<SPAN
+CLASS="APPLICATION"
+>pg_dump</SPAN
+>意外的请求规则中
+      <TT
+CLASS="LITERAL"
+>INSERT</TT
+>/<TT
+CLASS="LITERAL"
+>UPDATE</TT
+>/<TT
+CLASS="LITERAL"
+>DELETE</TT
+>
+      作为目标提及的表上的<TT
+CLASS="LITERAL"
+>RowExclusiveLock</TT
+>锁。
+      尽管通常无害，但是这会妨碍当前事务尝试获取，例如，
+      这些表上的<TT
+CLASS="LITERAL"
+>ShareLock</TT
+>。
+     </P
+></LI
+><LI
+><P
+>      阻止报告非<TT
+CLASS="LITERAL"
+>ERROR</TT
+>消息时的中断 (Tom Lane)
+     </P
+><P
+>      这防卫了由于到<CODE
+CLASS="FUNCTION"
+>syslog()</CODE
+>的递归项导致罕见的服务器进程冻结，
+      和可能出现的其他相关的问题。
+     </P
+></LI
+><LI
+><P
+>      更新时区数据文件到<SPAN
+CLASS="APPLICATION"
+>tzdata</SPAN
+>版本20014a，
+      因为DST规律在Fiji和Turkey发生了改变，加上Israel和Ukraine的历史修改。
+     </P
+></LI
+></UL
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="release-8-4-22.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="release-8-4-20.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>版本 8.4.22</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="release.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>版本 8.4.20</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

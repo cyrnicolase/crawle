@@ -1,0 +1,282 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>大对象</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="客户端接口"
+HREF="client-interfaces.html"><LINK
+REL="PREVIOUS"
+TITLE="例子程序"
+HREF="libpq-example.html"><LINK
+REL="NEXT"
+TITLE="简介"
+HREF="lo-intro.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="CHAPTER"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/lobj.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="例子程序"
+HREF="libpq-example.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="client-interfaces.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="简介"
+HREF="lo-intro.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="CHAPTER"
+><H1
+><A
+NAME="LARGEOBJECTS"
+></A
+>&#31456; 33. 大对象</H1
+><DIV
+CLASS="TOC"
+><DL
+><DT
+><B
+>&#30446;&#24405;</B
+></DT
+><DT
+>33.1. <A
+HREF="lo-intro.html"
+>简介</A
+></DT
+><DT
+>33.2. <A
+HREF="lo-implementation.html"
+>实现特性</A
+></DT
+><DT
+>33.3. <A
+HREF="lo-interfaces.html"
+>客户端接口</A
+></DT
+><DD
+><DL
+><DT
+>33.3.1. <A
+HREF="lo-interfaces.html#LO-CREATE"
+>创建一个大对象</A
+></DT
+><DT
+>33.3.2. <A
+HREF="lo-interfaces.html#LO-IMPORT"
+>导入一个大对象</A
+></DT
+><DT
+>33.3.3. <A
+HREF="lo-interfaces.html#LO-EXPORT"
+>导出一个大对象</A
+></DT
+><DT
+>33.3.4. <A
+HREF="lo-interfaces.html#LO-OPEN"
+>打开一个现有的大对象</A
+></DT
+><DT
+>33.3.5. <A
+HREF="lo-interfaces.html#LO-WRITE"
+>向一个大对象写入数据</A
+></DT
+><DT
+>33.3.6. <A
+HREF="lo-interfaces.html#LO-READ"
+>从一个大对象读取数据</A
+></DT
+><DT
+>33.3.7. <A
+HREF="lo-interfaces.html#LO-SEEK"
+>在一个大对象中查找</A
+></DT
+><DT
+>33.3.8. <A
+HREF="lo-interfaces.html#LO-TELL"
+>获取一个大对象的查找位置</A
+></DT
+><DT
+>33.3.9. <A
+HREF="lo-interfaces.html#LO-TRUNCATE"
+>截断一个大对象</A
+></DT
+><DT
+>33.3.10. <A
+HREF="lo-interfaces.html#LO-CLOSE"
+>关闭一个大对象描述符</A
+></DT
+><DT
+>33.3.11. <A
+HREF="lo-interfaces.html#LO-UNLINK"
+>移除一个大对象</A
+></DT
+></DL
+></DD
+><DT
+>33.4. <A
+HREF="lo-funcs.html"
+>服务器端函数</A
+></DT
+><DT
+>33.5. <A
+HREF="lo-examplesect.html"
+>例子程序</A
+></DT
+></DL
+></DIV
+><P
+>    <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>具有<I
+CLASS="FIRSTTERM"
+>大对象</I
+>的功能，它提供了对于存储在一个特殊大对象结构中的用户数据的流式访问。对于那些大得无法以一个整体处理的数据值 ，流式访问非常有用。
+   </P
+><P
+>    本章介绍了<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>中大对象数据的实现、编程和查询语言接口。在本章中我们使用名为<SPAN
+CLASS="APPLICATION"
+>libpq</SPAN
+>的C库来作为例子，但是绝大部分<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>支持的本地编程接口也具有相同的功能。其他接口可能会在内部使用大对象接口来提供对大值的一般支持，但这里就不再描述。
+   </P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="libpq-example.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="lo-intro.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>例子程序</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="client-interfaces.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>简介</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

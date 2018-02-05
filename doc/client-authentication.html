@@ -1,0 +1,318 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>客户端认证</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="服务器管理"
+HREF="admin.html"><LINK
+REL="PREVIOUS"
+TITLE="短选项"
+HREF="runtime-config-short.html"><LINK
+REL="NEXT"
+TITLE="pg_hba.conf文件"
+HREF="auth-pg-hba-conf.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="CHAPTER"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/client-auth.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="短选项"
+HREF="runtime-config-short.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="admin.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="pg_hba.conf文件"
+HREF="auth-pg-hba-conf.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="CHAPTER"
+><H1
+><A
+NAME="CLIENT-AUTHENTICATION"
+></A
+>&#31456; 20. 客户端认证</H1
+><DIV
+CLASS="TOC"
+><DL
+><DT
+><B
+>&#30446;&#24405;</B
+></DT
+><DT
+>20.1. <A
+HREF="auth-pg-hba-conf.html"
+><TT
+CLASS="FILENAME"
+>pg_hba.conf</TT
+>文件</A
+></DT
+><DT
+>20.2. <A
+HREF="auth-username-maps.html"
+>用户名映射</A
+></DT
+><DT
+>20.3. <A
+HREF="auth-methods.html"
+>认证方法</A
+></DT
+><DD
+><DL
+><DT
+>20.3.1. <A
+HREF="auth-methods.html#AUTH-TRUST"
+>信任认证</A
+></DT
+><DT
+>20.3.2. <A
+HREF="auth-methods.html#AUTH-PASSWORD"
+>口令认证</A
+></DT
+><DT
+>20.3.3. <A
+HREF="auth-methods.html#GSSAPI-AUTH"
+>GSSAPI 认证</A
+></DT
+><DT
+>20.3.4. <A
+HREF="auth-methods.html#SSPI-AUTH"
+>SSPI 认证</A
+></DT
+><DT
+>20.3.5. <A
+HREF="auth-methods.html#AUTH-IDENT"
+>Ident 认证</A
+></DT
+><DT
+>20.3.6. <A
+HREF="auth-methods.html#AUTH-PEER"
+>Peer 认证</A
+></DT
+><DT
+>20.3.7. <A
+HREF="auth-methods.html#AUTH-LDAP"
+>LDAP 认证</A
+></DT
+><DT
+>20.3.8. <A
+HREF="auth-methods.html#AUTH-RADIUS"
+>RADIUS 认证</A
+></DT
+><DT
+>20.3.9. <A
+HREF="auth-methods.html#AUTH-CERT"
+>证书认证</A
+></DT
+><DT
+>20.3.10. <A
+HREF="auth-methods.html#AUTH-PAM"
+>PAM 认证</A
+></DT
+><DT
+>20.3.11. <A
+HREF="auth-methods.html#AUTH-BSD"
+>BSD 认证</A
+></DT
+></DL
+></DD
+><DT
+>20.4. <A
+HREF="client-authentication-problems.html"
+>认证问题</A
+></DT
+></DL
+></DIV
+><P
+>  当一个客户端应用连接一个数据库服务器时，它将指定以哪个<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+> 数据库用户名连接，就像我们以一个特定用户登录一台 Unix 计算机一样。在 SQL 环境中，活动的数据库用户名决定对数据库对象的访问权限 &mdash; 详见<A
+HREF="user-manag.html"
+>第 21 &#31456;</A
+>。因此，它本质上是哪些数据库用户可以连接。
+ </P
+><DIV
+CLASS="NOTE"
+><BLOCKQUOTE
+CLASS="NOTE"
+><P
+><B
+>&#27880;&#24847;: </B
+>   如<A
+HREF="user-manag.html"
+>第 21 &#31456;</A
+>中所释，<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>实际上以<SPAN
+CLASS="QUOTE"
+>"角色"</SPAN
+>来进行权限管理。在本章中，我们用<I
+CLASS="FIRSTTERM"
+>数据库用户</I
+>表示<SPAN
+CLASS="QUOTE"
+>"拥有<TT
+CLASS="LITERAL"
+>LOGIN</TT
+>权限的角色"</SPAN
+>。
+  </P
+></BLOCKQUOTE
+></DIV
+><P
+>  <I
+CLASS="FIRSTTERM"
+>认证</I
+>是数据库服务器建立客户端身份的过程，并且服务器决定客户端应用（或者运行客户端应用的用户）是否被允许以请求的数据库用户名来连接。
+ </P
+><P
+>  <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>提供多种不同的客户端认证方式。被用来认证一个特定客户端连接的方法可以基于（客户端）主机地址、数据库和用户来选择。
+ </P
+><P
+>  <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>数据库用户名在逻辑上是和服务器运行的操作系统中的用户名相互独立的。如果一个特定服务器的所有用户在那台服务器的机器上也有帐号，那么分配与操作系统用户名匹配的数据库用户名是有意义的。不过，一个接受远程连接的服务器可能有许多没有本地操作系统帐号的用户，并且在这种情况下数据库用户和操作系统用户名之间不必有任何联系。
+ </P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="runtime-config-short.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="auth-pg-hba-conf.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>短选项</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="admin.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><TT
+CLASS="FILENAME"
+>pg_hba.conf</TT
+>文件</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

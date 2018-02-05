@@ -1,0 +1,562 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>CREATE EXTENSION</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="SQL 命令"
+HREF="sql-commands.html"><LINK
+REL="PREVIOUS"
+TITLE="CREATE EVENT TRIGGER"
+HREF="sql-createeventtrigger.html"><LINK
+REL="NEXT"
+TITLE="CREATE FOREIGN DATA WRAPPER"
+HREF="sql-createforeigndatawrapper.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="REFENTRY"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/ref/create_extension.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="CREATE EVENT TRIGGER"
+HREF="sql-createeventtrigger.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="CREATE FOREIGN DATA WRAPPER"
+HREF="sql-createforeigndatawrapper.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="SQL-CREATEEXTENSION"
+></A
+>CREATE EXTENSION</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN78946"
+></A
+><H2
+>&#21517;&#31216;</H2
+>CREATE EXTENSION&nbsp;--&nbsp;安装一个扩展</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN78949"
+></A
+><H2
+>&#22823;&#32434;</H2
+><PRE
+CLASS="SYNOPSIS"
+>CREATE EXTENSION [ IF NOT EXISTS ] <TT
+CLASS="REPLACEABLE"
+><I
+>extension_name</I
+></TT
+>
+    [ WITH ] [ SCHEMA <TT
+CLASS="REPLACEABLE"
+><I
+>schema_name</I
+></TT
+> ]
+             [ VERSION <TT
+CLASS="REPLACEABLE"
+><I
+>version</I
+></TT
+> ]
+             [ FROM <TT
+CLASS="REPLACEABLE"
+><I
+>old_version</I
+></TT
+> ]
+             [ CASCADE ]</PRE
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN78955"
+></A
+><H2
+>描述</H2
+><P
+>   <TT
+CLASS="COMMAND"
+>CREATE EXTENSION</TT
+>把一个新的扩展载入到
+   当前数据库中。不能有同名扩展已经被载入。
+  </P
+><P
+>   载入一个扩展本质上是运行该扩展的脚本文件。该脚本通常将创建新的
+   <ACRONYM
+CLASS="ACRONYM"
+>SQL</ACRONYM
+>对象，例如函数、数据类型、操作符以及索引支持
+   方法。<TT
+CLASS="COMMAND"
+>CREATE EXTENSION</TT
+>会额外地记录
+   所有被创建对象的标识，这样发出
+   <TT
+CLASS="COMMAND"
+>DROP EXTENSION</TT
+>时可以删除它们。
+  </P
+><P
+>   载入一个扩展要求创建其组件对象所要求的特权。对于大部分扩展这意味
+   这需要超级用户或者数据库拥有者的特权。为了以后特权检察的目的，运行
+   <TT
+CLASS="COMMAND"
+>CREATE EXTENSION</TT
+>的用户会成为该扩展的
+   拥有者以及由该扩展的脚本创建的任何对象的拥有者。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN78965"
+></A
+><H2
+>参数</H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="LITERAL"
+>IF NOT EXISTS</TT
+></DT
+><DD
+><P
+>        已有同名扩展存在时不要抛出错误。这种情况下会发出一个提示。
+        注意，不保证现有的扩展与将要从当前可用的脚本文件创建的脚本
+        有任何相似。
+       </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>extension_name</I
+></TT
+></DT
+><DD
+><P
+>        要安装的扩展的名称。<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>
+        将使用文件
+        <TT
+CLASS="LITERAL"
+>SHAREDIR/extension/</TT
+><TT
+CLASS="REPLACEABLE"
+><I
+>extension_name</I
+></TT
+><TT
+CLASS="LITERAL"
+>.control</TT
+>
+        中的指令来创建该扩展。
+       </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>schema_name</I
+></TT
+></DT
+><DD
+><P
+>        假定该扩展允许其内容被重定位，这是要在其中安装该扩展的对象的
+        模式名称。被提到的模式必须已经存在。如果没有指定并且该扩展的
+        控制文件也没有指定一个模式，将使用当前的默认对象创建模式。
+       </P
+><P
+>        如果该扩展在其控制文件中指定了一个<TT
+CLASS="LITERAL"
+>schema</TT
+>参数，
+        那么不能用<TT
+CLASS="LITERAL"
+>SCHEMA</TT
+>子句覆盖该模式。通常，如果
+        给出了一个<TT
+CLASS="LITERAL"
+>SCHEMA</TT
+>子句并且它与扩展的
+        <TT
+CLASS="LITERAL"
+>schema</TT
+>参数冲突，则会发生错误。不过，如果也给
+        出了<TT
+CLASS="LITERAL"
+>CASCADE</TT
+>子句，则schema冲突时会忽略
+        <TT
+CLASS="REPLACEABLE"
+><I
+>schema_name</I
+></TT
+>。
+        给定的<TT
+CLASS="REPLACEABLE"
+><I
+>schema_name</I
+></TT
+>
+        将被用来安装任何需要的并且没有在其控制文件中指定
+        <TT
+CLASS="LITERAL"
+>schema</TT
+>的扩展。
+       </P
+><P
+>        记住扩展本身被认为不在任何模式中：扩展具有无限定的名称，并且
+        要在整个数据库范围内唯一。但是属于扩展的对象可以在模式中。
+       </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>version</I
+></TT
+></DT
+><DD
+><P
+>        要安装的扩展的版本。这可以写成一个标识符或者一个字符串。
+        默认版本在该扩展的控制文件中指定。
+       </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>old_version</I
+></TT
+></DT
+><DD
+><P
+>        当且仅当尝试要安装一个扩展来替代一个<SPAN
+CLASS="QUOTE"
+>"老式"</SPAN
+>
+        的模块（它只是一组没有被打包成扩展的对象的集合）时，
+        才必须指定
+        <TT
+CLASS="LITERAL"
+>FROM</TT
+> <TT
+CLASS="REPLACEABLE"
+><I
+>old_version</I
+></TT
+>。
+        这个选项导致<TT
+CLASS="COMMAND"
+>CREATE EXTENSION</TT
+>运行
+        另一个安装脚本把现有的对象吸收到该扩展中，而不是创建
+        新对象。当心<TT
+CLASS="LITERAL"
+>SCHEMA</TT
+>指定的是包含已经存在
+        对象的模式。
+       </P
+><P
+>        用于<TT
+CLASS="REPLACEABLE"
+><I
+>old_version</I
+></TT
+>的值由扩展的作者决定，
+        且如果有多于一种版本的老式模块可以被升级到扩展，该值还可能变化。
+        对于 9.1 之前的<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>提供的
+        标准附加模块，在升级模块到扩展风格时要为
+        <TT
+CLASS="REPLACEABLE"
+><I
+>old_version</I
+></TT
+>使用
+        <TT
+CLASS="LITERAL"
+>unpackaged</TT
+>。
+       </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>CASCADE</TT
+></DT
+><DD
+><P
+>        自动安装这个扩展所依赖的任何还未安装的扩展。它们的依赖也会同样
+        被自动安装。如果给出<TT
+CLASS="LITERAL"
+>SCHEMA</TT
+>子句，它会应用于这种方式
+        下安装的所有扩展。这个语句的其他选项不会被应用于自动安装的扩展。
+        特别地，这些自动安装的扩展的默认版本将被选中。
+       </P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN79023"
+></A
+><H2
+>注解</H2
+><P
+>   在使用<TT
+CLASS="COMMAND"
+>CREATE EXTENSION</TT
+>载入扩展到数据库中之前，
+   必须先安装好该扩展的支持文件。关于安装
+   <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>提供的扩展的信息可以在
+   <A
+HREF="contrib.html"
+>额外提供的模块</A
+>中找到。
+  </P
+><P
+>   当前可以用于载入的扩展可以在系统视图
+   <A
+HREF="view-pg-available-extensions.html"
+><TT
+CLASS="STRUCTNAME"
+>pg_available_extensions</TT
+></A
+>
+   或者
+   <A
+HREF="view-pg-available-extension-versions.html"
+><TT
+CLASS="STRUCTNAME"
+>pg_available_extension_versions</TT
+></A
+>
+   中看到。
+  </P
+><P
+>   更多有关编写新扩展的内容请见<A
+HREF="extend-extensions.html"
+>第 36.15 &#33410;</A
+>。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN79036"
+></A
+><H2
+>示例</H2
+><P
+>   安装<A
+HREF="hstore.html"
+>hstore</A
+>扩展到当前数据库中：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>CREATE EXTENSION hstore;</PRE
+><P>
+  </P
+><P
+>   升级一个 9.1 之前的<TT
+CLASS="LITERAL"
+>hstore</TT
+>安装成为扩展：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>CREATE EXTENSION hstore SCHEMA public FROM unpackaged;</PRE
+><P>
+   要小心地指定安装现有<TT
+CLASS="LITERAL"
+>hstore</TT
+>对象的模式。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN79045"
+></A
+><H2
+>兼容性</H2
+><P
+>   <TT
+CLASS="COMMAND"
+>CREATE EXTENSION</TT
+>是一种
+   <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>扩展。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN79050"
+></A
+><H2
+>另见</H2
+><A
+HREF="sql-alterextension.html"
+>ALTER EXTENSION</A
+>, <A
+HREF="sql-dropextension.html"
+>DROP EXTENSION</A
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-createeventtrigger.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="sql-createforeigndatawrapper.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>CREATE EVENT TRIGGER</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>CREATE FOREIGN DATA WRAPPER</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

@@ -1,0 +1,413 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>运行时统计数据</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="服务器配置"
+HREF="runtime-config.html"><LINK
+REL="PREVIOUS"
+TITLE="错误报告和日志"
+HREF="runtime-config-logging.html"><LINK
+REL="NEXT"
+TITLE="自动清理"
+HREF="runtime-config-autovacuum.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/config.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="错误报告和日志"
+HREF="runtime-config-logging.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="runtime-config.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#31456; 19. 服务器配置</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="自动清理"
+HREF="runtime-config-autovacuum.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="RUNTIME-CONFIG-STATISTICS"
+>19.9. 运行时统计数据</A
+></H1
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="RUNTIME-CONFIG-STATISTICS-COLLECTOR"
+>19.9.1. 查询和索引统计收集器</A
+></H2
+><P
+>      这些参数控制服务器范围的统计数据收集特性。当统计收集被启用时，被产生的数据可以通过<TT
+CLASS="STRUCTNAME"
+>pg_stat</TT
+>和<TT
+CLASS="STRUCTNAME"
+>pg_statio</TT
+>系统视图族访问。详见<A
+HREF="monitoring.html"
+>第 28 &#31456;</A
+>。
+     </P
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><A
+NAME="GUC-TRACK-ACTIVITIES"
+></A
+><TT
+CLASS="VARNAME"
+>track_activities</TT
+> (<TT
+CLASS="TYPE"
+>boolean</TT
+>)
+      </DT
+><DD
+><P
+>        启用对每个会话的当前执行命令的信息收集，还有命令开始执行的时间。这个参数默认为打开。注意即使被启用，这些信息也不是对所有用户可见，只有超级用户和拥有报告信息的会话的用户可见，因此它不会表现为一个安全风险。只有超级用户可以更改这个设置。
+       </P
+></DD
+><DT
+><A
+NAME="GUC-TRACK-ACTIVITY-QUERY-SIZE"
+></A
+><TT
+CLASS="VARNAME"
+>track_activity_query_size</TT
+> (<TT
+CLASS="TYPE"
+>integer</TT
+>)
+      </DT
+><DD
+><P
+>       声明保留的字节数，以跟踪每个活动会话的当前执行命令，对 pg_stat_activity.current_query段。 缺省值是1024。这个参数只能在服务器启动时设置。
+       指定跟踪每个活动会话当前执行命令所保留的字节数，它们被用于<TT
+CLASS="STRUCTNAME"
+>pg_stat_activity</TT
+>.<TT
+CLASS="STRUCTFIELD"
+>query</TT
+>域。默认值是 1024。这个参数只能在服务器启动时被设置。
+       </P
+></DD
+><DT
+><A
+NAME="GUC-TRACK-COUNTS"
+></A
+><TT
+CLASS="VARNAME"
+>track_counts</TT
+> (<TT
+CLASS="TYPE"
+>boolean</TT
+>)
+      </DT
+><DD
+><P
+>        启用在数据库活动上的统计收集。这个参数默认为打开，因为自动清理守护进程需要被收集的信息。只有超级用户可以更改这个设置。
+       </P
+></DD
+><DT
+><A
+NAME="GUC-TRACK-IO-TIMING"
+></A
+><TT
+CLASS="VARNAME"
+>track_io_timing</TT
+> (<TT
+CLASS="TYPE"
+>boolean</TT
+>)
+      </DT
+><DD
+><P
+>        启用对系统 I/O 调用的计时。这个参数默认为关闭，因为它将重复地向操作系统查询当前时间，这会在某些平台上导致显著的负荷。你可以使用<A
+HREF="pgtesttiming.html"
+><SPAN
+CLASS="APPLICATION"
+>pg_test_timing</SPAN
+></A
+>工具来度量你的系统中计时的开销。I/O 计时信息被显示在<A
+HREF="monitoring-stats.html#PG-STAT-DATABASE-VIEW"
+>pg_stat_database</A
+>中、当<TT
+CLASS="LITERAL"
+>BUFFERS</TT
+>选项被使用时的<A
+HREF="sql-explain.html"
+>EXPLAIN</A
+>输出中以及<A
+HREF="pgstatstatements.html"
+>pg_stat_statements</A
+>中。只有超级用户可以更改这个设置。
+       </P
+></DD
+><DT
+><A
+NAME="GUC-TRACK-FUNCTIONS"
+></A
+><TT
+CLASS="VARNAME"
+>track_functions</TT
+> (<TT
+CLASS="TYPE"
+>enum</TT
+>)
+      </DT
+><DD
+><P
+>        启用跟踪函数调用计数和用时。指定<TT
+CLASS="LITERAL"
+>pl</TT
+>只跟踪过程语言函数，指定<TT
+CLASS="LITERAL"
+>all</TT
+>还会跟踪 SQL 和 C 语言函数。默认值是<TT
+CLASS="LITERAL"
+>none</TT
+>，它禁用函数统计跟踪。只有超级用户可以更改这个设置。
+       </P
+><DIV
+CLASS="NOTE"
+><BLOCKQUOTE
+CLASS="NOTE"
+><P
+><B
+>&#27880;&#24847;: </B
+>         简单到足以被<SPAN
+CLASS="QUOTE"
+>"内联"</SPAN
+>到调用查询中的 SQL 语言函数不会被跟踪， 而不管这个设置。
+        </P
+></BLOCKQUOTE
+></DIV
+></DD
+><DT
+><A
+NAME="GUC-STATS-TEMP-DIRECTORY"
+></A
+><TT
+CLASS="VARNAME"
+>stats_temp_directory</TT
+> (<TT
+CLASS="TYPE"
+>string</TT
+>)
+      </DT
+><DD
+><P
+>        设置存储临时统计数据的目录。这可以是一个相对于数据目录的路径或一个绝对路径。默认值是<TT
+CLASS="FILENAME"
+>pg_stat_tmp</TT
+>。在一个基于 RAM 的文件系统上指明这个参数将降低物理 I/O 需求，并且提高性能。这个参数只能在<TT
+CLASS="FILENAME"
+>postgresql.conf</TT
+>文件中或在服务器命令行上设置。
+       </P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="RUNTIME-CONFIG-STATISTICS-MONITOR"
+>19.9.2. 统计监控</A
+></H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="VARNAME"
+>log_statement_stats</TT
+> (<TT
+CLASS="TYPE"
+>boolean</TT
+>)
+      <BR><TT
+CLASS="VARNAME"
+>log_parser_stats</TT
+> (<TT
+CLASS="TYPE"
+>boolean</TT
+>)
+      <BR><TT
+CLASS="VARNAME"
+>log_planner_stats</TT
+> (<TT
+CLASS="TYPE"
+>boolean</TT
+>)
+      <BR><TT
+CLASS="VARNAME"
+>log_executor_stats</TT
+> (<TT
+CLASS="TYPE"
+>boolean</TT
+>)
+      </DT
+><DD
+><P
+>        对每个查询，向服务器日志里输出相应模块的性能统计。这是一种粗糙的分析工具。类似于 Unix 的<CODE
+CLASS="FUNCTION"
+>getrusage()</CODE
+>系统功能。<TT
+CLASS="VARNAME"
+>log_statement_stats</TT
+>报告总的语句统计，而其它的报告针每个模块的统计。<TT
+CLASS="VARNAME"
+>log_statement_stats</TT
+>不能和 其它任何针对每个模块统计的选项一起启用。所有这些选项都是默认禁用的。只有超级用户可以更改这个设置。
+       </P
+></DD
+></DL
+></DIV
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="runtime-config-logging.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="runtime-config-autovacuum.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>错误报告和日志</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="runtime-config.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>自动清理</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

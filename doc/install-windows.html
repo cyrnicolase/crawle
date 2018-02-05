@@ -1,0 +1,354 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>在Windows上从源代码安装</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="服务器管理"
+HREF="admin.html"><LINK
+REL="PREVIOUS"
+TITLE="平台相关的说明"
+HREF="installation-platform-notes.html"><LINK
+REL="NEXT"
+TITLE="使用Visual C++或Microsoft Windows SDK构建"
+HREF="install-windows-full.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="CHAPTER"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/install-windows.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="平台相关的说明"
+HREF="installation-platform-notes.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="admin.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="使用Visual C++或Microsoft Windows SDK构建"
+HREF="install-windows-full.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="CHAPTER"
+><H1
+><A
+NAME="INSTALL-WINDOWS"
+></A
+>&#31456; 17. 在<SPAN
+CLASS="PRODUCTNAME"
+>Windows</SPAN
+>上从源代码安装</H1
+><DIV
+CLASS="TOC"
+><DL
+><DT
+><B
+>&#30446;&#24405;</B
+></DT
+><DT
+>17.1. <A
+HREF="install-windows-full.html"
+>使用<SPAN
+CLASS="PRODUCTNAME"
+>Visual C++</SPAN
+>或<SPAN
+CLASS="PRODUCTNAME"
+>Microsoft Windows SDK</SPAN
+>构建</A
+></DT
+><DD
+><DL
+><DT
+>17.1.1. <A
+HREF="install-windows-full.html#AEN30596"
+>要求</A
+></DT
+><DT
+>17.1.2. <A
+HREF="install-windows-full.html#AEN30713"
+>针对64位Windows的特殊考虑</A
+></DT
+><DT
+>17.1.3. <A
+HREF="install-windows-full.html#AEN30721"
+>构建</A
+></DT
+><DT
+>17.1.4. <A
+HREF="install-windows-full.html#AEN30737"
+>清理和安装</A
+></DT
+><DT
+>17.1.5. <A
+HREF="install-windows-full.html#AEN30751"
+>运行回归测试</A
+></DT
+><DT
+>17.1.6. <A
+HREF="install-windows-full.html#AEN30785"
+>构建文档</A
+></DT
+></DL
+></DD
+><DT
+>17.2. <A
+HREF="install-windows-libpq.html"
+>使用<SPAN
+CLASS="PRODUCTNAME"
+>Visual C++</SPAN
+>或
+  <SPAN
+CLASS="PRODUCTNAME"
+>Borland C++</SPAN
+>构建<SPAN
+CLASS="APPLICATION"
+>libpq</SPAN
+></A
+></DT
+></DL
+></DIV
+><P
+>  对于大部分用户，推荐下载Windows的二进制发布，它在<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>
+  的网站上作为一个图形化安装包可供下载。从源代码构建的方式只适合于希望开发或者扩展
+  <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>的人们。
+ </P
+><P
+>  有多种不同的方式可以在<SPAN
+CLASS="PRODUCTNAME"
+>Windows</SPAN
+>上构建PostgreSQL。
+  用微软工具进行构建的最简单方式是安装
+  <SPAN
+CLASS="PRODUCTNAME"
+>Visual Studio Express 2015 for Windows Desktop</SPAN
+>并使用其中包含的编译器。
+  也可以使用完整的<SPAN
+CLASS="PRODUCTNAME"
+>Microsoft Visual C++ 2005到2015</SPAN
+>来构建。
+  在某些情况中除了编译器还需要安装<SPAN
+CLASS="PRODUCTNAME"
+>Windows SDK</SPAN
+>。
+ </P
+><P
+>  也可以使用由<SPAN
+CLASS="PRODUCTNAME"
+>MinGW</SPAN
+>提供的GNU编译器工具来构建PostgreSQL，或者使用适合于旧版本<SPAN
+CLASS="PRODUCTNAME"
+>Windows</SPAN
+>的<SPAN
+CLASS="PRODUCTNAME"
+>Cygwin</SPAN
+>。
+ </P
+><P
+>  最后，客户端访问库（<SPAN
+CLASS="APPLICATION"
+>libpq</SPAN
+>）可以使用<SPAN
+CLASS="PRODUCTNAME"
+>Visual C++ 7.1</SPAN
+>或<SPAN
+CLASS="PRODUCTNAME"
+>Borland C++</SPAN
+>构建，以便兼容哪些使用这些工具构建的静态链接应用。
+ </P
+><P
+>  使用<SPAN
+CLASS="PRODUCTNAME"
+>MinGW</SPAN
+>或<SPAN
+CLASS="PRODUCTNAME"
+>Cygwin</SPAN
+>的构建用到普通构建系统，见<A
+HREF="installation.html"
+>第 16 &#31456;</A
+>、<A
+HREF="installation-platform-notes.html#INSTALLATION-NOTES-MINGW"
+>第 16.7.4 &#33410;</A
+>和<A
+HREF="installation-platform-notes.html#INSTALLATION-NOTES-CYGWIN"
+>第 16.7.2 &#33410;</A
+>。在这些环境下，要产生原生的64位二进制代码，请使用<SPAN
+CLASS="PRODUCTNAME"
+>MinGW-w64</SPAN
+>中的工具。这些工具同样可以被用于在32位和64位 <SPAN
+CLASS="PRODUCTNAME"
+>Windows</SPAN
+>上交叉编译其他主机上的目标，例如<SPAN
+CLASS="PRODUCTNAME"
+>Linux</SPAN
+>和<SPAN
+CLASS="PRODUCTNAME"
+>Darwin</SPAN
+>。不推荐将<SPAN
+CLASS="PRODUCTNAME"
+>Cygwin</SPAN
+>用于一个产品服务器，它只应被用于老版本的<SPAN
+CLASS="PRODUCTNAME"
+>Windows</SPAN
+>，因为在这些系统中原生构建无法工作，例如<SPAN
+CLASS="PRODUCTNAME"
+>Windows 98</SPAN
+>。官方的二进制代码使用<SPAN
+CLASS="PRODUCTNAME"
+>Visual Studio</SPAN
+>构建。
+ </P
+><P
+>  <SPAN
+CLASS="APPLICATION"
+>psql</SPAN
+>的原生构建不支持命令行编辑。<SPAN
+CLASS="PRODUCTNAME"
+>Cygwin</SPAN
+>构建能支持命令行编辑，因此如果需要在<SPAN
+CLASS="PRODUCTNAME"
+>Windows</SPAN
+>上交互式地使用psql可以用到它。
+ </P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="installation-platform-notes.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="install-windows-full.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>平台相关的说明</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="admin.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>使用<SPAN
+CLASS="PRODUCTNAME"
+>Visual C++</SPAN
+>或<SPAN
+CLASS="PRODUCTNAME"
+>Microsoft Windows SDK</SPAN
+>构建</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

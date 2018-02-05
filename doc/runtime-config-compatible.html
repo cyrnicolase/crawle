@@ -1,0 +1,703 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>版本和平台兼容性</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="服务器配置"
+HREF="runtime-config.html"><LINK
+REL="PREVIOUS"
+TITLE="锁管理"
+HREF="runtime-config-locks.html"><LINK
+REL="NEXT"
+TITLE="错误处理"
+HREF="runtime-config-error-handling.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/config.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="锁管理"
+HREF="runtime-config-locks.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="runtime-config.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#31456; 19. 服务器配置</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="错误处理"
+HREF="runtime-config-error-handling.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="RUNTIME-CONFIG-COMPATIBLE"
+>19.13. 版本和平台兼容性</A
+></H1
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="RUNTIME-CONFIG-COMPATIBLE-VERSION"
+>19.13.1. 以前的 PostgreSQL 版本</A
+></H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><A
+NAME="GUC-ARRAY-NULLS"
+></A
+><TT
+CLASS="VARNAME"
+>array_nulls</TT
+> (<TT
+CLASS="TYPE"
+>boolean</TT
+>)
+      </DT
+><DD
+><P
+>        这个参数控制数组输入解析器是否把未用引号的<TT
+CLASS="LITERAL"
+>NULL</TT
+>识别为一个空数组元素。默认为<TT
+CLASS="LITERAL"
+>on</TT
+>，允许输入包含空值的数组值。但是<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+> 8.2 之前的版本不支持数组中的空值，并且因此将把<TT
+CLASS="LITERAL"
+>NULL</TT
+>当作指定一个值为字符串<SPAN
+CLASS="QUOTE"
+>"NULL"</SPAN
+>的正常数组元素。对于那些要求旧行为的应用的向后兼容性，这个变量可以被设置为<TT
+CLASS="LITERAL"
+>off</TT
+>。
+       </P
+><P
+>        注意即使这个变量为<TT
+CLASS="LITERAL"
+>off</TT
+>也能够创建包含空值的数组值。
+       </P
+></DD
+><DT
+><A
+NAME="GUC-BACKSLASH-QUOTE"
+></A
+><TT
+CLASS="VARNAME"
+>backslash_quote</TT
+> (<TT
+CLASS="TYPE"
+>enum</TT
+>)
+      
+      </DT
+><DD
+><P
+>        这个参数控制字符串文本中的单引号是否能够用<TT
+CLASS="LITERAL"
+>\'</TT
+>来表示。首选的 SQL 标准的方法是将其双写（<TT
+CLASS="LITERAL"
+>''</TT
+>），但是<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>在历史上也接受<TT
+CLASS="LITERAL"
+>\'</TT
+>。不过使用<TT
+CLASS="LITERAL"
+>\'</TT
+>容易导致安全风险，因为在某些客户端字符集编码中，有多字节字符的最后一个字节在数值上等价于 ASCII 的<TT
+CLASS="LITERAL"
+>\'</TT
+>。如果客户端代码没有做到正确转义，那么将会导致 SQL 注入攻击。如果服务器拒绝看起来带有被反斜线转义的单引号的查询，那么就可以避免这种风险。<TT
+CLASS="VARNAME"
+>backslash_quote</TT
+>的可用值是<TT
+CLASS="LITERAL"
+>on</TT
+>（总是允许<TT
+CLASS="LITERAL"
+>\'</TT
+>）、<TT
+CLASS="LITERAL"
+>off</TT
+>（总是拒绝）以及<TT
+CLASS="LITERAL"
+>safe_encoding</TT
+>（只有客户端编码不允许在多字节字符中存在 ASCII <TT
+CLASS="LITERAL"
+>\</TT
+>时允许）。<TT
+CLASS="LITERAL"
+>safe_encoding</TT
+>是默认设置。
+       </P
+><P
+>        注意在符合标准的字符串文本中，<TT
+CLASS="LITERAL"
+>\</TT
+>就表示<TT
+CLASS="LITERAL"
+>\</TT
+>。这个参数只影响不符合标准的文本的处理，包括转义字符串语法（<TT
+CLASS="LITERAL"
+>E'...'</TT
+>）。
+       </P
+></DD
+><DT
+><A
+NAME="GUC-DEFAULT-WITH-OIDS"
+></A
+><TT
+CLASS="VARNAME"
+>default_with_oids</TT
+> (<TT
+CLASS="TYPE"
+>boolean</TT
+>)
+      </DT
+><DD
+><P
+>        这个参数控制<TT
+CLASS="COMMAND"
+>CREATE TABLE</TT
+>和<TT
+CLASS="COMMAND"
+>CREATE TABLE AS</TT
+>在既没有指定<TT
+CLASS="LITERAL"
+>WITH OIDS</TT
+>也没有指定<TT
+CLASS="LITERAL"
+>WITHOUT OIDS</TT
+>的情况下，是否在新创建的表中包含 OID 列。它还决定被<TT
+CLASS="COMMAND"
+>SELECT INTO</TT
+>创建的表里面是否包含 OID 。这个参数在默认情况下为<TT
+CLASS="LITERAL"
+>off</TT
+>。在<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+> 8.0 及更早的版本中，它默认为<TT
+CLASS="LITERAL"
+>on</TT
+>。
+       </P
+><P
+>        我们反对在用户表中使用 OID ，因此大多数安装应该禁用这个变量。需要为一个特殊表使用 OID 的应用应该在创建表的时候指定<TT
+CLASS="LITERAL"
+>WITH OIDS</TT
+>。为了兼容不遵循这一行为的老旧应用，这个变量可以被启用。
+       </P
+></DD
+><DT
+><A
+NAME="GUC-ESCAPE-STRING-WARNING"
+></A
+><TT
+CLASS="VARNAME"
+>escape_string_warning</TT
+> (<TT
+CLASS="TYPE"
+>boolean</TT
+>)
+      
+      </DT
+><DD
+><P
+>        打开时，如果在普通字符串文本中（<TT
+CLASS="LITERAL"
+>'...'</TT
+>语法）出现了 一个反斜线（<TT
+CLASS="LITERAL"
+>\</TT
+>）并且<TT
+CLASS="VARNAME"
+>standard_conforming_strings</TT
+>为关闭，那么就会发出一个警告。默认值是<TT
+CLASS="LITERAL"
+>on</TT
+>。
+       </P
+><P
+>        希望使用反斜线作为转义符的应用应该被修改来使用转义字符串语法（<TT
+CLASS="LITERAL"
+>E'...'</TT
+>），因为在 SQL 标准中普通字符串的默认行为是将反斜线视作一个普通字符。这个变量可以被启用来帮助定位需要被更改的代码。
+       </P
+></DD
+><DT
+><A
+NAME="GUC-LO-COMPAT-PRIVILEGES"
+></A
+><TT
+CLASS="VARNAME"
+>lo_compat_privileges</TT
+> (<TT
+CLASS="TYPE"
+>boolean</TT
+>)
+      </DT
+><DD
+><P
+>        在9.0之前的版本中，大对象没有连接权限，并且对所有用户哦都是可读可写的。 
+        将这个变量设置为on，从而禁用新的权限检查，以与以前的版本兼容。 默认是off。
+        只有超级用户可以更改这个设置。
+       </P
+><P
+>        设置这个参数不会禁用所有与大对象相关的安全检查 &mdash; 除了那些在<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+> 9.0中已经修改了的默认行为。例如，<TT
+CLASS="LITERAL"
+>lo_import()</TT
+>和<TT
+CLASS="LITERAL"
+>lo_export()</TT
+>需要超级用户权限而不管这个设置。
+       </P
+></DD
+><DT
+><A
+NAME="GUC-OPERATOR-PRECEDENCE-WARNING"
+></A
+><TT
+CLASS="VARNAME"
+>operator_precedence_warning</TT
+> (<TT
+CLASS="TYPE"
+>boolean</TT
+>)
+      </DT
+><DD
+><P
+>        当开启时，解析器为了可能修改的任何结构发出警告，
+        意味着<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+> 9.4操作符优先级中作为修改结果。     
+        对审计应用程序是非常有用的，
+        看看是否优先更改会打断任何东西；
+        但它并不意味着在生成过程中保持开启，
+        因为它会对一些完全有效的，符合标准的SQL代码发出警告。
+        缺省<TT
+CLASS="LITERAL"
+>off</TT
+>。
+       </P
+><P
+>           参阅<A
+HREF="sql-syntax-lexical.html#SQL-PRECEDENCE"
+>第 4.1.6 &#33410;</A
+>获取更多信息。
+       </P
+></DD
+><DT
+><A
+NAME="GUC-QUOTE-ALL-IDENTIFIERS"
+></A
+><TT
+CLASS="VARNAME"
+>quote_all_identifiers</TT
+> (<TT
+CLASS="TYPE"
+>boolean</TT
+>)
+      </DT
+><DD
+><P
+>        当数据库产生 SQL 时，强制所有标识符被引号包围，即使它们（当前）不是关键字。这将影响<TT
+CLASS="COMMAND"
+>EXPLAIN</TT
+>的输出以及<CODE
+CLASS="FUNCTION"
+>pg_get_viewdef</CODE
+>等函数的结果。另请参阅<A
+HREF="app-pgdump.html"
+>pg_dump</A
+>和<A
+HREF="app-pg-dumpall.html"
+><SPAN
+CLASS="APPLICATION"
+>pg_dumpall</SPAN
+></A
+>的<TT
+CLASS="OPTION"
+>--quote-all-identifiers</TT
+>选项。
+       </P
+></DD
+><DT
+><A
+NAME="GUC-SQL-INHERITANCE"
+></A
+><TT
+CLASS="VARNAME"
+>sql_inheritance</TT
+> (<TT
+CLASS="TYPE"
+>boolean</TT
+>)
+      
+      </DT
+><DD
+><P
+>        这个设置控制未修饰的表引用是否被视作要包括继承的子表。默认值是<TT
+CLASS="LITERAL"
+>on</TT
+>，它表示包括子表（因此，默认假定一个<TT
+CLASS="LITERAL"
+>*</TT
+>后缀）。如果被设置为<TT
+CLASS="LITERAL"
+>off</TT
+>，不包括子表（因此，假设一个<TT
+CLASS="LITERAL"
+>ONLY</TT
+>前缀）。SQL 标准要求子表被包括在内，因此<TT
+CLASS="LITERAL"
+>off</TT
+>设置不是说明兼容的，但是被提供用来满足对<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>版本 7.1 之前的兼容性。详见<A
+HREF="ddl-inherit.html"
+>第 5.9 &#33410;</A
+>。
+       </P
+><P
+>        我们已经废弃了关闭<TT
+CLASS="VARNAME"
+>sql_inheritance</TT
+>，因为那个行为已经被发现容易产生错误并且与 SQL 标准矛盾。本手册中其他地方讨论继承行为时通常假设它被设置为<TT
+CLASS="LITERAL"
+>on</TT
+>。
+       </P
+></DD
+><DT
+><A
+NAME="GUC-STANDARD-CONFORMING-STRINGS"
+></A
+><TT
+CLASS="VARNAME"
+>standard_conforming_strings</TT
+> (<TT
+CLASS="TYPE"
+>boolean</TT
+>)
+      
+      </DT
+><DD
+><P
+>        控制普通字符串文本（<TT
+CLASS="LITERAL"
+>'...'</TT
+>）是否按照 SQL 标准把反斜线当普通文本。从<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+> 9.1 开始，默认值为<TT
+CLASS="LITERAL"
+>on</TT
+>（之前的发行中默认值为<TT
+CLASS="LITERAL"
+>off</TT
+>）。应用可以检查这个参数来判断字符串文本如何被处理。这个参数的存在也可以被当做转义字符串语法（<TT
+CLASS="LITERAL"
+>E'...'</TT
+>）被支持的标志。如果一个应用希望反斜线被当做转义字符，应该使用转义字符串语法（<A
+HREF="sql-syntax-lexical.html#SQL-SYNTAX-STRINGS-ESCAPE"
+>第 4.1.2.2 &#33410;</A
+>）。
+       </P
+></DD
+><DT
+><A
+NAME="GUC-SYNCHRONIZE-SEQSCANS"
+></A
+><TT
+CLASS="VARNAME"
+>synchronize_seqscans</TT
+> (<TT
+CLASS="TYPE"
+>boolean</TT
+>)
+      </DT
+><DD
+><P
+>        它允许对大型表的顺序扫描与其他扫描同步，因此并发扫描可以在几乎相同的时刻读取相同的块，这样可以分担 I/O 负载。当启用这个参数时，一个扫描可能会从表的中间开始并且之后<SPAN
+CLASS="QUOTE"
+>"绕回"</SPAN
+>到开头以覆盖所有的行，这样可以与已在进行中的扫描活动同步。对于没有<TT
+CLASS="LITERAL"
+>ORDER BY</TT
+>子句的查询来，这样的扫描会在返回行的顺序中造成不可预料的改变。将这个参数设置为<TT
+CLASS="LITERAL"
+>off</TT
+>以保证 8.3 之前的行为（顺序扫描总是从表的起始处开始）。默认值是<TT
+CLASS="LITERAL"
+>on</TT
+>。
+       </P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="RUNTIME-CONFIG-COMPATIBLE-CLIENTS"
+>19.13.2. 平台和客户端兼容性</A
+></H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><A
+NAME="GUC-TRANSFORM-NULL-EQUALS"
+></A
+><TT
+CLASS="VARNAME"
+>transform_null_equals</TT
+> (<TT
+CLASS="TYPE"
+>boolean</TT
+>)
+      
+      </DT
+><DD
+><P
+>        当打开时，形为<TT
+CLASS="LITERAL"
+><TT
+CLASS="REPLACEABLE"
+><I
+>expr</I
+></TT
+> = NULL</TT
+>（或<TT
+CLASS="LITERAL"
+>NULL =  <TT
+CLASS="REPLACEABLE"
+><I
+>expr</I
+></TT
+></TT
+>）的表达式将被当做<TT
+CLASS="LITERAL"
+><TT
+CLASS="REPLACEABLE"
+><I
+>expr</I
+></TT
+> IS NULL</TT
+>， 也就是说，如果<TT
+CLASS="REPLACEABLE"
+><I
+>expr</I
+></TT
+>得出空值值则返回真，否则返回假。正确的 SQL 标准兼容的<TT
+CLASS="LITERAL"
+><TT
+CLASS="REPLACEABLE"
+><I
+>expr</I
+></TT
+> = NULL</TT
+>行为总是返回空（未知）。因此这个参数默认为<TT
+CLASS="LITERAL"
+>off</TT
+>。
+       </P
+><P
+>        不过，在<SPAN
+CLASS="PRODUCTNAME"
+>Microsoft Access</SPAN
+>里的过滤表单生成的查询似乎使用<TT
+CLASS="LITERAL"
+><TT
+CLASS="REPLACEABLE"
+><I
+>expr</I
+></TT
+> = NULL</TT
+>来测试空值，因此，如果你使用这个接口访问数据库，你可能想把这个选项打开。因为<TT
+CLASS="LITERAL"
+><TT
+CLASS="REPLACEABLE"
+><I
+>expr</I
+></TT
+> = NULL</TT
+>形式的表达式总是返回空值（使用 SQL 标准解释）。它们不是非常有用并且在普通应用中也不常见，在应用中也不常见，因此这个选项实际上没有什么危害。但是新用户常常对涉及 空值的表达式的语义上感到困惑，因此这个选项默认为关闭。
+       </P
+><P
+>        请注意这个选项只影响<TT
+CLASS="LITERAL"
+>= NULL</TT
+>形式，而不影响其它比较操作符或者其它与一些涉及等值操作符的表达式在计算上等效的其他表达式（例如<TT
+CLASS="LITERAL"
+>IN</TT
+>）。因此，这个选项不是劣质程序的一般修复。
+       </P
+><P
+>        相关信息请见<A
+HREF="functions-comparison.html"
+>第 9.2 &#33410;</A
+>。
+       </P
+></DD
+></DL
+></DIV
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="runtime-config-locks.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="runtime-config-error-handling.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>锁管理</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="runtime-config.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>错误处理</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

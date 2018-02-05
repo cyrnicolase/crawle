@@ -1,0 +1,246 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>概念</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="ECPG - C 中的嵌入式 SQL"
+HREF="ecpg.html"><LINK
+REL="PREVIOUS"
+TITLE="ECPG - C 中的嵌入式 SQL"
+HREF="ecpg.html"><LINK
+REL="NEXT"
+TITLE="管理数据库连接"
+HREF="ecpg-connect.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/ecpg.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="ECPG - C 中的嵌入式 SQL"
+HREF="ecpg.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="ecpg.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#31456; 34. <SPAN
+CLASS="APPLICATION"
+>ECPG</SPAN
+> - C 中的嵌入式 <ACRONYM
+CLASS="ACRONYM"
+>SQL</ACRONYM
+></TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="管理数据库连接"
+HREF="ecpg-connect.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="ECPG-CONCEPT"
+>34.1. 概念</A
+></H1
+><P
+>   一个嵌入式 SQL 程序由一种普通编程语言编写的代码（在这里是 C）和位于特殊标记的小节中的 SQL 命令混合组成。要构建该程序，源代码（<TT
+CLASS="FILENAME"
+>*.pgc</TT
+>）首先会通过嵌入式 SQL 预处理器，它会将源代码转换成一个普通 C 程序（<TT
+CLASS="FILENAME"
+>*.c</TT
+>），并且后来它能够被一个 C 编译器所处理（编译和链接详见<A
+HREF="ecpg-process.html"
+>第 34.10 &#33410;</A
+>）。转换过的 ECPG 应用会通过嵌入式 SQL 库（ecpglib）调用 libpq 库中的函数，并且与 PostgreSQL 服务器使用普通的前端/后端协议通信。
+  </P
+><P
+>   嵌入式<ACRONYM
+CLASS="ACRONYM"
+>SQL</ACRONYM
+>在为 C 代码处理<ACRONYM
+CLASS="ACRONYM"
+>SQL</ACRONYM
+>命令方面比起其他方法来具有优势。首先，它会搞定向你的<ACRONYM
+CLASS="ACRONYM"
+>C</ACRONYM
+>程序变量传递或者读取信息时的繁文缛节。其次，程序中的 SQL 代码在编译时就会被检查以保证语法正确性。第三，C 中的嵌入式<ACRONYM
+CLASS="ACRONYM"
+>SQL</ACRONYM
+>是在<ACRONYM
+CLASS="ACRONYM"
+>SQL</ACRONYM
+>标准中指定的并且受到很多其他<ACRONYM
+CLASS="ACRONYM"
+>SQL</ACRONYM
+>数据库系统的支持。<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>实现被设计为尽可能匹配这个标准，并且通常可以相对容易地把为其他 SQL 数据库编写的<ACRONYM
+CLASS="ACRONYM"
+>SQL</ACRONYM
+>程序移植到<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>。
+  </P
+><P
+>   正如已经支出的，为嵌入式<ACRONYM
+CLASS="ACRONYM"
+>SQL</ACRONYM
+>接口编写的程序是插入了用于执行数据库相关动作的特殊代码的普通的 C 程序。这种特殊代码总是具有这样的形式：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>EXEC SQL ...;</PRE
+><P>
+   这些语句在语法上取代了一个 C 语句。取决于特定的语句，它们可以出现在全局层面或者是一个函数中。嵌入式
+   <ACRONYM
+CLASS="ACRONYM"
+>SQL</ACRONYM
+>语句遵循普通<ACRONYM
+CLASS="ACRONYM"
+>SQL</ACRONYM
+>代码的大小写敏感性规则，
+   而不是 C 的大小写敏感性规则。它们也允许嵌套的 C 风格注释（SQL 标准的一部分）。
+   不过，程序的 C 部分遵循 C 的标准不接受嵌套注释。
+  </P
+><P
+>   下列小节解释了所有嵌入式 SQL 语句。
+  </P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="ecpg.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="ecpg-connect.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><SPAN
+CLASS="APPLICATION"
+>ECPG</SPAN
+> - C 中的嵌入式 <ACRONYM
+CLASS="ACRONYM"
+>SQL</ACRONYM
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="ecpg.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>管理数据库连接</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

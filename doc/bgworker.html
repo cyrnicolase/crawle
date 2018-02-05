@@ -1,0 +1,672 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>后台工作者进程</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="服务器编程"
+HREF="server-programming.html"><LINK
+REL="PREVIOUS"
+TITLE="例子"
+HREF="spi-examples.html"><LINK
+REL="NEXT"
+TITLE="逻辑解码"
+HREF="logicaldecoding.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="CHAPTER"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/bgworker.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="例子"
+HREF="spi-examples.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="server-programming.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="逻辑解码"
+HREF="logicaldecoding.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="CHAPTER"
+><H1
+><A
+NAME="BGWORKER"
+></A
+>&#31456; 46. 后台工作者进程</H1
+><P
+>  PostgreSQL可以被扩展来在独立进程中运行用户提供的代码。这种进程被<TT
+CLASS="COMMAND"
+>postgres</TT
+>启动、停止和监控，这使它们的生命期与服务器的状态紧密联系。这些进程具有选项可以挂接上<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>的共享内存区域，并且可以从内部连接到数据库。它们也可以连续地运行多个事务，就像一个正常的被客户端连接的服务器进程。同样，通过链接到<SPAN
+CLASS="APPLICATION"
+>libpq</SPAN
+>，它们可以连接到服务器并像一个正常客户端应用工作。
+ </P
+><DIV
+CLASS="WARNING"
+><P
+></P
+><TABLE
+CLASS="WARNING"
+BORDER="1"
+WIDTH="100%"
+><TR
+><TD
+ALIGN="CENTER"
+><B
+>&#35686;&#21578;</B
+></TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+><P
+>   在使用后台工作者进程时具有相当大的鲁棒性和安全性风险，因为它们由<TT
+CLASS="LITERAL"
+>C</TT
+>语言编写，对数据具有无限制的访问权。希望使用包括后台工作者进程在内的模块的管理员必须要极度小心。只有仔细审计过的模块才会被允许运行后台工作者进程。
+  </P
+></TD
+></TR
+></TABLE
+></DIV
+><P
+>  通过将模块名放在<TT
+CLASS="VARNAME"
+>shared_preload_libraries</TT
+>中，可以在<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>被启动时初始化后台工作者。一个希望运行后台工作者的模块需要通过在其<CODE
+CLASS="FUNCTION"
+>_PG_init()</CODE
+>中调用<CODE
+CLASS="FUNCTION"
+>RegisterBackgroundWorker(<TT
+CLASS="TYPE"
+>BackgroundWorker *worker</TT
+>)</CODE
+>来注册它。也可以在系统启动后通过调用函数<CODE
+CLASS="FUNCTION"
+>RegisterDynamicBackgroundWorker(<TT
+CLASS="TYPE"
+>BackgroundWorker
+  *worker, BackgroundWorkerHandle **handle</TT
+>)</CODE
+>来启动后台工作者。与只能在postmaster内调用的<CODE
+CLASS="FUNCTION"
+>RegisterBackgroundWorker</CODE
+>不同，必须从一个常规后端调用<CODE
+CLASS="FUNCTION"
+>RegisterDynamicBackgroundWorker</CODE
+>。
+ </P
+><P
+></P><PRE
+CLASS="PROGRAMLISTING"
+>typedef void (*bgworker_main_type)(Datum main_arg);
+typedef struct BackgroundWorker
+{
+    char        bgw_name[BGW_MAXLEN];
+    int         bgw_flags;
+    BgWorkerStartTime bgw_start_time;
+    int         bgw_restart_time;       /* in seconds, or BGW_NEVER_RESTART */
+    bgworker_main_type bgw_main;
+    char        bgw_library_name[BGW_MAXLEN];   /* only if bgw_main is NULL */
+    char        bgw_function_name[BGW_MAXLEN];  /* only if bgw_main is NULL */
+    Datum       bgw_main_arg;
+    char        bgw_extra[BGW_EXTRALEN];
+    int         bgw_notify_pid;
+} BackgroundWorker;</PRE
+><P>
+  </P
+><P
+>   <TT
+CLASS="STRUCTFIELD"
+>bgw_name</TT
+>是一个用于记录消息、处理列表和类似上下文的字符串。
+  </P
+><P
+>   <TT
+CLASS="STRUCTFIELD"
+>bgw_flags</TT
+>是一个按位与的位掩码，它用于指示模块想要的能力。可能的值是：
+   <P
+></P
+></P><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="LITERAL"
+>BGWORKER_SHMEM_ACCESS</TT
+></DT
+><DD
+><P
+>       
+       请求共享内存访问。没有共享内存使用权的工作者不能访问任何的<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>共享数据结构，例如重量级或者轻量级锁、共享缓冲区以及该工作者本身想要创建和使用的任何自定义数据结构。
+      </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>BGWORKER_BACKEND_DATABASE_CONNECTION</TT
+></DT
+><DD
+><P
+>       
+       请求建立数据库连接的能力，这样它后面可以通过建立起的连接运行事务和查询。一个使用<TT
+CLASS="LITERAL"
+>BGWORKER_BACKEND_DATABASE_CONNECTION</TT
+>来连接一个数据库的后台工作者也必须使用<TT
+CLASS="LITERAL"
+>BGWORKER_SHMEM_ACCESS</TT
+>挂接到共享内存，否则工作者启动将会失败。
+      </P
+></DD
+></DL
+></DIV
+><P>
+
+  </P
+><P
+>   <TT
+CLASS="STRUCTFIELD"
+>bgw_start_time</TT
+>是服务器状态，在该状态中<TT
+CLASS="COMMAND"
+>postgres</TT
+>会启动该进程，它可以是<TT
+CLASS="LITERAL"
+>BgWorkerStart_PostmasterStart</TT
+>（在<TT
+CLASS="COMMAND"
+>postgres</TT
+>本身完成初始化之后立即启动，这种进程不能使用数据库连接）、<TT
+CLASS="LITERAL"
+>BgWorkerStart_ConsistentState</TT
+>（当一个热后备中达到一个一致性状态之后立即启动，允许进程连接到数据库并运行只读查询）和<TT
+CLASS="LITERAL"
+>BgWorkerStart_RecoveryFinished</TT
+>（在系统进入到正常读写状态后立即启动）之一。注意后两种值在服务器不是一个热后备的情况下是等同的。注意这种设置仅仅表示何时启动进程，当一个不同状态到达时它们不会停止。
+  </P
+><P
+>   <TT
+CLASS="STRUCTFIELD"
+>bgw_restart_time</TT
+>是在崩溃情况下<TT
+CLASS="COMMAND"
+>postgres</TT
+>启动进程之前等待的时间间隔，以秒计。它可以是任何正值，或者<TT
+CLASS="LITERAL"
+>BGW_NEVER_RESTART</TT
+>，表示在出现崩溃后不重启进程。
+  </P
+><P
+>   <TT
+CLASS="STRUCTFIELD"
+>bgw_main</TT
+>是进程被启动后要运行的函数指针。这个域只有在核心服务器中被用来执行函数时才是安全的，因为共享库在不同的后端进程中可能被载入到不同的起始地址。当使用除<A
+HREF="runtime-config-client.html#GUC-SHARED-PRELOAD-LIBRARIES"
+>shared_preload_libraries</A
+>之外的任何机制载入共享库时，这种情况会在所有的平台上发生。即便是使用<A
+HREF="runtime-config-client.html#GUC-SHARED-PRELOAD-LIBRARIES"
+>shared_preload_libraries</A
+>机制，在 Windows 上使用了<TT
+CLASS="LITERAL"
+>EXEC_BACKEND</TT
+>的情况下，地址空间布局变化也仍然会发生。因此，这个 API 的大部分使用者应该把这个域设置为 NULL。如果这个域为非 NULL，它会优先于<TT
+CLASS="STRUCTFIELD"
+>bgw_library_name</TT
+>和<TT
+CLASS="STRUCTFIELD"
+>bgw_function_name</TT
+>。
+  </P
+><P
+>   <TT
+CLASS="STRUCTFIELD"
+>bgw_library_name</TT
+>是应该在其中定位后台工作者初始入口点的库名称。所指的库将被工作者进程动态载入并且<TT
+CLASS="STRUCTFIELD"
+>bgw_function_name</TT
+>将被用来标识要调用的函数。如果从核心代码载入一个函数，应该设置<TT
+CLASS="STRUCTFIELD"
+>bgw_main</TT
+>。
+  </P
+><P
+>   <TT
+CLASS="STRUCTFIELD"
+>bgw_function_name</TT
+>是一个动态载入库中的一个函数名，该函数将被用作一个新后台工作者的初始入口点。
+  </P
+><P
+>   <TT
+CLASS="STRUCTFIELD"
+>bgw_main_arg</TT
+>是后台工作者主函数的<TT
+CLASS="TYPE"
+>Datum</TT
+>参数。不管是通过<TT
+CLASS="STRUCTFIELD"
+>bgw_main</TT
+>还是通过<CODE
+CLASS="FUNCTION"
+>bgw_library_name</CODE
+>和<CODE
+CLASS="FUNCTION"
+>bgw_function_name</CODE
+>的组合指定这个函数，这个主函数应该有一个单一的<TT
+CLASS="TYPE"
+>Datum</TT
+>类型的参数，并且返回<TT
+CLASS="TYPE"
+>void</TT
+>。<TT
+CLASS="STRUCTFIELD"
+>bgw_main_arg</TT
+>将被作为参数传递。此外，全局变量<TT
+CLASS="LITERAL"
+>MyBgworkerEntry</TT
+>指向注册时传入的<TT
+CLASS="STRUCTNAME"
+>BackgroundWorker</TT
+>结构的一份拷贝，工作者会发现检查这个结构会很有用。
+  </P
+><P
+>   在 Windows （以及任何定义了<TT
+CLASS="LITERAL"
+>EXEC_BACKEND</TT
+>的地方）上或者动态后台工作者中，用引用的方式传递<TT
+CLASS="TYPE"
+>Datum</TT
+>是不安全的，只有传值才安全。如果要求一个参数，最安全的方式是传递一个 int32 或者其他的小型值，并且把它当做共享内存中分配的一个数组的索引来使用。如果被传递的是一个<TT
+CLASS="TYPE"
+>cstring</TT
+>或者<TT
+CLASS="TYPE"
+>text</TT
+>这样的值，那么在新的后台工作者进程中该指针将不会有效。
+  </P
+><P
+>   <TT
+CLASS="STRUCTFIELD"
+>bgw_extra</TT
+>可以包含要传递给后台工作者的额外数据。与<TT
+CLASS="STRUCTFIELD"
+>bgw_main_arg</TT
+>不同，这个数据不会被作为一个参数传递给工作者的主函数，而是按照上面所述通过<TT
+CLASS="LITERAL"
+>MyBgworkerEntry</TT
+>来访问。
+  </P
+><P
+>   <TT
+CLASS="STRUCTFIELD"
+>bgw_notify_pid</TT
+>是一个PostgreSQL后端进程的PID，   当后台工作者进程启动或者退出时，postmaster会向这个PID所指的进程发送<TT
+CLASS="LITERAL"
+>SIGUSR1</TT
+>。
+   对于在postmaster启动时注册的工作者，它应该为0；或者注册该工作者的后端不希望等待该工作者启动时，它也应该为0。否则，它应该被初始化为<TT
+CLASS="LITERAL"
+>MyProcPid</TT
+>。
+  </P
+><P
+>   一旦运行起来，进程可以通过调用<CODE
+CLASS="FUNCTION"
+>BackgroundWorkerInitializeConnection(<TT
+CLASS="PARAMETER"
+>char *dbname</TT
+>, <TT
+CLASS="PARAMETER"
+>char *username</TT
+>)</CODE
+>或者<CODE
+CLASS="FUNCTION"
+>BackgroundWorkerInitializeConnectionByOid(<TT
+CLASS="PARAMETER"
+>Oid dboid</TT
+>, <TT
+CLASS="PARAMETER"
+>Oid useroid</TT
+>)</CODE
+>来连接到一个数据库。这使得该进程可以使用<TT
+CLASS="LITERAL"
+>SPI</TT
+>接口运行事务和查询。
+   如果<TT
+CLASS="VARNAME"
+>dbname</TT
+>为NULL或者<TT
+CLASS="VARNAME"
+>dboid</TT
+>为<TT
+CLASS="LITERAL"
+>InvalidOid</TT
+>，该会话没有连接到任何特定数据库，但共享的目录可以被访问。
+   如果<TT
+CLASS="VARNAME"
+>username</TT
+>为NULL或者<TT
+CLASS="VARNAME"
+>useroid</TT
+>为<TT
+CLASS="LITERAL"
+>InvalidOid</TT
+>，该进程将以在<TT
+CLASS="COMMAND"
+>initdb</TT
+>阶段创建的超级用户身份运行。
+   在每一个后台进程中，只能调用两者之一，并且只能调用一次，所以不可能切换数据库。
+  </P
+><P
+>   当控制到达<TT
+CLASS="STRUCTFIELD"
+>bgw_main</TT
+>函数时，信号初始会被阻塞，并且必须被它解除阻塞。这是为了允许进程自定义它的信号处理器。在新进程中可以通过调用<CODE
+CLASS="FUNCTION"
+>BackgroundWorkerUnblockSignals</CODE
+>来解除对信号的阻塞，还可以通过调用<CODE
+CLASS="FUNCTION"
+>BackgroundWorkerBlockSignals</CODE
+>来阻塞信号。
+  </P
+><P
+>   如果一个后台工作者的<TT
+CLASS="STRUCTFIELD"
+>bgw_restart_time</TT
+>被配置为
+   <TT
+CLASS="LITERAL"
+>BGW_NEVER_RESTART</TT
+>，或者它退出时的退出码为0，又或者它是被
+   <CODE
+CLASS="FUNCTION"
+>TerminateBackgroundWorker</CODE
+>所终止，它将会被postmaster在退出时自动解除
+   注册。否则，它将在等待通过<TT
+CLASS="STRUCTFIELD"
+>bgw_restart_time</TT
+>配置的时间段之后被重新启动，
+   或者在postmaster因为一次后端失败重新初始化集簇时立刻被重启。需要临时禁止执行的后端应该使用
+   可中断的休眠而不是退出，这可以通过调用<CODE
+CLASS="FUNCTION"
+>WaitLatch()</CODE
+>实现。
+   调用该函数时要确保<TT
+CLASS="LITERAL"
+>WL_POSTMASTER_DEATH</TT
+>标志被设置，并且验证在
+   <TT
+CLASS="COMMAND"
+>postgres</TT
+>本身被终止的紧急情况下产生的快速退出返回码。
+  </P
+><P
+>   当一个后台工作者是通过<CODE
+CLASS="FUNCTION"
+>RegisterDynamicBackgroundWorker</CODE
+>函数
+   注册时，后端可以执行该注册以获得有关该工作者的状态信息。希望这样做的后端应该把一个
+   <TT
+CLASS="TYPE"
+>BackgroundWorkerHandle *</TT
+>的地址作为第二个参数传递给
+   <CODE
+CLASS="FUNCTION"
+>RegisterDynamicBackgroundWorker</CODE
+>。如果工作者被成功地注册，
+   这个指针将被用一个非透明句柄初始化，它之后会被传递给
+   <CODE
+CLASS="FUNCTION"
+>GetBackgroundWorkerPid(<TT
+CLASS="PARAMETER"
+>BackgroundWorkerHandle *</TT
+>, <TT
+CLASS="PARAMETER"
+>pid_t *</TT
+>)</CODE
+>或者
+   <CODE
+CLASS="FUNCTION"
+>TerminateBackgroundWorker(<TT
+CLASS="PARAMETER"
+>BackgroundWorkerHandle *</TT
+>)</CODE
+>。
+   <CODE
+CLASS="FUNCTION"
+>GetBackgroundWorkerPid</CODE
+>可以被用来测试工作者的状态：返回值为
+   <TT
+CLASS="LITERAL"
+>BGWH_NOT_YET_STARTED</TT
+>表示该工作者还未被postmaster启动；
+   <TT
+CLASS="LITERAL"
+>BGWH_STOPPED</TT
+>表示它已经被启动但是不再运行；
+   而<TT
+CLASS="LITERAL"
+>BGWH_STARTED</TT
+>表示它正在运行。在最后一种情况下，PID也将被通过
+   第二个参数返回。
+   <CODE
+CLASS="FUNCTION"
+>TerminateBackgroundWorker</CODE
+>导致postmaster发送<TT
+CLASS="LITERAL"
+>SIGTERM</TT
+>
+   给工作者（如果它在运行），并且在它不再运行时尽快解除注册。
+  </P
+><P
+>   在某些情况下，一个注册后台工作者的进程可能希望等待该工作者启动起来。其实现方式是：把
+   <TT
+CLASS="STRUCTFIELD"
+>bgw_notify_pid</TT
+>初始化成<TT
+CLASS="LITERAL"
+>MyProcPid</TT
+>并且接着
+   把注册时得到的<TT
+CLASS="TYPE"
+>BackgroundWorkerHandle *</TT
+>传递给
+   <CODE
+CLASS="FUNCTION"
+>WaitForBackgroundWorkerStartup(<TT
+CLASS="PARAMETER"
+>BackgroundWorkerHandle
+   *handle</TT
+>, <TT
+CLASS="PARAMETER"
+>pid_t *</TT
+>)</CODE
+>函数。
+   这个函数将阻塞直到postmaster已经尝试启动该后台工作者，或者直到postmaster死亡。如果后台
+   工作者正在运行，返回值将是<TT
+CLASS="LITERAL"
+>BGWH_STARTED</TT
+>，并且其PID将被写入到所提供的地址。
+   否则，返回值将是<TT
+CLASS="LITERAL"
+>BGWH_STOPPED</TT
+>或者
+   <TT
+CLASS="LITERAL"
+>BGWH_POSTMASTER_DIED</TT
+>。
+  </P
+><P
+>   如果一个后台工作者通过服务器编程接口（<ACRONYM
+CLASS="ACRONYM"
+>SPI</ACRONYM
+>）用<TT
+CLASS="COMMAND"
+>NOTIFY</TT
+>命令发送异步通知，在提交外层事务之后它应该显式地调用<CODE
+CLASS="FUNCTION"
+>ProcessCompletedNotifies</CODE
+>，这样通知才能被发送出去。如果一个后台工作者通过<ACRONYM
+CLASS="ACRONYM"
+>SPI</ACRONYM
+>使用<TT
+CLASS="COMMAND"
+>LISTEN</TT
+>注册为接收异步通知，它将记录那些通知，但是对于工作者来说没有程序化的方式可以拦截以及响应那些通知。
+  </P
+><P
+>   <TT
+CLASS="FILENAME"
+>src/test/modules/worker_spi</TT
+>模块包含了一个实例，它展示了一些有用的技巧。
+  </P
+><P
+>   注册的后台工作者的最大数量由<A
+HREF="runtime-config-resource.html#GUC-MAX-WORKER-PROCESSES"
+>max_worker_processes</A
+>限制。
+  </P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="spi-examples.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="logicaldecoding.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>例子</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="server-programming.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>逻辑解码</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

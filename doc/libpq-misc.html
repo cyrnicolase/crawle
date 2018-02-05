@@ -1,0 +1,625 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>杂项函数</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="libpq - C 库"
+HREF="libpq.html"><LINK
+REL="PREVIOUS"
+TITLE="控制函数"
+HREF="libpq-control.html"><LINK
+REL="NEXT"
+TITLE="通知处理"
+HREF="libpq-notice-processing.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/libpq.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="控制函数"
+HREF="libpq-control.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="libpq.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#31456; 32. <SPAN
+CLASS="APPLICATION"
+>libpq</SPAN
+> - C 库</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="通知处理"
+HREF="libpq-notice-processing.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="LIBPQ-MISC"
+>32.11. 杂项函数</A
+></H1
+><P
+>   一如往常，总有一些函数不适合放在任何其他地方。
+  </P
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><A
+NAME="LIBPQ-PQFREEMEM"
+></A
+><CODE
+CLASS="FUNCTION"
+>PQfreemem</CODE
+>
+     </DT
+><DD
+><P
+>      释放<SPAN
+CLASS="APPLICATION"
+>libpq</SPAN
+>分配的内存。
+</P><PRE
+CLASS="SYNOPSIS"
+>void PQfreemem(void *ptr);</PRE
+><P>
+     </P
+><P
+>      释放<SPAN
+CLASS="APPLICATION"
+>libpq</SPAN
+>分配的内存，尤其是<CODE
+CLASS="FUNCTION"
+>PQescapeByteaConn</CODE
+>、<CODE
+CLASS="FUNCTION"
+>PQescapeBytea</CODE
+>、<CODE
+CLASS="FUNCTION"
+>PQunescapeBytea</CODE
+>和<CODE
+CLASS="FUNCTION"
+>PQnotifies</CODE
+>分配的内存。特别重要的是，在微软 Windows 上使用这个函数，而不是<CODE
+CLASS="FUNCTION"
+>free()</CODE
+>。这是因为只有 DLL 和应用的当多线程/单线程、发布/调试以及静态/动态标志相同时，才能在一个 DLL 中分配内存并且在应用中释放它。在非微软 Windows 平台上，这个函数与标准库函数<CODE
+CLASS="FUNCTION"
+>free()</CODE
+>相同。
+     </P
+></DD
+><DT
+><A
+NAME="LIBPQ-PQCONNINFOFREE"
+></A
+><CODE
+CLASS="FUNCTION"
+>PQconninfoFree</CODE
+>
+     </DT
+><DD
+><P
+>      释放<CODE
+CLASS="FUNCTION"
+>PQconndefaults</CODE
+>或<CODE
+CLASS="FUNCTION"
+>PQconninfoParse</CODE
+>分配的数据结构。
+</P><PRE
+CLASS="SYNOPSIS"
+>void PQconninfoFree(PQconninfoOption *connOptions);</PRE
+><P>
+     </P
+><P
+>      一个简单的<CODE
+CLASS="FUNCTION"
+>PQfreemem</CODE
+>不会做这些，因为数组包含对子字符串的引用。
+     </P
+></DD
+><DT
+><A
+NAME="LIBPQ-PQENCRYPTPASSWORD"
+></A
+><CODE
+CLASS="FUNCTION"
+>PQencryptPassword</CODE
+>
+     </DT
+><DD
+><P
+>      准备一个<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>口令的加密形式。
+</P><PRE
+CLASS="SYNOPSIS"
+>char * PQencryptPassword(const char *passwd, const char *user);</PRE
+><P>
+      这个函数旨在用于那些希望发送类似于<TT
+CLASS="LITERAL"
+>ALTER USER joe PASSWORD 'pwd'</TT
+>命令的客户端应用。不在这样一个命令中发送原始的明文密码是一个好习惯，因为它可能被暴露在命令日志、活动显示等等中。相反，在发送之前使用这个函数可以将口令转换为加密的形式。这个函数的参数是明文口令和要使用该口令的用户的 SQL 名。返回值是<CODE
+CLASS="FUNCTION"
+>malloc</CODE
+>分配的一个字符串，如果内存不足会返回<TT
+CLASS="SYMBOL"
+>NULL</TT
+>。调用者可以假定该字符串中不包含任何需要转义的特殊字符。当使用结束之后，用<CODE
+CLASS="FUNCTION"
+>PQfreemem</CODE
+>进行释放。
+     </P
+></DD
+><DT
+><A
+NAME="LIBPQ-PQMAKEEMPTYPGRESULT"
+></A
+><CODE
+CLASS="FUNCTION"
+>PQmakeEmptyPGresult</CODE
+>
+     </DT
+><DD
+><P
+>      用给定的状态，构造一个空<TT
+CLASS="STRUCTNAME"
+>PGresult</TT
+>对象。
+</P><PRE
+CLASS="SYNOPSIS"
+>PGresult *PQmakeEmptyPGresult(PGconn *conn, ExecStatusType status);</PRE
+><P>
+     </P
+><P
+>      这是<SPAN
+CLASS="APPLICATION"
+>libpq</SPAN
+>内部用于分配并初始化一个空<TT
+CLASS="STRUCTNAME"
+>PGresult</TT
+>对象的函数。如果不能分配内存，那么这个函数返回<TT
+CLASS="SYMBOL"
+>NULL</TT
+>。它也是可以对外使用的，因为一些应用认为它可以用于产生结果对象（特别是带有错误状态的对象）本身。如果<TT
+CLASS="PARAMETER"
+>conn</TT
+>非空，并且<TT
+CLASS="PARAMETER"
+>status</TT
+>表示一个错误，那么指定连接的当前错误消息会被复制到<TT
+CLASS="STRUCTNAME"
+>PGresult</TT
+>中。如果<TT
+CLASS="PARAMETER"
+>conn</TT
+>非空，那么连接中的任何已注册事件过程也会被复制到<TT
+CLASS="STRUCTNAME"
+>PGresult</TT
+>中（它们不会获得<TT
+CLASS="LITERAL"
+>PGEVT_RESULTCREATE</TT
+>调用，但会看到<CODE
+CLASS="FUNCTION"
+>PQfireResultCreateEvents</CODE
+>）。注意在该对象上最终应该调用<CODE
+CLASS="FUNCTION"
+>PQclear</CODE
+>，正如对<SPAN
+CLASS="APPLICATION"
+>libpq</SPAN
+>本身返回的<TT
+CLASS="STRUCTNAME"
+>PGresult</TT
+>对象所作的那样。
+     </P
+></DD
+><DT
+><A
+NAME="LIBPQ-PQFIRERESULTCREATEEVENTS"
+></A
+><CODE
+CLASS="FUNCTION"
+>PQfireResultCreateEvents</CODE
+>
+     </DT
+><DD
+><P
+>      为每一个在<TT
+CLASS="STRUCTNAME"
+>PGresult</TT
+>对象中注册的事件过程触发一个<TT
+CLASS="LITERAL"
+>PGEVT_RESULTCREATE</TT
+>事件（见<A
+HREF="libpq-events.html"
+>第 32.13 &#33410;</A
+>）。成功时返回非 0，如果任何事件过程失败则返回 0。
+
+</P><PRE
+CLASS="SYNOPSIS"
+>int PQfireResultCreateEvents(PGconn *conn, PGresult *res);</PRE
+><P>
+     </P
+><P
+>      <TT
+CLASS="LITERAL"
+>conn</TT
+>参数被传送给事件过程，但不会被直接使用。如果事件过程不使用它，则会返回<TT
+CLASS="SYMBOL"
+>NULL</TT
+>。
+     </P
+><P
+>      已经接收到这个对象的<TT
+CLASS="LITERAL"
+>PGEVT_RESULTCREATE</TT
+>或<TT
+CLASS="LITERAL"
+>PGEVT_RESULTCOPY</TT
+>事件的事件过程不会被再次触发。
+     </P
+><P
+>      这个函数与<CODE
+CLASS="FUNCTION"
+>PQmakeEmptyPGresult</CODE
+>分开的主要原因是在调用事件过程之前创建一个<TT
+CLASS="STRUCTNAME"
+>PGresult</TT
+>并且填充它常常是合适的。
+     </P
+></DD
+><DT
+><A
+NAME="LIBPQ-PQCOPYRESULT"
+></A
+><CODE
+CLASS="FUNCTION"
+>PQcopyResult</CODE
+>
+     </DT
+><DD
+><P
+>      为一个<TT
+CLASS="STRUCTNAME"
+>PGresult</TT
+>对象创建一个拷贝。这个拷贝不会以任何方式链接到源结果，并且当该拷贝不再需要时，必须调用<CODE
+CLASS="FUNCTION"
+>PQclear</CODE
+>进行清理。如果函数失败，返回<TT
+CLASS="SYMBOL"
+>NULL</TT
+>。
+
+</P><PRE
+CLASS="SYNOPSIS"
+>PGresult *PQcopyResult(const PGresult *src, int flags);</PRE
+><P>
+     </P
+><P
+>      这个函数的意图并非是制作一个准确的拷贝。返回的结果总是会被放入<TT
+CLASS="LITERAL"
+>PGRES_TUPLES_OK</TT
+>状态，并且不会拷贝来源中的任何错误消息（不过它确实会拷贝命令状态字符串）。<TT
+CLASS="PARAMETER"
+>flags</TT
+>参数决定还要拷贝些什么。它通常是几个标志的按位 OR。<TT
+CLASS="LITERAL"
+>PG_COPYRES_ATTRS</TT
+>指定复制源结果的属性（列定义）。<TT
+CLASS="LITERAL"
+>PG_COPYRES_TUPLES</TT
+>指定复制源结果的元组（这也意味着复制属性）。<TT
+CLASS="LITERAL"
+>PG_COPYRES_NOTICEHOOKS</TT
+>指定复制源结果的提醒钩子。<TT
+CLASS="LITERAL"
+>PG_COPYRES_EVENTS</TT
+>指定复制源结果的事件（但是不会复制与源结果相关的实例数据）。
+     </P
+></DD
+><DT
+><A
+NAME="LIBPQ-PQSETRESULTATTRS"
+></A
+><CODE
+CLASS="FUNCTION"
+>PQsetResultAttrs</CODE
+>
+     </DT
+><DD
+><P
+>      设置<TT
+CLASS="STRUCTNAME"
+>PGresult</TT
+>对象的属性。
+</P><PRE
+CLASS="SYNOPSIS"
+>int PQsetResultAttrs(PGresult *res, int numAttributes, PGresAttDesc *attDescs);</PRE
+><P>
+     </P
+><P
+>      提供的<TT
+CLASS="PARAMETER"
+>attDescs</TT
+>被复制到结果中。如果<TT
+CLASS="PARAMETER"
+>attDescs</TT
+>指针为<TT
+CLASS="SYMBOL"
+>NULL</TT
+>或<TT
+CLASS="PARAMETER"
+>numAttributes</TT
+>小于1，那么请求将被忽略并且函数成功。如果<TT
+CLASS="PARAMETER"
+>res</TT
+>已经包含属性，那么函数会失败。如果函数失败，返回值是 0。如果函数成功，返回值是非 0。
+     </P
+></DD
+><DT
+><A
+NAME="LIBPQ-PQSETVALUE"
+></A
+><CODE
+CLASS="FUNCTION"
+>PQsetvalue</CODE
+>
+     </DT
+><DD
+><P
+>      设置一个<TT
+CLASS="STRUCTNAME"
+>PGresult</TT
+>对象的一个元组域值。
+</P><PRE
+CLASS="SYNOPSIS"
+>int PQsetvalue(PGresult *res, int tup_num, int field_num, char *value, int len);</PRE
+><P>
+     </P
+><P
+>      这个函数将自动按需增加结果的内置元组数组。但是，<TT
+CLASS="PARAMETER"
+>tup_num</TT
+>参数必须小于等于<CODE
+CLASS="FUNCTION"
+>PQntuples</CODE
+>，意味着这个函数对元组数组一次只能增加一个元组。但已存在的任意元组中的任意域可以以任意顺序进行调整。如果<TT
+CLASS="PARAMETER"
+>field_num</TT
+>的一个值已经存在，它会被覆盖。如果<TT
+CLASS="PARAMETER"
+>len</TT
+>是 -1，或<TT
+CLASS="PARAMETER"
+>value</TT
+>是<TT
+CLASS="SYMBOL"
+>NULL</TT
+>， 该域值会被设置为一个 SQL 空值。<TT
+CLASS="PARAMETER"
+>value</TT
+>会被复制到结果的私有存储中，因此函数返回后就不再需要了。如果函数失败，返回值是 0。如果函数成功，返回值会是非 0。
+     </P
+></DD
+><DT
+><A
+NAME="LIBPQ-PQRESULTALLOC"
+></A
+><CODE
+CLASS="FUNCTION"
+>PQresultAlloc</CODE
+>
+     </DT
+><DD
+><P
+>      为一个<TT
+CLASS="STRUCTNAME"
+>PGresult</TT
+>对象分配附属存储。
+</P><PRE
+CLASS="SYNOPSIS"
+>void *PQresultAlloc(PGresult *res, size_t nBytes);</PRE
+><P>
+     </P
+><P
+>      当<TT
+CLASS="PARAMETER"
+>res</TT
+>被清除时，这个函数分配的内存也会被释放掉。如果函数失败，返回值是<TT
+CLASS="SYMBOL"
+>NULL</TT
+>。结果被保证为按照数据的任意类型充分地对齐，正如<CODE
+CLASS="FUNCTION"
+>malloc</CODE
+>所作的。
+     </P
+></DD
+><DT
+><A
+NAME="LIBPQ-PQLIBVERSION"
+></A
+><CODE
+CLASS="FUNCTION"
+>PQlibVersion</CODE
+>
+     </DT
+><DD
+><P
+>      返回所使用的<SPAN
+CLASS="PRODUCTNAME"
+>libpq</SPAN
+>版本。
+</P><PRE
+CLASS="SYNOPSIS"
+>int PQlibVersion(void);</PRE
+><P>
+     </P
+><P
+>      在运行时，这个函数的结果可以被用来决定在当前已载入的 libpq 版本中特定的功能是否可用。例如，这个函数可以被用来决定哪些选项可以被用于<CODE
+CLASS="FUNCTION"
+>PQconnectdb</CODE
+>或者 PostgreSQL 9.0 中加入的<TT
+CLASS="LITERAL"
+>hex</TT
+> <TT
+CLASS="TYPE"
+>bytea</TT
+>输出是否被支持。
+     </P
+><P
+>      该数字是通过将主数字、次数字和修订数字转换为两位十进制数字并且将它们追加在一起形成的。例如，版本 9.1 将被返回为 90100，并且 9.1.2 将被返回为 90102（前导零不被显示）。
+     </P
+><DIV
+CLASS="NOTE"
+><BLOCKQUOTE
+CLASS="NOTE"
+><P
+><B
+>&#27880;&#24847;: </B
+>       这个函数出现于<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>版本 9.1，因此它不能被用来在早期的版本中检测所需的功能，因为链接到它将会创建一个对版本 9.1 的链接依赖。
+      </P
+></BLOCKQUOTE
+></DIV
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="libpq-control.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="libpq-notice-processing.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>控制函数</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="libpq.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>通知处理</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

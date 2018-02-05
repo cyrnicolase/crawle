@@ -1,0 +1,291 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>遗传算法</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="遗传查询优化器"
+HREF="geqo.html"><LINK
+REL="PREVIOUS"
+TITLE="将查询处理看成是一个复杂的优化问题"
+HREF="geqo-intro.html"><LINK
+REL="NEXT"
+TITLE="PostgreSQL 中的遗传查询优化（GEQO）"
+HREF="geqo-pg-intro.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/geqo.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="将查询处理看成是一个复杂的优化问题"
+HREF="geqo-intro.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="geqo.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#31456; 58. 遗传查询优化器</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="PostgreSQL 中的遗传查询优化（GEQO）"
+HREF="geqo-pg-intro.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="GEQO-INTRO2"
+>58.2. 遗传算法</A
+></H1
+><P
+>    遗传算法（<ACRONYM
+CLASS="ACRONYM"
+>GA</ACRONYM
+>）是一种通过随机搜索操作的启发式优化方法。优化问题的可能的解决方案集合被看成是<I
+CLASS="FIRSTTERM"
+>个体</I
+>的<I
+CLASS="FIRSTTERM"
+>种群</I
+>。一个个体对于它的环境的适应程度由其<I
+CLASS="FIRSTTERM"
+>适应度</I
+>指定。
+   </P
+><P
+>    搜索空间中一个个体的座标被表示为<I
+CLASS="FIRSTTERM"
+>染色体</I
+>，实质上是一个字符串集合。一个<I
+CLASS="FIRSTTERM"
+>基因</I
+>是一个染色体的一个片段，它编码了一个要被优化参数的值。一个基因的典型编码包括<I
+CLASS="FIRSTTERM"
+>二进制</I
+>或<I
+CLASS="FIRSTTERM"
+>整数</I
+>。
+   </P
+><P
+>    通过对<I
+CLASS="FIRSTTERM"
+>重组</I
+>、<I
+CLASS="FIRSTTERM"
+>变异</I
+>和<I
+CLASS="FIRSTTERM"
+>选择</I
+>的模拟，比父辈平均适应度更好的新一代搜索点将被找到。
+   </P
+><P
+>    根据<SPAN
+CLASS="SYSTEMITEM"
+>comp.ai.genetic</SPAN
+> <ACRONYM
+CLASS="ACRONYM"
+>FAQ</ACRONYM
+>，<ACRONYM
+CLASS="ACRONYM"
+>GA</ACRONYM
+>并非是一个纯粹的随机搜索。<ACRONYM
+CLASS="ACRONYM"
+>GA</ACRONYM
+>会使用随机处理，但是结果的确是非随机的（比随机好）。
+   </P
+><DIV
+CLASS="FIGURE"
+><A
+NAME="GEQO-DIAGRAM"
+></A
+><P
+><B
+>&#22270; 58-1. 一种遗传算法的结构图</B
+></P
+><DIV
+CLASS="INFORMALTABLE"
+><P
+></P
+><A
+NAME="AEN116206"
+></A
+><TABLE
+BORDER="0"
+FRAME="void"
+CLASS="CALSTABLE"
+><COL><COL><TBODY
+><TR
+><TD
+>P(t)</TD
+><TD
+>在时刻 t 的祖先代</TD
+></TR
+><TR
+><TD
+>P''(t)</TD
+><TD
+>在时刻 t 的后代</TD
+></TR
+></TBODY
+></TABLE
+><P
+></P
+></DIV
+><PRE
+CLASS="LITERALLAYOUT"
+>+=========================================+
+|&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;  Algorithm GA  &lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;|
++=========================================+
+| INITIALIZE t := 0                       |
++=========================================+
+| INITIALIZE P(t)                         |
++=========================================+
+| evaluate FITNESS of P(t)                |
++=========================================+
+| while not STOPPING CRITERION do         |
+|   +-------------------------------------+
+|   | P'(t)  := RECOMBINATION{P(t)}       |
+|   +-------------------------------------+
+|   | P''(t) := MUTATION{P'(t)}           |
+|   +-------------------------------------+
+|   | P(t+1) := SELECTION{P''(t) + P(t)}  |
+|   +-------------------------------------+
+|   | evaluate FITNESS of P''(t)          |
+|   +-------------------------------------+
+|   | t := t + 1                          |
++===+=====================================+</PRE
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="geqo-intro.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="geqo-pg-intro.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>将查询处理看成是一个复杂的优化问题</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="geqo.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>PostgreSQL 中的遗传查询优化（<ACRONYM
+CLASS="ACRONYM"
+>GEQO</ACRONYM
+>）</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

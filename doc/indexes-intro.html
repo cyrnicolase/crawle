@@ -1,0 +1,272 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>简介</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="索引"
+HREF="indexes.html"><LINK
+REL="PREVIOUS"
+TITLE="索引"
+HREF="indexes.html"><LINK
+REL="NEXT"
+TITLE="索引类型"
+HREF="indexes-types.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/indices.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="索引"
+HREF="indexes.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="indexes.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#31456; 11. 索引</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="索引类型"
+HREF="indexes-types.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="INDEXES-INTRO"
+>11.1. 简介</A
+></H1
+><P
+>   假设我们有一个如下的表：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>CREATE TABLE test1 (
+    id integer,
+    content varchar
+);</PRE
+><P>
+   而应用发出很多以下形式的查询：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>SELECT content FROM test1 WHERE id = <TT
+CLASS="REPLACEABLE"
+><I
+>constant</I
+></TT
+>;</PRE
+><P>
+   在没有事前准备的情况下，系统不得不扫描整个<TT
+CLASS="STRUCTNAME"
+>test1</TT
+>表，一行一行地去找到所有匹配的项。如果<TT
+CLASS="STRUCTNAME"
+>test1</TT
+>中有很多行但是只有一小部分行（可能是0或者1）需要被该查询返回，这显然是一种低效的方式。但是如果系统被指示维护一个在<TT
+CLASS="STRUCTFIELD"
+>id</TT
+>列上的索引，它就能使用一种更有效的方式来定位匹配行。例如，它可能仅仅需要遍历一棵搜索树的几层而已。
+  </P
+><P
+>   类似的方法也被用于大部分非小说书籍中：经常被读者查找的术语和概念被收集在一个字母序索引中放在书籍的末尾。感兴趣的读者可以相对快地扫描索引并跳到合适的页而不需要阅读整本书来寻找感兴趣的材料。正如作者的任务是准备好读者可能会查找的术语一样，数据库程序员也需要预见哪些索引会有用。
+  </P
+><P
+>   正如前面讨论的，下列命令可以用来在<TT
+CLASS="STRUCTFIELD"
+>id</TT
+>列上创建一个索引：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>CREATE INDEX test1_id_index ON test1 (id);</PRE
+><P>
+   索引的名字<TT
+CLASS="STRUCTNAME"
+>test1_id_index</TT
+>可以自由选择，但我们最好选择一个能让我们想起该索引用途的名字。
+  </P
+><P
+>   为了移除一个索引，可以使用<TT
+CLASS="COMMAND"
+>DROP INDEX</TT
+>命令。索引可以随时被创建或删除。
+  </P
+><P
+>   一旦一个索引被创建，就不再需要进一步的干预：系统会在表更新时更新索引，而且会在它觉得使用索引比顺序扫描表效率更高时使用索引。但我们可能需要定期地运行<TT
+CLASS="COMMAND"
+>ANALYZE</TT
+>命令来更新统计信息以便查询规划器能做出正确的决定。通过<A
+HREF="performance-tips.html"
+>第 14 &#31456;</A
+>的信息可以了解如何找出一个索引是否被使用以及规划器在何时以及为什么会选择<SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>不</I
+></SPAN
+>使用索引。
+  </P
+><P
+>   索引也会使带有搜索条件的<TT
+CLASS="COMMAND"
+>UPDATE</TT
+>和<TT
+CLASS="COMMAND"
+>DELETE</TT
+>命令受益。此外索引还可以在连接搜索中使用。因此，一个定义在连接条件列上的索引可以显著地提高连接查询的速度。
+  </P
+><P
+>   在一个大表上创建一个索引会耗费很长的时间。默认情况下，<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>允许在索引创建时并行地进行读（<TT
+CLASS="COMMAND"
+>SELECT</TT
+>命令），但写（<TT
+CLASS="COMMAND"
+>INSERT</TT
+>、<TT
+CLASS="COMMAND"
+>UPDATE</TT
+>和<TT
+CLASS="COMMAND"
+>DELETE</TT
+>）则会被阻塞直到索引创建完成。在生产环境中这通常是不可接受的。在创建索引时允许并行的写是可能的，但是有些警告需要注意，更多信息可以参考<A
+HREF="sql-createindex.html#SQL-CREATEINDEX-CONCURRENTLY"
+><I
+>并发构建索引</I
+></A
+>。
+  </P
+><P
+>   一个索引被创建后，系统必须保持它与表同步。这增加了数据操作的负担。因此哪些很少或从不在查询中使用的索引应该被移除。
+  </P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="indexes.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="indexes-types.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>索引</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="indexes.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>索引类型</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

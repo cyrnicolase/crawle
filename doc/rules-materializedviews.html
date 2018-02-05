@@ -1,0 +1,374 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>物化视图</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="规则系统"
+HREF="rules.html"><LINK
+REL="PREVIOUS"
+TITLE="视图和规则系统"
+HREF="rules-views.html"><LINK
+REL="NEXT"
+TITLE="INSERT、UPDATE和DELETE上的规则"
+HREF="rules-update.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/rules.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="视图和规则系统"
+HREF="rules-views.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="rules.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#31456; 39. 规则系统</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="INSERT、UPDATE和DELETE上的规则"
+HREF="rules-update.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="RULES-MATERIALIZEDVIEWS"
+>39.3. 物化视图</A
+></H1
+><P
+>    <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>中的物化视图像视图一样使用了规则系统，但是以一种类表的形式保留了结果。在物化视图：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>CREATE MATERIALIZED VIEW mymatview AS SELECT * FROM mytab;</PRE
+><P>
+
+    和视图：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>CREATE TABLE mymatview AS SELECT * FROM mytab;</PRE
+><P>
+
+    之间的主要区别是物化视图不能直接被更新，并且用于创建物化视图的查询的存储方式和视图查询的存储方式完全相同，因此要为物化视图生成新鲜的数据：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>REFRESH MATERIALIZED VIEW mymatview;</PRE
+><P>
+
+    The information about a materialized view in the
+    有关一个<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>系统目录中的物化视图的信息和一个表或视图的信息完全相同。因此对于解析器，一个物化视图就是一个关系，就像一个表或一个视图。当一个物化视图被一个查询引用时，数据直接从物化视图中返回，如同表一样；规则只被用来填充物化视图。</P
+><P
+>    虽然对物化视图中存储的数据的访问常常要快于直接访问底层表或通过一个视图访问，但是数据并不总是最新的；但是某些时候并不需要当前数据。考虑一个记录销售情况的表：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>CREATE TABLE invoice (
+    invoice_no    integer        PRIMARY KEY,
+    seller_no     integer,       -- 销售员的 ID
+    invoice_date  date,          -- 销售日期
+    invoice_amt   numeric(13,2)  -- 销售量
+);</PRE
+><P>
+
+    如果人们想快速绘制历史销售数据，他们可能希望汇总，并且他们可能并不关心当前日期的不完整数据：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>CREATE MATERIALIZED VIEW sales_summary AS
+  SELECT
+      seller_no,
+      invoice_date,
+      sum(invoice_amt)::numeric(13,2) as sales_amt
+    FROM invoice
+    WHERE invoice_date &#60; CURRENT_DATE
+    GROUP BY
+      seller_no,
+      invoice_date
+    ORDER BY
+      seller_no,
+      invoice_date;
+
+CREATE UNIQUE INDEX sales_summary_seller
+  ON sales_summary (seller_no, invoice_date);</PRE
+><P>
+
+    这个物化视图可能对在为销售员创建的控制面板上显示一个图表非常有用。可以用一个计划任务在每晚使用这个 SQL 语句更新该统计信息：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>REFRESH MATERIALIZED VIEW sales_summary;</PRE
+><P></P
+><P
+>    物化视图的另一种使用是允许通过一个外部数据包装器对来
+    自一个远程系统的数据进行更快的访问。下面有一个使用
+    <TT
+CLASS="LITERAL"
+>file_fdw</TT
+>的简单例子，但是由于本地系
+    统上可以使用高速缓存，因此比起访问一个远程系统的性
+    能差异可能会比这里所展示的更大。注意鉴于
+    <TT
+CLASS="LITERAL"
+>file_fdw</TT
+>不支持索引，我们也使用这种
+    能力来在物化视图上放置索引。这种优势可能不适用于其
+    他种类的外部数据访问。</P
+><P
+>&#13;    建立：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>CREATE EXTENSION file_fdw;
+CREATE SERVER local_file FOREIGN DATA WRAPPER file_fdw;
+CREATE FOREIGN TABLE words (word text NOT NULL)
+  SERVER local_file
+  OPTIONS (filename '/usr/share/dict/words');
+CREATE MATERIALIZED VIEW wrd AS SELECT * FROM words;
+CREATE UNIQUE INDEX wrd_word ON wrd (word);
+CREATE EXTENSION pg_trgm;
+CREATE INDEX wrd_trgm ON wrd USING gist (word gist_trgm_ops);
+VACUUM ANALYZE wrd;</PRE
+><P>
+
+    现在让我们对一个词进行拼写检查。直接使用<TT
+CLASS="LITERAL"
+>file_fdw</TT
+>：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>SELECT count(*) FROM words WHERE word = 'caterpiler';
+
+ count 
+-------
+     0
+(1 row)</PRE
+><P>
+
+    通过<TT
+CLASS="COMMAND"
+>EXPLAIN ANALYZE</TT
+>，我们可以看到：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+> Aggregate  (cost=21763.99..21764.00 rows=1 width=0) (actual time=188.180..188.181 rows=1 loops=1)
+   -&gt;  Foreign Scan on words  (cost=0.00..21761.41 rows=1032 width=0) (actual time=188.177..188.177 rows=0 loops=1)
+         Filter: (word = 'caterpiler'::text)
+         Rows Removed by Filter: 479829
+         Foreign File: /usr/share/dict/words
+         Foreign File Size: 4953699
+ Planning time: 0.118 ms
+ Execution time: 188.273 ms</PRE
+><P>
+
+    如果使用物化视图，该查询会快很多：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+> Aggregate  (cost=4.44..4.45 rows=1 width=0) (actual time=0.042..0.042 rows=1 loops=1)
+   -&gt;  Index Only Scan using wrd_word on wrd  (cost=0.42..4.44 rows=1 width=0) (actual time=0.039..0.039 rows=0 loops=1)
+         Index Cond: (word = 'caterpiler'::text)
+         Heap Fetches: 0
+ Planning time: 0.164 ms
+ Execution time: 0.117 ms</PRE
+><P>
+
+    不管哪种方式，单词都是被拼错的，因此让我们看看什么是我们可能想要的。再次使用<TT
+CLASS="LITERAL"
+>file_fdw</TT
+>：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>SELECT word FROM words ORDER BY word &#60;-&#62; 'caterpiler' LIMIT 10;
+
+     word     
+---------------
+ cater
+ caterpillar
+ Caterpillar
+ caterpillars
+ caterpillar's
+ Caterpillar's
+ caterer
+ caterer's
+ caters
+ catered
+(10 rows)</PRE
+><P>
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+> Limit  (cost=11583.61..11583.64 rows=10 width=32) (actual time=1431.591..1431.594 rows=10 loops=1)
+   -&gt;  Sort  (cost=11583.61..11804.76 rows=88459 width=32) (actual time=1431.589..1431.591 rows=10 loops=1)
+         Sort Key: ((word &lt;-&gt; 'caterpiler'::text))
+         Sort Method: top-N heapsort  Memory: 25kB
+         -&gt;  Foreign Scan on words  (cost=0.00..9672.05 rows=88459 width=32) (actual time=0.057..1286.455 rows=479829 loops=1)
+               Foreign File: /usr/share/dict/words
+               Foreign File Size: 4953699
+ Planning time: 0.128 ms
+ Execution time: 1431.679 ms</PRE
+><P>
+
+    使用物化视图：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+> Limit  (cost=0.29..1.06 rows=10 width=10) (actual time=187.222..188.257 rows=10 loops=1)
+   -&gt;  Index Scan using wrd_trgm on wrd  (cost=0.29..37020.87 rows=479829 width=10) (actual time=187.219..188.252 rows=10 loops=1)
+         Order By: (word &lt;-&gt; 'caterpiler'::text)
+ Planning time: 0.196 ms
+ Execution time: 198.640 ms</PRE
+><P>
+
+    如果你能够忍受定期把远程数据更新到本地数据库，其性能收益可能是巨大的。</P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="rules-views.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="rules-update.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>视图和规则系统</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="rules.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><TT
+CLASS="COMMAND"
+>INSERT</TT
+>、<TT
+CLASS="COMMAND"
+>UPDATE</TT
+>和<TT
+CLASS="COMMAND"
+>DELETE</TT
+>上的规则</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

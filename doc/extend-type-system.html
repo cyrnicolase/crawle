@@ -1,0 +1,400 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>PostgreSQL类型系统</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="扩展 SQL"
+HREF="extend.html"><LINK
+REL="PREVIOUS"
+TITLE="扩展性如何工作"
+HREF="extend-how.html"><LINK
+REL="NEXT"
+TITLE="用户定义的函数"
+HREF="xfunc.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/extend.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="扩展性如何工作"
+HREF="extend-how.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="extend.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#31456; 36. 扩展 <ACRONYM
+CLASS="ACRONYM"
+>SQL</ACRONYM
+></TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="用户定义的函数"
+HREF="xfunc.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="EXTEND-TYPE-SYSTEM"
+>36.2. <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>类型系统</A
+></H1
+><P
+>    <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>数据类型被划分为基础类型、组合类型、域和伪类型。
+   </P
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN59205"
+>36.2.1. 基础类型</A
+></H2
+><P
+>     基础类型是那些被实现在<ACRONYM
+CLASS="ACRONYM"
+>SQL</ACRONYM
+>语言层面之下的类型（通常用一种底层语言，如 C），例如<TT
+CLASS="TYPE"
+>int4</TT
+>。它们通常对应于常说的抽象数据类型。<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>只能通过由用户提供的函数在这类类型上操作，并且只能理解到用户描述这种类型行为的程度。基础类型会被进一步划分为标量和数组类型。对于每一种标量类型，会自动创建一个相应的数组类型，它能够保存该标量类型的可变尺寸的数组。
+    </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN59211"
+>36.2.2. 组合类型</A
+></H2
+><P
+>     只要用户创建一个表，就会创建组合类型或者行类型。也可以使用<A
+HREF="sql-createtype.html"
+>CREATE TYPE</A
+>来定义一个没有关联表的<SPAN
+CLASS="QUOTE"
+>"stand-alone"</SPAN
+>组合类型。一个组合类型只是一个具有相关域名称的类型列表。一个组合类型的值是一个行或者域值记录。用户可以访问来自<ACRONYM
+CLASS="ACRONYM"
+>SQL</ACRONYM
+>查询的组成域。更多关于组合类型的信息请参考<A
+HREF="rowtypes.html"
+>第 8.16 &#33410;</A
+>。
+    </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="EXTEND-TYPE-SYSTEM-DOMAINS"
+>36.2.3. 域</A
+></H2
+><P
+>     一个域是基于一种特定基础类型的，并且出于很多目的它可以与其基础类型互换。不过，一个域能够具有约束来限制它的合法值于其底层基础类型允许值的一个子集。
+    </P
+><P
+>     可以使用<ACRONYM
+CLASS="ACRONYM"
+>SQL</ACRONYM
+>命令<A
+HREF="sql-createdomain.html"
+>CREATE DOMAIN</A
+>创建域。本章不会讨论它们的创建和使用。
+    </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN59224"
+>36.2.4. 伪类型</A
+></H2
+><P
+>     有一些用于特殊目的<SPAN
+CLASS="QUOTE"
+>"伪类型"</SPAN
+>。伪类型不能作为表列或者组合类型的属性出现，但是它们能被用于声明函数的参数和结果类型。这在类型系统中提供了一种机制来标识函数的特殊分类。<A
+HREF="datatype-pseudo.html#DATATYPE-PSEUDOTYPES-TABLE"
+>&#34920; 8-25</A
+>列出了现有的伪类型。
+    </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="EXTEND-TYPES-POLYMORPHIC"
+>36.2.5. 多态类型</A
+></H2
+><P
+>     特别让人感兴趣的五种伪类型是<TT
+CLASS="TYPE"
+>anyelement</TT
+>、<TT
+CLASS="TYPE"
+>anyarray</TT
+>、<TT
+CLASS="TYPE"
+>anynonarray</TT
+>、<TT
+CLASS="TYPE"
+>anyenum</TT
+>以及<TT
+CLASS="TYPE"
+>anyrange</TT
+>，它们被统称为<I
+CLASS="FIRSTTERM"
+>多态类型</I
+>。任何使用这些类型声明的函数被称作是一个<I
+CLASS="FIRSTTERM"
+>多态函数</I
+>。通过使用根据一次特定调用实际传递的数据类型所决定的相关数据类型，一个多态函数能够在多种不同数据类型上操作。
+    </P
+><P
+>     多态参数和结果是相互关联的，并且它们在解析调用多态函数的查询时被决定到一种特定的数据类型。每一个被声明为<TT
+CLASS="TYPE"
+>anyelement</TT
+>的位置（参数或返回值）被允许具有任意特定的实际数据类型，但是在任何给定的查询中它们必须全部是<SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>相同</I
+></SPAN
+>的实际类型。每一个被声明为<TT
+CLASS="TYPE"
+>anyarray</TT
+>的位置可以有任意数组数据类型，但是相似地，它们必须全部具有相同类型。并且类似地，被声明为<TT
+CLASS="TYPE"
+>anyrange</TT
+>的位置必须是全部是相同的范围类型。此外，如果有位置被声明为<TT
+CLASS="TYPE"
+>anyarray</TT
+>并且其他位置被声明为<TT
+CLASS="TYPE"
+>anyelement</TT
+>，<TT
+CLASS="TYPE"
+>anyarray</TT
+>位置中的实际数组类型必须是一个数组，该数组的元素都是出现在<TT
+CLASS="TYPE"
+>anyelement</TT
+>位置的同一种类型。相似地，如果有位置被声明为<TT
+CLASS="TYPE"
+>anyrange</TT
+>并且其他位置被声明为<TT
+CLASS="TYPE"
+>anyelement</TT
+>，<TT
+CLASS="TYPE"
+>anyrange</TT
+>位置的实际范围类型必须是一个范围，该范围的子类型是出现在<TT
+CLASS="TYPE"
+>anyelement</TT
+>位置的同一种类型。<TT
+CLASS="TYPE"
+>anynonarray</TT
+>被当做和<TT
+CLASS="TYPE"
+>anyelement</TT
+>相同，但是增加了额外的约束要求实际类型不能是一种数组类型。<TT
+CLASS="TYPE"
+>anyenum</TT
+>被当做和<TT
+CLASS="TYPE"
+>anyelement</TT
+>相同，但是增加了额外的约束要求实际类型不能是一种枚举类型。
+    </P
+><P
+>     因此，当使用一种多态类型声明了多于一个参数位置，有效效果是只有实际参数类型的某些组合才被允许。例如，一个被声明为<TT
+CLASS="LITERAL"
+>equal(anyelement, anyelement)</TT
+>的函数将要求任意两个输入值，只要它们是同一种数据类型。
+    </P
+><P
+>     当一个函数的返回值被声明为多态类型时，必须至少有一个参数位置也是多态的，并且作为该参数提供的实际数据类型决定了该调用的实际结果类型。例如，如果还没有一种数组下标机制，我们可以定义一个函数来实现下标：<TT
+CLASS="LITERAL"
+>subscript(anyarray, integer) returns anyelement</TT
+>。这个声明约束了实际的第一个参数是一种数组类型，并且允许解析器从实际的第一个参数类型推断正确的结果类型。另一个例子是一个被声明为<TT
+CLASS="LITERAL"
+>f(anyarray) returns anyenum</TT
+>的函数将只接受枚举类型的数组。
+    </P
+><P
+>     注意<TT
+CLASS="TYPE"
+>anynonarray</TT
+>和<TT
+CLASS="TYPE"
+>anyenum</TT
+>并不表示独立的类型变量，它们是和<TT
+CLASS="TYPE"
+>anyelement</TT
+>相同的类型，只是有一个额外的约束。例如，将一个函数声明为<TT
+CLASS="LITERAL"
+>f(anyelement, anyenum)</TT
+>等效于把它声明为<TT
+CLASS="LITERAL"
+>f(anyenum, anyenum)</TT
+>：两种实际参数必须是相同的枚举类型。
+    </P
+><P
+>     一个可变函数（可以有可变数量的参数，如<A
+HREF="xfunc-sql.html#XFUNC-SQL-VARIADIC-FUNCTIONS"
+>第 36.4.5 &#33410;</A
+>中所述）能够是多态的：这可以通过声明其最后一个参数为<TT
+CLASS="LITERAL"
+>VARIADIC</TT
+> <TT
+CLASS="TYPE"
+>anyarray</TT
+>来实现。为了匹配和决定实际结果类型的参数，这样一种函数的行为和写了合适数量的<TT
+CLASS="TYPE"
+>anynonarray</TT
+>参数是一样的。
+    </P
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="extend-how.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="xfunc.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>扩展性如何工作</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="extend.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>用户定义的函数</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

@@ -1,0 +1,396 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>数据定义</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="SQL 语言"
+HREF="sql.html"><LINK
+REL="PREVIOUS"
+TITLE="调用函数"
+HREF="sql-syntax-calling-funcs.html"><LINK
+REL="NEXT"
+TITLE="表基础"
+HREF="ddl-basics.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="CHAPTER"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/ddl.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="调用函数"
+HREF="sql-syntax-calling-funcs.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="表基础"
+HREF="ddl-basics.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="CHAPTER"
+><H1
+><A
+NAME="DDL"
+></A
+>&#31456; 5. 数据定义</H1
+><DIV
+CLASS="TOC"
+><DL
+><DT
+><B
+>&#30446;&#24405;</B
+></DT
+><DT
+>5.1. <A
+HREF="ddl-basics.html"
+>表基础</A
+></DT
+><DT
+>5.2. <A
+HREF="ddl-default.html"
+>默认值</A
+></DT
+><DT
+>5.3. <A
+HREF="ddl-constraints.html"
+>约束</A
+></DT
+><DD
+><DL
+><DT
+>5.3.1. <A
+HREF="ddl-constraints.html#DDL-CONSTRAINTS-CHECK-CONSTRAINTS"
+>检查约束</A
+></DT
+><DT
+>5.3.2. <A
+HREF="ddl-constraints.html#AEN2541"
+>非空约束</A
+></DT
+><DT
+>5.3.3. <A
+HREF="ddl-constraints.html#DDL-CONSTRAINTS-UNIQUE-CONSTRAINTS"
+>唯一约束</A
+></DT
+><DT
+>5.3.4. <A
+HREF="ddl-constraints.html#DDL-CONSTRAINTS-PRIMARY-KEYS"
+>主键</A
+></DT
+><DT
+>5.3.5. <A
+HREF="ddl-constraints.html#DDL-CONSTRAINTS-FK"
+>外键</A
+></DT
+><DT
+>5.3.6. <A
+HREF="ddl-constraints.html#DDL-CONSTRAINTS-EXCLUSION"
+>排他约束</A
+></DT
+></DL
+></DD
+><DT
+>5.4. <A
+HREF="ddl-system-columns.html"
+>系统列</A
+></DT
+><DT
+>5.5. <A
+HREF="ddl-alter.html"
+>修改表</A
+></DT
+><DD
+><DL
+><DT
+>5.5.1. <A
+HREF="ddl-alter.html#DDL-ALTER-ADDING-A-COLUMN"
+>增加列</A
+></DT
+><DT
+>5.5.2. <A
+HREF="ddl-alter.html#DDL-ALTER-REMOVING-A-COLUMN"
+>移除列</A
+></DT
+><DT
+>5.5.3. <A
+HREF="ddl-alter.html#DDL-ALTER-ADDING-A-CONSTRAINT"
+>增加约束</A
+></DT
+><DT
+>5.5.4. <A
+HREF="ddl-alter.html#DDL-ALTER-REMOVING-A-CONSTRAINT"
+>移除约束</A
+></DT
+><DT
+>5.5.5. <A
+HREF="ddl-alter.html#AEN2859"
+>更改列的默认值</A
+></DT
+><DT
+>5.5.6. <A
+HREF="ddl-alter.html#AEN2869"
+>修改列的数据类型</A
+></DT
+><DT
+>5.5.7. <A
+HREF="ddl-alter.html#AEN2879"
+>重命名列</A
+></DT
+><DT
+>5.5.8. <A
+HREF="ddl-alter.html#AEN2886"
+>重命名表</A
+></DT
+></DL
+></DD
+><DT
+>5.6. <A
+HREF="ddl-priv.html"
+>权限</A
+></DT
+><DT
+>5.7. <A
+HREF="ddl-rowsecurity.html"
+>行安全性策略</A
+></DT
+><DT
+>5.8. <A
+HREF="ddl-schemas.html"
+>模式</A
+></DT
+><DD
+><DL
+><DT
+>5.8.1. <A
+HREF="ddl-schemas.html#DDL-SCHEMAS-CREATE"
+>创建模式</A
+></DT
+><DT
+>5.8.2. <A
+HREF="ddl-schemas.html#DDL-SCHEMAS-PUBLIC"
+>公共模式</A
+></DT
+><DT
+>5.8.3. <A
+HREF="ddl-schemas.html#DDL-SCHEMAS-PATH"
+>模式搜索路径</A
+></DT
+><DT
+>5.8.4. <A
+HREF="ddl-schemas.html#DDL-SCHEMAS-PRIV"
+>模式和权限</A
+></DT
+><DT
+>5.8.5. <A
+HREF="ddl-schemas.html#DDL-SCHEMAS-CATALOG"
+>系统目录模式</A
+></DT
+><DT
+>5.8.6. <A
+HREF="ddl-schemas.html#DDL-SCHEMAS-PATTERNS"
+>惯用法</A
+></DT
+><DT
+>5.8.7. <A
+HREF="ddl-schemas.html#DDL-SCHEMAS-PORTABILITY"
+>可移植性</A
+></DT
+></DL
+></DD
+><DT
+>5.9. <A
+HREF="ddl-inherit.html"
+>继承</A
+></DT
+><DT
+>5.10. <A
+HREF="ddl-partitioning.html"
+>划分</A
+></DT
+><DD
+><DL
+><DT
+>5.10.1. <A
+HREF="ddl-partitioning.html#DDL-PARTITIONING-OVERVIEW"
+>概述</A
+></DT
+><DT
+>5.10.2. <A
+HREF="ddl-partitioning.html#DDL-PARTITIONING-IMPLEMENTATION"
+>实现划分</A
+></DT
+><DT
+>5.10.3. <A
+HREF="ddl-partitioning.html#DDL-PARTITIONING-MANAGING-PARTITIONS"
+>管理分区</A
+></DT
+><DT
+>5.10.4. <A
+HREF="ddl-partitioning.html#DDL-PARTITIONING-CONSTRAINT-EXCLUSION"
+>划分和约束排除</A
+></DT
+><DT
+>5.10.5. <A
+HREF="ddl-partitioning.html#DDL-PARTITIONING-ALTERNATIVES"
+>可选划分方法</A
+></DT
+><DT
+>5.10.6. <A
+HREF="ddl-partitioning.html#DDL-PARTITIONING-CAVEATS"
+>警告</A
+></DT
+></DL
+></DD
+><DT
+>5.11. <A
+HREF="ddl-foreign-data.html"
+>外部数据</A
+></DT
+><DT
+>5.12. <A
+HREF="ddl-others.html"
+>其他数据库对象</A
+></DT
+><DT
+>5.13. <A
+HREF="ddl-depend.html"
+>依赖跟踪</A
+></DT
+></DL
+></DIV
+><P
+>  本章包含了如何创建用来保存数据的数据库结构。在一个关系型数据库中，原始数据被存储在表中，因此本章的主要工作就是解释如何创建和修改表，以及哪些特性可以控制何种数据会被存储在表中。接着，我们讨论表如何被组织成模式，以及如何将权限分配给表。最后，我们将将简短地介绍其他一些影响数据存储的特性，例如继承、视图、函数和触发器。
+ </P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-syntax-calling-funcs.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="ddl-basics.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>调用函数</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="sql.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>表基础</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

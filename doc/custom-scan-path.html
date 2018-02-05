@@ -1,0 +1,290 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>创建自定义扫描路径</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="编写一个自定义扫描提供者"
+HREF="custom-scan.html"><LINK
+REL="PREVIOUS"
+TITLE="编写一个自定义扫描提供者"
+HREF="custom-scan.html"><LINK
+REL="NEXT"
+TITLE="创建自定义扫描计划"
+HREF="custom-scan-plan.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/custom-scan.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="编写一个自定义扫描提供者"
+HREF="custom-scan.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="custom-scan.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#31456; 57. 编写一个自定义扫描提供者</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="创建自定义扫描计划"
+HREF="custom-scan-plan.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="CUSTOM-SCAN-PATH"
+>57.1. 创建自定义扫描路径</A
+></H1
+><P
+>    一个自定义扫描提供者将通过设置下面的钩子函数来为基本关系增加路径，在核心代码已经为该关系产生了完全且正确的访问路径集后，这个钩子函数将被调用。
+</P><PRE
+CLASS="PROGRAMLISTING"
+>typedef void (*set_rel_pathlist_hook_type) (PlannerInfo *root,
+                                            RelOptInfo *rel,
+                                            Index rti,
+                                            RangeTblEntry *rte);
+extern PGDLLIMPORT set_rel_pathlist_hook_type set_rel_pathlist_hook;</PRE
+><P>
+  </P
+><P
+>    尽管这个钩子函数可被用来检查、修改或者移除核心系统产生的路径，自定义扫描提供程序通常还是局限于产生<TT
+CLASS="STRUCTNAME"
+>CustomPath</TT
+>对象并且使用<CODE
+CLASS="FUNCTION"
+>add_path</CODE
+>把它们加入到<TT
+CLASS="LITERAL"
+>rel</TT
+>中。自定义扫描提供者负责初始化<TT
+CLASS="STRUCTNAME"
+>CustomPath</TT
+>对象，它被声明为这样：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>typedef struct CustomPath
+{
+    Path      path;
+    uint32    flags;
+    List     *custom_paths;
+    List     *custom_private;
+    const CustomPathMethods *methods;
+} CustomPath;</PRE
+><P>
+  </P
+><P
+>    <TT
+CLASS="STRUCTFIELD"
+>path</TT
+>必须像任何其他路径一样被初始化，包括行计数估计、启动和总代价以及这条路径提供的排序顺序。<TT
+CLASS="STRUCTFIELD"
+>flags</TT
+>是一个位掩码，如果该自定义路径能够支持反向扫描则它应该包括<TT
+CLASS="LITERAL"
+>CUSTOMPATH_SUPPORT_BACKWARD_SCAN</TT
+>，如果支持标记和恢复则应该包括<TT
+CLASS="LITERAL"
+>CUSTOMPATH_SUPPORT_MARK_RESTORE</TT
+>。这两种能力都是可选的。可选的<TT
+CLASS="STRUCTFIELD"
+>custom_paths</TT
+>域是由这个自定义路径节点使用的<TT
+CLASS="STRUCTNAME"
+>Path</TT
+>节点的列表，这些将被规划器转换成<TT
+CLASS="STRUCTNAME"
+>Plan</TT
+>节点。<TT
+CLASS="STRUCTFIELD"
+>custom_private</TT
+>可被用来存储该自定义路径的私有数据。私有数据应该被存储为能被<TT
+CLASS="LITERAL"
+>nodeToString</TT
+>处理的形式，这样尝试打印该自定义路径的调试例程才能正常地工作。<TT
+CLASS="STRUCTFIELD"
+>methods</TT
+>必须指向一个实现了所需自定义路径方法的对象（通常是静态分配的），当前只有一种方法。<TT
+CLASS="STRUCTFIELD"
+>LibraryName</TT
+>和<TT
+CLASS="STRUCTFIELD"
+>SymbolName</TT
+>域必须也被初始化，这样动态载入器才能解析它们来定位方法表。
+  </P
+><P
+>   一个自定义扫描提供者还能提供连接路径。就和基本关系一样，这样一条路径也应该产生和它将要替换的连接所产生的相同的输出。要做到这一点，连接提供程序应该设置下面的钩子函数，并且在该钩子函数里为连接关系创建<TT
+CLASS="STRUCTNAME"
+>CustomPath</TT
+>路径。
+</P><PRE
+CLASS="PROGRAMLISTING"
+>typedef void (*set_join_pathlist_hook_type) (PlannerInfo *root,
+                                             RelOptInfo *joinrel,
+                                             RelOptInfo *outerrel,
+                                             RelOptInfo *innerrel,
+                                             JoinType jointype,
+                                             JoinPathExtraData *extra);
+extern PGDLLIMPORT set_join_pathlist_hook_type set_join_pathlist_hook;</PRE
+><P>
+
+   对于同一个连接关系，这个钩子将被反复调用，因为要对不同的内外关系组合生成路径，所以如何最小化可能的重复工作是钩子函数的责任。
+  </P
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="CUSTOM-SCAN-PATH-CALLBACKS"
+>57.1.1. 自定义扫描路径回调</A
+></H2
+><P
+></P><PRE
+CLASS="PROGRAMLISTING"
+>Plan *(*PlanCustomPath) (PlannerInfo *root,
+                         RelOptInfo *rel,
+                         CustomPath *best_path,
+                         List *tlist,
+                         List *clauses,
+                         List *custom_plans);</PRE
+><P>
+    将一条自定义路径转换为一个完成的计划。返回值通常将是一个<TT
+CLASS="LITERAL"
+>CustomScan</TT
+>对象，回调函数必须负责分配并且初始化这个对象。详见<A
+HREF="custom-scan-plan.html"
+>第 57.2 &#33410;</A
+>。
+   </P
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="custom-scan.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="custom-scan-plan.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>编写一个自定义扫描提供者</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="custom-scan.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>创建自定义扫描计划</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

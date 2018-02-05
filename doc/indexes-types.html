@@ -1,0 +1,679 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>索引类型</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="索引"
+HREF="indexes.html"><LINK
+REL="PREVIOUS"
+TITLE="简介"
+HREF="indexes-intro.html"><LINK
+REL="NEXT"
+TITLE="多列索引"
+HREF="indexes-multicolumn.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/indices.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="简介"
+HREF="indexes-intro.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="indexes.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#31456; 11. 索引</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="多列索引"
+HREF="indexes-multicolumn.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="INDEXES-TYPES"
+>11.2. 索引类型</A
+></H1
+><P
+>   <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>提供了多种索引类型：
+   B-tree、Hash、GiST、SP-GiST 、GIN 和 BRIN。每一种索引类型使用了
+   一种不同的算法来适应不同类型的查询。默认情况下，
+   <TT
+CLASS="COMMAND"
+>CREATE INDEX</TT
+>命令创建适合于大部分情况的B-tree 索引。
+  </P
+><P
+>   
+   
+   B-tree可以在可排序数据上的处理等值和范围查询。特别地，<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>的查询规划器会在任何一种涉及到以下操作符的已索引列上考虑使用B-tree索引：
+
+   <P
+></P
+><TABLE
+BORDER="0"
+><TBODY
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>&lt;</TT
+></TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>&lt;=</TT
+></TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>=</TT
+></TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>&gt;=</TT
+></TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>&gt;</TT
+></TD
+></TR
+></TBODY
+></TABLE
+><P
+></P
+>
+
+   将这些操作符组合起来，例如<TT
+CLASS="LITERAL"
+>BETWEEN</TT
+>和<TT
+CLASS="LITERAL"
+>IN</TT
+>，也可以用B-tree索引搜索实现。同样，在索引列上的<TT
+CLASS="LITERAL"
+>IS NULL</TT
+>或<TT
+CLASS="LITERAL"
+>IS NOT
+   NULL</TT
+>条件也可以在B-tree索引中使用。
+  </P
+><P
+>   优化器也会将B-tree索引用于涉及到模式匹配操作符<TT
+CLASS="LITERAL"
+>LIKE</TT
+>和<TT
+CLASS="LITERAL"
+>~</TT
+> 的查询，前提是<SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>如果</I
+></SPAN
+>模式是一个常量且被固定在字符串的开头&mdash;例如：<TT
+CLASS="LITERAL"
+>col LIKE
+   'foo%'</TT
+>或者<TT
+CLASS="LITERAL"
+>col ~ '^foo'</TT
+>, 但在<TT
+CLASS="LITERAL"
+>col LIKE '%bar'</TT
+>上则不会。但是，如果我们的数据库没有使用C区域设置，我们需要创建一个具有特殊操作符类的索引来支持模式匹配查询，参见下面的<A
+HREF="indexes-opclass.html"
+>第 11.9 &#33410;</A
+>。同样可以将B-tree索引用于<TT
+CLASS="LITERAL"
+>ILIKE</TT
+>和<TT
+CLASS="LITERAL"
+>~*</TT
+>，但仅当模式以非字母字符开始，即不受大小写转换影响的字符。
+  </P
+><P
+>   B-tree索引也可以用于检索排序数据。这并不会总是比简单扫描和排序更快，但是总是有用的。
+  </P
+><P
+>   
+   
+   Hash索引只能处理简单等值比较。不论何时当一个索引列涉及到一个使用了<TT
+CLASS="LITERAL"
+>=</TT
+>操作符的比较时，查询规划器将考虑使用一个Hash索引。下面的命令将创建一个Hash索引：
+</P><PRE
+CLASS="SYNOPSIS"
+>CREATE INDEX <TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+> ON <TT
+CLASS="REPLACEABLE"
+><I
+>table</I
+></TT
+> USING HASH (<TT
+CLASS="REPLACEABLE"
+><I
+>column</I
+></TT
+>);</PRE
+><P>
+  </P
+><DIV
+CLASS="CAUTION"
+><P
+></P
+><TABLE
+CLASS="CAUTION"
+BORDER="1"
+WIDTH="100%"
+><TR
+><TD
+ALIGN="CENTER"
+><B
+>&#23567;&#24515;</B
+></TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+><P
+>    Hash索引操作目前不被WAL记录，因此存在未写入修改，在数据库崩溃后需要用<TT
+CLASS="COMMAND"
+>REINDEX</TT
+>命令重建Hash索引。同样，在完成初始的基础备份后，对于Hash索引的改变也不会通过流式或基于文件的复制所复制，所以它们会对其后使用它们的查询给出错误的答案。正因为这些原因，Hash索引已不再被建议使用。
+   </P
+></TD
+></TR
+></TABLE
+></DIV
+><P
+>   
+   
+   GiST索引并不是一种单独的索引，而是可以用于实现很多不同索引策略的基础设施。相应地，可以使用一个GiST索引的特定操作符根据索引策略（<I
+CLASS="FIRSTTERM"
+>操作符类</I
+>）而变化。作为一个例子，<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>的标准捐献包中包括了用于多种二维几何数据类型的GiST操作符类，它用来支持使用下列操作符的索引化查询：
+
+   <P
+></P
+><TABLE
+BORDER="0"
+><TBODY
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>&lt;&lt;</TT
+></TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>&amp;&lt;</TT
+></TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>&amp;&gt;</TT
+></TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>&gt;&gt;</TT
+></TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>&lt;&lt;|</TT
+></TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>&amp;&lt;|</TT
+></TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>|&amp;&gt;</TT
+></TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>|&gt;&gt;</TT
+></TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>@&gt;</TT
+></TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>&lt;@</TT
+></TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>~=</TT
+></TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>&amp;&amp;</TT
+></TD
+></TR
+></TBODY
+></TABLE
+><P
+></P
+>
+
+   （这些操作符的含义见<A
+HREF="functions-geometry.html"
+>第 9.11 &#33410;</A
+>）<A
+HREF="gist-builtin-opclasses.html#GIST-BUILTIN-OPCLASSES-TABLE"
+>&#34920; 61-1</A
+>中给出了标准发布中所包括的 GiST 操作符类。<TT
+CLASS="LITERAL"
+>contrib</TT
+>集合中还包括了很多其他GiST操作符类，可见<A
+HREF="gist.html"
+>第 61 &#31456;</A
+>。
+  </P
+><P
+>   GiST索引也有能力优化<SPAN
+CLASS="QUOTE"
+>"最近邻"</SPAN
+>搜索，例如：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>SELECT * FROM places ORDER BY location &#60;-&#62; point '(101,456)' LIMIT 10;</PRE
+><P>
+   它将找到离给定目标点最近的10个位置。能够支持这种查询的能力同样取决于被使用的特定操作符类。
+   在<A
+HREF="gist-builtin-opclasses.html#GIST-BUILTIN-OPCLASSES-TABLE"
+>&#34920; 61-1</A
+>中，<SPAN
+CLASS="QUOTE"
+>"Ordering Operators"</SPAN
+>列中列出了可以在这种方法中使用的操作符。
+  </P
+><P
+>   
+   
+   和GiST相似，SP-GiST索引为支持多种搜索提供了一种基础结构。SP-GiST 允许实现众多不同的非平衡的基于磁盘的数据结构，例如四叉树、k-d树和radix树。作为一个例
+子，<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>的标准捐献包中包含了一个用于二维点的SP-GiST操作符类，它用于支持使用下列操作符的索引化查询：
+
+   <P
+></P
+><TABLE
+BORDER="0"
+><TBODY
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>&lt;&lt;</TT
+></TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>&gt;&gt;</TT
+></TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>~=</TT
+></TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>&lt;@</TT
+></TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>&lt;^</TT
+></TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>&gt;^</TT
+></TD
+></TR
+></TBODY
+></TABLE
+><P
+></P
+>
+
+   （其含义见<A
+HREF="functions-geometry.html"
+>第 9.11 &#33410;</A
+>）<A
+HREF="spgist-builtin-opclasses.html#SPGIST-BUILTIN-OPCLASSES-TABLE"
+>&#34920; 62-1</A
+>中给出了标准发布中所包括的 SP-GiST 操作符类。更多信息参见<A
+HREF="spgist.html"
+>第 62 &#31456;</A
+>。
+  </P
+><P
+>   
+   
+   GIN 索引是<SPAN
+CLASS="QUOTE"
+>"倒排索引"</SPAN
+>，它适合于包含多个组成值的数据值，例如数组。倒排索引中为每一个组成值都包含一个单独的项，它可以高效地处理测试指定组成值是否存在的查询。
+  </P
+><P
+>   与 GiST 和 SP-GiST相似， GIN可以支持多种不同的用户定义的索引策略和特定操作符，通过它一个GIN索引可以被根据索引策略被使用。作为一个例子，<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>的标准捐献包中包含了用于一维数组的GIN操作符类，它用于支持使用下列操作符的索引化查询：
+
+   <P
+></P
+><TABLE
+BORDER="0"
+><TBODY
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>&lt;@</TT
+></TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>@&gt;</TT
+></TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>=</TT
+></TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>&amp;&amp;</TT
+></TD
+></TR
+></TBODY
+></TABLE
+><P
+></P
+>
+
+   （这些操作符的含义见<A
+HREF="functions-array.html"
+>第 9.18 &#33410;</A
+>）<A
+HREF="gin-builtin-opclasses.html#GIN-BUILTIN-OPCLASSES-TABLE"
+>&#34920; 63-1</A
+>中给出了标准发布中所包括的 GIN 操作符类。在<TT
+CLASS="LITERAL"
+>contrib</TT
+>集合中还有更多其他GIN操作符类，更多信息参见<A
+HREF="gin.html"
+>第 63 &#31456;</A
+>。
+  </P
+><P
+>   
+   
+   BRIN 索引（块范围索引的缩写）存储有关存放在一个表的连续物理块范围上的值摘要信息。与 GiST、SP-GiST 和 GIN 相似，BRIN可以支持很多种不同的索引策略，并且可以与一个 BRIN 索引配合使用的特定操作符取决于索引策略。对于具有线性排序顺序的数据类型，被索引的数据对应于每个块范围的列中值的最小值和最大值，使用这些操作符来支持用到索引的查询：
+
+   <P
+></P
+><TABLE
+BORDER="0"
+><TBODY
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>&lt;</TT
+></TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>&lt;=</TT
+></TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>=</TT
+></TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>&gt;=</TT
+></TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>&gt;</TT
+></TD
+></TR
+></TBODY
+></TABLE
+><P
+></P
+>
+
+   包括在标准发布中的 BRIN 操作符类的文档在<A
+HREF="brin-builtin-opclasses.html#BRIN-BUILTIN-OPCLASSES-TABLE"
+>&#34920; 64-1</A
+>中。更多信息请见<A
+HREF="brin.html"
+>第 64 &#31456;</A
+>。
+  </P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="indexes-intro.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="indexes-multicolumn.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>简介</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="indexes.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>多列索引</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

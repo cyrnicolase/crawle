@@ -1,0 +1,385 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>pg_file_settings</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="系统目录"
+HREF="catalogs.html"><LINK
+REL="PREVIOUS"
+TITLE="pg_cursors"
+HREF="view-pg-cursors.html"><LINK
+REL="NEXT"
+TITLE="pg_group"
+HREF="view-pg-group.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/catalogs.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="pg_cursors"
+HREF="view-pg-cursors.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="catalogs.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#31456; 50. 系统目录</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="pg_group"
+HREF="view-pg-group.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="VIEW-PG-FILE-SETTINGS"
+>50.62. <TT
+CLASS="STRUCTNAME"
+>pg_file_settings</TT
+></A
+></H1
+><P
+>   视图<TT
+CLASS="STRUCTNAME"
+>pg_file_settings</TT
+>提供了服务器配置文件
+   内容的概要。这个视图中的每一行表示配置文件中出现的一个
+   <SPAN
+CLASS="QUOTE"
+>"name = value"</SPAN
+>项，还带有注解指示该值是否被成功地应用。在
+   配置文件有问题时，有可能出现额外的行，它们没有相关的
+   <SPAN
+CLASS="QUOTE"
+>"name = value"</SPAN
+>项，一个例子是配置文件中有语法错误。
+  </P
+><P
+>   这个视图有助于检查在配置文件中打算做的修改是否能工作，或者用来诊断
+   之前的失败。注意这个视图报告的是配置文件的<SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>当前</I
+></SPAN
+>内容，
+   而不是服务器最后应用的值（这些值通常查看
+   <A
+HREF="view-pg-settings.html"
+><TT
+CLASS="STRUCTNAME"
+>pg_settings</TT
+></A
+>
+   视图就够了）。
+  </P
+><P
+>   默认情况下，<TT
+CLASS="STRUCTNAME"
+>pg_file_settings</TT
+>视图只有超级用户可读。
+  </P
+><DIV
+CLASS="TABLE"
+><A
+NAME="AEN110562"
+></A
+><P
+><B
+>&#34920; 50-63. <TT
+CLASS="STRUCTNAME"
+>pg_file_settings</TT
+> 列</B
+></P
+><TABLE
+BORDER="1"
+CLASS="CALSTABLE"
+><COL><COL><COL><THEAD
+><TR
+><TH
+>名称</TH
+><TH
+>类型</TH
+><TH
+>描述</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+><TT
+CLASS="STRUCTFIELD"
+>sourcefile</TT
+></TD
+><TD
+><TT
+CLASS="STRUCTFIELD"
+>text</TT
+></TD
+><TD
+>配置文件的完整路径名</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="STRUCTFIELD"
+>sourceline</TT
+></TD
+><TD
+><TT
+CLASS="STRUCTFIELD"
+>integer</TT
+></TD
+><TD
+>      该项在配置文件中出现的行号
+     </TD
+></TR
+><TR
+><TD
+><TT
+CLASS="STRUCTFIELD"
+>seqno</TT
+></TD
+><TD
+><TT
+CLASS="STRUCTFIELD"
+>integer</TT
+></TD
+><TD
+>项被处理的顺序（1..<TT
+CLASS="REPLACEABLE"
+><I
+>n</I
+></TT
+>）</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="STRUCTFIELD"
+>name</TT
+></TD
+><TD
+><TT
+CLASS="STRUCTFIELD"
+>text</TT
+></TD
+><TD
+>配置参数名</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="STRUCTFIELD"
+>setting</TT
+></TD
+><TD
+><TT
+CLASS="STRUCTFIELD"
+>text</TT
+></TD
+><TD
+>被赋予给参数的值</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="STRUCTFIELD"
+>applied</TT
+></TD
+><TD
+><TT
+CLASS="STRUCTFIELD"
+>boolean</TT
+></TD
+><TD
+>为真表示值已被成功应用</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="STRUCTFIELD"
+>error</TT
+></TD
+><TD
+><TT
+CLASS="STRUCTFIELD"
+>text</TT
+></TD
+><TD
+>如果非空，表示一个错误消息，它说明为什么这个项不能被应用
+     </TD
+></TR
+></TBODY
+></TABLE
+></DIV
+><P
+>   如果配置文件包含语法错误或者非法参数名，服务器将不会尝试从其中应用
+   任何设置，并且因此所有的<TT
+CLASS="STRUCTFIELD"
+>applied</TT
+>域都为假。在这种情
+   况下，将会有一个或者多个行的<TT
+CLASS="STRUCTFIELD"
+>error</TT
+>域为非空，
+   它们说明了为什么出问题。否则，将尽可能应用每个设置。如果一个设置不能
+   被应用（例如非法值或者该设置不能在服务器开始后改变），会有一个合适的
+   消息存储在它的<TT
+CLASS="STRUCTFIELD"
+>error</TT
+>域中。一个项的<TT
+CLASS="STRUCTFIELD"
+>applied</TT
+>
+   域为假的另一种情况是它被后面一个具有相同参数名的项所覆盖，这种情况不
+   会被认为是一种错误，因此在<TT
+CLASS="STRUCTFIELD"
+>error</TT
+>域中不会有
+   错误消息。
+  </P
+><P
+>   关于更改运行时参数的各种方法请见<A
+HREF="config-setting.html"
+>第 19.1 &#33410;</A
+>。
+  </P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="view-pg-cursors.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="view-pg-group.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><TT
+CLASS="STRUCTNAME"
+>pg_cursors</TT
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="catalogs.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><TT
+CLASS="STRUCTNAME"
+>pg_group</TT
+></TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

@@ -1,0 +1,1216 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>日常清理</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="日常数据库维护工作"
+HREF="maintenance.html"><LINK
+REL="PREVIOUS"
+TITLE="日常数据库维护工作"
+HREF="maintenance.html"><LINK
+REL="NEXT"
+TITLE="日常重建索引"
+HREF="routine-reindex.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/maintenance.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="日常数据库维护工作"
+HREF="maintenance.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="maintenance.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#31456; 24. 日常数据库维护工作</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="日常重建索引"
+HREF="routine-reindex.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="ROUTINE-VACUUMING"
+>24.1. 日常清理</A
+></H1
+><P
+>   <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>数据库要求周期性的<I
+CLASS="FIRSTTERM"
+>清理</I
+>维护。对于很多安装，让<I
+CLASS="FIRSTTERM"
+>自动清理守护进程</I
+>来执行清理已经足够，如<A
+HREF="routine-vacuuming.html#AUTOVACUUM"
+>第 24.1.6 &#33410;</A
+>所述。你可能需要调整其中描述的自动清理参数来获得最佳结果。某些数据库管理员会希望使用手动管理的<TT
+CLASS="COMMAND"
+>VACUUM</TT
+>命令来对后台进程的活动进行补充或者替换，这通常使用<SPAN
+CLASS="APPLICATION"
+>cron</SPAN
+>或<SPAN
+CLASS="APPLICATION"
+>任务计划程序</SPAN
+>脚本来执行。要正确地设置手动管理的清理，最重要的是理解接下来几小节中讨论的问题。依赖自动清理的管理员最好也能略读该内容以帮助他们理解和调整自动清理。
+  </P
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="VACUUM-BASICS"
+>24.1.1. 清理的基础知识</A
+></H2
+><P
+>    <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>的<A
+HREF="sql-vacuum.html"
+>VACUUM</A
+>命令出于几个原因必须定期处理每一个表：
+
+    <P
+></P
+></P><OL
+TYPE="1"
+><LI
+><P
+>恢复或重用被已更新或已删除行所占用的磁盘空间。</P
+></LI
+><LI
+><P
+>更新被<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>查询规划器使用的数据统计信息。</P
+></LI
+><LI
+><P
+>更新可见性映射，它可以加速只用索引的扫描。</P
+></LI
+><LI
+><P
+>保护老旧数据不会由于<I
+CLASS="FIRSTTERM"
+>事务ID回卷</I
+>或<I
+CLASS="FIRSTTERM"
+>多事务ID回卷</I
+>而丢失。</P
+></LI
+></OL
+><P>
+
+    正如后续小节中解释的，每一个原因都将指示以不同的频率和范围执行<TT
+CLASS="COMMAND"
+>VACUUM</TT
+>操作。
+   </P
+><P
+>    有两种<TT
+CLASS="COMMAND"
+>VACUUM</TT
+>的变体：标准<TT
+CLASS="COMMAND"
+>VACUUM</TT
+>和<TT
+CLASS="COMMAND"
+>VACUUM FULL</TT
+>。<TT
+CLASS="COMMAND"
+>VACUUM FULL</TT
+>可以收回更多磁盘空间但是运行起来更慢。另外，标准形式的<TT
+CLASS="COMMAND"
+>VACUUM</TT
+>可以和生产数据库操作并行运行（<TT
+CLASS="COMMAND"
+>SELECT</TT
+>、<TT
+CLASS="COMMAND"
+>INSERT</TT
+>、<TT
+CLASS="COMMAND"
+>UPDATE</TT
+>和<TT
+CLASS="COMMAND"
+>DELETE</TT
+>等命令将继续正常工作，但在清理期间你无法使用<TT
+CLASS="COMMAND"
+>ALTER TABLE</TT
+>等命令来更新表的定义）。<TT
+CLASS="COMMAND"
+>VACUUM FULL</TT
+>要求在其工作的表上得到一个排他锁，因此无法和对此表的其他使用并行。因此，通常管理员应该努力使用标准<TT
+CLASS="COMMAND"
+>VACUUM</TT
+>并且避免<TT
+CLASS="COMMAND"
+>VACUUM FULL</TT
+>。
+   </P
+><P
+>    <TT
+CLASS="COMMAND"
+>VACUUM</TT
+>会产生大量I/O流量，这将导致其他活动会话性能变差。可以调整一些配置参数来后台清理活动造成的性能冲击 &mdash; 参阅<A
+HREF="runtime-config-resource.html#RUNTIME-CONFIG-RESOURCE-VACUUM-COST"
+>第 19.4.4 &#33410;</A
+>。
+   </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="VACUUM-FOR-SPACE-RECOVERY"
+>24.1.2. 恢复磁盘空间</A
+></H2
+><P
+>    在<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>中，一次行的<TT
+CLASS="COMMAND"
+>UPDATE</TT
+>或<TT
+CLASS="COMMAND"
+>DELETE</TT
+>不会立即移除该行的旧版本。这种方法对于从多版本并发控制（<ACRONYM
+CLASS="ACRONYM"
+>MVCC</ACRONYM
+>，见<A
+HREF="mvcc.html"
+>第 13 &#31456;</A
+>）获益是必需的：当旧版本仍可能对其他事务可见时，它不能被删除。但是最后，任何事务都不会再对一个过时的或者被删除的行版本感兴趣。它所占用的空间必须被回收来用于新行，这样可避免磁盘空间需求的无限制增长。这通过运行<TT
+CLASS="COMMAND"
+>VACUUM</TT
+>完成。
+   </P
+><P
+>    <TT
+CLASS="COMMAND"
+>VACUUM</TT
+>的标准形式移除表和索引中的死亡行版本并将该空间标记为可在未来重用。不过，它将不会把该空间交还给操作系统，除非在特殊的情况中表尾部的一个或多个页面变成完全空闲并且能够很容易地得到一个排他表锁。相反，<TT
+CLASS="COMMAND"
+>VACUUM FULL</TT
+>通过把死亡空间之外的内容写成一个完整的新版本表文件来主动紧缩表。这将最小化表的尺寸，但是要花较长的时间。它也需要额外的磁盘空间用于表的新副本，直到操作完成。
+   </P
+><P
+>    例行清理的一般目标是多做标准的<TT
+CLASS="COMMAND"
+>VACUUM</TT
+>来避免需要<TT
+CLASS="COMMAND"
+>VACUUM FULL</TT
+>。自动清理守护进程尝试这样工作，并且实际上永远不会发出<TT
+CLASS="COMMAND"
+>VACUUM FULL</TT
+>。在这种方法中，其思想不是让表保持它们的最小尺寸，而是保持磁盘空间使用的稳定状态：每个表占用的空间等于其最小尺寸外加清理之间被用完的空间。尽管<TT
+CLASS="COMMAND"
+>VACUUM FULL</TT
+>可被用来把一个表收缩回它的最小尺寸并将该磁盘空间交还给操作系统，但是如果该表将在未来再次增长这样就没什么意义。因此，对于维护频繁被更新的表，适度运行标准<TT
+CLASS="COMMAND"
+>VACUUM</TT
+>运行比少量运行<TT
+CLASS="COMMAND"
+>VACUUM FULL</TT
+>要更好。
+   </P
+><P
+>    一些管理员更喜欢自己计划清理，例如在晚上负载低时做所有的工作。根据一个固定日程来做清理的难点在于，如果一个表有一次预期之外的更新活动尖峰，它可能膨胀得真正需要<TT
+CLASS="COMMAND"
+>VACUUM FULL</TT
+>来回收空间。使用自动清理守护进程可以减轻这个问题，因为守护进程会根据更新活动动态规划清理操作。除非你的负载是完全可以预估的，完全禁用守护进程是不理智的。一种可能的折中方案是设置守护进程的参数，这样它将只对异常的大量更新活动做出反应，因而保证事情不会失控，而在负载正常时采用有计划的<TT
+CLASS="COMMAND"
+>VACUUM</TT
+>来做批量工作。
+   </P
+><P
+>    对于那些不使用自动清理的用户，一种典型的方法是计划一个数据库范围的<TT
+CLASS="COMMAND"
+>VACUUM</TT
+>，该操作每天在低使用量时段执行一次，并根据需要辅以在重度更新表上的更频繁的清理（一些有着极高更新率的安装会每几分钟清理一次它们的最繁忙的表）。如果你在一个集簇中有多个数据库，别忘记<TT
+CLASS="COMMAND"
+>VACUUM</TT
+>每一个，你会用得上<A
+HREF="app-vacuumdb.html"
+><SPAN
+CLASS="APPLICATION"
+>vacuumdb</SPAN
+></A
+>程序。
+   </P
+><DIV
+CLASS="TIP"
+><BLOCKQUOTE
+CLASS="TIP"
+><P
+><B
+>&#25552;&#31034;: </B
+>    当一个表因为大量更新或删除活动而包含大量死亡行版本时，纯粹的<TT
+CLASS="COMMAND"
+>VACUUM</TT
+>可能不能令人满意。如果你有这样一个表并且你需要回收它占用的过量磁盘空间，你将需要使用<TT
+CLASS="COMMAND"
+>VACUUM FULL</TT
+>，或者<A
+HREF="sql-cluster.html"
+>CLUSTER</A
+>，或者<A
+HREF="sql-altertable.html"
+>ALTER TABLE</A
+>的表重写变体之一。这些命令重写该表的一整个新拷贝并且为它构建新索引。所有这些选项都要求排他锁。注意它们也临时使用大约等于该表尺寸的额外磁盘空间，因为直到新表和索引完成之前旧表和索引都不能被释放。
+   </P
+></BLOCKQUOTE
+></DIV
+><DIV
+CLASS="TIP"
+><BLOCKQUOTE
+CLASS="TIP"
+><P
+><B
+>&#25552;&#31034;: </B
+>    如果你有一个表，它的整个内容会被周期性删除，考虑用<A
+HREF="sql-truncate.html"
+>TRUNCATE</A
+>而不是先用<TT
+CLASS="COMMAND"
+>DELETE</TT
+>再用<TT
+CLASS="COMMAND"
+>VACUUM</TT
+>。<TT
+CLASS="COMMAND"
+>TRUNCATE</TT
+>会立刻移除该表的整个内容，而不需要一次后续的<TT
+CLASS="COMMAND"
+>VACUUM</TT
+>或<TT
+CLASS="COMMAND"
+>VACUUM FULL</TT
+>来回收现在未被使用的磁盘空间。其缺点是会违背严格的 MVCC 语义。
+   </P
+></BLOCKQUOTE
+></DIV
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="VACUUM-FOR-STATISTICS"
+>24.1.3. 更新规划器统计信息</A
+></H2
+><P
+>    <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>查询规划器依赖于有关表内容的统计信息来为查询产生好的计划。这些统计信息由<A
+HREF="sql-analyze.html"
+>ANALYZE</A
+>命令收集，它除了直接被调用之外还可以作为<TT
+CLASS="COMMAND"
+>VACUUM</TT
+>的一个可选步骤被调用。拥有适度准确的统计信息很重要，否则差的计划可能降低数据库性能。
+   </P
+><P
+>    自动清理守护进程如果被启用，当一个表的内容被改变得足够多时，它将自动发出<TT
+CLASS="COMMAND"
+>ANALYZE</TT
+>命令。不过，管理员可能更喜欢依靠手动的<TT
+CLASS="COMMAND"
+>ANALYZE</TT
+>操作，特别是如果知道一个表上的更新活动将不会影响<SPAN
+CLASS="QUOTE"
+>"感兴趣的"</SPAN
+>列的统计信息时。守护进程严格地按照一个被插入或更新行数的函数来计划<TT
+CLASS="COMMAND"
+>ANALYZE</TT
+>，它不知道那是否将导致有意义的统计信息改变。
+   </P
+><P
+>    正如用于空间恢复的清理一样，频繁更新统计信息对重度更新的表更加有用。但即使对于一个重度更新的表，如果该数据的统计分布没有很大改变，也没有必要更新统计信息。一个简单的经验法则是考虑表中列的最大和最小值改变了多少。例如，一个包含行被更新时间的<TT
+CLASS="TYPE"
+>timestamp</TT
+>列将在行被增加和更新时有一直增加的最大值；这样一列将可能需要更频繁的统计更新，而一个包含一个网站上被访问页面 URL 的列则不需要。URL 列可以经常被更改，但是其值的统计分布的变化相对很慢。
+   </P
+><P
+>    可以在指定表上运行<TT
+CLASS="COMMAND"
+>ANALYZE</TT
+>甚至只在表的指定列上运行，因此如果你的应用需要，可以更加频繁地更新某些统计。但实际上，通常只分析整个数据库是最好的，因为它是一种很快的操作。<TT
+CLASS="COMMAND"
+>ANALYZE</TT
+>对一个表的行使用一种统计的随机采样，而不是读取每一个单一行。
+   </P
+><DIV
+CLASS="TIP"
+><BLOCKQUOTE
+CLASS="TIP"
+><P
+><B
+>&#25552;&#31034;: </B
+>     尽管对每列的<TT
+CLASS="COMMAND"
+>ANALYZE</TT
+>频度调整可能不是非常富有成效，你可能会发现值得为每列调整被<TT
+CLASS="COMMAND"
+>ANALYZE</TT
+>收集统计信息的详细程度。经常在<TT
+CLASS="LITERAL"
+>WHERE</TT
+>中被用到的列以及数据分布非常不规则的列可能需要比其他列更细粒度的数据直方图。见<TT
+CLASS="COMMAND"
+>ALTER TABLE SET STATISTICS</TT
+>，或者使用<A
+HREF="runtime-config-query.html#GUC-DEFAULT-STATISTICS-TARGET"
+>default_statistics_target</A
+>配置参数改变数据库范围的默认值。
+    </P
+><P
+>     还有，默认情况下关于函数的选择度的可用信息是有限的。但是，如果你创建一个使用函数调用的表达式索引，关于该函数的有用的统计信息将被收集，这些信息能够大大提高使用该表达式索引的查询计划的质量。
+    </P
+></BLOCKQUOTE
+></DIV
+><DIV
+CLASS="TIP"
+><BLOCKQUOTE
+CLASS="TIP"
+><P
+><B
+>&#25552;&#31034;: </B
+>     自动清理守护进程不会为外部表发出<TT
+CLASS="COMMAND"
+>ANALYZE</TT
+>命令，因为无法确定一个合适的频度。如果你的查询需要外部表的统计信息来正确地进行规划，比较好的方式是按照一个合适的时间表在那些表上手工运行<TT
+CLASS="COMMAND"
+>ANALYZE</TT
+>命令。
+    </P
+></BLOCKQUOTE
+></DIV
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="VACUUM-FOR-VISIBILITY-MAP"
+>24.1.4. 更新可见性映射</A
+></H2
+><P
+>    清理机制为每一个表维护着一个<A
+HREF="storage-vm.html"
+>可见性映射</A
+>，它被用来跟踪哪些页面只包含对所有活动事务（以及所有未来的事务，直到该页面被再次修改）可见的元组。这样做有两个目的。第一，清理本身可以在下一次运行时跳过这样的页面，因为其中没有什么需要被清除。
+   </P
+><P
+>    第二，这允许<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>回答一些只用索引的查询，而不需要引用底层表。因为<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>的索引不包含元组的可见性信息，一次普通的索引扫描会为每一个匹配的索引项获取堆元组，用来检查它是否能被当前事务所见。另一方面，一次<I
+CLASS="FIRSTTERM"
+>只用索引的扫描</I
+>会首先检查可见性映射。如果它了解到在该页面上的所有元组都是可见的，堆获取就可以被跳过。这对大数据集很有用，因为可见性映射可以防止磁盘访问。可见性映射比堆小很多，因此即使堆非常大，可见性映射也可以很容易地被缓存起来。
+   </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="VACUUM-FOR-WRAPAROUND"
+>24.1.5. 防止事务 ID 回卷失败</A
+></H2
+><P
+>    <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>的 MVCC 事务语义依赖于能够比较事务 ID（<ACRONYM
+CLASS="ACRONYM"
+>XID</ACRONYM
+>）数字：如果一个行版本的插入 XID 大于当前事务的 XID，它就是<SPAN
+CLASS="QUOTE"
+>"属于未来的"</SPAN
+>并且不应该对当前事务可见。但是因为事务 ID 的尺寸有限（32位），一个长时间（超过 40 亿个事务）运行的集簇会遭受到<I
+CLASS="FIRSTTERM"
+>事务 ID 回卷</I
+>问题：XID 计数器回卷到 0，并且本来属于过去的事务突然间就变成了属于未来 &mdash; 这意味着它们的输出变成不可见。简而言之，灾难性的数据丢失（实际上数据仍然在那里，但是如果你不能得到它也无济于事）。为了避免发生这种情况，有必要至少每 20 亿个事务就清理每个数据库中的每个表。
+   </P
+><P
+>    周期性的清理能够解决该问题的原因是，<TT
+CLASS="COMMAND"
+>VACUUM</TT
+>会把行标记为
+    <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>冻结</I
+></SPAN
+>，这表示它们是被一个在足够远的过去提交的事务所插入，
+    这样从 MVCC 的角度来看，效果就是该插入事务对所有当前和未来事务来说当然都
+    是可见的。<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>保留了一个特殊的 XID 
+    （<TT
+CLASS="LITERAL"
+>FrozenTransactionId</TT
+>），这个 XID 并不遵循普通 XID 的比较规则
+    并且总是被认为比任何普通 XID 要老。普通 XID 使用模-2<SUP
+>32</SUP
+>算
+    法来比较。这意味着对于每一个普通 XID都有 20 亿个 XID <SPAN
+CLASS="QUOTE"
+>"更老"</SPAN
+>并且
+    有 20 亿个<SPAN
+CLASS="QUOTE"
+>"更新"</SPAN
+>，另一种解释的方法是普通 XID 空间是没有端点的环。
+    因此，一旦一个行版本创建时被分配了一个特定的普通 XID，该行版本将成为接下
+    来 20 亿个事务的<SPAN
+CLASS="QUOTE"
+>"过去"</SPAN
+>（与我们谈论的具体哪个普通 XID 无关）。如
+    果在 20 亿个事务之后该行版本仍然存在，它将突然变得好像在未来。要阻止这一切
+    发生，被冻结行版本会被看成其插入 XID 为<TT
+CLASS="LITERAL"
+>FrozenTransactionId</TT
+>，
+    这样它们对所有普通事务来说都是<SPAN
+CLASS="QUOTE"
+>"在过去"</SPAN
+>，而不管回卷问题。并且这样
+    的行版本将一直有效直到被删除，不管它有多旧。
+   </P
+><DIV
+CLASS="NOTE"
+><BLOCKQUOTE
+CLASS="NOTE"
+><P
+><B
+>&#27880;&#24847;: </B
+>     在9.4之前的<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>版本中，实际上会通过将一行的插入 XID 替换为
+     <TT
+CLASS="LITERAL"
+>FrozenTransactionId</TT
+>来实现冻结，这种FrozenTransactionId在行的
+     <TT
+CLASS="STRUCTNAME"
+>xmin</TT
+>系统列中是可见的。较新的版本只是设置一个标志位，
+     保留行的原始<TT
+CLASS="STRUCTNAME"
+>xmin</TT
+>用于可能发生的鉴别用途。不过，
+     在9.4之前版本的数据库<SPAN
+CLASS="APPLICATION"
+>pg_upgrade</SPAN
+>中可能仍会找到
+     <TT
+CLASS="STRUCTNAME"
+>xmin</TT
+>等于<TT
+CLASS="LITERAL"
+>FrozenTransactionId</TT
+> (2)的行。
+    </P
+><P
+>     此外，系统目录可能会包含<TT
+CLASS="STRUCTNAME"
+>xmin</TT
+>等于<TT
+CLASS="LITERAL"
+>BootstrapTransactionId</TT
+> (1)
+     的行，这表示它们是在<SPAN
+CLASS="APPLICATION"
+>initdb</SPAN
+>的第一个阶段被插入的。
+     和<TT
+CLASS="LITERAL"
+>FrozenTransactionId</TT
+>相似，这个特殊的 XID 被认为比所有正常 XID 的年龄都要老。
+    </P
+></BLOCKQUOTE
+></DIV
+><P
+>    <A
+HREF="runtime-config-client.html#GUC-VACUUM-FREEZE-MIN-AGE"
+>vacuum_freeze_min_age</A
+>控制在其行版本被冻结前一个 XID
+    值应该有多老。如果被冻结的行将很快会被再次修改，增加这个设置可以避免不必要
+    的工作。但是减少这个设置会增加在表必须再次被清理之前能够流逝的事务数。
+   </P
+><P
+>    <TT
+CLASS="COMMAND"
+>VACUUM</TT
+>通常会跳过不含有任何死亡行版本的页面，但是不会跳过那些含有带旧 XID 值的行版本的页面。要保证所有旧的行版本都已经被冻结，需要对整个表做一次扫描。<A
+HREF="runtime-config-client.html#GUC-VACUUM-FREEZE-TABLE-AGE"
+>vacuum_freeze_table_age</A
+>控制<TT
+CLASS="COMMAND"
+>VACUUM</TT
+>什么时候这样做：如果该表经过<TT
+CLASS="VARNAME"
+>vacuum_freeze_table_age</TT
+>减去<TT
+CLASS="VARNAME"
+>vacuum_freeze_min_age</TT
+>个事务还没有被完全扫描过，则会强制一次全表清扫。将这个参数设置为 0 将强制<TT
+CLASS="COMMAND"
+>VACUUM</TT
+>总是扫描所有页面而实际上忽略可见性映射。
+   </P
+><P
+>    一个表能保持不被清理的最长时间是 20 亿个事务减去<TT
+CLASS="COMMAND"
+>VACUUM</TT
+>上次扫描全表时的<TT
+CLASS="VARNAME"
+>vacuum_freeze_min_age</TT
+>值。如果它超过该时间没有被清理，可能会导致数据丢失。要保证这不会发生，将在任何包含比<A
+HREF="runtime-config-autovacuum.html#GUC-AUTOVACUUM-FREEZE-MAX-AGE"
+>autovacuum_freeze_max_age</A
+>配置参数所指定的年龄更老的 XID 的未冻结行的表上调用自动清理（即使自动清理被禁用也会发生）。
+   </P
+><P
+>    这意味着如果一个表没有被清理，大约每<TT
+CLASS="VARNAME"
+>autovacuum_freeze_max_age</TT
+>减去<TT
+CLASS="VARNAME"
+>vacuum_freeze_min_age</TT
+>事务就会在该表上调用一次自动清理。对那些为了空间回收目的而被正常清理的表，这是无关紧要的。然而，对静态表（包括接收插入但没有更新或删除的表）就没有为空间回收而清理的需要，因此尝试在非常大的静态表上强制自动清理的间隔最大化会非常有用。显然我们可以通过增加<TT
+CLASS="VARNAME"
+>autovacuum_freeze_max_age</TT
+>或减少<TT
+CLASS="VARNAME"
+>vacuum_freeze_min_age</TT
+>来实现此目的。
+   </P
+><P
+>    <TT
+CLASS="VARNAME"
+>vacuum_freeze_table_age</TT
+>的实际最大值是 0.95 * <TT
+CLASS="VARNAME"
+>autovacuum_freeze_max_age</TT
+>，高于它的设置将被上限到最大值。一个高于<TT
+CLASS="VARNAME"
+>autovacuum_freeze_max_age</TT
+>的值没有意义，因为不管怎样在那个点上都会触发一次防回卷自动清理，并且 0.95 的乘数为在防回卷自动清理发生之前运行一次手动<TT
+CLASS="COMMAND"
+>VACUUM</TT
+>留出了一些空间。作为一种经验法则，<TT
+CLASS="COMMAND"
+>vacuum_freeze_table_age</TT
+>应当被设置成一个低于<TT
+CLASS="VARNAME"
+>autovacuum_freeze_max_age</TT
+>的值，留出一个足够的空间让一次被正常调度的<TT
+CLASS="COMMAND"
+>VACUUM</TT
+>或一次被正常删除和更新活动触发的自动清理可以在这个窗口中被运行。将它设置得太接近可能导致防回卷自动清理，即使该表最近因为回收空间的目的被清理过，而较低的值将导致更频繁的全表扫描。
+   </P
+><P
+>    增加<TT
+CLASS="VARNAME"
+>autovacuum_freeze_max_age</TT
+>（以及和它一起的<TT
+CLASS="VARNAME"
+>vacuum_freeze_table_age</TT
+>）的唯一不足是数据库集簇的<TT
+CLASS="FILENAME"
+>pg_clog</TT
+>子目录将占据更多空间，因为它必须存储所有向后<TT
+CLASS="VARNAME"
+>autovacuum_freeze_max_age</TT
+>范围内的所有事务的提交状态。提交时为每个事务使用两个二进制位，因此如果<TT
+CLASS="VARNAME"
+>autovacuum_freeze_max_age</TT
+>被设置为它的最大允许值 20 亿，<TT
+CLASS="FILENAME"
+>pg_clog</TT
+>将会增长到大约 0.5 吉字节。如果这对于你的总数据库尺寸是微小的，我们推荐设置<TT
+CLASS="VARNAME"
+>autovacuum_freeze_max_age</TT
+>为它的最大允许值。否则，基于你想要允许<TT
+CLASS="FILENAME"
+>pg_clog</TT
+>使用的存储空间大小来设置它（默认情况下 2 亿个事务大约等于<TT
+CLASS="FILENAME"
+>pg_clog</TT
+>的 50 MB存储空间）。
+   </P
+><P
+>    减小<TT
+CLASS="VARNAME"
+>vacuum_freeze_min_age</TT
+>的一个不足之处是它可能导致<TT
+CLASS="COMMAND"
+>VACUUM</TT
+>做无用的工作：如果该行在被替换成<TT
+CLASS="LITERAL"
+>FrozenXID</TT
+>之后很快就被修改（导致该行获得一个新的 XID），那么冻结一个行版本就是浪费时间。因此该设置应该足够大，这样直到行不再可能被修改之前，它们都不会被冻结。
+   </P
+><P
+>    为了跟踪一个数据库中最老的未冻结 XID 的年龄，<TT
+CLASS="COMMAND"
+>VACUUM</TT
+>在系统表<TT
+CLASS="STRUCTNAME"
+>pg_class</TT
+>和<TT
+CLASS="STRUCTNAME"
+>pg_database</TT
+>中存储 XID 的统计信息。特别地，一个表的<TT
+CLASS="STRUCTNAME"
+>pg_class</TT
+>行的<TT
+CLASS="STRUCTFIELD"
+>relfrozenxid</TT
+>列包含被该表的上一次全表<TT
+CLASS="COMMAND"
+>VACUUM</TT
+>所用的冻结截止 XID。该表中所有被有比这个截断 XID 老的普通 XID 的事务插入的行 都确保被冻结。相似地，一个数据库的<TT
+CLASS="STRUCTNAME"
+>pg_database</TT
+>行的<TT
+CLASS="STRUCTFIELD"
+>datfrozenxid</TT
+>列是出现在该数据库中的未冻结 XID 的下界 &mdash; 它只是数据库中每一个表的<TT
+CLASS="STRUCTFIELD"
+>relfrozenxid</TT
+>值的最小值。一种检查这些信息的方便方法是执行这样的查询：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>SELECT c.oid::regclass as table_name,
+       greatest(age(c.relfrozenxid),age(t.relfrozenxid)) as age
+FROM pg_class c
+LEFT JOIN pg_class t ON c.reltoastrelid = t.oid
+WHERE c.relkind IN ('r', 'm');
+
+SELECT datname, age(datfrozenxid) FROM pg_database;</PRE
+><P>
+
+    <TT
+CLASS="LITERAL"
+>age</TT
+>列度量从该截断 XID 到当前事务 XID 的事务数。
+   </P
+><P
+>    <TT
+CLASS="COMMAND"
+>VACUUM</TT
+>通常只扫描从上次清理后备修改过的页面，但是只有当全表被扫描时<TT
+CLASS="STRUCTFIELD"
+>relfrozenxid</TT
+>才能被推进。当<TT
+CLASS="STRUCTFIELD"
+>relfrozenxid</TT
+>比<TT
+CLASS="VARNAME"
+>vacuum_freeze_table_age</TT
+>个事务还老时、当<TT
+CLASS="COMMAND"
+>VACUUM</TT
+>的<TT
+CLASS="LITERAL"
+>FREEZE</TT
+>选项被使用时或当所有页面正好要求清理来移除死亡行版本时，全表将被扫描。当<TT
+CLASS="COMMAND"
+>VACUUM</TT
+>扫描全表时，在它被完成后，<TT
+CLASS="LITERAL"
+>age(relfrozenxid)</TT
+>应该比被使用的<TT
+CLASS="VARNAME"
+>vacuum_freeze_min_age</TT
+>设置略大（比在<TT
+CLASS="COMMAND"
+>VACUUM</TT
+>开始后开始的事务数多）。如果在<TT
+CLASS="VARNAME"
+>autovacuum_freeze_max_age</TT
+>被达到之前没有全表扫描<TT
+CLASS="COMMAND"
+>VACUUM</TT
+>在该表上被发出，将很快为该表强制一次自动清理。
+   </P
+><P
+>    如果出于某种原因自动清理无法从一个表中清除旧的 XID，当数据库的最旧 XID 和回卷点之间达到 1 千万个事务时，系统将开始发出这样的警告消息：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>WARNING:  database "mydb" must be vacuumed within 177009986 transactions
+HINT:  To avoid a database shutdown, execute a database-wide VACUUM in "mydb".</PRE
+><P>
+
+    （如该示意所建议的，一次手动的<TT
+CLASS="COMMAND"
+>VACUUM</TT
+>应该会修复该问题；但是注意该次<TT
+CLASS="COMMAND"
+>VACUUM</TT
+>必须由一个超级用户来执行，否则它将无法处理系统目录并且因而不能推进数据库的<TT
+CLASS="STRUCTFIELD"
+>datfrozenxid</TT
+>）。如果这些警告被忽略，一旦距离回卷点只剩下 1 百万个事务时，该系统将会关闭并且拒绝开始任何新的事务：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>ERROR:  database is not accepting commands to avoid wraparound data loss in database "mydb"
+HINT:  Stop the postmaster and vacuum that database in single-user mode.</PRE
+><P>
+
+    这一百万个事务的富余是为了让管理员能通过手动执行所要求的<TT
+CLASS="COMMAND"
+>VACUUM</TT
+>命令进行恢复而不丢失数据。但是，由于一旦系统进入到安全关闭模式，它将不会执行命令。做这个操作的唯一方法是停止服务器并且以单一用户启动服务器来执行<TT
+CLASS="COMMAND"
+>VACUUM</TT
+>。单一用户模式中不会强制该关闭模式。关于使用单一用户模式的细节请见<A
+HREF="app-postgres.html"
+><SPAN
+CLASS="APPLICATION"
+>postgres</SPAN
+></A
+>参考页。
+   </P
+><DIV
+CLASS="SECT3"
+><H3
+CLASS="SECT3"
+><A
+NAME="VACUUM-FOR-MULTIXACT-WRAPAROUND"
+>24.1.5.1. 多事务和回卷</A
+></H3
+><P
+>     <I
+CLASS="FIRSTTERM"
+>Multixact ID</I
+>被用来支持被多个事务锁定的行。由于在一个元组头部
+     只有有限的空间可以用来存储锁信息，所以只要有多于一个事务并发地锁住一个行，
+     锁信息将使用一个<SPAN
+CLASS="QUOTE"
+>"多个事务 ID"</SPAN
+>（或简称多事务 ID）来编码。任何特定
+     多事务 ID 中包括的事务 ID 的信息被独立地存储在<TT
+CLASS="FILENAME"
+>pg_multixact</TT
+>子目
+     录中，并且只有多事务 ID 出现在元组头部的<TT
+CLASS="STRUCTFIELD"
+>xmax</TT
+>域中。和事务 ID 
+     类似，多事务 ID 也是用一个 32 位计数器实现，并且也采用了相似的存储，这些都要
+     求仔细的年龄管理、存储清除和回卷处理。在每个多事务中都有一个独立的存储区域
+     保存成员列表，它也使用一个 32 位计数器并且也应被管理。
+    </P
+><P
+>     在一次<TT
+CLASS="COMMAND"
+>VACUUM</TT
+>表扫描（部分或者全部）期间，任何比
+     <A
+HREF="runtime-config-client.html#GUC-VACUUM-MULTIXACT-FREEZE-MIN-AGE"
+>vacuum_multixact_freeze_min_age</A
+>
+     要老的多事务 ID 会被替换为一个不同的值，该值可以是零值、
+     一个单一事务 ID 或者一个更新的多事务 ID。
+     对于每一个表，<TT
+CLASS="STRUCTNAME"
+>pg_class</TT
+>.<TT
+CLASS="STRUCTFIELD"
+>relminmxid</TT
+>
+     存储了在该表任意元组中仍然存在的最老可能多事务 ID。如果这个值比
+     <A
+HREF="runtime-config-client.html#GUC-VACUUM-MULTIXACT-FREEZE-TABLE-AGE"
+>vacuum_multixact_freeze_table_age</A
+>老，
+     将强制一次全表扫描。可以在
+     <TT
+CLASS="STRUCTNAME"
+>pg_class</TT
+>.<TT
+CLASS="STRUCTFIELD"
+>relminmxid</TT
+>
+     上使用<CODE
+CLASS="FUNCTION"
+>mxid_age()</CODE
+>来找到它的年龄。
+    </P
+><P
+> 
+     全表<TT
+CLASS="COMMAND"
+>VACUUM</TT
+>扫描（不管是什么导致它们）将为表推进该值。
+     最后，当所有数据库中的所有表被扫描并且它们的最老多事务值被推进，
+     较老的多事务的磁盘存储可以被移除。
+    </P
+><P
+>     作为一种安全设备，对任何多事务年龄超过
+     <A
+HREF="runtime-config-autovacuum.html#GUC-AUTOVACUUM-MULTIXACT-FREEZE-MAX-AGE"
+>autovacuum_multixact_freeze_max_age</A
+>的表，
+     都将发生一次全表清理扫描。如果已用的成员存储空间超过总量的 50%，全表清理扫描
+     也将逐步在所有表上进行，这会从那些具有最老多事务年龄的表开始。即使自动清理被
+     在名义上被禁用，这两中类型的全表扫描都将会发生。
+    </P
+></DIV
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AUTOVACUUM"
+>24.1.6. 自动清理后台进程</A
+></H2
+><P
+>    <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>有一个可选的但是被高度推荐的特性<I
+CLASS="FIRSTTERM"
+>autovacuum</I
+>，它的目的是自动执行<TT
+CLASS="COMMAND"
+>VACUUM</TT
+>和<TT
+CLASS="COMMAND"
+>ANALYZE </TT
+>命令。当它被启用时，自动清理会检查被大量插入、更新或删除元组的表。这些检查会利用统计信息收集功能，因此除非<A
+HREF="runtime-config-statistics.html#GUC-TRACK-COUNTS"
+>track_counts</A
+>被设置为<TT
+CLASS="LITERAL"
+>true</TT
+>，自动清理不能被使用。在默认配置下，自动清理是被启用的并且相关配置参数已被正确配置。
+   </P
+><P
+>    <SPAN
+CLASS="QUOTE"
+>"自动清理后台进程"</SPAN
+>实际上由多个进程组成。有一个称为
+    <I
+CLASS="FIRSTTERM"
+>自动清理启动器</I
+>的常驻后台进程，
+    它负责为所有数据库启动<I
+CLASS="FIRSTTERM"
+>自动清理工作者</I
+>进程。
+    启动器将把工作散布在一段时间上，它每隔
+    <A
+HREF="runtime-config-autovacuum.html#GUC-AUTOVACUUM-NAPTIME"
+>autovacuum_naptime</A
+>秒尝试在每个数据库中启动一个工作者
+    （因此，如果安装中有<TT
+CLASS="REPLACEABLE"
+><I
+>N</I
+></TT
+>个数据库，则每
+    <TT
+CLASS="VARNAME"
+>autovacuum_naptime</TT
+>/<TT
+CLASS="REPLACEABLE"
+><I
+>N</I
+></TT
+>秒将启动一个新的工作者）。
+    在同一时间只允许最多<A
+HREF="runtime-config-autovacuum.html#GUC-AUTOVACUUM-MAX-WORKERS"
+>autovacuum_max_workers</A
+>
+    个工作者进程运行。如果有超过<TT
+CLASS="VARNAME"
+>autovacuum_max_workers</TT
+>
+    个数据库需要被处理，下一个数据库将在第一个工作者结束后马上被处理。
+    每一个工作者进程将检查其数据库中的每一个表并且在需要时执行
+    <TT
+CLASS="COMMAND"
+>VACUUM</TT
+>和/或<TT
+CLASS="COMMAND"
+>ANALYZE</TT
+>。
+    可以设置<A
+HREF="runtime-config-autovacuum.html#GUC-LOG-AUTOVACUUM-MIN-DURATION"
+>log_autovacuum_min_duration</A
+>
+    来监控自动清理工作者的活动。
+   </P
+><P
+>    如果在一小段时间内多个大型表都变得可以被清理，所有的自动清理工作者可能都会被占用来在一段长的时间内清理这些表。这将会造成其他的表和数据库无法被清理，直到一个工作者变得可用。对于一个数据库中的工作者数量并没有限制，但是工作者确实会试图避免重复已经被其他工作者完成的工作。注意运行着的工作者的数量不会被计入<A
+HREF="runtime-config-connection.html#GUC-MAX-CONNECTIONS"
+>max_connections</A
+>或<A
+HREF="runtime-config-connection.html#GUC-SUPERUSER-RESERVED-CONNECTIONS"
+>superuser_reserved_connections</A
+>限制。
+   </P
+><P
+>    <TT
+CLASS="STRUCTFIELD"
+>relfrozenxid</TT
+>值比<A
+HREF="runtime-config-autovacuum.html#GUC-AUTOVACUUM-FREEZE-MAX-AGE"
+>autovacuum_freeze_max_age</A
+>事务年龄更大的表总是会被清理（这页表示这些表的冻结最大年龄被通过表的存储参数修改过，参见后文）。否则，如果从上次<TT
+CLASS="COMMAND"
+>VACUUM</TT
+>以来失效的元组数超过<SPAN
+CLASS="QUOTE"
+>"清理阈值"</SPAN
+>，表也会被清理。清理阈值定义为：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>清理阈值 = 清理基本阈值 + 清理缩放系数 * 元组数</PRE
+><P>
+    其中清理基本阈值为<A
+HREF="runtime-config-autovacuum.html#GUC-AUTOVACUUM-VACUUM-THRESHOLD"
+>autovacuum_vacuum_threshold</A
+>，
+    清理缩放系数为<A
+HREF="runtime-config-autovacuum.html#GUC-AUTOVACUUM-VACUUM-SCALE-FACTOR"
+>autovacuum_vacuum_scale_factor</A
+>，
+    元组数为<TT
+CLASS="STRUCTNAME"
+>pg_class</TT
+>.<TT
+CLASS="STRUCTFIELD"
+>reltuples</TT
+>。
+    失效元组的数量从统计信息收集器获得，它是一个由每个<TT
+CLASS="COMMAND"
+>UPDATE</TT
+>和<TT
+CLASS="COMMAND"
+>DELETE</TT
+>命令更新的半准确的计数（它只是半准确，是因为在高负载的情况下某些信息可能会丢失）。如果表的<TT
+CLASS="STRUCTFIELD"
+>relfrozenxid</TT
+>值比<TT
+CLASS="VARNAME"
+>vacuum_freeze_table_age</TT
+>事务年龄更大，整个表将被扫描以冻结旧元组并增长<TT
+CLASS="STRUCTFIELD"
+>relfrozenxid</TT
+>，否则只有从上次清理以来被修改的页面会被扫描。
+   </P
+><P
+>    对于分析，也使用了一个相似的阈值：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>分析阈值 = 分析基本阈值 + 分析缩放系数 * 元组数</PRE
+><P>
+    该阈值将与自从上次<TT
+CLASS="COMMAND"
+>ANALYZE</TT
+>以来被插入、更新或删除的元组数进行比较。
+   </P
+><P
+>    临时表不能被自动清理访问。因此，临时表的清理和分析操作必须通过会话期间的SQL命令来执行。
+   </P
+><P
+>    默认的阈值和缩放系数都取自于<TT
+CLASS="FILENAME"
+>postgresql.conf</TT
+>，
+    但是可以为每一个表重写它们(和许多其他自动清理控制参数)，
+    详情参见<A
+HREF="sql-createtable.html#SQL-CREATETABLE-STORAGE-PARAMETERS"
+><I
+>存储参数</I
+></A
+>。
+    如果一个设置已经通过一个表的存储参数修改，那么在处理该表时使用该值，
+    否则使用全局设置。全局设置请参阅<A
+HREF="runtime-config-autovacuum.html"
+>第 19.10 &#33410;</A
+>。
+   </P
+><P
+>    当多个工作者运行时，在所有运行着的工作者之间自动清理代价延迟参数
+    (参阅<A
+HREF="runtime-config-resource.html#RUNTIME-CONFIG-RESOURCE-VACUUM-COST"
+>第 19.4.4 &#33410;</A
+>)是
+    <SPAN
+CLASS="QUOTE"
+>"平衡的"</SPAN
+>，这样不管实际运行的工作者数量是多少，
+    对于系统的总体 I/O 影响总是相同的。不过，任何正在处理已经设置了每表
+    <TT
+CLASS="LITERAL"
+>autovacuum_vacuum_cost_delay</TT
+>或
+    <TT
+CLASS="LITERAL"
+>autovacuum_vacuum_cost_limit</TT
+>
+    存储参数的表的工作者不会被考虑在均衡算法中。
+   </P
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="maintenance.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="routine-reindex.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>日常数据库维护工作</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="maintenance.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>日常重建索引</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

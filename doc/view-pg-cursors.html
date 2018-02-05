@@ -1,0 +1,383 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>pg_cursors</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="系统目录"
+HREF="catalogs.html"><LINK
+REL="PREVIOUS"
+TITLE="pg_config"
+HREF="view-pg-config.html"><LINK
+REL="NEXT"
+TITLE="pg_file_settings"
+HREF="view-pg-file-settings.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/catalogs.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="pg_config"
+HREF="view-pg-config.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="catalogs.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#31456; 50. 系统目录</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="pg_file_settings"
+HREF="view-pg-file-settings.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="VIEW-PG-CURSORS"
+>50.61. <TT
+CLASS="STRUCTNAME"
+>pg_cursors</TT
+></A
+></H1
+><P
+>   <TT
+CLASS="STRUCTNAME"
+>pg_cursors</TT
+>视图列出了当前可用的游标。游标可以以几种方式定义：
+   <P
+></P
+></P><UL
+><LI
+><P
+>      通过SQL中的<A
+HREF="sql-declare.html"
+>DECLARE</A
+>语句
+     </P
+></LI
+><LI
+><P
+>      通过前端/后端协议中的绑定消息，如<A
+HREF="protocol-flow.html#PROTOCOL-FLOW-EXT-QUERY"
+>第 51.2.3 &#33410;</A
+>中所描述的
+     </P
+></LI
+><LI
+><P
+>      通过服务器编程接口（SPI），如<A
+HREF="spi-interface.html"
+>第 45.1 &#33410;</A
+>中所描述的
+     </P
+></LI
+></UL
+><P>
+
+   <TT
+CLASS="STRUCTNAME"
+>pg_cursors</TT
+>视图显示由任何这些方式创建的游标。视图只存在于定义它们的事务期间，除非声明了<TT
+CLASS="LITERAL"
+>WITH HOLD</TT
+>。因此非保持游标只在它们的创建事务结束前存在于这个视图中。
+
+   </P><DIV
+CLASS="NOTE"
+><BLOCKQUOTE
+CLASS="NOTE"
+><P
+><B
+>&#27880;&#24847;: </B
+>     视图用于在内部实现<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>的某些部件，例如过程语言。因此，<TT
+CLASS="STRUCTNAME"
+>pg_cursors</TT
+>视图可能包括那些不是由用户显式创建的游标。
+    </P
+></BLOCKQUOTE
+></DIV
+><P>
+  </P
+><DIV
+CLASS="TABLE"
+><A
+NAME="AEN110492"
+></A
+><P
+><B
+>&#34920; 50-62. <TT
+CLASS="STRUCTNAME"
+>pg_cursors</TT
+>的列</B
+></P
+><TABLE
+BORDER="1"
+CLASS="CALSTABLE"
+><COL><COL><COL><THEAD
+><TR
+><TH
+>名字</TH
+><TH
+>类型</TH
+><TH
+>描述</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+><TT
+CLASS="STRUCTFIELD"
+>name</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>text</TT
+></TD
+><TD
+>游标名</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="STRUCTFIELD"
+>statement</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>text</TT
+></TD
+><TD
+>提交用于定义此游标的查询语句</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="STRUCTFIELD"
+>is_holdable</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>boolean</TT
+></TD
+><TD
+>       如果游标是可保持的（即，它可以在其定义事务提交后被访问）则为<TT
+CLASS="LITERAL"
+>真</TT
+>，否则为<TT
+CLASS="LITERAL"
+>否</TT
+>
+       </TD
+></TR
+><TR
+><TD
+><TT
+CLASS="STRUCTFIELD"
+>is_binary</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>boolean</TT
+></TD
+><TD
+>       如果游标被声明为<TT
+CLASS="LITERAL"
+>BINARY</TT
+>则为<TT
+CLASS="LITERAL"
+>真</TT
+>，否则为<TT
+CLASS="LITERAL"
+>假</TT
+>
+       </TD
+></TR
+><TR
+><TD
+><TT
+CLASS="STRUCTFIELD"
+>is_scrollable</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>boolean</TT
+></TD
+><TD
+>       如果游标是可滚动的（即，允许以一种非顺序的方式检索行）则为<TT
+CLASS="LITERAL"
+>真</TT
+>，否则为<TT
+CLASS="LITERAL"
+>假</TT
+>
+       </TD
+></TR
+><TR
+><TD
+><TT
+CLASS="STRUCTFIELD"
+>creation_time</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>timestamptz</TT
+></TD
+><TD
+>游标被声明的时间</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+><P
+>   <TT
+CLASS="STRUCTNAME"
+>pg_cursors</TT
+>视图是只读的。
+  </P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="view-pg-config.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="view-pg-file-settings.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><TT
+CLASS="STRUCTNAME"
+>pg_config</TT
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="catalogs.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><TT
+CLASS="STRUCTNAME"
+>pg_file_settings</TT
+></TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

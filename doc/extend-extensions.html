@@ -1,0 +1,1146 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>打包相关对象到一个扩展中</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="扩展 SQL"
+HREF="extend.html"><LINK
+REL="PREVIOUS"
+TITLE="索引的接口扩展"
+HREF="xindex.html"><LINK
+REL="NEXT"
+TITLE="扩展的构建基础设施"
+HREF="extend-pgxs.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/extend.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="索引的接口扩展"
+HREF="xindex.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="extend.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#31456; 36. 扩展 <ACRONYM
+CLASS="ACRONYM"
+>SQL</ACRONYM
+></TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="扩展的构建基础设施"
+HREF="extend-pgxs.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="EXTEND-EXTENSIONS"
+>36.15. 打包相关对象到一个扩展中</A
+></H1
+><P
+>    一个对<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>有用的扩展通常包括多个 SQL 对象，例如，一种新的数据类型将需要新函数、新操作符以及可能的新索引操作符类。将所有这些对象收集到一个单一包中有助于简化数据库管理。<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>称这样一个包为一个<I
+CLASS="FIRSTTERM"
+>扩展</I
+>。要定义一个扩展，你至少需要一个包含创建该扩展的对象的<ACRONYM
+CLASS="ACRONYM"
+>SQL</ACRONYM
+>命令的<I
+CLASS="FIRSTTERM"
+>脚本文件</I
+>以及一个指定扩展本身的一些基本属性的<I
+CLASS="FIRSTTERM"
+>控制文件</I
+>。如果扩展包括 C 代码，通常还有一个 C 代码编译而成的共享库文件。一旦你有了这些文件，一个简单的<A
+HREF="sql-createextension.html"
+>CREATE EXTENSION</A
+>命令可以把这些对象载入到你的数据库。
+   </P
+><P
+>    使用一个扩展而不是只运行<ACRONYM
+CLASS="ACRONYM"
+>SQL</ACRONYM
+>脚本载入一堆<SPAN
+CLASS="QUOTE"
+>"松散"</SPAN
+>对象到数据库的主要优点是，<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>将能理解该扩展的对象是一起的。你可以用一个单一的<A
+HREF="sql-dropextension.html"
+>DROP EXTENSION</A
+>命令删除所有的对象（不用维护一个单独的<SPAN
+CLASS="QUOTE"
+>"卸载"</SPAN
+>脚本）。 甚至更有用的一点是，<SPAN
+CLASS="APPLICATION"
+>pg_dump</SPAN
+>知道它不应该转储该扩展中的个体成员对象 &mdash; 它将只在转储中包括一个<TT
+CLASS="COMMAND"
+>CREATE EXTENSION</TT
+>命令。这大大简化了迁移到一个包含不同于旧版扩展中对象的新版扩展的工作。不过，注意在把这样一个转储载入到一个新数据库时，该扩展的控制、脚本和其他文件必须可用。
+   </P
+><P
+>    <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>不会让你删除包含在一个扩展中的个体对象，除非删除整个扩展。还有，虽然你能够改变一个扩展的成员对象的定义（例如，通过<TT
+CLASS="COMMAND"
+>CREATE OR REPLACE FUNCTION</TT
+>改变一个函数），记住被修改后的定义将不会被<SPAN
+CLASS="APPLICATION"
+>pg_dump</SPAN
+>转储。这种改变通常只有在你并发地在扩展脚本文件中做出相同更改时才有意义（但是对于包含配置数据的表有特殊的规定，见<A
+HREF="extend-extensions.html#EXTEND-EXTENSIONS-CONFIG-TABLES"
+>第 36.15.3 &#33410;</A
+>）。在生产环境中，通常更好的方式是创建一个扩展更新脚本来执行对扩展中成员对象的更改。
+   </P
+><P
+>    扩展脚本可能会通过<TT
+CLASS="COMMAND"
+>GRANT</TT
+>和<TT
+CLASS="COMMAND"
+>REVOKE</TT
+>语句设置扩展中所含对象的特权。每一个对象的最终特权集合（如果设置了任何特权）将被存储在<A
+HREF="catalog-pg-init-privs.html"
+><TT
+CLASS="STRUCTNAME"
+>pg_init_privs</TT
+></A
+>系统目录中。使用<SPAN
+CLASS="APPLICATION"
+>pg_dump</SPAN
+>时，<TT
+CLASS="COMMAND"
+>CREATE EXTENSION</TT
+>命令将被包括在转储中，后面会跟着必要的<TT
+CLASS="COMMAND"
+>GRANT</TT
+>和<TT
+CLASS="COMMAND"
+>REVOKE</TT
+>语句集合来将对象的特权设置成取得该转储时的样子。
+   </P
+><P
+>    <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>当前不支持扩展脚本发出<TT
+CLASS="COMMAND"
+>CREATE POLICY</TT
+>或者<TT
+CLASS="COMMAND"
+>SECURITY LABEL</TT
+>语句。这些东西的设置应该在扩展被创建好之后来进行。所有在扩展对象上创建的 RLS 策略和安全标签都将被包括在<SPAN
+CLASS="APPLICATION"
+>pg_dump</SPAN
+>创建的转储中。
+   </P
+><P
+>    扩展机制也对打包调整一个扩展中所含 SQL 对象定义的修改脚本有规定。例如，如果一个扩展的 1.1 版本比 1.0 版本增加了一个函数并且更改了另一个函数的函数体，该扩展的作者可以提供一个<I
+CLASS="FIRSTTERM"
+>更新脚本</I
+>来做这两个更改。那么<TT
+CLASS="COMMAND"
+>ALTER EXTENSION UPDATE</TT
+>命令可以被用来应用这些更改并且跟踪在给定数据库中实际安装的是该扩展的哪个版本。
+   </P
+><P
+>    能作为一个扩展的成员的 SQL 对象的种类如<A
+HREF="sql-alterextension.html"
+>ALTER EXTENSION</A
+>所示。尤其是数据库集簇范围的对象（例如数据库、角色和表空间）不能作为扩展成员，因为一个扩展只在一个数据库范围内可见（尽管一个扩展脚本并没有被禁止创建这些对象，但是这样做将无法把它们作为扩展的一部分来跟踪）。还要注意虽然一个表可以是一个扩展的成员，它的扶助对象（例如索引）不会被直接认为是该扩展的成员。另一个重点是模式可以属于扩展，但是反过来不行：一个扩展本身有一个不被限定的名称并且不存在于任何模式<SPAN
+CLASS="QUOTE"
+>"中"</SPAN
+>。不过，扩展的成员对象只要对象类型合适就可以属于模式。一个扩展拥有包含其成员对象的模式可能合适也可能不合适。
+   </P
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN61831"
+>36.15.1. 扩展文件</A
+></H2
+><P
+>     <A
+HREF="sql-createextension.html"
+>CREATE EXTENSION</A
+>命令依赖每一个扩展都有的控制文件，控制文件必须被命名为扩展的名称加上一个后缀<TT
+CLASS="LITERAL"
+>.control</TT
+>，并且必须被放在安装的<TT
+CLASS="LITERAL"
+>SHAREDIR/extension</TT
+>目录中。还必须至少有一个<ACRONYM
+CLASS="ACRONYM"
+>SQL</ACRONYM
+>脚本文件，它遵循命名模式<TT
+CLASS="LITERAL"
+><TT
+CLASS="REPLACEABLE"
+><I
+>extension</I
+></TT
+>--<TT
+CLASS="REPLACEABLE"
+><I
+>version</I
+></TT
+>.sql</TT
+>（例如，<TT
+CLASS="LITERAL"
+>foo--1.0.sql</TT
+>表示扩展<TT
+CLASS="LITERAL"
+>foo</TT
+>的<TT
+CLASS="LITERAL"
+>1.0</TT
+>版本）。默认情况下，脚本文件也被放置在<TT
+CLASS="LITERAL"
+>SHAREDIR/extension</TT
+>目录中，但是控制文件中可以为脚本文件指定一个不同的目录。
+    </P
+><P
+>     一个扩展控制文件的格式与<TT
+CLASS="FILENAME"
+>postgresql.conf</TT
+>文件相同，即是一个<TT
+CLASS="REPLACEABLE"
+><I
+>parameter_name</I
+></TT
+> <TT
+CLASS="LITERAL"
+>=</TT
+> <TT
+CLASS="REPLACEABLE"
+><I
+>value</I
+></TT
+>赋值的列表，每行一个。允许空行和<TT
+CLASS="LITERAL"
+>#</TT
+>引入的注释。注意对任何不是单一词或数字的值加上引号。
+    </P
+><P
+>     一个控制文件可以设置下列参数：
+    </P
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="VARNAME"
+>directory</TT
+> (<TT
+CLASS="TYPE"
+>string</TT
+>)</DT
+><DD
+><P
+>        包含扩展的<ACRONYM
+CLASS="ACRONYM"
+>SQL</ACRONYM
+>脚本文件的目录。除非给出一个绝对路径，这个目录名是相对于安装的<TT
+CLASS="LITERAL"
+>SHAREDIR</TT
+>目录。默认行为等效于指定<TT
+CLASS="LITERAL"
+>directory = 'extension'</TT
+>。
+       </P
+></DD
+><DT
+><TT
+CLASS="VARNAME"
+>default_version</TT
+> (<TT
+CLASS="TYPE"
+>string</TT
+>)</DT
+><DD
+><P
+>        该扩展的默认版本（就是如果在<TT
+CLASS="COMMAND"
+>CREATE EXTENSION</TT
+>中没有指定版本时将会被安装的那一个）。尽管可以忽略这个参数，但如果没有出现<TT
+CLASS="LITERAL"
+>VERSION</TT
+>选项时那将会导致<TT
+CLASS="COMMAND"
+>CREATE EXTENSION</TT
+>失败，因此你通常不会希望这样做。
+       </P
+></DD
+><DT
+><TT
+CLASS="VARNAME"
+>comment</TT
+> (<TT
+CLASS="TYPE"
+>string</TT
+>)</DT
+><DD
+><P
+>        一个关于该扩展的注释（任意字符串）。该注释会在初始创建扩展时应用，但是扩展更新时不会引用该注释（因为可能会覆盖用户增加的注释）。扩展的注释也可以通过在脚本文件中写上<A
+HREF="sql-comment.html"
+>COMMENT</A
+>命令来设置。
+       </P
+></DD
+><DT
+><TT
+CLASS="VARNAME"
+>encoding</TT
+> (<TT
+CLASS="TYPE"
+>string</TT
+>)</DT
+><DD
+><P
+>        该脚本文件使用的字符集编码。当脚本文件包含任何非 ASCII 字符时，可以指定这个参数。否则文件都会被假定为数据库编码。
+       </P
+></DD
+><DT
+><TT
+CLASS="VARNAME"
+>module_pathname</TT
+> (<TT
+CLASS="TYPE"
+>string</TT
+>)</DT
+><DD
+><P
+>        这个参数的值将被用于替换脚本文件中每一次出现的<TT
+CLASS="LITERAL"
+>MODULE_PATHNAME</TT
+>。如果设置，将不会进行替换。通常，这会被设置为<TT
+CLASS="LITERAL"
+>$libdir/<TT
+CLASS="REPLACEABLE"
+><I
+>shared_library_name</I
+></TT
+></TT
+>并且接着<TT
+CLASS="LITERAL"
+>MODULE_PATHNAME</TT
+>被用在<TT
+CLASS="COMMAND"
+>CREATE FUNCTION</TT
+>命令中进行 C-语言函数的创建，因此该脚本文件不必把共享库的名称硬编码在其中。
+       </P
+></DD
+><DT
+><TT
+CLASS="VARNAME"
+>requires</TT
+> (<TT
+CLASS="TYPE"
+>string</TT
+>)</DT
+><DD
+><P
+>        这个扩展依赖的其他扩展名的一个列表，例如<TT
+CLASS="LITERAL"
+>requires = 'foo, bar'</TT
+>。被依赖的扩展必须先于这个扩展安装。
+       </P
+></DD
+><DT
+><TT
+CLASS="VARNAME"
+>superuser</TT
+> (<TT
+CLASS="TYPE"
+>boolean</TT
+>)</DT
+><DD
+><P
+>        如果这个参数为<TT
+CLASS="LITERAL"
+>true</TT
+>（默认情况），只有超级用户能够创建该扩展或者将它更新到一个新版本。如果被设置为<TT
+CLASS="LITERAL"
+>false</TT
+>，只需要用来执行安装中命令或者更新脚本的特权。
+       </P
+></DD
+><DT
+><TT
+CLASS="VARNAME"
+>relocatable</TT
+> (<TT
+CLASS="TYPE"
+>boolean</TT
+>)</DT
+><DD
+><P
+>        如果一个扩展可能在初始创建之后将其所含的对象移动到一个不同的模式中，它就是<I
+CLASS="FIRSTTERM"
+>relocatable</I
+>。默认值是<TT
+CLASS="LITERAL"
+>false</TT
+>，即该扩展是不可重定位的。详见<A
+HREF="extend-extensions.html#EXTEND-EXTENSIONS-RELOCATION"
+>第 36.15.2 &#33410;</A
+>。
+       </P
+></DD
+><DT
+><TT
+CLASS="VARNAME"
+>schema</TT
+> (<TT
+CLASS="TYPE"
+>string</TT
+>)</DT
+><DD
+><P
+>        这个参数只能为非可重定位扩展设置。它强制扩展被载入到给定的模式中而非其他模式中。只有在初始创建一个扩展时才会参考<TT
+CLASS="VARNAME"
+>schema</TT
+>参数，扩展更新时则不会参考这个参数。详见<A
+HREF="extend-extensions.html#EXTEND-EXTENSIONS-RELOCATION"
+>第 36.15.2 &#33410;</A
+>。
+       </P
+></DD
+></DL
+></DIV
+><P
+>     除了主要控制文件<TT
+CLASS="LITERAL"
+><TT
+CLASS="REPLACEABLE"
+><I
+>extension</I
+></TT
+>.control</TT
+>，一个扩展还可以有二级控制文件，它们以<TT
+CLASS="LITERAL"
+><TT
+CLASS="REPLACEABLE"
+><I
+>extension</I
+></TT
+>--<TT
+CLASS="REPLACEABLE"
+><I
+>version</I
+></TT
+>.control</TT
+>的风格命名。如果提供了二级控制文件，它们必须被放置在脚本文件的目录中。二级控制文件遵循主要控制文件相同的格式。在安装或更新该扩展的版本时，一个二级控制文件中设置的任何参数将覆盖主要控制文件中的设置。不过，参数<TT
+CLASS="VARNAME"
+>directory</TT
+>以及<TT
+CLASS="VARNAME"
+>default_version</TT
+>不能在二级控制文件中设置。
+    </P
+><P
+>     一个扩展的<ACRONYM
+CLASS="ACRONYM"
+>SQL</ACRONYM
+>脚本文件能够包含任何 SQL 命令，除了事务控制命令（<TT
+CLASS="COMMAND"
+>BEGIN</TT
+>、<TT
+CLASS="COMMAND"
+>COMMIT</TT
+>等）以及不能在一个事务块中执行的命令（如<TT
+CLASS="COMMAND"
+>VACUUM</TT
+>）。这是因为脚本文件会被隐式地在一个事务块中被执行。
+    </P
+><P
+>     一个扩展的<ACRONYM
+CLASS="ACRONYM"
+>SQL</ACRONYM
+>脚本文件也能包含以<TT
+CLASS="LITERAL"
+>\echo</TT
+>开始的行，它将被扩展机制忽略（当作注释）。如果脚本文件被送给<SPAN
+CLASS="APPLICATION"
+>psql</SPAN
+>而不是由<TT
+CLASS="COMMAND"
+>CREATE EXTENSION</TT
+>载入（见<A
+HREF="extend-extensions.html#EXTEND-EXTENSIONS-EXAMPLE"
+>第 36.15.5 &#33410;</A
+>中的示例脚本），这种机制通常被用来抛出错误。如果没有这种功能，用户可能会意外地把该扩展的内容作为<SPAN
+CLASS="QUOTE"
+>"松散的"</SPAN
+>对象而不是一整个扩展载入，这样的状态恢复起来比较麻烦。
+    </P
+><P
+>     尽管脚本文件可以包含指定编码允许的任何字符，但是控制文件应该只包含纯 ASCII 字符，因为<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>没有办法知道一个控制文件是什么编码。实际上，如果你想在扩展的注释中使用非 ASCII 字符只有一个问题。推荐的方法是不使用控制文件的<TT
+CLASS="VARNAME"
+>comment</TT
+>参数，而是使用脚本文件中的<TT
+CLASS="COMMAND"
+>COMMENT ON EXTENSION</TT
+>来设置注释。
+    </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="EXTEND-EXTENSIONS-RELOCATION"
+>36.15.2. 扩展可再定位性</A
+></H2
+><P
+>     用户常常希望把扩展中包含的对象载入到一个与扩展的作者所设想的不一样的模式中。对于这种可重定位性，有三种支持的级别：
+    </P
+><P
+></P
+><UL
+><LI
+><P
+>       一个完全可重定位的扩展能在任何时候被移动到另一个模式中，即使在它被载入到一个数据库中之后。这种移动通过<TT
+CLASS="COMMAND"
+>ALTER EXTENSION SET SCHEMA</TT
+>命令完成，该命令会自动地把所有成员对象重命名到新的模式中。通常，只有扩展不包含任何对其所在模式的内部假设时才可能这样做。还有，该扩展的对象必须全部在同一个模式中（忽略那些不属于任何模式的对象，例如过程语言）。要让一个扩展变成完全可定位，在它的控制文件中设置<TT
+CLASS="LITERAL"
+>relocatable = true</TT
+>。
+      </P
+></LI
+><LI
+><P
+>       一个扩展可能在安装过程中是可重定位的，但是安装完后就不再可重定位。典型的情况是扩展的脚本文件需要显式地引用目标模式，例如为 SQL 函数设置<TT
+CLASS="LITERAL"
+>search_path</TT
+>属性。对于这样一种扩展，在其控制文件中设置<TT
+CLASS="LITERAL"
+>relocatable = false</TT
+>，并且使用<TT
+CLASS="LITERAL"
+>@extschema@</TT
+>在脚本文件中引用目标模式。在脚本被执行前，所有这个字符串的出现都将被替换为实际的目标模式名。用户可以使用<TT
+CLASS="COMMAND"
+>CREATE EXTENSION</TT
+>的<TT
+CLASS="LITERAL"
+>SCHEMA</TT
+>选项设置目标模式名。
+      </P
+></LI
+><LI
+><P
+>       如果扩展根本就不支持重定位，在它的控制文件中设置<TT
+CLASS="LITERAL"
+>relocatable = false</TT
+>，并且还设置<TT
+CLASS="LITERAL"
+>schema</TT
+>为想要的目标模式的名称。这将阻止使用<TT
+CLASS="COMMAND"
+>CREATE EXTENSION</TT
+>的<TT
+CLASS="LITERAL"
+>SCHEMA</TT
+>选项修改目标模式，除非它指定的是和控制文件中相同的模式。如果该扩展包括关于模式名的内部假设且模式名不能使用<TT
+CLASS="LITERAL"
+>@extschema@</TT
+>的方法替换，这种选择通常是必须的。<TT
+CLASS="LITERAL"
+>@extschema@</TT
+>替换机制在这种情况中也是可用的，不过由于模式名已经被控制文件所决定，它的使用受到了很大的限制。
+      </P
+></LI
+></UL
+><P
+>     在所有情况下，脚本文件将被用<A
+HREF="runtime-config-client.html#GUC-SEARCH-PATH"
+>search_path</A
+>执行，它最初会被设置为指向目标模式，也就是说<TT
+CLASS="COMMAND"
+>CREATE EXTENSION</TT
+>做的也是等效的工作：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>SET LOCAL search_path TO @extschema@;</PRE
+><P>
+     这允许由这个脚本文件创建的对象进入到目标模式中。如果脚本文件希望，它可以改变<TT
+CLASS="VARNAME"
+>search_path</TT
+>，但这种用法通常是不受欢迎的。在<TT
+CLASS="COMMAND"
+>CREATE EXTENSION</TT
+>结束后，<TT
+CLASS="VARNAME"
+>search_path</TT
+>会被恢复到之前的设置。
+    </P
+><P
+>     如果控制文件中给出了<TT
+CLASS="VARNAME"
+>schema</TT
+>参数，目标模式就由该参数决定，否则目标模式由<TT
+CLASS="COMMAND"
+>CREATE EXTENSION</TT
+>的<TT
+CLASS="LITERAL"
+>SCHEMA</TT
+>选项给出，如果以上两者都没有给出则会用当前默认的对象创建模式（在调用者<TT
+CLASS="VARNAME"
+>search_path</TT
+>中的第一个）。当使用扩展文件的<TT
+CLASS="VARNAME"
+>schema</TT
+>参数时，如果目标模式还不存在将创建它，但是在另外两种情况下它必须已经存在。
+    </P
+><P
+>     如果在控制文件中的<TT
+CLASS="VARNAME"
+>requires</TT
+>中列举了任何先导扩展，它们的目标模式会被追加到<TT
+CLASS="VARNAME"
+>search_path</TT
+>的初始设置中。这允许新扩展的脚本文件能够看到它们的对象。
+    </P
+><P
+>     尽管一个不可重定位的扩展能够包含散布在多个模式中的对象，通常还是值得将意图用于外部使用的所有对象放置在一个模式中，这被认为是该扩展的目标模式。这样一种安排可以在依赖的扩展创建过程中方便地与<TT
+CLASS="VARNAME"
+>search_path</TT
+>的默认设置一起工作。
+    </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="EXTEND-EXTENSIONS-CONFIG-TABLES"
+>36.15.3. 扩展配置表</A
+></H2
+><P
+>     某些扩展包括配置表，其中包含可以由用户在扩展安装后增加或修改的数据。通常，如果一个表是一个扩展的一部分，该表的定义和内容都不会被<SPAN
+CLASS="APPLICATION"
+>pg_dump</SPAN
+>转储。但是对于一个配置表来说并不希望是这样的行为，任何用户做出的数据修改都需要被包括在转储中，否则该扩展在重载之后的行为将和转储之前不同。
+    </P
+><P
+>     要解决这个问题，一个扩展的脚本文件可以把一个它创建的表或者序列标记为配置关系，这将导致<SPAN
+CLASS="APPLICATION"
+>pg_dump</SPAN
+>把该表或者序列的内容（而不是它的定义）包括在转储中。要这样做，在创建表或序列之后调用函数<CODE
+CLASS="FUNCTION"
+>pg_extension_config_dump(regclass, text)</CODE
+>，例如
+</P><PRE
+CLASS="PROGRAMLISTING"
+>CREATE TABLE my_config (key text, value text);
+CREATE SEQUENCE my_config_seq;
+
+SELECT pg_catalog.pg_extension_config_dump('my_config', '');
+SELECT pg_catalog.pg_extension_config_dump('my_config_seq', '');</PRE
+><P>
+     可以用这种方法标记任意数量的表或者序列。与<TT
+CLASS="TYPE"
+>serial</TT
+>或者<TT
+CLASS="TYPE"
+>bigserial</TT
+>列相关联的序列也可以被标记。
+    </P
+><P
+>     当<CODE
+CLASS="FUNCTION"
+>pg_extension_config_dump</CODE
+>的第二个参数是一个空字符串时，该表的全部内容都会被<SPAN
+CLASS="APPLICATION"
+>pg_dump</SPAN
+>转储。这通常只有在表被扩展脚本创建为初始为空时才正确。如果在表中混合有初始数据和用户提供的数据，<CODE
+CLASS="FUNCTION"
+>pg_extension_config_dump</CODE
+>的第二个参数提供了一种<TT
+CLASS="LITERAL"
+>WHERE</TT
+>条件来选择要被转储的数据。例如，你可能会做
+</P><PRE
+CLASS="PROGRAMLISTING"
+>CREATE TABLE my_config (key text, value text, standard_entry boolean);
+
+SELECT pg_catalog.pg_extension_config_dump('my_config', 'WHERE NOT standard_entry');</PRE
+><P>
+     并且确保只有扩展脚本创建的行中<TT
+CLASS="STRUCTFIELD"
+>standard_entry</TT
+>才为真。
+    </P
+><P
+>     对于序列，第二个参数<CODE
+CLASS="FUNCTION"
+>pg_extension_config_dump</CODE
+>没有影响。
+    </P
+><P
+>     更复杂的情况（例如用户可能会修改初始提供的数据）可以通过在配置表上创建触发器来处理，触发器将负责保证被修改的行会被正确地标记。
+    </P
+><P
+>     你可通过再次调用<CODE
+CLASS="FUNCTION"
+>pg_extension_config_dump</CODE
+>来修改与一个配置表相关的过滤条件（这通常对于一个扩展更新脚本有用）。将一个表标记为不再是一个配置表的方法是用<TT
+CLASS="COMMAND"
+>ALTER EXTENSION ... DROP TABLE</TT
+>将它与扩展脱离开。
+    </P
+><P
+>     注意这些表之间的外键关系将会指导这些表被 pg_dump 转储的顺序。特别地，pg_dump 将尝试
+     先转储被引用的表再转储引用表。由于外键关系是在 CREATE EXTENSION 时间（先于数据被载入
+     到表中）建立的，环状依赖还没有建立。当环状依赖存在时，数据将仍然被转储，但是该转储无法被
+     直接恢复并且必须要用户的介入。
+    </P
+><P
+>     与<TT
+CLASS="TYPE"
+>serial</TT
+>或者<TT
+CLASS="TYPE"
+>bigserial</TT
+>列相关联的序列需要被直接标记以转储它们的状态。只标记它们的父关系不足以转储它们的状态。
+    </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN62023"
+>36.15.4. 扩展更新</A
+></H2
+><P
+>     扩展机制的一个优点是它提供了方便的方法来管理那些定义扩展中对象的 SQL 命令的更新。这是通过为扩展的安装脚本的每一个发行版本关联一个版本名称或者版本号实现的。此外，如果你希望用户能够动态地把他们的数据库从一个版本更新到下一个版本，你应该提供<I
+CLASS="FIRSTTERM"
+>更新脚本</I
+>来做必要的更改。更新脚本的名称遵循<TT
+CLASS="LITERAL"
+><TT
+CLASS="REPLACEABLE"
+><I
+>extension</I
+></TT
+>--<TT
+CLASS="REPLACEABLE"
+><I
+>oldversion</I
+></TT
+>--<TT
+CLASS="REPLACEABLE"
+><I
+>newversion</I
+></TT
+>.sql</TT
+>模式（例如，<TT
+CLASS="LITERAL"
+>foo--1.0--1.1.sql</TT
+>包含着把扩展<TT
+CLASS="LITERAL"
+>foo</TT
+>的版本<TT
+CLASS="LITERAL"
+>1.0</TT
+>修改成版本<TT
+CLASS="LITERAL"
+>1.1</TT
+>的命令）。
+    </P
+><P
+>     假定有一个合适的更新脚本可用，命令<TT
+CLASS="COMMAND"
+>ALTER EXTENSION UPDATE</TT
+>将把一个已安装的扩展更新到指定的新版本。更新脚本运行在与<TT
+CLASS="COMMAND"
+>CREATE EXTENSION</TT
+>提供给安装脚本相同的环境中：特别是<TT
+CLASS="VARNAME"
+>search_path</TT
+>会按照相同的方式设置，并且该脚本创建的任何新对象会被自动地加入到扩展中。
+    </P
+><P
+>     如果一个扩展具有二级控制文件，用于更新脚本的控制参数是那些与新目标版本相关的参数。
+    </P
+><P
+>     更新机制可以被用来解决一种重要的特殊情况：将一个<SPAN
+CLASS="QUOTE"
+>"松散的"</SPAN
+>对象集合转变成一个扩展。在扩展机制被加入到<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>（从 9.1 开始）之前，很多人编写的扩展模块简单地创建各种各样未打包的对象。给定一个包含这类对象的现有数据库，我们怎样才能将这些对象转变成一个正确打包的扩展？将它们全部删除然后做一次<TT
+CLASS="COMMAND"
+>CREATE EXTENSION</TT
+>是一种方法，但是如果对象之间有依赖（例如，如果有一些表列使用了扩展创建的数据类型）这就行不通。修正这种情况的方法是创建一个空扩展，然后使用<TT
+CLASS="COMMAND"
+>ALTER EXTENSION ADD</TT
+>把每一个以前就存在的对象附着到该扩展，最后创建在当前扩展版本中而不再未打包版本中的任何新对象。<TT
+CLASS="COMMAND"
+>CREATE EXTENSION</TT
+>用它的<TT
+CLASS="LITERAL"
+>FROM</TT
+> <TT
+CLASS="REPLACEABLE"
+><I
+>old_version</I
+></TT
+>选项支持这种情况，这会导致它不为目标版本运行正常的安装脚本，而是运行名为<TT
+CLASS="LITERAL"
+><TT
+CLASS="REPLACEABLE"
+><I
+>extension</I
+></TT
+>--<TT
+CLASS="REPLACEABLE"
+><I
+>old_version</I
+></TT
+>--<TT
+CLASS="REPLACEABLE"
+><I
+>target_version</I
+></TT
+>.sql</TT
+>的更新脚本。选择作为<TT
+CLASS="REPLACEABLE"
+><I
+>old_version</I
+></TT
+>使用的虚假版本名称是扩展作者的工作，不过<TT
+CLASS="LITERAL"
+>unpackaged</TT
+>是一种习惯用法。如果你有多个早期版本需要更新到扩展风格，使用多个虚假版本名称来标识它们。
+    </P
+><P
+>     <TT
+CLASS="COMMAND"
+>ALTER EXTENSION</TT
+>能够执行更新脚本的序列来实现一个要求的更新。例如，如果只有<TT
+CLASS="LITERAL"
+>foo--1.0--1.1.sql</TT
+>和<TT
+CLASS="LITERAL"
+>foo--1.1--2.0.sql</TT
+>可用，当前安装了<TT
+CLASS="LITERAL"
+>1.0</TT
+>版本并且要求更新到版本<TT
+CLASS="LITERAL"
+>2.0</TT
+>，<TT
+CLASS="COMMAND"
+>ALTER EXTENSION</TT
+>将依次应用它们。
+    </P
+><P
+>     <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>并不假定任何有关版本名称的性质：例如，它不知道<TT
+CLASS="LITERAL"
+>1.1</TT
+>是否跟在<TT
+CLASS="LITERAL"
+>1.0</TT
+>后面。它只是匹配可用的版本名称并且遵照要求应用最少更新脚本的路径进行（一个版本名称实际上可以是不含<TT
+CLASS="LITERAL"
+>--</TT
+>或者前导或后缀<TT
+CLASS="LITERAL"
+>-</TT
+>的字符串）。
+    </P
+><P
+>     有时提供<SPAN
+CLASS="QUOTE"
+>"降级"</SPAN
+>脚本也有用，例如<TT
+CLASS="LITERAL"
+>foo--1.1--1.0.sql</TT
+>允许把版本<TT
+CLASS="LITERAL"
+>1.1</TT
+>相关的改变恢复原状。如果你这样做，要当心降级脚本被意外应用的可能性，因为它会得到一个较短的路径。危险的情况是，有一个跳过几个版本的<SPAN
+CLASS="QUOTE"
+>"快速路径"</SPAN
+>更新脚本还有一个降级到该快速路径开始点的降级脚本。先应用降级然后再应用快速路径可能比一次升级一个版本需要更少的步骤。如果降级版本删除了任何不可替代的对象，这将会得到意想不到的结果。
+    </P
+><P
+>     要检查意料之外的更新路径，可使用这个命令：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>SELECT * FROM pg_extension_update_paths('<TT
+CLASS="REPLACEABLE"
+><I
+>extension_name</I
+></TT
+>');</PRE
+><P>
+     这会为指定的扩展显示已知的每一个可区分的版本名对，每一个版本名对还带有一个从源版本到目标版本的更新路径序列，如果没有可用的更新路径则这部份信息为<TT
+CLASS="LITERAL"
+>NULL</TT
+>。该路径显示为用<TT
+CLASS="LITERAL"
+>--</TT
+>分隔符的文本形式。如果你更喜欢数组格式，可以使用<TT
+CLASS="LITERAL"
+>regexp_split_to_array(path,'--')</TT
+>。
+    </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="EXTEND-EXTENSIONS-EXAMPLE"
+>36.15.5. 扩展实例</A
+></H2
+><P
+>     这里是一个只用<ACRONYM
+CLASS="ACRONYM"
+>SQL</ACRONYM
+>的扩展的完整例子，一个两个元素的组合类型，它可以在它的槽（命名为<SPAN
+CLASS="QUOTE"
+>"k"</SPAN
+>和<SPAN
+CLASS="QUOTE"
+>"v"</SPAN
+>）中存储任何类型的值。非文本值会被自动强制为文本进行存储。
+    </P
+><P
+>     脚本文件<TT
+CLASS="FILENAME"
+>pair--1.0.sql</TT
+>看起来像这样：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>-- 如果脚本是由 psql 而不是 CREATE EXTENSION 执行，则报错
+\echo Use "CREATE EXTENSION pair" to load this file. \quit
+
+CREATE TYPE pair AS ( k text, v text );
+
+CREATE OR REPLACE FUNCTION pair(anyelement, text)
+RETURNS pair LANGUAGE SQL AS 'SELECT ROW($1, $2)::pair';
+
+CREATE OR REPLACE FUNCTION pair(text, anyelement)
+RETURNS pair LANGUAGE SQL AS 'SELECT ROW($1, $2)::pair';
+
+CREATE OR REPLACE FUNCTION pair(anyelement, anyelement)
+RETURNS pair LANGUAGE SQL AS 'SELECT ROW($1, $2)::pair';
+
+CREATE OR REPLACE FUNCTION pair(text, text)
+RETURNS pair LANGUAGE SQL AS 'SELECT ROW($1, $2)::pair;';
+
+CREATE OPERATOR ~&#62; (LEFTARG = text, RIGHTARG = anyelement, PROCEDURE = pair);
+CREATE OPERATOR ~&#62; (LEFTARG = anyelement, RIGHTARG = text, PROCEDURE = pair);
+CREATE OPERATOR ~&#62; (LEFTARG = anyelement, RIGHTARG = anyelement, PROCEDURE = pair);
+CREATE OPERATOR ~&#62; (LEFTARG = text, RIGHTARG = text, PROCEDURE = pair);</PRE
+><P>
+    </P
+><P
+>     控制文件<TT
+CLASS="FILENAME"
+>pair.control</TT
+>看起来像这样：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+># pair 扩展
+comment = 'A key/value pair data type'
+default_version = '1.0'
+relocatable = true</PRE
+><P>
+    </P
+><P
+>     虽然你几乎不会需要一个 makefile 来安装这两个文件到正确的目录，你还是可以使用一个<TT
+CLASS="FILENAME"
+>Makefile</TT
+>：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>EXTENSION = pair
+DATA = pair--1.0.sql
+
+PG_CONFIG = pg_config
+PGXS := $(shell $(PG_CONFIG) --pgxs)
+include $(PGXS)</PRE
+><P>
+
+     这个 makefile 依赖于<ACRONYM
+CLASS="ACRONYM"
+>PGXS</ACRONYM
+>，它在<A
+HREF="extend-pgxs.html"
+>第 36.16 &#33410;</A
+>中描述。命令<TT
+CLASS="LITERAL"
+>make install</TT
+>将把控制和脚本文件安装到<SPAN
+CLASS="APPLICATION"
+>pg_config</SPAN
+>报告的正确的目录中。
+    </P
+><P
+>     一旦文件被安装，使用<A
+HREF="sql-createextension.html"
+>CREATE EXTENSION</A
+>命令就可以把对象载入到任何特定的数据库中。
+    </P
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="xindex.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="extend-pgxs.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>索引的接口扩展</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="extend.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>扩展的构建基础设施</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

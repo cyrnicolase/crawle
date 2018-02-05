@@ -1,0 +1,1343 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>平台相关的说明</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="  从源代码安装"
+HREF="installation.html"><LINK
+REL="PREVIOUS"
+TITLE="平台支持"
+HREF="supported-platforms.html"><LINK
+REL="NEXT"
+TITLE="在Windows上从源代码安装"
+HREF="install-windows.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/installation.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="平台支持"
+HREF="supported-platforms.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="installation.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#31456; 16. 从源代码安装</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="在Windows上从源代码安装"
+HREF="install-windows.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="INSTALLATION-PLATFORM-NOTES"
+>16.7. 平台相关的说明</A
+></H1
+><P
+>   这一节提供了考虑 PostgreSQL 安装和设置的附加平台相关的话题。确保阅读安装指导，特别是<A
+HREF="install-requirements.html"
+>第 16.2 &#33410;</A
+>。同样，检查关于回归测试结果解释的
+   <A
+HREF="regress.html"
+>第 31 &#31456;</A
+>。
+  </P
+><P
+>   这里没有覆盖的平台不存在平台相关的安装问题。
+  </P
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="INSTALLATION-NOTES-AIX"
+>16.7.1. AIX</A
+></H2
+><P
+>    PostgreSQL 能在 AIX 上工作，但是正确地安装它却富有挑战性。从4.3.3到6.1的 AIX 被认为是可支持的。你可以使用 GCC 或本地 IBM 编译器<TT
+CLASS="COMMAND"
+>xlc</TT
+>。通常，使用最新版本的 AIX 和 PostgreSQL 能有所帮助。在编译农场中检查有关已知能工作的 AIX 版本的最新信息。
+   </P
+><P
+>    被支持的 AIX 版本的最小推荐修理级别是：
+   </P
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+>AIX 4.3.3</DT
+><DD
+><P
+>Maintenance Level 11 + post ML11 bundle</P
+></DD
+><DT
+>AIX 5.1</DT
+><DD
+><P
+>Maintenance Level 9 + post ML9 bundle</P
+></DD
+><DT
+>AIX 5.2</DT
+><DD
+><P
+>Technology Level 10 Service Pack 3</P
+></DD
+><DT
+>AIX 5.3</DT
+><DD
+><P
+>Technology Level 7</P
+></DD
+><DT
+>AIX 6.1</DT
+><DD
+><P
+>Base Level</P
+></DD
+></DL
+></DIV
+><P
+>    要检查你当前的修理级别，在AIX 4.3.3 至 AIX 5.2 ML 7中使用
+    <TT
+CLASS="COMMAND"
+>oslevel -r</TT
+>，或者在后面的版本中使用
+    <TT
+CLASS="COMMAND"
+>oslevel -s</TT
+>。
+   </P
+><P
+>    如果你已经在<TT
+CLASS="LITERAL"
+>/usr/local</TT
+>中安装了 Readline 或 libz，在你自己的选项之外使用下列<TT
+CLASS="COMMAND"
+>configure</TT
+>标志：
+    <TT
+CLASS="LITERAL"
+>--with-includes=/usr/local/include
+    --with-libraries=/usr/local/lib</TT
+>.
+   </P
+><DIV
+CLASS="SECT3"
+><H3
+CLASS="SECT3"
+><A
+NAME="AEN30178"
+>16.7.1.1. GCC问题</A
+></H3
+><P
+>     在 AIX 5.3 上，使用 GCC 编译和运行 PostgreSQL 有一些问题。
+    </P
+><P
+>     你将要使用 GCC 继 3.3.2 之后的一个版本，特别是如果你在使用一个打包好的版本。我们在 4.0.1 上获得了成功。早期版本的问题看起来更多地与 IBM 打包的 GCC 有关，而非 GCC 真正的问题，因此如果你自己编译 GCC， 你更有可能使用早期版本的 GCC 取得成功。
+    </P
+></DIV
+><DIV
+CLASS="SECT3"
+><H3
+CLASS="SECT3"
+><A
+NAME="AEN30182"
+>16.7.1.2. Unix域套接字崩溃</A
+></H3
+><P
+>     AIX 5.3 有一个问题是<TT
+CLASS="STRUCTNAME"
+>sockaddr_storage</TT
+>定义得不够大。在版本 5.3 中，IBM 增加了<TT
+CLASS="STRUCTNAME"
+>sockaddr_un</TT
+>（Unix域套接字的地址结构）的尺寸，但是没有相应地增加<TT
+CLASS="STRUCTNAME"
+>sockaddr_storage</TT
+>的尺寸。这样做的结果是在 PostgreSQL 中尝试使用 Unix域套接字会导致 libpq 让该数据结构溢出。 TCP/IP 连接工作正常，但是 Unix域套接字不行，这将使回归测试不能工作。
+    </P
+><P
+>     该问题已经被报告给了 IBM，并且已被记录为缺陷报告 PMR29657。如果你升级到 maintenance level 5300-03 或更新，将会包括这个修复。一种快速的解决方法是把<TT
+CLASS="FILENAME"
+>/usr/include/sys/socket.h</TT
+>中的<TT
+CLASS="SYMBOL"
+>_SS_MAXSIZE</TT
+>改成 1025。在两种情况中，一旦你得到了修正过的头文件，你都需要重编译 PostgreSQL。
+    </P
+></DIV
+><DIV
+CLASS="SECT3"
+><H3
+CLASS="SECT3"
+><A
+NAME="AEN30191"
+>16.7.1.3. Internet地址问题</A
+></H3
+><P
+>     PostgreSQL 依赖系统的<CODE
+CLASS="FUNCTION"
+>getaddrinfo</CODE
+>函数来解析<TT
+CLASS="VARNAME"
+>listen_addresses</TT
+>、<TT
+CLASS="FILENAME"
+>pg_hba.conf</TT
+>等中的 IP 地址。旧版本的 AIX 在这个函数中有各种各样的缺陷。如果你存在与此有关的问题，更新到上文所示的合适的 AIX fix level 将会解决它。
+    </P
+><P
+>     一个用户报告：
+    </P
+><P
+>     当在 AIX 5.3 上实现 PostgreSQL 版本 8.1 时，我们会周期性地碰到问题，在其中统计收集器会<SPAN
+CLASS="QUOTE"
+>"神秘地"</SPAN
+>无法成功启动。这似乎是在 IPv6 实现中意外行为的结果。看起来 PostgreSQL 和 IPv6 无法和 AIX 5.3 一起很好地工作。
+    </P
+><P
+>     下面任意一种动作都可以<SPAN
+CLASS="QUOTE"
+>"修复"</SPAN
+>该问题。
+     <P
+></P
+></P><UL
+><LI
+><P
+>        删除 localhost 的 IPv6 地址：
+</P><PRE
+CLASS="SCREEN"
+>(as root)
+# ifconfig lo0 inet6 ::1/0 delete</PRE
+><P>
+       </P
+></LI
+><LI
+><P
+>        从网络服务删除 IPv6。AIX 上的<TT
+CLASS="FILENAME"
+>/etc/netsvc.conf</TT
+>大概等价于 Solaris/Linux 上的<TT
+CLASS="FILENAME"
+>/etc/nsswitch.conf</TT
+>。在 AIX 上的默认值因此是：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>hosts=local,bind</PRE
+><P>
+        将其换成：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>hosts=local4,bind4</PRE
+><P>
+        来使 IPv6 地址的搜索无效。
+       </P
+></LI
+></UL
+><P>
+    </P
+><DIV
+CLASS="WARNING"
+><P
+></P
+><TABLE
+CLASS="WARNING"
+BORDER="1"
+WIDTH="100%"
+><TR
+><TD
+ALIGN="CENTER"
+><B
+>&#35686;&#21578;</B
+></TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+><P
+>     这实际上是对有关 IPv6 支持不成熟性的问题的一种变通方案，这在 AIX 5.3 发布的过程中有了显著地改进。它可以和 AIX 5.3 一起工作，但是不代表对此问题的一种华丽的解决方案。有报告称该变通方案不仅仅是多余的，还会在 AIX 6.1 上导致问题，在 AIX 6.1 中 IPv6 支持已变得更加成熟。
+    </P
+></TD
+></TR
+></TABLE
+></DIV
+></DIV
+><DIV
+CLASS="SECT3"
+><H3
+CLASS="SECT3"
+><A
+NAME="AEN30214"
+>16.7.1.4. 内存管理</A
+></H3
+><P
+>     AIX 的特别之处在于它的内存管理。你可能有一个装备有好多个吉字节空闲 RAM 的服务器，但是在运行应用时仍然会得到内存不足或者地址空间错误。一个例子是<TT
+CLASS="COMMAND"
+>createlang</TT
+>会因为罕见的错误失败。例如，作为 PostgreSQL 安装的拥有者运行：
+</P><PRE
+CLASS="SCREEN"
+>-bash-3.00$ createlang plperl template1
+createlang: language installation failed: ERROR:  could not load library "/opt/dbs/pgsql748/lib/plperl.so": A memory address is not in the address space for the process.</PRE
+><P>
+    作为拥有 PostgreSQL 安装的组中的非拥有者运行：
+</P><PRE
+CLASS="SCREEN"
+>-bash-3.00$ createlang plperl template1
+createlang: language installation failed: ERROR:  could not load library "/opt/dbs/pgsql748/lib/plperl.so": Bad address</PRE
+><P>
+     另一个例子是 PostgreSQL 服务器日志中的内存不足错误，每次内存分配接近或者超过 256 MB 时都会失败。
+    </P
+><P
+>     所有这些问题的总体成因是服务器进程所用的寻址空间和内存模型。默认情况下，所有在 AIX 上编译的二进制都是32位。这并不依赖于硬件类型或使用的内核。这些32位进程被限制在 4GB 的内存中，并被使用几种模型之一安排成 256 MB 的段。该默认值允许在堆中低于 256 MB，因为它和栈共享一个单独的段。
+    </P
+><P
+>     在<TT
+CLASS="COMMAND"
+>createlang</TT
+>的例子中，检查你的 umask 和你的 PostgreSQL 安装中的二进制的权限。这个例子中涉及的二进制是32位的并且被用模式 750 而不是 755 安装。由于这种方式的权限设置，只有所有者或拥有组的成员可以载入该库。因为它不是所有人可读的，载入器将该对象放在进程的堆中而不是它应该被放入的共享库段中。
+    </P
+><P
+>     这个问题的<SPAN
+CLASS="QUOTE"
+>"理想的"</SPAN
+>解决方案是使用 PostgreSQL 的64位编译，但是这不是总是实用的，因为有32位处理器的系统可以编译64位二进制但是却不能运行它。
+    </P
+><P
+>     如果想要一个 32 位二进制，在开始 PostgreSQL 服务器之前将<TT
+CLASS="SYMBOL"
+>LDR_CNTRL</TT
+>设置为<TT
+CLASS="LITERAL"
+>MAXDATA=0x<TT
+CLASS="REPLACEABLE"
+><I
+>n</I
+></TT
+>0000000</TT
+>，其中 1 &lt;= n &lt;= 8，并且尝试不同的值以及<TT
+CLASS="FILENAME"
+>postgresql.conf</TT
+>设置来找一个能让你满意的配置。这种<TT
+CLASS="SYMBOL"
+>LDR_CNTRL</TT
+>的使用告诉 AIX 你希望服务器留出<TT
+CLASS="SYMBOL"
+>MAXDATA</TT
+>字节给堆，以 256 MB 的段分配。当你找到了一个可工作的配置时，<TT
+CLASS="COMMAND"
+>ldedit</TT
+>可以被用来修改二进制，这样它们默认使用想要的堆尺寸。PostgreSQL 也可以被重新编译，传递<TT
+CLASS="LITERAL"
+>configure  LDFLAGS="-Wl,-bmaxdata:0x<TT
+CLASS="REPLACEABLE"
+><I
+>n</I
+></TT
+>0000000"</TT
+>来达到相同的效果。
+    </P
+><P
+>     对于一个 64 位编译，设置<TT
+CLASS="ENVAR"
+>OBJECT_MODE</TT
+>为 64 并且传递<TT
+CLASS="LITERAL"
+>CC="gcc -maix64"</TT
+>和<TT
+CLASS="LITERAL"
+>LDFLAGS="-Wl,-bbigtoc"</TT
+>给<TT
+CLASS="COMMAND"
+>configure</TT
+>（给<TT
+CLASS="COMMAND"
+>xlc</TT
+>的选项可能不同）。如果你省略<TT
+CLASS="ENVAR"
+>OBJECT_MODE</TT
+>的输出，你的编译可能会因为链接器错误而失败。当<TT
+CLASS="ENVAR"
+>OBJECT_MODE</TT
+>被设置时，它告诉 AIX 的编译工具（如<TT
+CLASS="COMMAND"
+>ar</TT
+>、<TT
+CLASS="COMMAND"
+>as</TT
+>和<TT
+CLASS="COMMAND"
+>ld</TT
+>）默认要处理哪些对象类型。
+    </P
+><P
+>     默认情况下，过量使用页面空间的情况可能会发生。不过我们还没有看到过，当进程用尽内存并且出现了过量使用时 AIX 会杀死进程。我们见到过的最接近于此的是 fork 失败，其原因是系统觉得已经没有足够的内存给另一个进程。和 AIX 的很多其他部分一样，如果这成为了一个问题，页面空间分配方法和耗尽内存导致的杀死在系统范围或进程范围是可以配置的。
+    </P
+><H3
+><A
+NAME="AEN30247"
+>参考和资源</A
+></H3
+><DIV
+CLASS="BIBLIOENTRY"
+><A
+NAME="AEN30249"
+></A
+><P
+>"<A
+HREF="http://publib.boulder.ibm.com/infocenter/pseries/topic/com.ibm.aix.doc/aixprggd/genprogc/lrg_prg_support.htm"
+TARGET="_top"
+>Large Program Support</A
+>", <I
+>AIX Documentation: General Programming Concepts: Writing and Debugging Programs</I
+>.</P
+><DIV
+CLASS="BIBLIOENTRYBLOCK"
+STYLE="margin-left: 0.5in"
+></DIV
+></DIV
+><DIV
+CLASS="BIBLIOENTRY"
+><A
+NAME="AEN30255"
+></A
+><P
+>"<A
+HREF="http://publib.boulder.ibm.com/infocenter/pseries/topic/com.ibm.aix.doc/aixprggd/genprogc/address_space.htm"
+TARGET="_top"
+>Program Address Space Overview</A
+>", <I
+>AIX Documentation: General Programming Concepts: Writing and Debugging Programs</I
+>.</P
+><DIV
+CLASS="BIBLIOENTRYBLOCK"
+STYLE="margin-left: 0.5in"
+></DIV
+></DIV
+><DIV
+CLASS="BIBLIOENTRY"
+><A
+NAME="AEN30261"
+></A
+><P
+>"<A
+HREF="http://publib.boulder.ibm.com/infocenter/pseries/v5r3/topic/com.ibm.aix.doc/aixbman/prftungd/resmgmt2.htm"
+TARGET="_top"
+>Performance Overview of the Virtual Memory Manager (VMM)</A
+>", <I
+>AIX Documentation: Performance Management Guide</I
+>.</P
+><DIV
+CLASS="BIBLIOENTRYBLOCK"
+STYLE="margin-left: 0.5in"
+></DIV
+></DIV
+><DIV
+CLASS="BIBLIOENTRY"
+><A
+NAME="AEN30267"
+></A
+><P
+>"<A
+HREF="http://publib.boulder.ibm.com/infocenter/pseries/v5r3/topic/com.ibm.aix.doc/aixbman/prftungd/memperf7.htm"
+TARGET="_top"
+>Page Space Allocation</A
+>", <I
+>AIX Documentation: Performance Management Guide</I
+>.</P
+><DIV
+CLASS="BIBLIOENTRYBLOCK"
+STYLE="margin-left: 0.5in"
+></DIV
+></DIV
+><DIV
+CLASS="BIBLIOENTRY"
+><A
+NAME="AEN30273"
+></A
+><P
+>"<A
+HREF="http://publib.boulder.ibm.com/infocenter/pseries/v5r3/topic/com.ibm.aix.doc/aixbman/prftungd/memperf6.htm"
+TARGET="_top"
+>Paging-space thresholds tuning</A
+>", <I
+>AIX Documentation: Performance Management Guide</I
+>.</P
+><DIV
+CLASS="BIBLIOENTRYBLOCK"
+STYLE="margin-left: 0.5in"
+></DIV
+></DIV
+><DIV
+CLASS="BIBLIOENTRY"
+><A
+NAME="AEN30279"
+></A
+><P
+><I
+><A
+HREF="http://www.redbooks.ibm.com/abstracts/sg245674.html?Open"
+TARGET="_top"
+>Developing and Porting C and C++ Applications on AIX</A
+></I
+>, IBM Redbook.</P
+><DIV
+CLASS="BIBLIOENTRYBLOCK"
+STYLE="margin-left: 0.5in"
+></DIV
+></DIV
+></DIV
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="INSTALLATION-NOTES-CYGWIN"
+>16.7.2. Cygwin</A
+></H2
+><P
+>    PostgreSQL 可以使用 Cygwin 来编译，它是用于 Windows 的一个类 Linux 环境，但是这种方法不如原生 Windows 编译（见<A
+HREF="install-windows.html"
+>第 17 &#31456;</A
+>）并且我们已经不再推荐在 Cygwin 下运行一个服务器。
+   </P
+><P
+>    在从源代码编译时，按照正常安装过程进行（即<TT
+CLASS="LITERAL"
+>./configure;
+    make</TT
+>; 等；只要注意下列 Cygwin 相关的区别：
+
+    <P
+></P
+></P><UL
+><LI
+><P
+>       将你的路径设置为使用 Cygwin 的 bin 目录并且把它放在 Windows 工具的前面。这将帮助避免很多编译的问题。
+      </P
+></LI
+><LI
+><P
+>       不支持<TT
+CLASS="COMMAND"
+>adduser</TT
+>命令；使用 Windows NT、2000 或 XP 上的用户管理应用来替代。否则，跳过这一步。
+      </P
+></LI
+><LI
+><P
+>       不支持<TT
+CLASS="COMMAND"
+>su</TT
+>命令；在 Windows NT、2000 或 XP 上使用 ssh 来模拟 su。否则，跳过这一步。
+      </P
+></LI
+><LI
+><P
+>       不支持 OpenSSL。
+      </P
+></LI
+><LI
+><P
+>       为共享内存支持启动<TT
+CLASS="COMMAND"
+>cygserver</TT
+>。要这样做，输入命令<TT
+CLASS="LITERAL"
+>/usr/sbin/cygserver &amp;</TT
+>。这个程序在你启动 PostgreSQL 服务器或初始化一个数据集簇（<TT
+CLASS="COMMAND"
+>initdb</TT
+>）时的任何时刻都需要被运行。默认的<TT
+CLASS="COMMAND"
+>cygserver</TT
+>配置可能需要被更改（例如增加<TT
+CLASS="SYMBOL"
+>SEMMNS</TT
+>）来防止 PostgreSQL 因为缺少系统资源而失败。
+      </P
+></LI
+><LI
+><P
+>        在某些不使用 C 区域的系统上编译可能会失败。要修复这个问题，通过在边以前<TT
+CLASS="COMMAND"
+>export LANG=C.utf8</TT
+>把区域设置为 C，并且在安装完 PostgreSQL 之后把区域恢复成之前的设置。
+      </P
+></LI
+><LI
+><P
+>       并行回归测试（<TT
+CLASS="LITERAL"
+>make check</TT
+>）可能产生虚假的回归测试错误，这是由于溢出的<CODE
+CLASS="FUNCTION"
+>listen()</CODE
+>连接缓冲区，它会导致连接拒绝错误或挂起。你可以使用<TT
+CLASS="VARNAME"
+>MAX_CONNECTIONS</TT
+>来限制连接数：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>make MAX_CONNECTIONS=5 check</PRE
+><P>
+       （在某些系统上你可以有大约 10 个同时连接）。
+      </P
+></LI
+></UL
+><P>
+   </P
+><P
+>    可以把<TT
+CLASS="COMMAND"
+>cygserver</TT
+> PostgreSQL 服务器安装为 Windows NT 服务。关于如何这样做的信息，请参考包含在 Cygwin 上 PostgreSQL 二进制包中的<TT
+CLASS="FILENAME"
+>README</TT
+>文档。它被安装在目录<TT
+CLASS="FILENAME"
+>/usr/share/doc/Cygwin</TT
+>中。
+   </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="INSTALLATION-NOTES-HPUX"
+>16.7.3. HP-UX</A
+></H2
+><P
+>    给定合适的系统补丁级别和编译工具，PostgreSQL 7.3+ 应该可以工作在运行 HP-UX 10.X 或 11.X 的 Series 700/800 PA-RISC 机器上。至少一个开发者例行地在 HP-UX 10.20 上测试过，并且我们有在 HP-UX 11.00 和 11.11 上成功安装的报告。
+   </P
+><P
+>    除了 PostgreSQL 源代码发布，你将需要 GNU make（HP 的 make 不行），并且需要 GCC 或 HP 的 ANSI C 编译器。如果你想从 Git 源编译而不是一个发布包，你还将需要 Flex（GNU lex）和 Bison（GNU yacc）。我们还推荐确认你真的在使用最新的 HP 补丁。最低限度下，如果你在 HP-UX 11.11 上编译 64 位二进制，你可能需要 PHSS_30966 (11.11) 或一个后继补丁，否则<TT
+CLASS="COMMAND"
+>initdb</TT
+>可能中止：
+<P
+CLASS="LITERALLAYOUT"
+>PHSS_30966&nbsp;&nbsp;s700_800&nbsp;ld(1)&nbsp;and&nbsp;linker&nbsp;tools&nbsp;cumulative&nbsp;patch</P
+>
+
+    在一般原则上，你应该使用 libc 和 ld/dld 的当前补丁，如果你在使用 HP 的 C 编译器也一样要用当前的编译器补丁。它们最新补丁的免费拷贝请见 HP 的支持站点如<A
+HREF="http://itrc.hp.com"
+TARGET="_top"
+>http://itrc.hp.com</A
+>和<A
+HREF="ftp://us-ffs.external.hp.com/"
+TARGET="_top"
+>ftp://us-ffs.external.hp.com/</A
+>。
+   </P
+><P
+>    如果你正在一台 PA-RISC 2.0 机器上编译并且项使用 GCC 得到 64 位二进制，你必须使用 GCC 的 64 位版本。HP-UX PA-RISC 和 Itanium 的 GCC 二进制可以从<A
+HREF="http://www.hp.com/go/gcc"
+TARGET="_top"
+>http://www.hp.com/go/gcc</A
+>得到。别忘了在同时获取并安装 binutils。
+   </P
+><P
+>    如果你正在一台 PA-RISC 2.0 机器上编译并且想让编译好的二进制运行在 PA-RISC 1.1 机器上，你将需要在<TT
+CLASS="ENVAR"
+>CFLAGS</TT
+>中指定<TT
+CLASS="OPTION"
+>+DAportable</TT
+>。
+   </P
+><P
+>    如果你正在一台 HP-UX Itanium 机器上编译，你将需要最新的 HP ANSI C 编译器，以及它的依赖补丁或后继补丁：
+<P
+CLASS="LITERALLAYOUT"
+>PHSS_30848&nbsp;&nbsp;s700_800&nbsp;HP&nbsp;C&nbsp;Compiler&nbsp;(A.05.57)<br>
+PHSS_30849&nbsp;&nbsp;s700_800&nbsp;u2comp/be/plugin&nbsp;library&nbsp;Patch</P
+>
+   </P
+><P
+>    如果你同时有 HP 的 C 编译器和 GCC 的编译器，那么在运行<TT
+CLASS="COMMAND"
+>configure</TT
+>时你可能希望显式地选择要使用的编译器：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>./configure CC=cc</PRE
+><P>
+    用于 HP 的 C 编译器，或者
+</P><PRE
+CLASS="PROGRAMLISTING"
+>./configure CC=gcc</PRE
+><P>
+    用于 GCC。如果你忽略这个设置，configure 在可以选择时会使用<TT
+CLASS="COMMAND"
+>gcc</TT
+>。
+   </P
+><P
+>    默认的安装目标位置是<TT
+CLASS="FILENAME"
+>/usr/local/pgsql</TT
+>，你可能希望修改它为<TT
+CLASS="FILENAME"
+>/opt</TT
+>之下的某个地方。如果是这样，使用<TT
+CLASS="COMMAND"
+>configure</TT
+>的<TT
+CLASS="OPTION"
+>--prefix</TT
+>开关。
+   </P
+><P
+>    在回归测试中，在几何测试中可能会有某些低序位差别，这会根据你使用的编译器和数学库版本而变化。任何其他错误都需要怀疑。
+   </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="INSTALLATION-NOTES-MINGW"
+>16.7.4. MinGW/原生 Windows</A
+></H2
+><P
+>    用于 Windows 的 PostgreSQL 可以使用 MinGW 编译，它是一个用于微软操作系统的类 Unix 的编译环境。也可以使用微软的<SPAN
+CLASS="PRODUCTNAME"
+>Visual C++</SPAN
+>编译器套件来编译。MinGW 编译使用本章中描述的正常编译系统；而  Visual C++ 编译的工作完全不同并且在<A
+HREF="install-windows.html"
+>第 17 &#31456;</A
+>中描述。后者是一种完全原生的编译并且没有像 MinGW 那样使用额外软件。在 PostgreSQL 的主网站上有一个现成的安装器可用。
+   </P
+><P
+>    原生 Windows 移植要求一个 Windows 2000 或更高的 32 或 64 位版本。早期的操作系统没有足够的基础设施（但 Cygwin可以用在它们之上）。类 Unix 的编译工具 MinGW 和 MSYS（一个 Unix 工具集合，用于运行如<TT
+CLASS="COMMAND"
+>configure</TT
+>之类的 shell 脚本）可以从<A
+HREF="http://www.mingw.org/"
+TARGET="_top"
+>http://www.mingw.org/</A
+>下载。运行结果二进制两者都需要，它们只在创建二进制时需要。
+   </P
+><P
+>     要使用 MinGW 编译 64 位二进制，从<A
+HREF="http://mingw-w64.sourceforge.net/"
+TARGET="_top"
+>http://mingw-w64.sourceforge.net/</A
+>安装 64 位工具。把它放在<TT
+CLASS="ENVAR"
+>PATH</TT
+>中的 bin 目录，并且使用<TT
+CLASS="COMMAND"
+>--host=x86_64-w64-mingw32</TT
+>选项运行<TT
+CLASS="COMMAND"
+>configure</TT
+>.
+   </P
+><P
+>    在你安装完所有的东西之后，我们建议你在<TT
+CLASS="COMMAND"
+>CMD.EXE</TT
+>下运行<SPAN
+CLASS="APPLICATION"
+>psql</SPAN
+>，因为 MSYS 控制台有缓冲问题。
+   </P
+><DIV
+CLASS="SECT3"
+><H3
+CLASS="SECT3"
+><A
+NAME="WINDOWS-CRASH-DUMPS"
+>16.7.4.1. 在 Windows 上收集崩溃转储</A
+></H3
+><P
+>     如果 PostgreSQL 在 Windows 上崩溃，它有能力产生<SPAN
+CLASS="PRODUCTNAME"
+>minidumps</SPAN
+>，这可以被用来追踪崩溃发生的原因，这与 Unix 上的核心转储相似。这些转储可以被使用<SPAN
+CLASS="PRODUCTNAME"
+>Windows Debugger Tools</SPAN
+>或<SPAN
+CLASS="PRODUCTNAME"
+>Visual Studio</SPAN
+>读取。要启用在 Windows 上的转储生成，可在集簇数据目录下创建一个名为<TT
+CLASS="FILENAME"
+>crashdumps</TT
+>的子目录。转储将被写入到这个目录，转储的名字基于崩溃进程的标识符和崩溃的当前时间来确定。
+    </P
+></DIV
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="INSTALLATION-NOTES-SCO"
+>16.7.5. SCO OpenServer 和 SCO UnixWare</A
+></H2
+><P
+>    PostgreSQL 可以在 SCO UnixWare 7 和 SCO OpenServer 5 上编译。在 OpenServer 上，你可以使用 OpenServer Development Kit 或 Universal Development Kit。但是可能需要一些调整，如下所述。
+   </P
+><DIV
+CLASS="SECT3"
+><H3
+CLASS="SECT3"
+><A
+NAME="AEN30388"
+>16.7.5.1. Skunkware</A
+></H3
+><P
+>     你应该找到你的 SCO Skunkware CD 的拷贝。Skunkware CD 被包括在 UnixWare 7 和当前版本的 OpenServer 5。Skunkware 包括很多在互联网上可以得到的流行程序的待安装版本。例如，gzip、gunzip、GNU Make、Flex 和 Bison 都被包括在内。对于 UnixWare 7.1，这个 CD 现在被标为 "Open License Software Supplement"。如果你没有这个 CD，其中的软件可以从<A
+HREF="http://www.sco.com/skunkware/"
+TARGET="_top"
+>http://www.sco.com/skunkware/</A
+>得到。
+    </P
+><P
+>     对于 UnixWare 和 OpenServer，Skunkware有不同的版本。请确保你为你的操作系统安装了正确的版本，除了以下需要注意的。
+    </P
+><P
+>     在 UnixWare 7.1.3 及其以后，GCC 被包括在 UDK CD 上作为 GNU Make。
+    </P
+></DIV
+><DIV
+CLASS="SECT3"
+><H3
+CLASS="SECT3"
+><A
+NAME="AEN30394"
+>16.7.5.2. GNU Make</A
+></H3
+><P
+>     你需要使用 GNU Make 程序，它位于 Skunkware CD 上。默认情况下，它作为<TT
+CLASS="FILENAME"
+>/usr/local/bin/make</TT
+>安装。
+    </P
+><P
+>     对于 UnixWare 7.1.3 及以上，GNU Make 程序是 UDK CD 的 OSTK 部分，并且在<TT
+CLASS="FILENAME"
+>/usr/gnu/bin/gmake</TT
+>中。
+    </P
+></DIV
+><DIV
+CLASS="SECT3"
+><H3
+CLASS="SECT3"
+><A
+NAME="AEN30400"
+>16.7.5.3. Readline</A
+></H3
+><P
+>     Readline 库在 Skunkware CD 上。但是它不被包括在 UnixWare 7.1 Skunkware CD 上。如果你有 UnixWare 7.0.0 或 7.0.1 Skunkware CD，你可以从那里安装 Readline 库。否则，试试<A
+HREF="http://www.sco.com/skunkware/"
+TARGET="_top"
+>http://www.sco.com/skunkware/</A
+>。
+    </P
+><P
+>     默认情况下，Readline 安装到<TT
+CLASS="FILENAME"
+>/usr/local/lib</TT
+>和<TT
+CLASS="FILENAME"
+>/usr/local/include</TT
+>。但是，PostgreSQL <TT
+CLASS="COMMAND"
+>configure</TT
+> 程序在没有得到帮助的情况下将不能找到它。如果你安装了 Readline，那么对<TT
+CLASS="COMMAND"
+>configure</TT
+>使用下列选项：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>./configure --with-libraries=/usr/local/lib --with-includes=/usr/local/include</PRE
+><P>
+    </P
+></DIV
+><DIV
+CLASS="SECT3"
+><H3
+CLASS="SECT3"
+><A
+NAME="AEN30410"
+>16.7.5.4. 在 OpenServer 上使用 UDK</A
+></H3
+><P
+>     如果你正在 OpenServer 上使用新的 Universal Development Kit (UDK) 编译器，你需要指定 UDK 库的位置：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>./configure --with-libraries=/udk/usr/lib --with-includes=/udk/usr/include</PRE
+><P>
+     把这些和 Readline 选项放在一起：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>./configure --with-libraries="/udk/usr/lib /usr/local/lib" --with-includes="/udk/usr/include /usr/local/include"</PRE
+><P>
+    </P
+></DIV
+><DIV
+CLASS="SECT3"
+><H3
+CLASS="SECT3"
+><A
+NAME="AEN30415"
+>16.7.5.5. 阅读 PostgreSQL 手册页</A
+></H3
+><P
+>     默认情况下，PostgreSQL 手册页被安装到<TT
+CLASS="FILENAME"
+>/usr/local/pgsql/share/man</TT
+>。默认情况下，UnixWare 不会在那里查看手册页。要能够阅读它们你需要修改<TT
+CLASS="FILENAME"
+>/etc/default/man</TT
+>中的<TT
+CLASS="VARNAME"
+>MANPATH</TT
+>变量，例如：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>MANPATH=/usr/lib/scohelp/%L/man:/usr/dt/man:/usr/man:/usr/share/man:scohelp:/usr/local/man:/usr/local/pgsql/share/man</PRE
+><P>
+    </P
+><P
+>     在 OpenServer 上，某些额外的研究需要被覆盖来使得手册页可用，因为其手册系统与其他平台有点不同。当前，PostgreSQL 将根本不会安装它们。
+    </P
+></DIV
+><DIV
+CLASS="SECT3"
+><H3
+CLASS="SECT3"
+><A
+NAME="AEN30423"
+>16.7.5.6. 带 7.1.1b 特性补充的 C99 问题</A
+></H3
+><P
+>     对于那些早于随 OpenUNIX 8.0.0（UnixWare 7.1.2）一起发布的编译器版本的编译器，它们包括 7.1.1b 特性补充，你可能需要在<TT
+CLASS="VARNAME"
+>CFLAGS</TT
+>或<TT
+CLASS="VARNAME"
+>CC</TT
+>环境变量中指定<TT
+CLASS="OPTION"
+>-Xb</TT
+>。这种问题的迹象是在编译引用内联函数的<TT
+CLASS="FILENAME"
+>tuplesort.c</TT
+>时的一个错误。显然在 7.1.2（8.0.0）及以后的编译器中已有修改。
+    </P
+></DIV
+><DIV
+CLASS="SECT3"
+><H3
+CLASS="SECT3"
+><A
+NAME="AEN30430"
+>16.7.5.7. UnixWare 上的线程</A
+></H3
+><P
+>     对于线程，你<SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>必须</I
+></SPAN
+>在<SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>所有</I
+></SPAN
+>使用libpq的程序上使用<TT
+CLASS="OPTION"
+>-Kpthread</TT
+>。libpq使用<CODE
+CLASS="FUNCTION"
+>pthread_*</CODE
+>调用，这些只能在有<TT
+CLASS="OPTION"
+>-Kpthread</TT
+>/<TT
+CLASS="OPTION"
+>-Kthread</TT
+>标志的情况下可用。
+    </P
+></DIV
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="INSTALLATION-NOTES-SOLARIS"
+>16.7.6. Solaris</A
+></H2
+><P
+>    PostgreSQL 在 Solaris 上得到了很好的支持。你的操作系统越新，你将会碰到更少的问题；细节如下。
+   </P
+><DIV
+CLASS="SECT3"
+><H3
+CLASS="SECT3"
+><A
+NAME="AEN30445"
+>16.7.6.1. 要求的工具</A
+></H3
+><P
+>     你可以使用 GCC 或 Sun 的编译器套件进行编译。为了更好的代码优化，我们强烈推荐在 SPARC 架构下使用 Sun 的编译器。我们已经得到一些使用 GCC 2.95.1 时的问题报告；我们推荐 GCC 2.95.3 或之后的版本。如果你正在使用 Sun 的编译器，注意不要选择<TT
+CLASS="FILENAME"
+>/usr/ucb/cc</TT
+>；而是使用<TT
+CLASS="FILENAME"
+>/opt/SUNWspro/bin/cc</TT
+>。
+    </P
+><P
+>     你可以从<A
+HREF="http://www.oracle.com/technetwork/server-storage/solarisstudio/downloads/"
+TARGET="_top"
+>http://www.oracle.com/technetwork/server-storage/solarisstudio/downloads/</A
+>下载 Sun Studio。很多 GNU 工具都被整合到了 Solaris 10，或者它们在 Solaris companion CD 中。如果你喜欢用于老版本 Solaris 的包，你可以在<A
+HREF="http://www.sunfreeware.com"
+TARGET="_top"
+>http://www.sunfreeware.com</A
+>找到这些工具。如果你想要源码，在<A
+HREF="http://www.gnu.org/order/ftp.html"
+TARGET="_top"
+>http://www.gnu.org/order/ftp.html</A
+>上找找。
+    </P
+></DIV
+><DIV
+CLASS="SECT3"
+><H3
+CLASS="SECT3"
+><A
+NAME="AEN30454"
+>16.7.6.2. OpenSSL 的问题</A
+></H3
+><P
+>     当你编译 PostgreSQL 带有 OpenSSL 支持时，你可能在下列文件中得到编译错误：
+     <P
+></P
+></P><UL
+><LI
+><P
+><TT
+CLASS="FILENAME"
+>src/backend/libpq/crypt.c</TT
+></P
+></LI
+><LI
+><P
+><TT
+CLASS="FILENAME"
+>src/backend/libpq/password.c</TT
+></P
+></LI
+><LI
+><P
+><TT
+CLASS="FILENAME"
+>src/interfaces/libpq/fe-auth.c</TT
+></P
+></LI
+><LI
+><P
+><TT
+CLASS="FILENAME"
+>src/interfaces/libpq/fe-connect.c</TT
+></P
+></LI
+></UL
+><P>
+
+     这是由于标准<TT
+CLASS="FILENAME"
+>/usr/include/crypt.h</TT
+>头部和 OpenSSL 提供的头文件之间的一个名字空间冲突导致的。
+    </P
+><P
+>     升级你的 OpenSSL 安装到版本 0.9.6a 来修复这个问题。 Solaris 9 及以上有一个更新版本的 OpenSSL。
+    </P
+></DIV
+><DIV
+CLASS="SECT3"
+><H3
+CLASS="SECT3"
+><A
+NAME="AEN30472"
+>16.7.6.3. configure 抱怨一个失败的测试程序</A
+></H3
+><P
+>     如果<TT
+CLASS="COMMAND"
+>configure</TT
+>抱怨一个失败的测试程序，可能的情况是运行时链接器无法找到某些库，可能是libz、libreadline或某些其他非标准库如 libssl。要向它指出正确的位置，在<TT
+CLASS="COMMAND"
+>configure</TT
+>命令行上设置<TT
+CLASS="ENVAR"
+>LDFLAGS</TT
+>环境变量，例如：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>configure ... LDFLAGS="-R /usr/sfw/lib:/opt/sfw/lib:/usr/local/lib"</PRE
+><P>
+     更多信息可见<SPAN
+CLASS="CITEREFENTRY"
+><SPAN
+CLASS="REFENTRYTITLE"
+>ld</SPAN
+></SPAN
+>手册页。
+    </P
+></DIV
+><DIV
+CLASS="SECT3"
+><H3
+CLASS="SECT3"
+><A
+NAME="AEN30482"
+>16.7.6.4. 64-位编译有时会崩溃</A
+></H3
+><P
+>     在 Solaris 7 和更老的版本上，64-位版本的 libc 有一个有缺陷的<CODE
+CLASS="FUNCTION"
+>vsnprintf</CODE
+>例程，这导致 PostgreSQL 中不稳定的核心转储。最简单的已知解决方案是强制 PostgreSQL 使用它自己的<CODE
+CLASS="FUNCTION"
+>vsnprintf</CODE
+>版本而不是库中的拷贝。要这样做，运行<TT
+CLASS="COMMAND"
+>configure</TT
+>之后编辑一个由<TT
+CLASS="COMMAND"
+>configure</TT
+>产生的文件：
+     在文件<TT
+CLASS="FILENAME"
+>src/Makefile.global</TT
+>中将行
+</P><PRE
+CLASS="PROGRAMLISTING"
+>LIBOBJS =</PRE
+><P>
+     改成
+</P><PRE
+CLASS="PROGRAMLISTING"
+>LIBOBJS = snprintf.o</PRE
+><P>
+     （可能有其他文件已经被列在这个变量中。顺序无影响）。然后正常编译。
+    </P
+></DIV
+><DIV
+CLASS="SECT3"
+><H3
+CLASS="SECT3"
+><A
+NAME="AEN30492"
+>16.7.6.5. 为最优性能编译</A
+></H3
+><P
+>     在 SPARC 架构上，我们强烈推荐使用 Sun Studio来编译。尝试使用<TT
+CLASS="OPTION"
+>-xO5</TT
+>优化标志来生成显著加快的二进制。不要使用任何修改浮点操作和<TT
+CLASS="VARNAME"
+>errno</TT
+>处理（例如<TT
+CLASS="OPTION"
+>-fast</TT
+>）行为的标志。这些标志可能会做出某些非标准 PostgreSQL 行为，例如在日期/时间计算中。
+    </P
+><P
+>     如果你没有理由要使用 SPARC 上的 64 位二进制，最好用 32 位版本。64 位操作较慢并且 64 位二进制比其 32 位变体要慢。并且在另一方面，AMD64 CPU 家族上的32 位代码不是原生的，并且这也是问什么在这个 CPU 族中 32 位代码要明显地更慢。
+    </P
+></DIV
+><DIV
+CLASS="SECT3"
+><H3
+CLASS="SECT3"
+><A
+NAME="AEN30499"
+>16.7.6.6. 用 DTrace 来跟踪 PostgreSQL</A
+></H3
+><P
+>     是的，可以使用 DTrace。详见
+     <A
+HREF="dynamic-trace.html"
+>第 28.5 &#33410;</A
+>。你还可以在这篇文章<A
+HREF="https://blogs.oracle.com/robertlor/entry/user_level_dtrace_probes_in"
+TARGET="_top"
+>https://blogs.oracle.com/robertlor/entry/user_level_dtrace_probes_in</A
+>中找到更多信息。
+    </P
+><P
+>     如果你看到<TT
+CLASS="COMMAND"
+>postgres</TT
+>可执行程序的链接中断并且报出下面的错误消息：
+</P><PRE
+CLASS="SCREEN"
+>Undefined                       first referenced
+ symbol                             in file
+AbortTransaction                    utils/probes.o
+CommitTransaction                   utils/probes.o
+ld: fatal: Symbol referencing errors. No output written to postgres
+collect2: ld returned 1 exit status
+make: *** [postgres] Error 1</PRE
+><P>
+     说明你的 DTrace 安装太旧，无法处理静态函数中的探测。你需要 Solaris 10u4 或更新的版本。
+    </P
+></DIV
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="supported-platforms.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="install-windows.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>平台支持</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="installation.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>在<SPAN
+CLASS="PRODUCTNAME"
+>Windows</SPAN
+>上从源代码安装</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

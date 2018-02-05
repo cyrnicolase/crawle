@@ -1,0 +1,966 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>CREATE ROLE</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="SQL 命令"
+HREF="sql-commands.html"><LINK
+REL="PREVIOUS"
+TITLE="CREATE POLICY"
+HREF="sql-createpolicy.html"><LINK
+REL="NEXT"
+TITLE="CREATE RULE"
+HREF="sql-createrule.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="REFENTRY"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/ref/create_role.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="CREATE POLICY"
+HREF="sql-createpolicy.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="CREATE RULE"
+HREF="sql-createrule.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="SQL-CREATEROLE"
+></A
+>CREATE ROLE</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN80986"
+></A
+><H2
+>&#21517;&#31216;</H2
+>CREATE ROLE&nbsp;--&nbsp;定义一个新的数据库角色</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN80989"
+></A
+><H2
+>&#22823;&#32434;</H2
+><PRE
+CLASS="SYNOPSIS"
+>CREATE ROLE <TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+> [ [ WITH ] <TT
+CLASS="REPLACEABLE"
+><I
+>option</I
+></TT
+> [ ... ] ]
+
+<SPAN
+CLASS="phrase"
+><SPAN
+CLASS="PHRASE"
+>where <TT
+CLASS="REPLACEABLE"
+><I
+>option</I
+></TT
+>可以是：</SPAN
+></SPAN
+>
+
+      SUPERUSER | NOSUPERUSER
+    | CREATEDB | NOCREATEDB
+    | CREATEROLE | NOCREATEROLE
+    | INHERIT | NOINHERIT
+    | LOGIN | NOLOGIN
+    | REPLICATION | NOREPLICATION
+    | BYPASSRLS | NOBYPASSRLS
+    | CONNECTION LIMIT <TT
+CLASS="REPLACEABLE"
+><I
+>connlimit</I
+></TT
+>
+    | [ ENCRYPTED | UNENCRYPTED ] PASSWORD '<TT
+CLASS="REPLACEABLE"
+><I
+>password</I
+></TT
+>'
+    | VALID UNTIL '<TT
+CLASS="REPLACEABLE"
+><I
+>timestamp</I
+></TT
+>'
+    | IN ROLE <TT
+CLASS="REPLACEABLE"
+><I
+>role_name</I
+></TT
+> [, ...]
+    | IN GROUP <TT
+CLASS="REPLACEABLE"
+><I
+>role_name</I
+></TT
+> [, ...]
+    | ROLE <TT
+CLASS="REPLACEABLE"
+><I
+>role_name</I
+></TT
+> [, ...]
+    | ADMIN <TT
+CLASS="REPLACEABLE"
+><I
+>role_name</I
+></TT
+> [, ...]
+    | USER <TT
+CLASS="REPLACEABLE"
+><I
+>role_name</I
+></TT
+> [, ...]
+    | SYSID <TT
+CLASS="REPLACEABLE"
+><I
+>uid</I
+></TT
+></PRE
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN81004"
+></A
+><H2
+>描述</H2
+><P
+>   <TT
+CLASS="COMMAND"
+>CREATE ROLE</TT
+>向<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>数据库集簇增加一个新的角色。一个角色是一个实体，它可以拥有数据库对象并且拥有数据库特权。根据一个角色如何被使用，它可以被考虑成一个<SPAN
+CLASS="QUOTE"
+>"用户"</SPAN
+>、一个<SPAN
+CLASS="QUOTE"
+>"组"</SPAN
+>或者两者。有关管理用户和认证的信息可以参考<A
+HREF="user-manag.html"
+>第 21 &#31456;</A
+>和<A
+HREF="client-authentication.html"
+>第 20 &#31456;</A
+>。要使用这个命令，你必须具有<TT
+CLASS="LITERAL"
+>CREATEROLE</TT
+>特权或者成为一个数据库超级用户。
+  </P
+><P
+>   注意角色是定义在数据库集簇层面上的，并且因此在集簇中的所有数据库中都可用。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN81015"
+></A
+><H2
+>参数</H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+></DT
+><DD
+><P
+>        新角色的名称。
+       </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>SUPERUSER</TT
+><BR><TT
+CLASS="LITERAL"
+>NOSUPERUSER</TT
+></DT
+><DD
+><P
+>        这些子句决定新角色是否是一个<SPAN
+CLASS="QUOTE"
+>"超级用户"</SPAN
+>，它可以越过数据库内的所有访问限制。超级用户状态很危险并且只应该在确实需要时才用。要创建一个新超级用户，你必须自己是一个超级用户。如果没有指定，默认值是<TT
+CLASS="LITERAL"
+>NOSUPERUSER</TT
+>。
+       </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>CREATEDB</TT
+><BR><TT
+CLASS="LITERAL"
+>NOCREATEDB</TT
+></DT
+><DD
+><P
+>        这些子句定义一个角色创建数据库的能力。如果指定了<TT
+CLASS="LITERAL"
+>CREATEDB</TT
+>，被定义的角色将被允许创建新的数据库。指定<TT
+CLASS="LITERAL"
+>NOCREATEDB</TT
+>将否定一个角色创建数据库的能力。如果没有指定，默认值是<TT
+CLASS="LITERAL"
+>NOCREATEDB</TT
+>。
+       </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>CREATEROLE</TT
+><BR><TT
+CLASS="LITERAL"
+>NOCREATEROLE</TT
+></DT
+><DD
+><P
+>        这些子句决定一个角色是否被允许创建新的角色（也就是执行<TT
+CLASS="COMMAND"
+>CREATE ROLE</TT
+>）。一个带有<TT
+CLASS="LITERAL"
+>CREATEROLE</TT
+>特权的角色也能修改和删除其他角色。如果没有指定，默认值是<TT
+CLASS="LITERAL"
+>NOCREATEROLE</TT
+>。
+       </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>INHERIT</TT
+><BR><TT
+CLASS="LITERAL"
+>NOINHERIT</TT
+></DT
+><DD
+><P
+>        如果新的角色是其他角色的成员，这些子句决定新角色是否从那些角色中<SPAN
+CLASS="QUOTE"
+>"继承"</SPAN
+>特权，把新角色作为成员的角色称为新角色的父角色。一个带有<TT
+CLASS="LITERAL"
+>INHERIT</TT
+>属性的角色能够自动使用已经被授予给其直接或间接父角色的任何数据库特权。如果没有<TT
+CLASS="LITERAL"
+>INHERIT</TT
+>，在另一个角色中的成员关系只会把<TT
+CLASS="COMMAND"
+>SET ROLE</TT
+>的能力授予给那个其他角色，只有在这样做后那个其他角色的特权才可用。如果没有指定，默认值是<TT
+CLASS="LITERAL"
+>INHERIT</TT
+>。
+       </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>LOGIN</TT
+><BR><TT
+CLASS="LITERAL"
+>NOLOGIN</TT
+></DT
+><DD
+><P
+>        这些子句决定一个角色是否被允许登录，也就是在客户端连接期间该角色是否能被给定为初始会话认证名称。一个具有<TT
+CLASS="LITERAL"
+>LOGIN</TT
+>属性的角色可以被考虑为一个用户。没有这个属性的角色对于管理数据库特权很有用，但是却不是用户这个词的通常意义。如果没有指定，默认值是<TT
+CLASS="LITERAL"
+>NOLOGIN</TT
+>，不过当<TT
+CLASS="COMMAND"
+>CREATE ROLE</TT
+>被通过<A
+HREF="sql-createuser.html"
+>CREATE USER</A
+>调用时默认值会是<TT
+CLASS="LITERAL"
+>LOGIN</TT
+>。
+       </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>REPLICATION</TT
+><BR><TT
+CLASS="LITERAL"
+>NOREPLICATION</TT
+></DT
+><DD
+><P
+>        这些子句决定一个角色是否被允许发起流复制或者把系统放入或者退出备份模式。一个具有<TT
+CLASS="LITERAL"
+>REPLICATION</TT
+>属性的角色是一个具有非常高特权的角色，并且只应被用于确实需要复制的角色上。如果没有指定，默认值是<TT
+CLASS="LITERAL"
+>NOREPLICATION</TT
+>。
+       </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>BYPASSRLS</TT
+><BR><TT
+CLASS="LITERAL"
+>NOBYPASSRLS</TT
+></DT
+><DD
+><P
+>        这些子句决定是否一个角色可以绕过每一条行级安全性（RLS）策略。
+        默认是<TT
+CLASS="LITERAL"
+>NOBYPASSRLS</TT
+>。注意 pg_dump 将默认
+        把<TT
+CLASS="LITERAL"
+>row_security</TT
+>设置为<TT
+CLASS="LITERAL"
+>OFF</TT
+>，
+        以确保一个表的所有内容被转储出来。如果运行 pg_dump 的用户不
+        具有适当的权限，将会返回一个错误。超级用户和被转储表的拥有者
+        总是可以绕过 RLS。
+       </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>CONNECTION LIMIT</TT
+> <TT
+CLASS="REPLACEABLE"
+><I
+>connlimit</I
+></TT
+></DT
+><DD
+><P
+>        如果角色能登录，这指定该角色能建立多少并发连接。-1（默认值）表示无限制。
+       </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>PASSWORD</TT
+> <TT
+CLASS="REPLACEABLE"
+><I
+>password</I
+></TT
+></DT
+><DD
+><P
+>        设置角色的口令（口令只对具有<TT
+CLASS="LITERAL"
+>LOGIN</TT
+>属性的角色有用，但是不管怎样你还是可以为没有该属性的角色定义一个口令）。如果你没有计划使用口令认证，你可以忽略这个选项。如果没有指定口令，口令将被设置为空并且该用户的口令认证总是会失败。也可以用<TT
+CLASS="LITERAL"
+>PASSWORD NULL</TT
+>显式地写出一个空口令。
+       </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>ENCRYPTED</TT
+><BR><TT
+CLASS="LITERAL"
+>UNENCRYPTED</TT
+></DT
+><DD
+><P
+>        这些关键词控制口令是否被加密存储在系统目录中（如果都没有指定，默认的行为由配置参数<A
+HREF="runtime-config-connection.html#GUC-PASSWORD-ENCRYPTION"
+>password_encryption</A
+>决定）。如果已经存在的口令字符串已经被 MD5 加密过，那么它会被照原样存储，而不管是否指定了<TT
+CLASS="LITERAL"
+>ENCRYPTED</TT
+>或<TT
+CLASS="LITERAL"
+>UNENCRYPTED</TT
+>（因为系统不能解密指定的已加密口令字符串）。这允许在转储/恢复期间重载被加密的口令。
+       </P
+><P
+>        注意旧的客户端可能缺乏对 MD5 认证机制的支持，而被加密存储的口令恰好需要该机制。
+       </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>VALID UNTIL</TT
+> '<TT
+CLASS="REPLACEABLE"
+><I
+>timestamp</I
+></TT
+>'</DT
+><DD
+><P
+>        <TT
+CLASS="LITERAL"
+>VALID UNTIL</TT
+>机制设置一个日期和时间，在该时间点之后角色的口令将会失效。如果这个子句被忽略，那么口令将总是有效。
+       </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>IN ROLE</TT
+> <TT
+CLASS="REPLACEABLE"
+><I
+>role_name</I
+></TT
+></DT
+><DD
+><P
+>        <TT
+CLASS="LITERAL"
+>IN ROLE</TT
+>子句列出一个或多个现有的角色，新角色将被立即作为新成员加入到这些角色中（注意没有选项可以把新角色作为一个管理员加入，需要用一个单独的<TT
+CLASS="COMMAND"
+>GRANT</TT
+>命令来完成）。
+       </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>IN GROUP</TT
+> <TT
+CLASS="REPLACEABLE"
+><I
+>role_name</I
+></TT
+></DT
+><DD
+><P
+><TT
+CLASS="LITERAL"
+>IN GROUP</TT
+>是<TT
+CLASS="LITERAL"
+>IN ROLE</TT
+>的一种已废弃的拼写方式。
+       </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>ROLE</TT
+> <TT
+CLASS="REPLACEABLE"
+><I
+>role_name</I
+></TT
+></DT
+><DD
+><P
+>        <TT
+CLASS="LITERAL"
+>ROLE</TT
+>子句列出一个或者多个现有角色，它们会被自动作为成员加入到新角色中（这实际上新角色变成了一个<SPAN
+CLASS="QUOTE"
+>"组"</SPAN
+>）。
+       </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>ADMIN</TT
+> <TT
+CLASS="REPLACEABLE"
+><I
+>role_name</I
+></TT
+></DT
+><DD
+><P
+>        <TT
+CLASS="LITERAL"
+>ADMIN</TT
+>子句与<TT
+CLASS="LITERAL"
+>ROLE</TT
+>相似，但是被提及的角色被使用<TT
+CLASS="LITERAL"
+>WITH ADMIN OPTION</TT
+>加入到新角色中，让它们能够把这个角色中的成员关系授予给其他人。
+       </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>USER</TT
+> <TT
+CLASS="REPLACEABLE"
+><I
+>role_name</I
+></TT
+></DT
+><DD
+><P
+>        <TT
+CLASS="LITERAL"
+>USER</TT
+>子句是<TT
+CLASS="LITERAL"
+>ROLE</TT
+>子句的一个已废弃的拼写方式。
+       </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>SYSID</TT
+> <TT
+CLASS="REPLACEABLE"
+><I
+>uid</I
+></TT
+></DT
+><DD
+><P
+>        <TT
+CLASS="LITERAL"
+>SYSID</TT
+>子句会被忽略，但是会为了向后兼容，还是会接受它。
+       </P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN81175"
+></A
+><H2
+>注解</H2
+><P
+>   使用<A
+HREF="sql-alterrole.html"
+>ALTER ROLE</A
+>来更改一个角色的属性，以及使用<A
+HREF="sql-droprole.html"
+>DROP ROLE</A
+>来移除一个角色。所有用<TT
+CLASS="COMMAND"
+>CREATE ROLE</TT
+>指定的属性可以被后来的<TT
+CLASS="COMMAND"
+>ALTER ROLE</TT
+>命令所修改。
+  </P
+><P
+>   增加和移除组角色成员的最佳方式是使用<A
+HREF="sql-grant.html"
+>GRANT</A
+>和<A
+HREF="sql-revoke.html"
+>REVOKE</A
+>。
+  </P
+><P
+>   <TT
+CLASS="LITERAL"
+>VALID UNTIL</TT
+>子句只为一个口令而不是为一个角色<I
+CLASS="FOREIGNPHRASE"
+>本身</I
+>定义了一个过期时间。特别地，当使用一个非基于口令认证的方法登录时，过期时间是不会被强制的。
+  </P
+><P
+>   <TT
+CLASS="LITERAL"
+>INHERIT</TT
+>属性管理可授予特权（也就是对数据库对象和角色成员关系的访问特权）的继承性。它并不适用于由<TT
+CLASS="COMMAND"
+>CREATE ROLE</TT
+>和<TT
+CLASS="COMMAND"
+>ALTER ROLE</TT
+>设置的特殊角色属性。例如，作为具有<TT
+CLASS="LITERAL"
+>CREATEDB</TT
+>特权的角色的一个成员，并不会立刻授予创建数据库的角色，即便<TT
+CLASS="LITERAL"
+>INHERIT</TT
+>被设置也是如此，在创建一个数据库之前必须通过<A
+HREF="sql-set-role.html"
+>SET ROLE</A
+>成为该角色。
+  </P
+><P
+>   <TT
+CLASS="LITERAL"
+>INHERIT</TT
+>属性是用于向后兼容原因的默认值：在早前的<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>发布中，用户总是能够访问其所属组的所有特权。不过，<TT
+CLASS="LITERAL"
+>NOINHERIT</TT
+>更加接近于 SQL 标准中指定的语义。
+  </P
+><P
+>   要小心<TT
+CLASS="LITERAL"
+>CREATEROLE</TT
+>特权。对于一个<TT
+CLASS="LITERAL"
+>CREATEROLE</TT
+>角色的特权没有继承的概念。那意味着即使一个角色没有特定的特权但被允许创建其他角色，它可以轻易地创建与自身特权不同的另一个角色（除了创建具有超级用户特权的角色）。例如，如果角色<SPAN
+CLASS="QUOTE"
+>"user"</SPAN
+>具有<TT
+CLASS="LITERAL"
+>CREATEROLE</TT
+>特权但是没有<TT
+CLASS="LITERAL"
+>CREATEDB</TT
+>特权，但是它能够创建一个带有<TT
+CLASS="LITERAL"
+>CREATEDB</TT
+>特权的新角色。因此，可以把具有<TT
+CLASS="LITERAL"
+>CREATEROLE</TT
+>特权的角色看成是准超级用户角色。
+  </P
+><P
+>   <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>包括一个程序<A
+HREF="app-createuser.html"
+><SPAN
+CLASS="APPLICATION"
+>createuser</SPAN
+></A
+>，它具有和<TT
+CLASS="COMMAND"
+>CREATE ROLE</TT
+>相同的功能（事实上，它会调用这个命令），但是它可以从命令 shell 中运行。
+  </P
+><P
+>   <TT
+CLASS="LITERAL"
+>CONNECTION LIMIT</TT
+>只被近似地强制，如果两个新会话在几乎相同时间被开始，而此时该角色只剩下刚好一个连接<SPAN
+CLASS="QUOTE"
+>"槽"</SPAN
+>，两者可能都将失败。还有，该限制从不对超级用户强制。
+  </P
+><P
+>   用这个命令指定一个非加密口令时必须加以注意。该命令将被以明文的形式传输到服务器，并且它也可能被记录在客户端命令历史或者服务器日志中。不过，命令<A
+HREF="app-createuser.html"
+><SPAN
+CLASS="APPLICATION"
+>createuser</SPAN
+></A
+>会传输加密的口令。还有，<A
+HREF="app-psql.html"
+><SPAN
+CLASS="APPLICATION"
+>psql</SPAN
+></A
+>包含一个命令<TT
+CLASS="COMMAND"
+>\password</TT
+>，它可以被用来安全地改变该口令。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN81218"
+></A
+><H2
+>例子</H2
+><P
+>   创建一个能登录但是没有口令的角色：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>CREATE ROLE jonathan LOGIN;</PRE
+><P>
+  </P
+><P
+>   创建一个有口令的角色：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>CREATE USER davide WITH PASSWORD 'jw8s0F4';</PRE
+><P>
+   （<TT
+CLASS="COMMAND"
+>CREATE USER</TT
+>和<TT
+CLASS="COMMAND"
+>CREATE ROLE</TT
+>完全相同，除了它带有<TT
+CLASS="LITERAL"
+>LOGIN</TT
+>）。
+  </P
+><P
+>   创建一个角色，它的口令有效期截止到 2004 年底。在进入 2005 年第一秒时，该口令会失效。
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>CREATE ROLE miriam WITH LOGIN PASSWORD 'jw8s0F4' VALID UNTIL '2005-01-01';</PRE
+><P>
+  </P
+><P
+>   创建一个能够创建数据库并且管理角色的角色：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>CREATE ROLE admin WITH CREATEDB CREATEROLE;</PRE
+><P></P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN81231"
+></A
+><H2
+>兼容性</H2
+><P
+>   SQL 标准中有<TT
+CLASS="COMMAND"
+>CREATE ROLE</TT
+>语句，但是标准只要求语法
+</P><PRE
+CLASS="SYNOPSIS"
+>CREATE ROLE <TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+> [ WITH ADMIN <TT
+CLASS="REPLACEABLE"
+><I
+>role_name</I
+></TT
+> ]</PRE
+><P>
+   多个初始管理员以及<TT
+CLASS="COMMAND"
+>CREATE ROLE</TT
+>的所有其他选项都是<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>扩展。
+   </P
+><P
+>   SQL 标准定义了用户和角色的概念，但是它把它们看成是可区分的概念并且将定义用户的所有命令留给每一种数据库实现来指定。在<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>中，我们已经选择把用户和角色统一成一种单一实体类型。因此角色比起标准中拥有更多可选的属性。
+  </P
+><P
+>   SQL 标准指定的行为可以通过给用户<TT
+CLASS="LITERAL"
+>NOINHERIT</TT
+>属性来得到最大的金丝，而角色会被给予<TT
+CLASS="LITERAL"
+>INHERIT</TT
+>属性。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN81245"
+></A
+><H2
+>参见</H2
+><A
+HREF="sql-set-role.html"
+>SET ROLE</A
+>, <A
+HREF="sql-alterrole.html"
+>ALTER ROLE</A
+>, <A
+HREF="sql-droprole.html"
+>DROP ROLE</A
+>, <A
+HREF="sql-grant.html"
+>GRANT</A
+>, <A
+HREF="sql-revoke.html"
+>REVOKE</A
+>, <A
+HREF="app-createuser.html"
+><SPAN
+CLASS="APPLICATION"
+>createuser</SPAN
+></A
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-createpolicy.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="sql-createrule.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>CREATE POLICY</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>CREATE RULE</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

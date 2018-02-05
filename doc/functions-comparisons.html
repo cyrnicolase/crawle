@@ -1,0 +1,771 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>行和数组比较</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="函数和操作符"
+HREF="functions.html"><LINK
+REL="PREVIOUS"
+TITLE="子查询表达式"
+HREF="functions-subquery.html"><LINK
+REL="NEXT"
+TITLE="集合返回函数"
+HREF="functions-srf.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/func.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="子查询表达式"
+HREF="functions-subquery.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="functions.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#31456; 9. 函数和操作符</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="集合返回函数"
+HREF="functions-srf.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="FUNCTIONS-COMPARISONS"
+>9.23. 行和数组比较</A
+></H1
+><P
+>   本节描述几个特殊的结构，用于在值的组之间进行多重比较。这些形式语法上和前面一节的子查询形式相关，但是不涉及子查询。 这种形式涉及的数组子表达式是<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>的扩展； 其它的是<ACRONYM
+CLASS="ACRONYM"
+>SQL</ACRONYM
+>兼容的。所有本节记录的表达式形式都返回布尔（Boolean）结果（真/假）。
+  </P
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="FUNCTIONS-COMPARISONS-IN-SCALAR"
+>9.23.1. <TT
+CLASS="LITERAL"
+>IN</TT
+></A
+></H2
+><PRE
+CLASS="SYNOPSIS"
+><TT
+CLASS="REPLACEABLE"
+><I
+>expression</I
+></TT
+> IN (<TT
+CLASS="REPLACEABLE"
+><I
+>value</I
+></TT
+> [<SPAN
+CLASS="OPTIONAL"
+>, ...</SPAN
+>])</PRE
+><P
+>   右手边是一个圆括弧包围的标量列表。如果左手边表达式的结果等于任何右手边表达式中的一个，结果为<SPAN
+CLASS="QUOTE"
+>"真"</SPAN
+>。它是下面形式的缩写
+
+</P><PRE
+CLASS="SYNOPSIS"
+><TT
+CLASS="REPLACEABLE"
+><I
+>expression</I
+></TT
+> = <TT
+CLASS="REPLACEABLE"
+><I
+>value1</I
+></TT
+>
+OR
+<TT
+CLASS="REPLACEABLE"
+><I
+>expression</I
+></TT
+> = <TT
+CLASS="REPLACEABLE"
+><I
+>value2</I
+></TT
+>
+OR
+...</PRE
+><P>
+  </P
+><P
+>   请注意如果左手边表达式得到空值，或者没有相等的右手边值并且至少有一个右手边的表达式得到空值，那么<TT
+CLASS="TOKEN"
+>IN</TT
+>结构的结果将为空值，而不是假。这符合 SQL 处理空值的布尔组合的一般规则。
+  </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN20920"
+>9.23.2. <TT
+CLASS="LITERAL"
+>NOT IN</TT
+></A
+></H2
+><PRE
+CLASS="SYNOPSIS"
+><TT
+CLASS="REPLACEABLE"
+><I
+>expression</I
+></TT
+> NOT IN (<TT
+CLASS="REPLACEABLE"
+><I
+>value</I
+></TT
+> [<SPAN
+CLASS="OPTIONAL"
+>, ...</SPAN
+>])</PRE
+><P
+>   右手边是一个圆括弧包围的标量列表。如果左手边表达式的结果不等于所有右手边表达式，结果为<SPAN
+CLASS="QUOTE"
+>"真"</SPAN
+>。它是下面形式的缩写
+
+</P><PRE
+CLASS="SYNOPSIS"
+><TT
+CLASS="REPLACEABLE"
+><I
+>expression</I
+></TT
+> &lt;&gt; <TT
+CLASS="REPLACEABLE"
+><I
+>value1</I
+></TT
+>
+AND
+<TT
+CLASS="REPLACEABLE"
+><I
+>expression</I
+></TT
+> &lt;&gt; <TT
+CLASS="REPLACEABLE"
+><I
+>value2</I
+></TT
+>
+AND
+...</PRE
+><P>
+  </P
+><P
+>   请注意如果左手边表达式得到空值，或者没有相等的右手边值并且至少有一个右手边的表达式得到空值，那么<TT
+CLASS="TOKEN"
+>NOT IN</TT
+>结构的结果将为空值， 而不是我们可能天真地认为的真值。这符合 SQL 处理空值的布尔组合的一般规则。
+  </P
+><DIV
+CLASS="TIP"
+><BLOCKQUOTE
+CLASS="TIP"
+><P
+><B
+>&#25552;&#31034;: </B
+>   <TT
+CLASS="LITERAL"
+>x NOT IN y</TT
+>在所有情况下都等效于<TT
+CLASS="LITERAL"
+>NOT (x IN y)</TT
+>。但是，在处理空值的时候，用<TT
+CLASS="TOKEN"
+>NOT IN</TT
+>比用<TT
+CLASS="TOKEN"
+>IN</TT
+>更可能迷惑新手。最好尽可能用正逻辑来表达你的条件。
+  </P
+></BLOCKQUOTE
+></DIV
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN20942"
+>9.23.3. <TT
+CLASS="LITERAL"
+>ANY</TT
+>/<TT
+CLASS="LITERAL"
+>SOME</TT
+> (array)</A
+></H2
+><PRE
+CLASS="SYNOPSIS"
+><TT
+CLASS="REPLACEABLE"
+><I
+>expression</I
+></TT
+> <TT
+CLASS="REPLACEABLE"
+><I
+>operator</I
+></TT
+> ANY (<TT
+CLASS="REPLACEABLE"
+><I
+>array expression</I
+></TT
+>)
+<TT
+CLASS="REPLACEABLE"
+><I
+>expression</I
+></TT
+> <TT
+CLASS="REPLACEABLE"
+><I
+>operator</I
+></TT
+> SOME (<TT
+CLASS="REPLACEABLE"
+><I
+>array expression</I
+></TT
+>)</PRE
+><P
+>   右手边是一个圆括弧包围的表达式，它必须得到一个数组值。左手边表达式被计算并且使用给出的<TT
+CLASS="REPLACEABLE"
+><I
+>操作符</I
+></TT
+>对数组的每个元素进行比较，这个操作符必须得到布尔结果。如果得到了任何真值结果，那么<TT
+CLASS="TOKEN"
+>ANY</TT
+>的结果是<SPAN
+CLASS="QUOTE"
+>"真"</SPAN
+>。 如果没有找到真值结果（包括数组只有零个元素的情况），那么结果是<SPAN
+CLASS="QUOTE"
+>"假"</SPAN
+>。
+  </P
+><P
+>   如果数组表达式得到一个空数组，<TT
+CLASS="TOKEN"
+>ANY</TT
+>的结果将为空值。如果左手边的表达式得到空值，<TT
+CLASS="TOKEN"
+>ANY</TT
+>通常是空值（尽管一个非严格比较操作符可能得到一个不同的结果）。另外，如果右手边的数组包含任何空值元素或者没有得到真值比较结果，<TT
+CLASS="TOKEN"
+>ANY</TT
+>的结果将是空值而不是假（再次，假设是一个严格的比较操作符）。这符合 SQL 对空值的布尔组合的一般规则。
+  </P
+><P
+>   <TT
+CLASS="TOKEN"
+>SOME</TT
+>是<TT
+CLASS="TOKEN"
+>ANY</TT
+>的同义词。
+  </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN20965"
+>9.23.4. <TT
+CLASS="LITERAL"
+>ALL</TT
+> (array)</A
+></H2
+><PRE
+CLASS="SYNOPSIS"
+><TT
+CLASS="REPLACEABLE"
+><I
+>expression</I
+></TT
+> <TT
+CLASS="REPLACEABLE"
+><I
+>operator</I
+></TT
+> ALL (<TT
+CLASS="REPLACEABLE"
+><I
+>array expression</I
+></TT
+>)</PRE
+><P
+>   右手边是一个圆括弧包围的表达式，它必须得到一个数组值。左手边表达式将被计算并使用给出的<TT
+CLASS="REPLACEABLE"
+><I
+>操作符</I
+></TT
+>与数组的每个元素进行比较，这个操作符必须得到一个布尔结果。如果所有比较都得到真值结果，那么<TT
+CLASS="TOKEN"
+>ALL</TT
+>的结果是 <SPAN
+CLASS="QUOTE"
+>"真"</SPAN
+>（包括数组只有零个元素的情况）。如果有任何假值结果，那么结果是<SPAN
+CLASS="QUOTE"
+>"假"</SPAN
+>。
+  </P
+><P
+>  如果数组表达式得到一个空数组，<TT
+CLASS="TOKEN"
+>ALL</TT
+>的结果将为空值。如果左手边的表达式得到空值，<TT
+CLASS="TOKEN"
+>ALL</TT
+>通常是空值（尽管一个非严格比较操作符可能得到一个不同的结果）。另外，如果右手边的数组包含任何空值元素或者没有得到假值比较结果，<TT
+CLASS="TOKEN"
+>ALL</TT
+>的结果将是空值而不是真（再次，假设是一个严格的比较操作符）。这符合 SQL 对空值的布尔组合的一般规则。
+  </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="ROW-WISE-COMPARISON"
+>9.23.5. 行构造器比较</A
+></H2
+><PRE
+CLASS="SYNOPSIS"
+><TT
+CLASS="REPLACEABLE"
+><I
+>row_constructor</I
+></TT
+> <TT
+CLASS="REPLACEABLE"
+><I
+>operator</I
+></TT
+> <TT
+CLASS="REPLACEABLE"
+><I
+>row_constructor</I
+></TT
+></PRE
+><P
+>   每一边都是一个行构造器，如<A
+HREF="sql-expressions.html#SQL-SYNTAX-ROW-CONSTRUCTORS"
+>第 4.2.13 &#33410;</A
+>所述。两个行值必须具有相同数量的域。每一边被计算并且被逐行比较。当<TT
+CLASS="REPLACEABLE"
+><I
+>操作符</I
+></TT
+>是
+   <TT
+CLASS="LITERAL"
+>=</TT
+>、
+   <TT
+CLASS="LITERAL"
+>&lt;&gt;</TT
+>、
+   <TT
+CLASS="LITERAL"
+>&lt;</TT
+>
+   <TT
+CLASS="LITERAL"
+>&lt;=</TT
+>、
+   <TT
+CLASS="LITERAL"
+>&gt;</TT
+>、
+   <TT
+CLASS="LITERAL"
+>&gt;=</TT
+>时，允许进行行构造器比较。每一个行元素必须是具有一个默认 B 树操作符类的类型，否则尝试比较会产生一个错误。
+  </P
+><DIV
+CLASS="NOTE"
+><BLOCKQUOTE
+CLASS="NOTE"
+><P
+><B
+>&#27880;&#24847;: </B
+>    Errors related to the number or types of elements might not occur if
+    the comparison is resolved using earlier columns.
+   </P
+></BLOCKQUOTE
+></DIV
+><P
+>   <TT
+CLASS="LITERAL"
+>=</TT
+>和<TT
+CLASS="LITERAL"
+>&lt;&gt;</TT
+>情况略有不同。如果两行的所有对应成员都是非空且相等则这两行被认为相等；如果任何对应成员是非空但是不相等则这两行不相等；否则行比较的结果为未知（空值）。
+  </P
+><P
+>   对于<TT
+CLASS="LITERAL"
+>&lt;</TT
+>、<TT
+CLASS="LITERAL"
+>&lt;=</TT
+>、<TT
+CLASS="LITERAL"
+>&gt;</TT
+>和<TT
+CLASS="LITERAL"
+>&gt;=</TT
+>情况，行元素被从左至右比较，在找到一处不等的或为空的元素对就立刻停下来。如果这一对元素都为空值，则行比较的结果为未知（空值）；否则这一对元素的比较结果决定行比较的结果。例如，<TT
+CLASS="LITERAL"
+>ROW(1,2,NULL) &lt; ROW(1,3,0)</TT
+>得到真，而不是空值，因为第三对元素并没有被考虑。
+  </P
+><DIV
+CLASS="NOTE"
+><BLOCKQUOTE
+CLASS="NOTE"
+><P
+><B
+>&#27880;&#24847;: </B
+>    在<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+> 8.2之前，<TT
+CLASS="LITERAL"
+>&lt;</TT
+>、<TT
+CLASS="LITERAL"
+>&lt;=</TT
+>、<TT
+CLASS="LITERAL"
+>&gt;</TT
+>和<TT
+CLASS="LITERAL"
+>&gt;=</TT
+>情况不是按照每个 SQL 声明来处理的。一个像<TT
+CLASS="LITERAL"
+>ROW(a,b) &lt; ROW(c,d)</TT
+>的比较会被实现为<TT
+CLASS="LITERAL"
+>a &lt; c AND b &lt; d</TT
+>，而结果行为等价于<TT
+CLASS="LITERAL"
+>a &lt; c OR (a = c AND b &lt; d)</TT
+>。
+   </P
+></BLOCKQUOTE
+></DIV
+><PRE
+CLASS="SYNOPSIS"
+><TT
+CLASS="REPLACEABLE"
+><I
+>row_constructor</I
+></TT
+> IS DISTINCT FROM <TT
+CLASS="REPLACEABLE"
+><I
+>row_constructor</I
+></TT
+></PRE
+><P
+>   这个结构与<TT
+CLASS="LITERAL"
+>&lt;&gt;</TT
+>行比较相似，但是它对于空值输入不会得到空值。任何空值被认为和任何非空值不相等（有区别），并且任意两个空值被认为相等（无区别）。因此结果将总是为真或为假，永远不会是空值。
+  </P
+><PRE
+CLASS="SYNOPSIS"
+><TT
+CLASS="REPLACEABLE"
+><I
+>row_constructor</I
+></TT
+> IS NOT DISTINCT FROM <TT
+CLASS="REPLACEABLE"
+><I
+>row_constructor</I
+></TT
+></PRE
+><P
+>   这个结构与<TT
+CLASS="LITERAL"
+>=</TT
+>行比较相似，但是它对于空值输入不会得到空值。任何空值被认为和任何非空值不相等（有区别），并且任意两个空值被认为相等（无区别）。因此结果将总是为真或为假，永远不会是空值。
+  </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="COMPOSITE-TYPE-COMPARISON"
+>9.23.6. 组合类型比较</A
+></H2
+><PRE
+CLASS="SYNOPSIS"
+><TT
+CLASS="REPLACEABLE"
+><I
+>record</I
+></TT
+> <TT
+CLASS="REPLACEABLE"
+><I
+>operator</I
+></TT
+> <TT
+CLASS="REPLACEABLE"
+><I
+>record</I
+></TT
+></PRE
+><P
+>    SQL 规范要求在结果依赖于比较两个 NULL 值或者一个 NULL 与一个非 NULL 时逐行比较返回 NULL。<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>只有在比较两个行构造器（如<A
+HREF="functions-comparisons.html#ROW-WISE-COMPARISON"
+>第 9.23.5 &#33410;</A
+>）的结果或者比较一个行构造器与一个子查询的输出时才这样做（如<A
+HREF="functions-subquery.html"
+>第 9.22 &#33410;</A
+>中所述）。在其他比较两个组合类型值的环境中，两个 NULL 域值被认为相等，并且一个 NULL 被认为大于一个非 NULL。为了得到组合类型的一致的排序和索引行为，这样做是必要的。
+   </P
+><P
+>   每一边都会被计算并且它们会被逐行比较。当<TT
+CLASS="REPLACEABLE"
+><I
+>操作符</I
+></TT
+>是
+   <TT
+CLASS="LITERAL"
+>=</TT
+>、
+   <TT
+CLASS="LITERAL"
+>&lt;&gt;</TT
+>、
+   <TT
+CLASS="LITERAL"
+>&lt;</TT
+>、
+   <TT
+CLASS="LITERAL"
+>&lt;=</TT
+>、
+   <TT
+CLASS="LITERAL"
+>&gt;</TT
+>或者
+   <TT
+CLASS="LITERAL"
+>&gt;=</TT
+>时或者具有与这些类似的语义时，允许组合类型的比较（更准确地说，如果一个操作符是一个 B 树操作符类的成员，或者是一个 B 树操作符类的<TT
+CLASS="LITERAL"
+>=</TT
+>成员的否定词，它就可以是一个行比较操作符）。
+   上述操作符的行为与用于行构造器（见<A
+HREF="functions-comparisons.html#ROW-WISE-COMPARISON"
+>第 9.23.5 &#33410;</A
+>）的<TT
+CLASS="LITERAL"
+>IS [ NOT ] DISTINCT FROM</TT
+>相同。
+  </P
+><P
+>   为了支持包含无默认 B 树操作符类的元素的行匹配，为组合类型比较定义了下列操作符：
+   <TT
+CLASS="LITERAL"
+>*=</TT
+>,
+   <TT
+CLASS="LITERAL"
+>*&lt;&gt;</TT
+>,
+   <TT
+CLASS="LITERAL"
+>*&lt;</TT
+>,
+   <TT
+CLASS="LITERAL"
+>*&lt;=</TT
+>,
+   <TT
+CLASS="LITERAL"
+>*&gt;</TT
+>, and
+   <TT
+CLASS="LITERAL"
+>*&gt;=</TT
+>.
+   这些操作符比较两行的内部二进制表达。即使两行用相等操作符的比较为真，两行也可能
+   具有不同的二进制表达。行在这些比较操作符之下的排序是决定性的，其他倒没什么意义。
+   这些操作符在内部被用于物化视图并且可能对其他如复制之类的特殊功能有用，但是它们
+   并不打算用在书写查询这类普通用途中。
+  </P
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="functions-subquery.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="functions-srf.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>子查询表达式</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="functions.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>集合返回函数</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

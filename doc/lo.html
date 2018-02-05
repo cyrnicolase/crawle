@@ -1,0 +1,337 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>lo</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="额外提供的模块"
+HREF="contrib.html"><LINK
+REL="PREVIOUS"
+TITLE="isn"
+HREF="isn.html"><LINK
+REL="NEXT"
+TITLE="ltree"
+HREF="ltree.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/lo.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="isn"
+HREF="isn.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="contrib.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#38468;&#24405; F. 额外提供的模块</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="ltree"
+HREF="ltree.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="LO"
+>F.20. lo</A
+></H1
+><P
+>  <TT
+CLASS="FILENAME"
+>lo</TT
+>模块提供管理大对象（也被称为 LO 或 BLOB）的支持。这包括一种数据类型<TT
+CLASS="TYPE"
+>lo</TT
+>以及一个触发器<CODE
+CLASS="FUNCTION"
+>lo_manage</CODE
+>。
+ </P
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN177779"
+>F.20.1. 原理</A
+></H2
+><P
+>   JDBC 驱动的问题之一（并且这也影响 ODBC 驱动）是其说明书假定对 BLOB（二进制大对象）的引用被存储在一个表中，并且如果该项被改变相关的 BLOB 会被从数据库删除。
+  </P
+><P
+>   但对于<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>来说这并不会发生。大对象被当做自主的对象，一个表项可以通过 OID 引用一个大对象，但是可以有多个表项引用同一个大对象 OID，因此系统不会因为你改变或者删除这种项而删除大对象。
+  </P
+><P
+>   现在这对<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>-相关的应用挺好的，但是使用 JDBC 或 ODBC 的标准代码不会删除那些对象，从而导致孤立对象 &mdash; 不被任何东西引用的对象，而且会占据磁盘空间。
+  </P
+><P
+>   <TT
+CLASS="FILENAME"
+>lo</TT
+>允许通过附加一个触发器到包含 LO 引用列的表来修复这种问题。该触发器本质上只是在你删除或修改一个引用大对象的值时做<CODE
+CLASS="FUNCTION"
+>lo_unlink</CODE
+>。当你使用这个触发器时，你必须假定在一个触发器控制的列中只有一个对任意大对象的数据库引用！
+  </P
+><P
+>   这个模块也提供了一种数据类型<TT
+CLASS="TYPE"
+>lo</TT
+>，它实际上只是<TT
+CLASS="TYPE"
+>oid</TT
+>类型的一个域。这有助于区分保存大对象引用的数据库列和保存其他东西 OID 的列。你并不是必须使用<TT
+CLASS="TYPE"
+>lo</TT
+>类型来使用该触发器，但是用它来追踪数据库中哪些列表示你要用触发器管理的大对象非常方便。也有传言说如果你不为 BLOB 列使用<TT
+CLASS="TYPE"
+>lo</TT
+>，ODBC 驱动会感到困惑。
+  </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN177794"
+>F.20.2. 如何使用它</A
+></H2
+><P
+>   这里是一个简单的用法示例：
+  </P
+><PRE
+CLASS="PROGRAMLISTING"
+>CREATE TABLE image (title TEXT, raster lo);
+
+CREATE TRIGGER t_raster BEFORE UPDATE OR DELETE ON image
+    FOR EACH ROW EXECUTE PROCEDURE lo_manage(raster);</PRE
+><P
+>   对每一个将包含到大对象唯一引用的列，创建一个<TT
+CLASS="LITERAL"
+>BEFORE UPDATE OR DELETE</TT
+>触发器，并且将该列名作为唯一的触发器参数。你也可以用<TT
+CLASS="LITERAL"
+>BEFORE UPDATE OF</TT
+> <TT
+CLASS="REPLACEABLE"
+><I
+>column_name</I
+></TT
+>来限制该触发器只对该列上的更新事件执行。如果你需要在同一个表中有多个<TT
+CLASS="TYPE"
+>lo</TT
+>列，为每一个创建一个独立的触发器，记住为同一个表上的每个触发器指定一个不同的名称。
+  </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN177803"
+>F.20.3. 限制</A
+></H2
+><P
+></P
+><UL
+><LI
+><P
+>     删除一个表仍将让它包含的任何对象变成孤立的，因为触发器在这种情况下不会被执行。你可以在<TT
+CLASS="COMMAND"
+>DROP TABLE</TT
+>之前放上<TT
+CLASS="COMMAND"
+>DELETE FROM <TT
+CLASS="REPLACEABLE"
+><I
+>table</I
+></TT
+></TT
+>来避免这种问题。
+    </P
+><P
+>     <TT
+CLASS="COMMAND"
+>TRUNCATE</TT
+>有同样的危害。
+    </P
+><P
+>     如果你已经有或者怀疑有孤立的大对象，参考<A
+HREF="vacuumlo.html"
+><SPAN
+CLASS="APPLICATION"
+>vacuumlo</SPAN
+></A
+>模块可以帮助你清理它们。偶尔运行<SPAN
+CLASS="APPLICATION"
+>vacuumlo</SPAN
+>作为<CODE
+CLASS="FUNCTION"
+>lo_manage</CODE
+>触发器的后备是个好主意。
+    </P
+></LI
+><LI
+><P
+>     有些前端可能会创建它们自己的表，并且将不会创建相关的触发器。另外，用户可能不会记得（或知道）要创建触发器。
+    </P
+></LI
+></UL
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN177819"
+>F.20.4. 作者</A
+></H2
+><P
+>   Peter Mount <CODE
+CLASS="EMAIL"
+>&#60;<A
+HREF="mailto:peter@retep.org.uk"
+>peter@retep.org.uk</A
+>&#62;</CODE
+>
+  </P
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="isn.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="ltree.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>isn</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="contrib.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>ltree</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

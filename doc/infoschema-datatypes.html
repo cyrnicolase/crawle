@@ -1,0 +1,254 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>数据类型</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="信息模式"
+HREF="information-schema.html"><LINK
+REL="PREVIOUS"
+TITLE="模式"
+HREF="infoschema-schema.html"><LINK
+REL="NEXT"
+TITLE="information_schema_catalog_name"
+HREF="infoschema-information-schema-catalog-name.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/information_schema.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="模式"
+HREF="infoschema-schema.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="information-schema.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#31456; 35. 信息模式</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="information_schema_catalog_name"
+HREF="infoschema-information-schema-catalog-name.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="INFOSCHEMA-DATATYPES"
+>35.2. 数据类型</A
+></H1
+><P
+>   信息模式视图的列使用定义在信息模式中的特殊数据类型。它们被定义为普通内建类型之上的简单域。你不应在信息模式之外使用这些类型进行工作，但是如果你的应用从信息模式中进行选择，那你的应用就必须准备好面对它们。
+  </P
+><P
+>   这些类型是：
+
+   <P
+></P
+></P><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="TYPE"
+>cardinal_number</TT
+></DT
+><DD
+><P
+>       一种非负整数。
+      </P
+></DD
+><DT
+><TT
+CLASS="TYPE"
+>character_data</TT
+></DT
+><DD
+><P
+>       一种字符串（没有指定最大长度）。
+      </P
+></DD
+><DT
+><TT
+CLASS="TYPE"
+>sql_identifier</TT
+></DT
+><DD
+><P
+>       一种字符串。这种类型被用于 SQL 标识符，类型<TT
+CLASS="TYPE"
+>character_data</TT
+>被用于任何其他类型的文本数据。
+      </P
+></DD
+><DT
+><TT
+CLASS="TYPE"
+>time_stamp</TT
+></DT
+><DD
+><P
+>       在类型<TT
+CLASS="TYPE"
+>timestamp with time zone</TT
+>之上的一个域。
+      </P
+></DD
+><DT
+><TT
+CLASS="TYPE"
+>yes_or_no</TT
+></DT
+><DD
+><P
+>       一种字符串域，它包含<TT
+CLASS="LITERAL"
+>YES</TT
+>或<TT
+CLASS="LITERAL"
+>NO</TT
+>。这被用来在信息模式中表示布尔（真/假）（信息模式是在类型<TT
+CLASS="TYPE"
+>boolean</TT
+>被加到 SQL 标准之前被发明的，因此这个惯例是用来使信息模式向后兼容）。
+      </P
+></DD
+></DL
+></DIV
+><P>
+
+   信息模式中的每一列都是这五种类型之一。
+  </P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="infoschema-schema.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="infoschema-information-schema-catalog-name.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>模式</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="information-schema.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><TT
+CLASS="LITERAL"
+>information_schema_catalog_name</TT
+></TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

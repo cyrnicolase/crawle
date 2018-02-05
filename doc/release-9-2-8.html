@@ -1,0 +1,356 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>版本 9.2.8</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="版本说明"
+HREF="release.html"><LINK
+REL="PREVIOUS"
+TITLE="版本 9.2.9"
+HREF="release-9-2-9.html"><LINK
+REL="NEXT"
+TITLE="版本 9.2.7"
+HREF="release-9-2-7.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/release-9.2.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="版本 9.2.9"
+HREF="release-9-2-9.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="release.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#38468;&#24405; E. 版本说明</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="版本 9.2.7"
+HREF="release-9-2-7.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="RELEASE-9-2-8"
+>E.42. 版本 9.2.8</A
+></H1
+><DIV
+CLASS="NOTE"
+><BLOCKQUOTE
+CLASS="NOTE"
+><P
+><B
+>发布日期: </B
+>2014-03-20</P
+></BLOCKQUOTE
+></DIV
+><P
+>   这个版本包含各种自9.2.7以来的修复。关于9.2主版本的新特性信息，
+   请查看<A
+HREF="release-9-2.html"
+>第 E.50 &#33410;</A
+>。
+  </P
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN141191"
+>E.42.1. 迁移到版本9.2.8</A
+></H2
+><P
+>运行9.2.X的用户不需要转储/恢复。</P
+><P
+>    不过，如果你是从一个早于9.2.6的版本升级而来，
+    那么请查看<A
+HREF="release-9-2-6.html"
+>第 E.44 &#33410;</A
+>。
+   </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN141196"
+>E.42.2. 修改列表</A
+></H2
+><P
+></P
+><UL
+><LI
+><P
+>无条件的转储GIN元页，以避免页撕裂的风险 (Heikki Linnakangas)</P
+><P
+>尽管这个疏忽理论上会导致索引损坏，但是在现实中不大可能导致任何问题，
+因为GIN元页的活动部分远远小于标准512字节磁盘扇区。</P
+></LI
+><LI
+><P
+>在收到<TT
+CLASS="COMMAND"
+>NOTIFY</TT
+>消息期间，避免检查事务提交状态中的竞态条件 (Marko Tiikkaja)</P
+><P
+>这阻止了足够快的客户端在通知者所做的数据库更新被接收者可见之前，
+响应通知的情况。</P
+></LI
+><LI
+><P
+>允许查询取消请求提早中断正则表达式操作 (Tom Lane)</P
+><P
+>这阻止了病态的正则表达式很长一段时间都在查找服务器处理而不能中断的情况。</P
+></LI
+><LI
+><P
+>删除尝试允许带有单元素行参数的<TT
+CLASS="LITERAL"
+>OVERLAPS</TT
+>的不正确代码 (Joshua Yanovski)</P
+><P
+>这些代码从未正确的运行过，并且因此该情况从未被SQL标准指出过，也没有记录，
+看起来删除它比修复它更好一些。</P
+></LI
+><LI
+><P
+>在反解析规则或视图时，避免获得多于<TT
+CLASS="LITERAL"
+>AccessShareLock</TT
+>个锁 (Dean Rasheed)</P
+><P
+>这个疏忽导致<SPAN
+CLASS="APPLICATION"
+>pg_dump</SPAN
+>意外的请求规则中
+<TT
+CLASS="LITERAL"
+>INSERT</TT
+>/<TT
+CLASS="LITERAL"
+>UPDATE</TT
+>/<TT
+CLASS="LITERAL"
+>DELETE</TT
+>命令提到的目标表上的
+<TT
+CLASS="LITERAL"
+>RowExclusiveLock</TT
+>锁。虽然通常无害，但是会干扰尝试在这些表上获取，
+例如<TT
+CLASS="LITERAL"
+>ShareLock</TT
+>锁的并发事务。</P
+></LI
+><LI
+><P
+>改善规划期间索引端点探针的性能 (Tom Lane)</P
+><P
+>这个修改修复了一个重要的性能问题，该问题发生在索引末端有许多未提交的行时，
+这是顺序分配值上的索引的共同情况，比如时间戳或顺序生成的标识符。</P
+></LI
+><LI
+><P
+>修复客户端是<SPAN
+CLASS="APPLICATION"
+>pg_receivexlog</SPAN
+>时，
+<SPAN
+CLASS="APPLICATION"
+>walsender</SPAN
+>未能干净的关闭 (Fujii Masao)</P
+></LI
+><LI
+><P
+>在执行跟随着归档恢复的崩溃恢复时，正确的检查WAL级别和热备份参数 (Heikki Linnakangas)</P
+></LI
+><LI
+><P
+>修复测试，查看在崩溃后是否立即允许热备份连接 (Heikki Linnakangas)</P
+></LI
+><LI
+><P
+>在报告非<TT
+CLASS="LITERAL"
+>ERROR</TT
+>消息时阻止中断 (Tom Lane)</P
+><P
+>这防卫了由于到<CODE
+CLASS="FUNCTION"
+>syslog()</CODE
+>的递归项引起的罕见服务器处理冻结，
+还有可能的其他相关问题。</P
+></LI
+><LI
+><P
+>修复返回一个复合结果，包括多个OUT参数情况时PL/Perl中的内存泄露 (Alex Hunsaker)</P
+></LI
+><LI
+><P
+>修复从外联数据<TT
+CLASS="LITERAL"
+>\copy</TT
+>期间，<SPAN
+CLASS="APPLICATION"
+>psql</SPAN
+>
+脚本行号的追踪 (Kumar Rajeev Rastogi, Amit Khandekar)</P
+><P
+><TT
+CLASS="LITERAL"
+>\copy ... from</TT
+>增加每个数据行的脚本文件行号，
+即使数据不是来自该脚本文件。这个错误导致在相同的脚本文件中稍后发生的任何错误报告错误的行号。</P
+></LI
+><LI
+><P
+>阻止最近Windows版本上间歇的<SPAN
+CLASS="QUOTE"
+>"could not reserve shared memory region"</SPAN
+>
+失败 (MauMau)</P
+></LI
+><LI
+><P
+>更新时区数据文件到<SPAN
+CLASS="APPLICATION"
+>tzdata</SPAN
+>版本2014a，因为DST规律在斐济、
+土耳其发生了改变，加上以色列和乌克兰的历史修改。</P
+></LI
+></UL
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="release-9-2-9.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="release-9-2-7.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>版本 9.2.9</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="release.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>版本 9.2.7</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

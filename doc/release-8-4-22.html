@@ -1,0 +1,545 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>版本 8.4.22</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="版本说明"
+HREF="release.html"><LINK
+REL="PREVIOUS"
+TITLE="版本 9.0"
+HREF="release-9-0.html"><LINK
+REL="NEXT"
+TITLE="版本 8.4.21"
+HREF="release-8-4-21.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/release-8.4.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="版本 9.0"
+HREF="release-9-0.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="release.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#38468;&#24405; E. 版本说明</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="版本 8.4.21"
+HREF="release-8-4-21.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="RELEASE-8-4-22"
+>E.99. 版本 8.4.22</A
+></H1
+><DIV
+CLASS="NOTE"
+><BLOCKQUOTE
+CLASS="NOTE"
+><P
+><B
+>发布日期: </B
+>2014-07-24</P
+></BLOCKQUOTE
+></DIV
+><P
+>   这个版本包含自8.4.21以来的各种修复。
+   关于8.4主版本的新特性信息，请查看<A
+HREF="release-8-4.html"
+>第 E.121 &#33410;</A
+>。
+  </P
+><P
+>   这预计是<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>在8.4.X系列的最后一个版本。
+   建议用户尽快更新到最新的版本。
+  </P
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN152892"
+>E.99.1. 迁移到版本 8.4.22</A
+></H2
+><P
+>    运行8.4.X的用户不需要转储/恢复。
+   </P
+><P
+>    这个版本纠正了在一些GiST索引中索引损坏的问题。查看下面第一条修改日志项，
+    找出你的安装是否受到影响和应该采取什么步骤。
+   </P
+><P
+>    另外，如果你是从一个早于8.4.19的版本升级而来，请查看<A
+HREF="release-8-4-19.html"
+>第 E.102 &#33410;</A
+>。
+   </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN152898"
+>E.99.2. 修改列表</A
+></H2
+><P
+></P
+><UL
+><LI
+><P
+>      正确的初始化<TT
+CLASS="TYPE"
+>bit</TT
+>字段上<TT
+CLASS="FILENAME"
+>contrib/btree_gist</TT
+>
+      索引里的填充字节 (Heikki Linnakangas)
+     </P
+><P
+>      这个错误由于值应该是比较相等而不是看做相等而导致不正确的查询结果。
+      在<TT
+CLASS="TYPE"
+>bit</TT
+>或<TT
+CLASS="TYPE"
+>bit varying</TT
+>字段上拥有GiST索引的用户应该在安装此次更新后
+      <TT
+CLASS="COMMAND"
+>REINDEX</TT
+>这些索引。
+     </P
+></LI
+><LI
+><P
+>      在删除GIN列表页时防止页面破损 (Heikki
+      Linnakangas)
+     </P
+><P
+>      如果系统崩溃发生在页更新正在写入磁盘时，这个修复阻止了可能的索引损坏。
+     </P
+></LI
+><LI
+><P
+>      修复嵌套调用<CODE
+CLASS="FUNCTION"
+>ReceiveSharedInvalidMessages</CODE
+>期间，
+      可能不正确的缓存失效 (Andres Freund)
+     </P
+></LI
+><LI
+><P
+>      如果子查询的目标列表中有一个设置-返回函数，那么不要假设它的输出是唯一的 (David Rowley)
+     </P
+><P
+>      这个疏忽可能会导致错误的最佳化像
+      <TT
+CLASS="LITERAL"
+>WHERE x IN (SELECT y, generate_series(1,10) FROM t GROUP
+      BY y)</TT
+>这样的构造。
+     </P
+></LI
+><LI
+><P
+>      修复结构化类型的复合元素中未能detoast字段(Tom Lane)
+     </P
+><P
+>     这纠正了TOAST指针没被间接引用就拷贝到其他表的情况。
+     如果原始数据稍后删除，则当新的悬挂指针正在使用时，会导致像<SPAN
+CLASS="QUOTE"
+>"missing chunk number 0
+      for toast value ..."</SPAN
+>这样的错误。
+     </P
+></LI
+><LI
+><P
+>      修复整行引用附加规划节点的输出时<SPAN
+CLASS="QUOTE"
+>"record type has not been registered"</SPAN
+>
+      错误 (Tom Lane)
+     </P
+></LI
+><LI
+><P
+>      修复游标倒回时调用一个用户定义的函数时可能的崩溃 (Tom Lane)
+     </P
+></LI
+><LI
+><P
+>      修复评估<TT
+CLASS="LITERAL"
+>FROM</TT
+>中的一个函数的参数时查询寿命内存泄露 (Tom Lane)
+     </P
+></LI
+><LI
+><P
+>      修复规则表达式处理中的会话寿命内存泄露 (Tom Lane, Arthur O'Dwyer, Greg Stark)
+     </P
+></LI
+><LI
+><P
+>      修复<TT
+CLASS="FILENAME"
+>hungarian.stop</TT
+>中的数据编码错误 (Tom Lane)
+     </P
+></LI
+><LI
+><P
+>      修复对插入到当前事务中然后被一个新回滚的子事务删除的行的活跃度检查 (Andres Freund)
+     </P
+><P
+>      如果稍后在相同的事务中执行<TT
+CLASS="COMMAND"
+>CREATE INDEX</TT
+>或<TT
+CLASS="COMMAND"
+>CLUSTER</TT
+>，
+      这会导致问题（至少是虚假警告，最坏是一个无限循环）。
+     </P
+></LI
+><LI
+><P
+>      在<TT
+CLASS="COMMAND"
+>PREPARE TRANSACTION</TT
+>期间清理
+      <TT
+CLASS="STRUCTNAME"
+>pg_stat_activity</TT
+>.<TT
+CLASS="STRUCTFIELD"
+>xact_start</TT
+> (Andres Freund)
+     </P
+><P
+>      在<TT
+CLASS="COMMAND"
+>PREPARE</TT
+>之后，原始的会话不再在事务中，
+      所以它应该不能继续显示会话的开始时间。
+     </P
+></LI
+><LI
+><P
+>      修复<TT
+CLASS="COMMAND"
+>REASSIGN OWNED</TT
+>，文本搜索对象不会失败
+      (&Aacute;lvaro Herrera)
+     </P
+></LI
+><LI
+><P
+>      在postmaster启动期间封锁信号 (Tom Lane)
+     </P
+><P
+>      这保证了postmaster在仍然启动时，例如，收到<SPAN
+CLASS="SYSTEMITEM"
+>SIGINT</SPAN
+>
+      之后能够正确的清理。
+     </P
+></LI
+><LI
+><P
+>      保护在<TT
+CLASS="LITERAL"
+>make check</TT
+>期间启动的临时postmasters的Unix域套接字 (Noah Misch)
+     </P
+><P
+>      任何可以访问该套接字文件的本地用户都可以作为服务器的bootstrap超级用户连接，
+      然后如同操作系统用户运行测试一样继续执行任意代码，就像我们之前在
+      CVE-2014-0067观察到的那样。这个修改通过在一个临时文件中存放服务器的套接字防止该风险，
+      临时文件是<TT
+CLASS="FILENAME"
+>/tmp</TT
+>的子目录，模式0700。
+      在不支持Unix套接字的平台上仍然存在该风险，尤其是Windows，
+      因为临时postmaster必须接受本地TCP连接。
+     </P
+><P
+>      这个修改的一个有用的副作用是简化了重载<TT
+CLASS="LITERAL"
+>DEFAULT_PGSOCKET_DIR</TT
+>
+      建立中的<TT
+CLASS="LITERAL"
+>make check</TT
+>测试。像<TT
+CLASS="FILENAME"
+>/var/run/postgresql</TT
+>
+      这样的普通非缺省值通常不是建立用户可写的，将不再需要请求绕开它。
+     </P
+></LI
+><LI
+><P
+>      在Windows上，允许新的会话接收来自配置文件的PGC_BACKEND
+      参数（比如<A
+HREF="runtime-config-logging.html#GUC-LOG-CONNECTIONS"
+>log_connections</A
+>）的值 (Amit Kapila)
+     </P
+><P
+>      以前，如果这样的参数在文件启动之后修改，那么该修改将不会有任何影响。
+     </P
+></LI
+><LI
+><P
+>      在Windows中正确的引用可执行的路径名 (Nikhil Deshpande)
+     </P
+><P
+>      如果安装路径包含空白和<TT
+CLASS="LITERAL"
+>@</TT
+>符号，会导致<SPAN
+CLASS="APPLICATION"
+>initdb</SPAN
+>
+      和<SPAN
+CLASS="APPLICATION"
+>pg_upgrade</SPAN
+>在Windows上失败，。
+     </P
+></LI
+><LI
+><P
+>      修复OS X上的<SPAN
+CLASS="APPLICATION"
+>libpython</SPAN
+>链接 (Tom Lane)
+     </P
+><P
+>      我们之前使用的方法在使用Xcode 5.0及更高版本提供的Python库时会失败。
+     </P
+></LI
+><LI
+><P
+>      当服务器发送数据速度持续比客户端可接受的速度快时，
+      避免<SPAN
+CLASS="APPLICATION"
+>libpq</SPAN
+>中的缓冲区膨胀 (Shin-ichi Morita, Tom Lane)
+     </P
+><P
+>      <SPAN
+CLASS="APPLICATION"
+>libpq</SPAN
+>可以强制扩大它的输入缓冲区，直到它内存溢出
+      （它可能会误报为<SPAN
+CLASS="QUOTE"
+>"丢失与服务器的同步"</SPAN
+>）。在普通情况下，
+      它可以持续的比<CODE
+CLASS="FUNCTION"
+>recv()</CODE
+>循环更快的传输数据，因此可以吸收数据，
+      但是通过调节约束人工的降低客户端速度是，可以观察到这种现象。
+     </P
+></LI
+><LI
+><P
+>      确保<SPAN
+CLASS="APPLICATION"
+>libpq</SPAN
+>中的LDAP查找尝试像预计的那样超时 (Laurenz Albe)
+     </P
+></LI
+><LI
+><P
+>      修复<SPAN
+CLASS="APPLICATION"
+>pg_restore</SPAN
+>对老旧风格的大对象注释的处理 (Tom Lane)
+     </P
+><P
+>      如果9.0之前版本的<SPAN
+CLASS="APPLICATION"
+>pg_dump</SPAN
+>生成的归档包含几个大对象的注释，
+      那么从该归档文件直接到数据库的恢复通常会失败。
+     </P
+></LI
+><LI
+><P
+>      在<TT
+CLASS="FILENAME"
+>contrib/pgcrypto</TT
+>函数中，确保在返回之前清理堆栈变量中的敏感信息
+      (Marko Kreen)
+     </P
+></LI
+><LI
+><P
+>      在<TT
+CLASS="FILENAME"
+>contrib/uuid-ossp</TT
+>中，在调用间缓存OSSP UUID库的状态 (Tom Lane)
+     </P
+><P
+>      这提高了UUID产生的效率并降低了从<TT
+CLASS="FILENAME"
+>/dev/urandom</TT
+>
+      中提取熵的数量，在拥有它们的平台上。
+     </P
+></LI
+><LI
+><P
+>      更新时区数据文件到<SPAN
+CLASS="APPLICATION"
+>tzdata</SPAN
+>版本2014e，
+      因为DAT规则在Crimea、Egypt和Morocco发生了改变。
+     </P
+></LI
+></UL
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="release-9-0.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="release-8-4-21.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>版本 9.0</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="release.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>版本 8.4.21</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

@@ -1,0 +1,228 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>数据改变的可见性</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="服务器编程接口"
+HREF="spi.html"><LINK
+REL="PREVIOUS"
+TITLE="SPI_freeplan"
+HREF="spi-spi-freeplan.html"><LINK
+REL="NEXT"
+TITLE="例子"
+HREF="spi-examples.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/spi.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="SPI_freeplan"
+HREF="spi-spi-freeplan.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="spi.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#31456; 45. 服务器编程接口</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="例子"
+HREF="spi-examples.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="SPI-VISIBILITY"
+>45.4. 数据改变的可见性</A
+></H1
+><P
+>   下列规则主导了使用 SPI 的函数（或者任何其他 C 函数）中数据改变
+   的可见性：
+
+   <P
+></P
+></P><UL
+><LI
+><P
+>      在一个 SQL 命令的执行期间，该命令所作的任何数据更改对该命令本身
+      是不可见的。例如，在
+</P><PRE
+CLASS="PROGRAMLISTING"
+>INSERT INTO a SELECT * FROM a;</PRE
+><P>
+      中，被插入的行对<TT
+CLASS="COMMAND"
+>SELECT</TT
+>部分不可见。
+     </P
+></LI
+><LI
+><P
+>      一个命令 C 所作的更改对所有在 C 之后开始的命令可见，不管它们是否
+      在 C 之中（在 C 的执行期间）开始还是在 C 完成之后开始。
+     </P
+></LI
+><LI
+><P
+>      在一个 SQL 命令（或者一个普通函数或者触发器）调用的函数内通过
+      SPI 执行的命令遵循以上哪条规则取决于传递给 SPI 的读/写标志。以
+      只读模式执行的命令遵循第一条规则：它们不能看到调用它们的命令的
+      改变。在读写模式中执行的命令遵循第二条规则：它们能看见目前为止
+      所有的改变。
+     </P
+></LI
+><LI
+><P
+>      所有的标准过程语言会基于函数的易变性属性设置 SPI 读写模式。
+      <TT
+CLASS="LITERAL"
+>STABLE</TT
+>和<TT
+CLASS="LITERAL"
+>IMMUTABLE</TT
+>函数的命令会以
+      只读模式完成，而<TT
+CLASS="LITERAL"
+>VOLATILE</TT
+>函数的命令会以读写模式
+      完成。虽然 C 函数的作者可以违反这种习惯，但是最好不要那样做。
+     </P
+></LI
+></UL
+><P>
+  </P
+><P
+>   下一节包含一个关于这些规则应用的例子：
+  </P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="spi-spi-freeplan.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="spi-examples.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>SPI_freeplan</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="spi.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>例子</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

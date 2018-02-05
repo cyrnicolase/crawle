@@ -1,0 +1,594 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>ALTER INDEX</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="SQL 命令"
+HREF="sql-commands.html"><LINK
+REL="PREVIOUS"
+TITLE="ALTER GROUP"
+HREF="sql-altergroup.html"><LINK
+REL="NEXT"
+TITLE="ALTER LANGUAGE"
+HREF="sql-alterlanguage.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="REFENTRY"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/ref/alter_index.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="ALTER GROUP"
+HREF="sql-altergroup.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="ALTER LANGUAGE"
+HREF="sql-alterlanguage.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="SQL-ALTERINDEX"
+></A
+>ALTER INDEX</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN73623"
+></A
+><H2
+>&#21517;&#31216;</H2
+>ALTER INDEX&nbsp;--&nbsp;更改一个索引的定义</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN73626"
+></A
+><H2
+>&#22823;&#32434;</H2
+><PRE
+CLASS="SYNOPSIS"
+>ALTER INDEX [ IF EXISTS ] <TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+> RENAME TO <TT
+CLASS="REPLACEABLE"
+><I
+>new_name</I
+></TT
+>
+ALTER INDEX [ IF EXISTS ] <TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+> SET TABLESPACE <TT
+CLASS="REPLACEABLE"
+><I
+>tablespace_name</I
+></TT
+>
+ALTER INDEX <TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+> DEPENDS ON EXTENSION <TT
+CLASS="REPLACEABLE"
+><I
+>extension_name</I
+></TT
+>
+ALTER INDEX [ IF EXISTS ] <TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+> SET ( <TT
+CLASS="REPLACEABLE"
+><I
+>storage_parameter</I
+></TT
+> = <TT
+CLASS="REPLACEABLE"
+><I
+>value</I
+></TT
+> [, ... ] )
+ALTER INDEX [ IF EXISTS ] <TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+> RESET ( <TT
+CLASS="REPLACEABLE"
+><I
+>storage_parameter</I
+></TT
+> [, ... ] )
+ALTER INDEX ALL IN TABLESPACE <TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+> [ OWNED BY <TT
+CLASS="REPLACEABLE"
+><I
+>role_name</I
+></TT
+> [, ... ] ]
+    SET TABLESPACE <TT
+CLASS="REPLACEABLE"
+><I
+>new_tablespace</I
+></TT
+> [ NOWAIT ]</PRE
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN73642"
+></A
+><H2
+>描述</H2
+><P
+>   <TT
+CLASS="COMMAND"
+>ALTER INDEX</TT
+>更改一个现有索引的定义。
+   它有几种形式：
+
+  <P
+></P
+></P><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="LITERAL"
+>RENAME</TT
+></DT
+><DD
+><P
+>      <TT
+CLASS="LITERAL"
+>RENAME</TT
+>形式更改该索引的名称。这对已存储的数据没有
+      影响。
+     </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>SET TABLESPACE</TT
+></DT
+><DD
+><P
+>      这种形式更改该索引的表空间为指定的表空间，并且把与该索引相关联的数据文件
+      移动到新的表空间中。要更改一个索引的表空间，你必须拥有该索引并且具有新表
+      空间上的<TT
+CLASS="LITERAL"
+>CREATE</TT
+>特权。可以使用
+      <TT
+CLASS="LITERAL"
+>ALL IN TABLESPACE</TT
+>形式把当前数据库中在一个表空间内的
+      所有索引全部移动到另一个表空间中，这将会锁定所有要被移动的索引然后挨个移
+      动它们。这种形式也支持<TT
+CLASS="LITERAL"
+>OWNED BY</TT
+>，即只移动属于指定角色
+      的索引。如果指定了<TT
+CLASS="LITERAL"
+>NOWAIT</TT
+>选项，那么当该命令无法立刻获
+      得所有锁时将会失败。注意这个命令不会移动系统目录，如果想要移动系统目录，
+      应使用<TT
+CLASS="COMMAND"
+>ALTER DATABASE</TT
+>或者显式的
+      <TT
+CLASS="COMMAND"
+>ALTER INDEX</TT
+>调用。另见
+      <A
+HREF="sql-createtablespace.html"
+>CREATE TABLESPACE</A
+>。
+     </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>DEPENDS ON EXTENSION</TT
+></DT
+><DD
+><P
+>      这种形式把该索引标记为依赖于扩展，这样如果该扩展被删除，该索引也将被
+      自动删除。
+     </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>SET ( <TT
+CLASS="REPLACEABLE"
+><I
+>storage_parameter</I
+></TT
+> = <TT
+CLASS="REPLACEABLE"
+><I
+>value</I
+></TT
+> [, ... ] )</TT
+></DT
+><DD
+><P
+>      这种形式为该索引更改一个或者多个索引方法相关的存储参数。可用的参数详见
+      <A
+HREF="sql-createindex.html"
+>CREATE INDEX</A
+>。注意这个命令不会立刻修改索引内容，
+      根据参数你可能需要用<A
+HREF="sql-reindex.html"
+>REINDEX</A
+>重建索引来得到想要的
+      效果。
+     </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>RESET ( <TT
+CLASS="REPLACEABLE"
+><I
+>storage_parameter</I
+></TT
+> [, ... ] )</TT
+></DT
+><DD
+><P
+>      这种形式把一个或者多个索引方法相关的存储参数重置为其默认值。正如
+      <TT
+CLASS="LITERAL"
+>SET</TT
+>一样，可能需要一次<TT
+CLASS="LITERAL"
+>REINDEX</TT
+>来完全更新
+      该索引。
+     </P
+></DD
+></DL
+></DIV
+><P>
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN73687"
+></A
+><H2
+>参数</H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="LITERAL"
+>IF EXISTS</TT
+></DT
+><DD
+><P
+>        如果该索引不存在不要抛出错误。这种情况下将发出一个提示。
+       </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+></DT
+><DD
+><P
+>        要更改的一个现有索引的名称（可能被模式限定）。
+       </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>new_name</I
+></TT
+></DT
+><DD
+><P
+>        该索引的新名称。
+       </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>tablespace_name</I
+></TT
+></DT
+><DD
+><P
+>        该索引将被移动到的表空间。
+       </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>extension_name</I
+></TT
+></DT
+><DD
+><P
+>        该索引所依赖的扩展的名称。
+       </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>storage_parameter</I
+></TT
+></DT
+><DD
+><P
+>        一个索引方法相关的存储参数的名称。
+       </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>value</I
+></TT
+></DT
+><DD
+><P
+>        一个索引方法相关的存储参数的新值。根据该参数，这可能是一个数字或者一个
+        词。
+       </P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN73725"
+></A
+><H2
+>注解</H2
+><P
+>    也可以用<A
+HREF="sql-altertable.html"
+>ALTER TABLE</A
+>来做这些操作。实际上，
+    <TT
+CLASS="COMMAND"
+>ALTER INDEX</TT
+>只是<TT
+CLASS="COMMAND"
+>ALTER TABLE</TT
+>应用在索引
+    上的形式的别名而已。
+   </P
+><P
+>    以前有一种<TT
+CLASS="COMMAND"
+>ALTER INDEX OWNER</TT
+>变体，但现在已被忽略（会出现
+    一个警告）。一个索引的拥有者不能与其基表的拥有者不同。更改基表的拥有者
+    会自动地更改索引的拥有者。
+   </P
+><P
+>    不允许更改系统目录索引的任何部分。
+   </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN73734"
+></A
+><H2
+>示例</H2
+><P
+>   要重命名一个现有索引：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>ALTER INDEX distributors RENAME TO suppliers;</PRE
+><P>
+  </P
+><P
+>   把一个索引移动到一个不同的表空间：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>ALTER INDEX distributors SET TABLESPACE fasttablespace;</PRE
+><P>
+  </P
+><P
+>   更改一个索引的填充因子（假设该索引方法支持填充因子）：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>ALTER INDEX distributors SET (fillfactor = 75);
+REINDEX INDEX distributors;</PRE
+><P></P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN73742"
+></A
+><H2
+>兼容性</H2
+><P
+>   <TT
+CLASS="COMMAND"
+>ALTER INDEX</TT
+>是一种
+   <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>扩展。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN73747"
+></A
+><H2
+>另见</H2
+><A
+HREF="sql-createindex.html"
+>CREATE INDEX</A
+>, <A
+HREF="sql-reindex.html"
+>REINDEX</A
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-altergroup.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="sql-alterlanguage.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>ALTER GROUP</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>ALTER LANGUAGE</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

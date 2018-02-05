@@ -1,0 +1,578 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>citext</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="额外提供的模块"
+HREF="contrib.html"><LINK
+REL="PREVIOUS"
+TITLE="chkpass"
+HREF="chkpass.html"><LINK
+REL="NEXT"
+TITLE="cube"
+HREF="cube.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/citext.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="chkpass"
+HREF="chkpass.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="contrib.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#38468;&#24405; F. 额外提供的模块</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="cube"
+HREF="cube.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="CITEXT"
+>F.8. citext</A
+></H1
+><P
+>  <TT
+CLASS="FILENAME"
+>citext</TT
+>模块提供了一种大小写不敏感的字符串类型：<TT
+CLASS="TYPE"
+>citext</TT
+>。特别地，它在比较值时内部调用的是<CODE
+CLASS="FUNCTION"
+>lower</CODE
+>。除此之外，它的行为几乎与<TT
+CLASS="TYPE"
+>text</TT
+>完全相同。
+ </P
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN174865"
+>F.8.1. 基本原理</A
+></H2
+><P
+>   在<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>中做大小写不敏感匹配的标准方法曾经是在比较值时使用<CODE
+CLASS="FUNCTION"
+>lower</CODE
+>函数，例如：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>SELECT * FROM tab WHERE lower(col) = LOWER(?);</PRE
+><P>
+  </P
+><P
+>   这工作得比较好，但是有一些缺点：
+  </P
+><P
+></P
+><UL
+><LI
+><P
+>      它让你的 SQL 语句冗长，并且你必须总是要记住在列和查询值上使用<CODE
+CLASS="FUNCTION"
+>lower</CODE
+>。
+     </P
+></LI
+><LI
+><P
+>      它不会使用一个索引，除非你使用<CODE
+CLASS="FUNCTION"
+>lower</CODE
+>创建一个函数索引。
+     </P
+></LI
+><LI
+><P
+>      如果你声明一个列为<TT
+CLASS="LITERAL"
+>UNIQUE</TT
+>或<TT
+CLASS="LITERAL"
+>PRIMARY KEY</TT
+>，隐式生成的索引是大小写敏感的。因此，它对于大小写不敏感的搜索是没有用处的，并且它不会强制大小写不敏感的唯一性。
+     </P
+></LI
+></UL
+><P
+>    <TT
+CLASS="TYPE"
+>citext</TT
+>数据类型允许你在 SQL 查询中消除对<CODE
+CLASS="FUNCTION"
+>lower</CODE
+>的调用，并且允许一个主键是大小写无关的。就和<TT
+CLASS="TYPE"
+>text</TT
+>一样，<TT
+CLASS="TYPE"
+>citext</TT
+>是区域相关的，这意味着大写和小写字符的匹配依赖于数据库<TT
+CLASS="LITERAL"
+>LC_CTYPE</TT
+>设置的规则。此外，这种行为和在查询中使用<CODE
+CLASS="FUNCTION"
+>lower</CODE
+>是一样的。但是因为它是由数据类型以透明的方式完成的，你不需要记住在你的查询中做任何特殊的事情。
+   </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN174890"
+>F.8.2. 如何使用它</A
+></H2
+><P
+>   这里是一个简单的用法示例：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>CREATE TABLE users (
+    nick CITEXT PRIMARY KEY,
+    pass TEXT   NOT NULL
+);
+
+INSERT INTO users VALUES ( 'larry',  md5(random()::text) );
+INSERT INTO users VALUES ( 'Tom',    md5(random()::text) );
+INSERT INTO users VALUES ( 'Damian', md5(random()::text) );
+INSERT INTO users VALUES ( 'NEAL',   md5(random()::text) );
+INSERT INTO users VALUES ( 'Bj&oslash;rn',  md5(random()::text) );
+
+SELECT * FROM users WHERE nick = 'Larry';</PRE
+><P>
+
+   即使<TT
+CLASS="STRUCTFIELD"
+>nick</TT
+>列被设置为<TT
+CLASS="LITERAL"
+>larry</TT
+>而查询是<TT
+CLASS="LITERAL"
+>Larry</TT
+>，<TT
+CLASS="COMMAND"
+>SELECT</TT
+>语句也将只返回一个元组。
+  </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN174898"
+>F.8.3. 串比较行为</A
+></H2
+><P
+>   <TT
+CLASS="TYPE"
+>citext</TT
+>执行比较时先将每一个串转换成小写形式（调用<CODE
+CLASS="FUNCTION"
+>lower</CODE
+>）然后正常地比较结果。因此，如果两个串通过<CODE
+CLASS="FUNCTION"
+>lower</CODE
+>产生相同的结果，它们就被认为是相等。
+  </P
+><P
+>   为了尽可能接近地模拟一种大小写不敏感的排序规则，一些串处理操作符和函数有<TT
+CLASS="TYPE"
+>citext</TT
+>相关的版本。例如，当应用到<TT
+CLASS="TYPE"
+>citext</TT
+>时，正则表达式操作符<TT
+CLASS="LITERAL"
+>~</TT
+>和<TT
+CLASS="LITERAL"
+>~*</TT
+>会展现出相同的行为：它们都以大小写不敏感的方式匹配。<TT
+CLASS="LITERAL"
+>!~</TT
+>和<TT
+CLASS="LITERAL"
+>!~*</TT
+>也是一样，以及<TT
+CLASS="LITERAL"
+>LIKE</TT
+>操作符<TT
+CLASS="LITERAL"
+>~~</TT
+>和<TT
+CLASS="LITERAL"
+>~~*</TT
+>，以及<TT
+CLASS="LITERAL"
+>!~~</TT
+>和<TT
+CLASS="LITERAL"
+>!~~*</TT
+>。如果你想以大小写敏感的方式匹配，你可以把该操作符的参数造型成<TT
+CLASS="TYPE"
+>text</TT
+>。
+  </P
+><P
+>   相似地，如果下列函数的参数是<TT
+CLASS="TYPE"
+>citext</TT
+>，它们会以大小写不敏感的方式执行匹配：
+  </P
+><P
+></P
+><UL
+><LI
+><P
+>      <CODE
+CLASS="FUNCTION"
+>regexp_matches()</CODE
+>
+    </P
+></LI
+><LI
+><P
+>      <CODE
+CLASS="FUNCTION"
+>regexp_replace()</CODE
+>
+    </P
+></LI
+><LI
+><P
+>      <CODE
+CLASS="FUNCTION"
+>regexp_split_to_array()</CODE
+>
+    </P
+></LI
+><LI
+><P
+>      <CODE
+CLASS="FUNCTION"
+>regexp_split_to_table()</CODE
+>
+    </P
+></LI
+><LI
+><P
+>      <CODE
+CLASS="FUNCTION"
+>replace()</CODE
+>
+    </P
+></LI
+><LI
+><P
+>      <CODE
+CLASS="FUNCTION"
+>split_part()</CODE
+>
+    </P
+></LI
+><LI
+><P
+>      <CODE
+CLASS="FUNCTION"
+>strpos()</CODE
+>
+    </P
+></LI
+><LI
+><P
+>      <CODE
+CLASS="FUNCTION"
+>translate()</CODE
+>
+    </P
+></LI
+></UL
+><P
+>   对于 regexp 函数，如果你想要以大小写敏感的方式匹配，你可以指定<SPAN
+CLASS="QUOTE"
+>"c"</SPAN
+>标志来强制大小写敏感的匹配。否则，如果你想要大小写敏感的行为，你必须在使用这些函数之一之前造型到<TT
+CLASS="TYPE"
+>text</TT
+>。
+  </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN174947"
+>F.8.4. 限制</A
+></H2
+><P
+></P
+><UL
+><LI
+><P
+>      <TT
+CLASS="TYPE"
+>citext</TT
+>的大小写折叠行为取决于你的数据库的<TT
+CLASS="LITERAL"
+>LC_CTYPE</TT
+>设置。因此它如何比较值是在数据库被创建时决定的。在 Unicode 标准定义的术语中没有真正的大小写不敏感。实际上，它的含义是，只要你对你的排序规则满意，你就应该对<TT
+CLASS="TYPE"
+>citext</TT
+>的比较满意。但是如果在你的数据库中存储有不同语言的数据，当排序规则是用于一种语言时，另一种语言的用户可能会发现他们的查询结果并不是所期待的。
+     </P
+></LI
+><LI
+><P
+>      自<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+> 9.1 其，你可以为<TT
+CLASS="TYPE"
+>citext</TT
+>列或数据值附加一个<TT
+CLASS="LITERAL"
+>COLLATE</TT
+>说明。当前，在比较大小写折叠过的字符串时，<TT
+CLASS="TYPE"
+>citext</TT
+>操作符将尊重一种非默认的<TT
+CLASS="LITERAL"
+>COLLATE</TT
+>说明，但是最初到小写形式的折叠是根据数据库的 <TT
+CLASS="LITERAL"
+>LC_CTYPE</TT
+>设置完成的（就是说，尽管给出了<TT
+CLASS="LITERAL"
+>COLLATE "default"</TT
+>）。这可能在未来的发行中被改变，这样两步都能遵循输入的<TT
+CLASS="LITERAL"
+>COLLATE</TT
+>说明。
+     </P
+></LI
+><LI
+><P
+>       <TT
+CLASS="TYPE"
+>citext</TT
+>的效率不如<TT
+CLASS="TYPE"
+>text</TT
+>，因为操作符函数和 B 树比较函数必须创建数据的拷贝并且将它转换为小写形式来进行比较。不过，它比使用<CODE
+CLASS="FUNCTION"
+>lower</CODE
+>进行大小写不敏感的匹配的效率要略高。
+     </P
+></LI
+><LI
+><P
+>      如果你在某些环境下需要以大小写敏感的方式比较数据并且在另一些环境下需要以大小写不敏感的方式比较数据，<TT
+CLASS="TYPE"
+>citext</TT
+>就帮不上什么忙。标准的答案是使用<TT
+CLASS="TYPE"
+>text</TT
+>类型并且在你需要以大小写不敏感的方式比较时手工使用<CODE
+CLASS="FUNCTION"
+>lower</CODE
+>函数。如果大小写不敏感的比较需求不频繁，这会工作得不错。如果你大部分时间需要大小写不敏感的行为，考虑将数据存储为<TT
+CLASS="TYPE"
+>citext</TT
+>并且在进行大小写敏感比较时显式地将列造型为<TT
+CLASS="TYPE"
+>text</TT
+>。不管在那种情况下，你都需要两个索引来让两种类型的搜索更快。
+    </P
+></LI
+><LI
+><P
+>      包含<TT
+CLASS="TYPE"
+>citext</TT
+>操作符的模式必须在当前的<TT
+CLASS="VARNAME"
+>search_path</TT
+>（通常是<TT
+CLASS="LITERAL"
+>public</TT
+>）中。如果它不在搜索路径中，普通的大小写敏感的<TT
+CLASS="TYPE"
+>text</TT
+>操作符将会取而代之。
+    </P
+></LI
+></UL
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN174983"
+>F.8.5. 作者</A
+></H2
+><P
+>   David E. Wheeler <CODE
+CLASS="EMAIL"
+>&#60;<A
+HREF="mailto:david@kineticode.com"
+>david@kineticode.com</A
+>&#62;</CODE
+>
+  </P
+><P
+>    受 Donald Fraser 的<TT
+CLASS="TYPE"
+>citext</TT
+>模块启发。
+  </P
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="chkpass.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="cube.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>chkpass</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="contrib.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>cube</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

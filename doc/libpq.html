@@ -1,0 +1,482 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>libpq - C 库</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="客户端接口"
+HREF="client-interfaces.html"><LINK
+REL="PREVIOUS"
+TITLE="客户端接口"
+HREF="client-interfaces.html"><LINK
+REL="NEXT"
+TITLE="数据库连接控制函数"
+HREF="libpq-connect.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="CHAPTER"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/libpq.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="客户端接口"
+HREF="client-interfaces.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="client-interfaces.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="数据库连接控制函数"
+HREF="libpq-connect.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="CHAPTER"
+><H1
+><A
+NAME="LIBPQ"
+></A
+>&#31456; 32. <SPAN
+CLASS="APPLICATION"
+>libpq</SPAN
+> - C 库</H1
+><DIV
+CLASS="TOC"
+><DL
+><DT
+><B
+>&#30446;&#24405;</B
+></DT
+><DT
+>32.1. <A
+HREF="libpq-connect.html"
+>数据库连接控制函数</A
+></DT
+><DD
+><DL
+><DT
+>32.1.1. <A
+HREF="libpq-connect.html#LIBPQ-CONNSTRING"
+>连接字符串</A
+></DT
+><DT
+>32.1.2. <A
+HREF="libpq-connect.html#LIBPQ-PARAMKEYWORDS"
+>参数关键词</A
+></DT
+></DL
+></DD
+><DT
+>32.2. <A
+HREF="libpq-status.html"
+>连接状态函数</A
+></DT
+><DT
+>32.3. <A
+HREF="libpq-exec.html"
+>命令执行函数</A
+></DT
+><DD
+><DL
+><DT
+>32.3.1. <A
+HREF="libpq-exec.html#LIBPQ-EXEC-MAIN"
+>主要函数</A
+></DT
+><DT
+>32.3.2. <A
+HREF="libpq-exec.html#LIBPQ-EXEC-SELECT-INFO"
+>检索查询结果信息</A
+></DT
+><DT
+>32.3.3. <A
+HREF="libpq-exec.html#LIBPQ-EXEC-NONSELECT"
+>检索其他结果信息</A
+></DT
+><DT
+>32.3.4. <A
+HREF="libpq-exec.html#LIBPQ-EXEC-ESCAPE-STRING"
+>用于包含在 SQL 命令中的转移字符串</A
+></DT
+></DL
+></DD
+><DT
+>32.4. <A
+HREF="libpq-async.html"
+>异步命令处理</A
+></DT
+><DT
+>32.5. <A
+HREF="libpq-single-row-mode.html"
+>一行一行地检索查询结果</A
+></DT
+><DT
+>32.6. <A
+HREF="libpq-cancel.html"
+>取消进行中的查询</A
+></DT
+><DT
+>32.7. <A
+HREF="libpq-fastpath.html"
+>快速路径接口</A
+></DT
+><DT
+>32.8. <A
+HREF="libpq-notify.html"
+>异步提示</A
+></DT
+><DT
+>32.9. <A
+HREF="libpq-copy.html"
+><TT
+CLASS="COMMAND"
+>COPY</TT
+>命令相关的函数</A
+></DT
+><DD
+><DL
+><DT
+>32.9.1. <A
+HREF="libpq-copy.html#LIBPQ-COPY-SEND"
+>用于发送<TT
+CLASS="COMMAND"
+>COPY</TT
+>数据的函数</A
+></DT
+><DT
+>32.9.2. <A
+HREF="libpq-copy.html#LIBPQ-COPY-RECEIVE"
+>用于接收<TT
+CLASS="COMMAND"
+>COPY</TT
+>数据的函数</A
+></DT
+><DT
+>32.9.3. <A
+HREF="libpq-copy.html#LIBPQ-COPY-DEPRECATED"
+>用于<TT
+CLASS="COMMAND"
+>COPY</TT
+>的废弃函数</A
+></DT
+></DL
+></DD
+><DT
+>32.10. <A
+HREF="libpq-control.html"
+>控制函数</A
+></DT
+><DT
+>32.11. <A
+HREF="libpq-misc.html"
+>杂项函数</A
+></DT
+><DT
+>32.12. <A
+HREF="libpq-notice-processing.html"
+>通知处理</A
+></DT
+><DT
+>32.13. <A
+HREF="libpq-events.html"
+>事件系统</A
+></DT
+><DD
+><DL
+><DT
+>32.13.1. <A
+HREF="libpq-events.html#LIBPQ-EVENTS-TYPES"
+>事件类型</A
+></DT
+><DT
+>32.13.2. <A
+HREF="libpq-events.html#LIBPQ-EVENTS-PROC"
+>事件回调函数</A
+></DT
+><DT
+>32.13.3. <A
+HREF="libpq-events.html#LIBPQ-EVENTS-FUNCS"
+>事件支持函数</A
+></DT
+><DT
+>32.13.4. <A
+HREF="libpq-events.html#LIBPQ-EVENTS-EXAMPLE"
+>事件实例</A
+></DT
+></DL
+></DD
+><DT
+>32.14. <A
+HREF="libpq-envars.html"
+>环境变量</A
+></DT
+><DT
+>32.15. <A
+HREF="libpq-pgpass.html"
+>口令文件</A
+></DT
+><DT
+>32.16. <A
+HREF="libpq-pgservice.html"
+>连接服务文件</A
+></DT
+><DT
+>32.17. <A
+HREF="libpq-ldap.html"
+>连接参数的 LDAP 查找</A
+></DT
+><DT
+>32.18. <A
+HREF="libpq-ssl.html"
+>SSL 支持</A
+></DT
+><DD
+><DL
+><DT
+>32.18.1. <A
+HREF="libpq-ssl.html#LIBQ-SSL-CERTIFICATES"
+>服务器证书的客户端验证</A
+></DT
+><DT
+>32.18.2. <A
+HREF="libpq-ssl.html#LIBPQ-SSL-CLIENTCERT"
+>客户端证书</A
+></DT
+><DT
+>32.18.3. <A
+HREF="libpq-ssl.html#LIBPQ-SSL-PROTECTION"
+>不同模式中提供的保护</A
+></DT
+><DT
+>32.18.4. <A
+HREF="libpq-ssl.html#LIBPQ-SSL-FILEUSAGE"
+>SSL 客户端文件使用</A
+></DT
+><DT
+>32.18.5. <A
+HREF="libpq-ssl.html#LIBPQ-SSL-INITIALIZE"
+>SSL 库初始化</A
+></DT
+></DL
+></DD
+><DT
+>32.19. <A
+HREF="libpq-threading.html"
+>在线程化程序中的行为</A
+></DT
+><DT
+>32.20. <A
+HREF="libpq-build.html"
+>编译 <SPAN
+CLASS="APPLICATION"
+>libpq</SPAN
+> 程序</A
+></DT
+><DT
+>32.21. <A
+HREF="libpq-example.html"
+>例子程序</A
+></DT
+></DL
+></DIV
+><P
+>  <SPAN
+CLASS="APPLICATION"
+>libpq</SPAN
+>是应用程序员使用<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>的<ACRONYM
+CLASS="ACRONYM"
+>C</ACRONYM
+>接口。<SPAN
+CLASS="APPLICATION"
+>libpq</SPAN
+>是一个库函数的集合，它们允许客户端程序传递查询给<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>后端服务器并且接收这些查询的结果。
+ </P
+><P
+>  <SPAN
+CLASS="APPLICATION"
+>libpq</SPAN
+>也是很多其他<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>应用接口的底层引擎，包括为 C++、Perl、Python、Tcl 和 <SPAN
+CLASS="APPLICATION"
+>ECPG</SPAN
+>编写的接口。如果你使用那些包，某些方面的<SPAN
+CLASS="APPLICATION"
+>libpq</SPAN
+>行为将会对你很重要。特别是，<A
+HREF="libpq-envars.html"
+>第 32.14 &#33410;</A
+>、<A
+HREF="libpq-pgpass.html"
+>第 32.15 &#33410;</A
+>和<A
+HREF="libpq-ssl.html"
+>第 32.18 &#33410;</A
+>描述了任何使用<SPAN
+CLASS="APPLICATION"
+>libpq</SPAN
+>的应用的用户可见的行为。
+ </P
+><P
+>  在本章的末尾（<A
+HREF="libpq-example.html"
+>第 32.21 &#33410;</A
+>）包括了一些短程序来展示如何编写使用<SPAN
+CLASS="APPLICATION"
+>libpq</SPAN
+>的应用。在源代码发布的<TT
+CLASS="FILENAME"
+>src/test/examples</TT
+>目录中还有一些完整的<SPAN
+CLASS="APPLICATION"
+>libpq</SPAN
+>应用的例子。
+ </P
+><P
+>  使用<SPAN
+CLASS="APPLICATION"
+>libpq</SPAN
+>的客户端程序必须包括头文件<TT
+CLASS="FILENAME"
+>libpq-fe.h</TT
+>并必须与<SPAN
+CLASS="APPLICATION"
+>libpq</SPAN
+>库链接在一起。
+ </P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="client-interfaces.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="libpq-connect.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>客户端接口</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="client-interfaces.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>数据库连接控制函数</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

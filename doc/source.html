@@ -1,0 +1,300 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>PostgreSQL编码习惯</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="内部"
+HREF="internals.html"><LINK
+REL="PREVIOUS"
+TITLE="自协议2.0以来的变化总结"
+HREF="protocol-changes.html"><LINK
+REL="NEXT"
+TITLE="格式化"
+HREF="source-format.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="CHAPTER"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/sources.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="自协议2.0以来的变化总结"
+HREF="protocol-changes.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="internals.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="格式化"
+HREF="source-format.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="CHAPTER"
+><H1
+><A
+NAME="SOURCE"
+></A
+>&#31456; 52. PostgreSQL编码习惯</H1
+><DIV
+CLASS="TOC"
+><DL
+><DT
+><B
+>&#30446;&#24405;</B
+></DT
+><DT
+>52.1. <A
+HREF="source-format.html"
+>格式化</A
+></DT
+><DT
+>52.2. <A
+HREF="error-message-reporting.html"
+>在服务器中报告错误</A
+></DT
+><DT
+>52.3. <A
+HREF="error-style-guide.html"
+>错误消息风格指导</A
+></DT
+><DD
+><DL
+><DT
+>52.3.1. <A
+HREF="error-style-guide.html#AEN114689"
+>什么去哪里</A
+></DT
+><DT
+>52.3.2. <A
+HREF="error-style-guide.html#AEN114698"
+>格式化</A
+></DT
+><DT
+>52.3.3. <A
+HREF="error-style-guide.html#AEN114702"
+>引号</A
+></DT
+><DT
+>52.3.4. <A
+HREF="error-style-guide.html#AEN114706"
+>引号的使用</A
+></DT
+><DT
+>52.3.5. <A
+HREF="error-style-guide.html#AEN114712"
+>语法和标点</A
+></DT
+><DT
+>52.3.6. <A
+HREF="error-style-guide.html#AEN114719"
+>大写 vs. 小写</A
+></DT
+><DT
+>52.3.7. <A
+HREF="error-style-guide.html#AEN114723"
+>避免被动态</A
+></DT
+><DT
+>52.3.8. <A
+HREF="error-style-guide.html#AEN114729"
+>现在式 vs. 过去式</A
+></DT
+><DT
+>52.3.9. <A
+HREF="error-style-guide.html#AEN114739"
+>对象类型</A
+></DT
+><DT
+>52.3.10. <A
+HREF="error-style-guide.html#AEN114744"
+>括号</A
+></DT
+><DT
+>52.3.11. <A
+HREF="error-style-guide.html#AEN114748"
+>组装错误消息</A
+></DT
+><DT
+>52.3.12. <A
+HREF="error-style-guide.html#AEN114753"
+>错误原因</A
+></DT
+><DT
+>52.3.13. <A
+HREF="error-style-guide.html#AEN114757"
+>函数名</A
+></DT
+><DT
+>52.3.14. <A
+HREF="error-style-guide.html#AEN114764"
+>应该避免的捣蛋词</A
+></DT
+><DT
+>52.3.15. <A
+HREF="error-style-guide.html#AEN114807"
+>适当的拼写</A
+></DT
+><DT
+>52.3.16. <A
+HREF="error-style-guide.html#AEN114822"
+>本地化</A
+></DT
+></DL
+></DD
+><DT
+>52.4. <A
+HREF="source-conventions.html"
+>其他编码习惯</A
+></DT
+><DD
+><DL
+><DT
+>52.4.1. <A
+HREF="source-conventions.html#AEN114828"
+>C 标准</A
+></DT
+><DT
+>52.4.2. <A
+HREF="source-conventions.html#AEN114836"
+>类函数的宏以及内联函数</A
+></DT
+><DT
+>52.4.3. <A
+HREF="source-conventions.html#AEN114845"
+>编写信号处理器</A
+></DT
+></DL
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="protocol-changes.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="source-format.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>自协议2.0以来的变化总结</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="internals.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>格式化</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

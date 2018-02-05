@@ -1,0 +1,464 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>SPI_prepare</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="接口函数"
+HREF="spi-interface.html"><LINK
+REL="PREVIOUS"
+TITLE="SPI_execute_with_args"
+HREF="spi-spi-execute-with-args.html"><LINK
+REL="NEXT"
+TITLE="SPI_prepare_cursor"
+HREF="spi-spi-prepare-cursor.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="REFENTRY"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/spi.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="SPI_execute_with_args"
+HREF="spi-spi-execute-with-args.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="spi-interface.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="SPI_prepare_cursor"
+HREF="spi-spi-prepare-cursor.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="SPI-SPI-PREPARE"
+></A
+>SPI_prepare</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN69487"
+></A
+><H2
+>&#21517;&#31216;</H2
+>SPI_prepare&nbsp;--&nbsp;准备一个语句，但不执行它</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN69490"
+></A
+><H2
+>&#22823;&#32434;</H2
+><PRE
+CLASS="SYNOPSIS"
+>SPIPlanPtr SPI_prepare(const char * <TT
+CLASS="PARAMETER"
+>command</TT
+>, int <TT
+CLASS="PARAMETER"
+>nargs</TT
+>, Oid * <TT
+CLASS="PARAMETER"
+>argtypes</TT
+>)</PRE
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN69495"
+></A
+><H2
+>描述</H2
+><P
+>   <CODE
+CLASS="FUNCTION"
+>SPI_prepare</CODE
+>为指定的命令创建并且返回一个
+   预备语句，但是并不执行该命令。该预备语句会在稍后使用
+   <CODE
+CLASS="FUNCTION"
+>SPI_execute_plan</CODE
+>重复执行。
+  </P
+><P
+>   当相同的或者相似的命令要被重复执行时，通常来说只执行一次解析分
+   析是有利的，并且更有利的是重用该命令的执行计划。
+   <CODE
+CLASS="FUNCTION"
+>SPI_prepare</CODE
+>把一个命令字符串转换成一个预
+   备语句，它包装了解析分析的结果。如果发现为每一次执行都生成一个
+   定制计划没有帮助，该预备语句也提供了一个地方缓存执行计划。
+  </P
+><P
+>   一个预备命令可以被一般化为在一个普通命令中应该出现常量的地方写
+   上参数（<TT
+CLASS="LITERAL"
+>$1</TT
+>、<TT
+CLASS="LITERAL"
+>$2</TT
+>等等）。参数的实际值在
+   <CODE
+CLASS="FUNCTION"
+>SPI_execute_plan</CODE
+>被调用时指定。这让该预备
+   语句可以比没有参数的形式用户与更广泛的情况。
+  </P
+><P
+>   <CODE
+CLASS="FUNCTION"
+>SPI_prepare</CODE
+>返回的语句只能在当前过程调用
+   中使用，因为<CODE
+CLASS="FUNCTION"
+>SPI_finish</CODE
+>会释放为这样一个语句
+   分配的内存。但是可以使用函数<CODE
+CLASS="FUNCTION"
+>SPI_keepplan</CODE
+>
+   或<CODE
+CLASS="FUNCTION"
+>SPI_saveplan</CODE
+>把该语句保存更久。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN69511"
+></A
+><H2
+>参数</H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="LITERAL"
+>const char * <TT
+CLASS="PARAMETER"
+>command</TT
+></TT
+></DT
+><DD
+><P
+>      命令字符串
+     </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>int <TT
+CLASS="PARAMETER"
+>nargs</TT
+></TT
+></DT
+><DD
+><P
+>      输入参数（<TT
+CLASS="LITERAL"
+>$1</TT
+>、<TT
+CLASS="LITERAL"
+>$2</TT
+>等等）的数量
+     </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>Oid * <TT
+CLASS="PARAMETER"
+>argtypes</TT
+></TT
+></DT
+><DD
+><P
+>      一个数组指针，它指向的数组包含参数的数据类型的
+      <ACRONYM
+CLASS="ACRONYM"
+>OID</ACRONYM
+>
+     </P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN69535"
+></A
+><H2
+>返回值</H2
+><P
+>   <CODE
+CLASS="FUNCTION"
+>SPI_prepare</CODE
+>返回一个指向<TT
+CLASS="TYPE"
+>SPIPlan</TT
+>
+   的非空指针，它是一个表示一个预备语句的不透明结构。发生错误时，
+   将会返回<TT
+CLASS="SYMBOL"
+>NULL</TT
+>，并且
+   <TT
+CLASS="VARNAME"
+>SPI_result</TT
+>将被设置为一个也被
+   <CODE
+CLASS="FUNCTION"
+>SPI_execute</CODE
+>使用的错误码，不过当
+   <TT
+CLASS="PARAMETER"
+>command</TT
+>为<TT
+CLASS="SYMBOL"
+>NULL</TT
+>、
+   或者<TT
+CLASS="PARAMETER"
+>nargs</TT
+>小于零、或者<TT
+CLASS="PARAMETER"
+>nargs</TT
+>大于
+   零但是<TT
+CLASS="PARAMETER"
+>argtypes</TT
+>为<TT
+CLASS="SYMBOL"
+>NULL</TT
+>
+   时它会被设置为<TT
+CLASS="SYMBOL"
+>SPI_ERROR_ARGUMENT</TT
+>。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN69550"
+></A
+><H2
+>注解</H2
+><P
+>   如果没有定义参数，在第一次使用<CODE
+CLASS="FUNCTION"
+>SPI_execute_plan</CODE
+>
+   时将会创建一个一般的计划，并且把它用于所有的后续执行。如果有参数，
+   <CODE
+CLASS="FUNCTION"
+>SPI_execute_plan</CODE
+>的前几次使用将根据提供的参数值
+   产生定制计划。在使用同一个预备语句足够多次后，
+   <CODE
+CLASS="FUNCTION"
+>SPI_execute_plan</CODE
+>将构建一个一般计划，并且如果它
+   并不比定制计划昂贵太多， <CODE
+CLASS="FUNCTION"
+>SPI_execute_plan</CODE
+>将开始
+   使用一般计划来取代每次都进行重新规划。如果这种默认的行为不合适，你可以
+   通过传递<TT
+CLASS="LITERAL"
+>CURSOR_OPT_GENERIC_PLAN</TT
+>或
+   <TT
+CLASS="LITERAL"
+>CURSOR_OPT_CUSTOM_PLAN</TT
+>标志给
+   <CODE
+CLASS="FUNCTION"
+>SPI_prepare_cursor</CODE
+>，以分别强制使用一般或者定制
+   计划。
+  </P
+><P
+>   尽管一个预备语句的要点是避免对语句的重复解析分析以及规划，只要语句中
+   用到的数据库对象从上一次使用该预备语句以来经历过定义性（DDL）改变，
+   <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>将会强制重新分析和重新规划该语句。还有，
+   如果<A
+HREF="runtime-config-client.html#GUC-SEARCH-PATH"
+>search_path</A
+>的值从一个改变成下一个，该语句将
+   会使用新的<TT
+CLASS="VARNAME"
+>search_path</TT
+>进行重新解析（后一种行为是从
+   <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+> 9.3 开始的新行为）。更多
+   有关预备语句行为的信息请见<A
+HREF="sql-prepare.html"
+>PREPARE</A
+>。
+  </P
+><P
+>   这个函数只能从一个已连接的过程调用。
+  </P
+><P
+>   <TT
+CLASS="TYPE"
+>SPIPlanPtr</TT
+>被声明为<TT
+CLASS="FILENAME"
+>spi.h</TT
+>中的一种不透明结构类型
+   的指针。尝试直接访问其内容是不明智的，因为那会让你的代码更有可能会在未
+   来版本的<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>中崩溃。
+  </P
+><P
+>   <TT
+CLASS="TYPE"
+>SPIPlanPtr</TT
+>这个名字多少有点历史原因，因为该数据结构不再需要包
+   含一个执行计划。
+  </P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="spi-spi-execute-with-args.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="spi-spi-prepare-cursor.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>SPI_execute_with_args</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="spi-interface.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>SPI_prepare_cursor</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

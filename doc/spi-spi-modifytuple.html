@@ -1,0 +1,451 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>SPI_modifytuple</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="内存管理"
+HREF="spi-memory.html"><LINK
+REL="PREVIOUS"
+TITLE="SPI_returntuple"
+HREF="spi-spi-returntuple.html"><LINK
+REL="NEXT"
+TITLE="SPI_freetuple"
+HREF="spi-spi-freetuple.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="REFENTRY"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/spi.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="SPI_returntuple"
+HREF="spi-spi-returntuple.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="spi-memory.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="SPI_freetuple"
+HREF="spi-spi-freetuple.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="SPI-SPI-MODIFYTUPLE"
+></A
+>SPI_modifytuple</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN71206"
+></A
+><H2
+>&#21517;&#31216;</H2
+>SPI_modifytuple&nbsp;--&nbsp;通过替换一个给定行的选定域来创建一行</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN71209"
+></A
+><H2
+>&#22823;&#32434;</H2
+><PRE
+CLASS="SYNOPSIS"
+>HeapTuple SPI_modifytuple(Relation <TT
+CLASS="PARAMETER"
+>rel</TT
+>, HeapTuple <TT
+CLASS="PARAMETER"
+>row</TT
+>, int <TT
+CLASS="PARAMETER"
+>ncols</TT
+>,
+                          int * <TT
+CLASS="PARAMETER"
+>colnum</TT
+>, Datum * <TT
+CLASS="PARAMETER"
+>values</TT
+>, const char * <TT
+CLASS="PARAMETER"
+>nulls</TT
+>)</PRE
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN71217"
+></A
+><H2
+>描述</H2
+><P
+>   <CODE
+CLASS="FUNCTION"
+>SPI_modifytuple</CODE
+>创建一个新行，其中选定的列
+   用新值替代，其他列则从输入行中拷贝。输入行本身不被修改。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN71221"
+></A
+><H2
+>参数</H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="LITERAL"
+>Relation <TT
+CLASS="PARAMETER"
+>rel</TT
+></TT
+></DT
+><DD
+><P
+>      只被用作该行的行描述符的来源（传递一个关系而不是
+      一个行描述符是一种令人头痛的设计）。
+     </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>HeapTuple <TT
+CLASS="PARAMETER"
+>row</TT
+></TT
+></DT
+><DD
+><P
+>      要被修改的行
+     </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>int <TT
+CLASS="PARAMETER"
+>ncols</TT
+></TT
+></DT
+><DD
+><P
+>      要被修改的列数
+     </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>int * <TT
+CLASS="PARAMETER"
+>colnum</TT
+></TT
+></DT
+><DD
+><P
+>      一个长度为<TT
+CLASS="PARAMETER"
+>ncols</TT
+>的数组，包含了要被修改的列号
+      （列号从 1 开始）
+     </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>Datum * <TT
+CLASS="PARAMETER"
+>values</TT
+></TT
+></DT
+><DD
+><P
+>      一个长度为<TT
+CLASS="PARAMETER"
+>ncols</TT
+>的数组，包含了指定列的新值
+     </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>const char * <TT
+CLASS="PARAMETER"
+>nulls</TT
+></TT
+></DT
+><DD
+><P
+>      一个长度为<TT
+CLASS="PARAMETER"
+>ncols</TT
+>的数组，描述哪些新值为空值
+     </P
+><P
+>      如果<TT
+CLASS="PARAMETER"
+>nulls</TT
+>为<TT
+CLASS="SYMBOL"
+>NULL</TT
+>，那么
+      <CODE
+CLASS="FUNCTION"
+>SPI_modifytuple</CODE
+>假定没有新值为空值。否则，
+      如果对应的新值为非空，<TT
+CLASS="PARAMETER"
+>nulls</TT
+>数组的每一项都应
+      该是<TT
+CLASS="LITERAL"
+>'&nbsp;'</TT
+>，而如果对应的新值为空值则为<TT
+CLASS="LITERAL"
+>'n'</TT
+>（在
+      后一种情况中，对应的<TT
+CLASS="PARAMETER"
+>values</TT
+>项中的新值无关紧
+      要）。注意<TT
+CLASS="PARAMETER"
+>nulls</TT
+>不是一个文本字符串，只是一个
+      数组：它不需要一个<TT
+CLASS="LITERAL"
+>'\0'</TT
+>终止符。
+     </P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN71273"
+></A
+><H2
+>返回值</H2
+><P
+>   应用了修改的新行，在上层执行器上下文中分配，只有当
+   <TT
+CLASS="PARAMETER"
+>row</TT
+>为<TT
+CLASS="SYMBOL"
+>NULL</TT
+>时才返回
+   <TT
+CLASS="SYMBOL"
+>NULL</TT
+>
+  </P
+><P
+>   出错时，<TT
+CLASS="VARNAME"
+>SPI_result</TT
+>被设置如下：
+   <P
+></P
+></P><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="SYMBOL"
+>SPI_ERROR_ARGUMENT</TT
+></DT
+><DD
+><P
+>       如果<TT
+CLASS="PARAMETER"
+>rel</TT
+>为<TT
+CLASS="SYMBOL"
+>NULL</TT
+>，或者
+       <TT
+CLASS="PARAMETER"
+>row</TT
+>为<TT
+CLASS="SYMBOL"
+>NULL</TT
+>，或者<TT
+CLASS="PARAMETER"
+>ncols</TT
+>
+       小于等于 0，或者<TT
+CLASS="PARAMETER"
+>colnum</TT
+>为<TT
+CLASS="SYMBOL"
+>NULL</TT
+>，
+       或者<TT
+CLASS="PARAMETER"
+>values</TT
+>为<TT
+CLASS="SYMBOL"
+>NULL</TT
+>。
+      </P
+></DD
+><DT
+><TT
+CLASS="SYMBOL"
+>SPI_ERROR_NOATTRIBUTE</TT
+></DT
+><DD
+><P
+>       如果<TT
+CLASS="PARAMETER"
+>colnum</TT
+>包含一个无效的列号（小于等于 0 或者大于
+       <TT
+CLASS="PARAMETER"
+>row</TT
+>中的列数）。
+      </P
+></DD
+></DL
+></DIV
+><P>
+  </P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="spi-spi-returntuple.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="spi-spi-freetuple.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>SPI_returntuple</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="spi-memory.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>SPI_freetuple</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

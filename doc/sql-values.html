@@ -1,0 +1,667 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>VALUES</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="SQL 命令"
+HREF="sql-commands.html"><LINK
+REL="PREVIOUS"
+TITLE="VACUUM"
+HREF="sql-vacuum.html"><LINK
+REL="NEXT"
+TITLE="PostgreSQL 客户端应用"
+HREF="reference-client.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="REFENTRY"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/ref/values.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="VACUUM"
+HREF="sql-vacuum.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="PostgreSQL 客户端应用"
+HREF="reference-client.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="SQL-VALUES"
+></A
+>VALUES</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN92478"
+></A
+><H2
+>&#21517;&#31216;</H2
+>VALUES&nbsp;--&nbsp;计算一个行集合</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN92481"
+></A
+><H2
+>&#22823;&#32434;</H2
+><PRE
+CLASS="SYNOPSIS"
+>VALUES ( <TT
+CLASS="REPLACEABLE"
+><I
+>expression</I
+></TT
+> [, ...] ) [, ...]
+    [ ORDER BY <TT
+CLASS="REPLACEABLE"
+><I
+>sort_expression</I
+></TT
+> [ ASC | DESC | USING <TT
+CLASS="REPLACEABLE"
+><I
+>operator</I
+></TT
+> ] [, ...] ]
+    [ LIMIT { <TT
+CLASS="REPLACEABLE"
+><I
+>count</I
+></TT
+> | ALL } ]
+    [ OFFSET <TT
+CLASS="REPLACEABLE"
+><I
+>start</I
+></TT
+> [ ROW | ROWS ] ]
+    [ FETCH { FIRST | NEXT } [ <TT
+CLASS="REPLACEABLE"
+><I
+>count</I
+></TT
+> ] { ROW | ROWS } ONLY ]</PRE
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN92489"
+></A
+><H2
+>描述</H2
+><P
+>   <TT
+CLASS="COMMAND"
+>VALUES</TT
+>计算由值表达式指定的一个行值或者
+   一组行值。更常见的是把它用来生成一个大型命令内的<SPAN
+CLASS="QUOTE"
+>"常量表"</SPAN
+>，
+   但是它也可以被独自使用。
+  </P
+><P
+>   当多于一行被指定时，所有行都必须具有相同数量的元素。结果表的列数据类型
+   由出现在该列的表达式的显式或者推导类型组合决定，决定的规则与
+   <TT
+CLASS="LITERAL"
+>UNION</TT
+>相同（见<A
+HREF="typeconv-union-case.html"
+>第 10.5 &#33410;</A
+>）。
+  </P
+><P
+>   在大型的命令中，在语法上允许<TT
+CLASS="COMMAND"
+>VALUES</TT
+>出现在
+   <TT
+CLASS="COMMAND"
+>SELECT</TT
+>出现的任何地方。因为语法把它当做一个
+   <TT
+CLASS="COMMAND"
+>SELECT</TT
+>，可以为一个<TT
+CLASS="COMMAND"
+>VALUES</TT
+>
+   命令使用<TT
+CLASS="LITERAL"
+>ORDER BY</TT
+>、
+   <TT
+CLASS="LITERAL"
+>LIMIT</TT
+>（或者等效的<TT
+CLASS="LITERAL"
+>FETCH FIRST</TT
+>）
+   以及<TT
+CLASS="LITERAL"
+>OFFSET</TT
+>子句。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN92506"
+></A
+><H2
+>参数</H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>expression</I
+></TT
+></DT
+><DD
+><P
+>      要在结果表（行集合）中指定位置计算并且插入的一个常量或者表达式。
+      在一个出现于<TT
+CLASS="COMMAND"
+>INSERT</TT
+>顶层的
+      <TT
+CLASS="COMMAND"
+>VALUES</TT
+>列表中，
+      <TT
+CLASS="REPLACEABLE"
+><I
+>expression</I
+></TT
+>可以
+      被<TT
+CLASS="LITERAL"
+>DEFAULT</TT
+>替代以表示应该插入目标列的默认值。
+      当<TT
+CLASS="COMMAND"
+>VALUES</TT
+>出现在其他环境中时，不能使用
+      <TT
+CLASS="LITERAL"
+>DEFAULT</TT
+>。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>sort_expression</I
+></TT
+></DT
+><DD
+><P
+>      一个指示如何排序结果行的表达式或者整型常量。这个表达式
+      可以用<TT
+CLASS="LITERAL"
+>column1</TT
+>、<TT
+CLASS="LITERAL"
+>column2</TT
+>等来
+      引用该<TT
+CLASS="COMMAND"
+>VALUES</TT
+>结果的列。详见
+      <A
+HREF="sql-select.html#SQL-ORDERBY"
+><I
+><I
+>ORDER BY</I
+> 子句</I
+></A
+>。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>operator</I
+></TT
+></DT
+><DD
+><P
+>      一个排序操作符。详见
+      <A
+HREF="sql-select.html#SQL-ORDERBY"
+><I
+><I
+>ORDER BY</I
+> 子句</I
+></A
+>。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>count</I
+></TT
+></DT
+><DD
+><P
+>      要返回的最大行数。详见
+      <A
+HREF="sql-select.html#SQL-LIMIT"
+><I
+><I
+>LIMIT</I
+> 子句</I
+></A
+>。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>start</I
+></TT
+></DT
+><DD
+><P
+>      开始返回行之前要跳过的行数。详见
+      <A
+HREF="sql-select.html#SQL-LIMIT"
+><I
+><I
+>LIMIT</I
+> 子句</I
+></A
+>。
+     </P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN92547"
+></A
+><H2
+>注解</H2
+><P
+>   应该避免具有大量行的<TT
+CLASS="COMMAND"
+>VALUES</TT
+>列表，否则可能会
+   碰到内存不足失败或者很差的性能。出现在<TT
+CLASS="COMMAND"
+>INSERT</TT
+>
+   中的<TT
+CLASS="COMMAND"
+>VALUES</TT
+>是一种特殊情况（因为想要的列类型
+   可以从<TT
+CLASS="COMMAND"
+>INSERT</TT
+>的目标表得知，并且不需要通过扫描
+   该<TT
+CLASS="COMMAND"
+>VALUES</TT
+>列表来推导），因此它可以处理比其他
+   环境中更大的列表。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN92555"
+></A
+><H2
+>示例</H2
+><P
+>   一个纯粹的<TT
+CLASS="COMMAND"
+>VALUES</TT
+>命令：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>VALUES (1, 'one'), (2, 'two'), (3, 'three');</PRE
+><P>
+
+   这将返回一个具有两列、三行的表。它实际等效于：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>SELECT 1 AS column1, 'one' AS column2
+UNION ALL
+SELECT 2, 'two'
+UNION ALL
+SELECT 3, 'three';</PRE
+><P>
+
+  </P
+><P
+>   更常用地，<TT
+CLASS="COMMAND"
+>VALUES</TT
+>可以被用在一个大型 SQL 命令中。
+   在<TT
+CLASS="COMMAND"
+>INSERT</TT
+>中最常用：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>INSERT INTO films (code, title, did, date_prod, kind)
+    VALUES ('T_601', 'Yojimbo', 106, '1961-06-16', 'Drama');</PRE
+><P>
+  </P
+><P
+>   在<TT
+CLASS="COMMAND"
+>INSERT</TT
+>的环境中，一个<TT
+CLASS="COMMAND"
+>VALUES</TT
+>列表
+   的项可以是<TT
+CLASS="LITERAL"
+>DEFAULT</TT
+>来指示应该使用该列的默认值而不是
+   指定一个值：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>INSERT INTO films VALUES
+    ('UA502', 'Bananas', 105, DEFAULT, 'Comedy', '82 minutes'),
+    ('T_601', 'Yojimbo', 106, DEFAULT, 'Drama', DEFAULT);</PRE
+><P>
+  </P
+><P
+>   <TT
+CLASS="COMMAND"
+>VALUES</TT
+>也可以被用在可以写子-<TT
+CLASS="COMMAND"
+>SELECT</TT
+>
+   的地方，例如在一个<TT
+CLASS="LITERAL"
+>FROM</TT
+>子句中：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>SELECT f.*
+  FROM films f, (VALUES('MGM', 'Horror'), ('UA', 'Sci-Fi')) AS t (studio, kind)
+  WHERE f.studio = t.studio AND f.kind = t.kind;
+
+UPDATE employees SET salary = salary * v.increase
+  FROM (VALUES(1, 200000, 1.2), (2, 400000, 1.4)) AS v (depno, target, increase)
+  WHERE employees.depno = v.depno AND employees.sales &gt;= v.target;</PRE
+><P>
+
+   注意当<TT
+CLASS="COMMAND"
+>VALUES</TT
+>被用在一个<TT
+CLASS="LITERAL"
+>FROM</TT
+>子句中时，
+   需要提供一个<TT
+CLASS="LITERAL"
+>AS</TT
+>子句，与<TT
+CLASS="COMMAND"
+>SELECT</TT
+>相同。
+   不需要为所有的列用<TT
+CLASS="LITERAL"
+>AS</TT
+>子句指定名称，但是那样做是一种好
+   习惯（在<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>中，
+   <TT
+CLASS="COMMAND"
+>VALUES</TT
+>的默认列名是<TT
+CLASS="LITERAL"
+>column1</TT
+>、
+   <TT
+CLASS="LITERAL"
+>column2</TT
+>等，但在其他数据库系统中可能会不同）。
+  </P
+><P
+>   当在<TT
+CLASS="COMMAND"
+>INSERT</TT
+>中使用<TT
+CLASS="COMMAND"
+>VALUES</TT
+>时，值都会
+   被自动地强制为相应目标列的数据类型。当在其他环境中使用时，有必要指定
+   正确的数据类型。如果项都是带引号的字符串常量，强制第一个就足以为所有
+   项假设数据类型：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>SELECT * FROM machines
+WHERE ip_address IN (VALUES('192.168.0.1'::inet), ('192.168.0.10'), ('192.168.1.43'));</PRE
+><P></P
+><DIV
+CLASS="TIP"
+><BLOCKQUOTE
+CLASS="TIP"
+><P
+><B
+>&#25552;&#31034;: </B
+>    对于简单的<TT
+CLASS="LITERAL"
+>IN</TT
+>测试，最好使用<TT
+CLASS="LITERAL"
+>IN</TT
+>的
+    <A
+HREF="functions-comparisons.html#FUNCTIONS-COMPARISONS-IN-SCALAR"
+>list-of-scalars</A
+>形式
+    而不是写一个上面那样的<TT
+CLASS="COMMAND"
+>VALUES</TT
+>查询。标量列表方法的
+    书写更少并且常常更加高效。
+   </P
+></BLOCKQUOTE
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN92594"
+></A
+><H2
+>兼容性</H2
+><P
+><TT
+CLASS="COMMAND"
+>VALUES</TT
+>符合 SQL 标准。
+   <TT
+CLASS="LITERAL"
+>LIMIT</TT
+>和<TT
+CLASS="LITERAL"
+>OFFSET</TT
+>是
+   <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>扩展，另见
+   <A
+HREF="sql-select.html"
+>SELECT</A
+>。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN92602"
+></A
+><H2
+>另见</H2
+><A
+HREF="sql-insert.html"
+>INSERT</A
+>, <A
+HREF="sql-select.html"
+>SELECT</A
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-vacuum.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="reference-client.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>VACUUM</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>PostgreSQL 客户端应用</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

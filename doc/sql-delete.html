@@ -1,0 +1,725 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>DELETE</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="SQL 命令"
+HREF="sql-commands.html"><LINK
+REL="PREVIOUS"
+TITLE="DECLARE"
+HREF="sql-declare.html"><LINK
+REL="NEXT"
+TITLE="DISCARD"
+HREF="sql-discard.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="REFENTRY"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/ref/delete.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="DECLARE"
+HREF="sql-declare.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="DISCARD"
+HREF="sql-discard.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="SQL-DELETE"
+></A
+>DELETE</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN84649"
+></A
+><H2
+>&#21517;&#31216;</H2
+>DELETE&nbsp;--&nbsp;删除一个表的行</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN84652"
+></A
+><H2
+>&#22823;&#32434;</H2
+><PRE
+CLASS="SYNOPSIS"
+>[ WITH [ RECURSIVE ] <TT
+CLASS="REPLACEABLE"
+><I
+>with_query</I
+></TT
+> [, ...] ]
+DELETE FROM [ ONLY ] <TT
+CLASS="REPLACEABLE"
+><I
+>table_name</I
+></TT
+> [ * ] [ [ AS ] <TT
+CLASS="REPLACEABLE"
+><I
+>alias</I
+></TT
+> ]
+    [ USING <TT
+CLASS="REPLACEABLE"
+><I
+>using_list</I
+></TT
+> ]
+    [ WHERE <TT
+CLASS="REPLACEABLE"
+><I
+>condition</I
+></TT
+> | WHERE CURRENT OF <TT
+CLASS="REPLACEABLE"
+><I
+>cursor_name</I
+></TT
+> ]
+    [ RETURNING * | <TT
+CLASS="REPLACEABLE"
+><I
+>output_expression</I
+></TT
+> [ [ AS ] <TT
+CLASS="REPLACEABLE"
+><I
+>output_name</I
+></TT
+> ] [, ...] ]</PRE
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN84662"
+></A
+><H2
+>描述</H2
+><P
+>   <TT
+CLASS="COMMAND"
+>DELETE</TT
+>从指定表中删除满足
+   <TT
+CLASS="LITERAL"
+>WHERE</TT
+>子句的行。如果<TT
+CLASS="LITERAL"
+>WHERE</TT
+>
+   子句没有出现，效果将会是删除表中的所有行。结果是一个合法的空表。
+  </P
+><DIV
+CLASS="TIP"
+><BLOCKQUOTE
+CLASS="TIP"
+><P
+><B
+>&#25552;&#31034;: </B
+>     <A
+HREF="sql-truncate.html"
+>TRUNCATE</A
+>是一种提供移除表中所有行的快速机制的
+     <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>扩展。
+    </P
+></BLOCKQUOTE
+></DIV
+><P
+>   有两种方式可以使用数据库中其他表中包含的信息来删除一个表的行：
+   使用子选择或者在<TT
+CLASS="LITERAL"
+>USING</TT
+>子句中指定额外的表。
+   哪种技术更合适取决于特定的环境。
+  </P
+><P
+>   可选的<TT
+CLASS="LITERAL"
+>RETURNING</TT
+>子句导致<TT
+CLASS="COMMAND"
+>DELETE</TT
+>
+   基于实际被删除的每一行计算并且返回值。任何使用被删除表列或者
+   <TT
+CLASS="LITERAL"
+>USING</TT
+>中提到的其他表的列的表达式都可以被计算。
+   <TT
+CLASS="LITERAL"
+>RETURNING</TT
+>列表的语法和<TT
+CLASS="COMMAND"
+>SELECT</TT
+>的
+   输出列表语法相同。
+  </P
+><P
+>   要从表中删除行，你必须具有其上的<TT
+CLASS="LITERAL"
+>DELETE</TT
+>特权，
+   以及<TT
+CLASS="LITERAL"
+>USING</TT
+>子句中任何表以及其值在<TT
+CLASS="REPLACEABLE"
+><I
+>condition</I
+></TT
+>中被读取的表上的
+   <TT
+CLASS="LITERAL"
+>SELECT</TT
+>特权。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN84685"
+></A
+><H2
+>参数</H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>with_query</I
+></TT
+></DT
+><DD
+><P
+>      <TT
+CLASS="LITERAL"
+>WITH</TT
+>子句允许你指定一个或者多个子查询，在 
+      <TT
+CLASS="COMMAND"
+>DELETE</TT
+>查询中可以用子查询的名字来引用它们。
+      详见<A
+HREF="queries-with.html"
+>第 7.8 &#33410;</A
+>和<A
+HREF="sql-select.html"
+>SELECT</A
+>。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>table_name</I
+></TT
+></DT
+><DD
+><P
+>      要从其中删除行的表名（可以是模式限定的）。如果在表名前指定
+      <TT
+CLASS="LITERAL"
+>ONLY</TT
+>，只会从提到的表中删除匹配的行。如果没有指定
+      <TT
+CLASS="LITERAL"
+>ONLY</TT
+>，还会删除该表的任何继承表中的匹配行。可选地，
+      可以在表名后面指定<TT
+CLASS="LITERAL"
+>*</TT
+>来显式指定要包括继承表。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>alias</I
+></TT
+></DT
+><DD
+><P
+>      目标表的一个别名。提供别名时，它会完全隐藏该表的真实名称。例如，
+      对于<TT
+CLASS="LITERAL"
+>DELETE FROM foo AS f</TT
+>，
+      <TT
+CLASS="COMMAND"
+>DELETE</TT
+>语句的剩余部分都会用
+      <TT
+CLASS="LITERAL"
+>f</TT
+>而不是 <TT
+CLASS="LITERAL"
+>foo</TT
+>来引用该表。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>using_list</I
+></TT
+></DT
+><DD
+><P
+>      一个表表达式的列表，它允许在<TT
+CLASS="LITERAL"
+>WHERE</TT
+>条件中出现
+      来自其他表的列。这和<TT
+CLASS="COMMAND"
+>SELECT</TT
+>语句
+      的<A
+HREF="sql-select.html#SQL-FROM"
+><I
+><I
+>FROM</I
+> 子句</I
+></A
+>中指定
+      的表列表相似。例如，可以指定表的别名。除非想要进行自连接，
+      否则不要在<TT
+CLASS="REPLACEABLE"
+><I
+>using_list</I
+></TT
+>
+      再写上目标表。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>condition</I
+></TT
+></DT
+><DD
+><P
+>      一个返回<TT
+CLASS="TYPE"
+>boolean</TT
+>类型值的表达式。只有让这个
+      表达式返回<TT
+CLASS="LITERAL"
+>true</TT
+>的行才将被删除。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>cursor_name</I
+></TT
+></DT
+><DD
+><P
+>      要在<TT
+CLASS="LITERAL"
+>WHERE CURRENT OF</TT
+>情况中使用的游标
+      的名称。最近一次从这个游标中取出的行将被删除。该游标
+      必须是<TT
+CLASS="COMMAND"
+>DELETE</TT
+>的目标表上的非分组查询。
+      注意不能在使用<TT
+CLASS="LITERAL"
+>WHERE CURRENT OF</TT
+>的同时
+      指定一个布尔条件。有关将游标用于
+      <TT
+CLASS="LITERAL"
+>WHERE CURRENT OF</TT
+>的更多信息请见
+      <A
+HREF="sql-declare.html"
+>DECLARE</A
+>。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>output_expression</I
+></TT
+></DT
+><DD
+><P
+>      在每一行被删除后，会被<TT
+CLASS="COMMAND"
+>DELETE</TT
+>计算并且返回的表达式。
+      该表达式可以使用<TT
+CLASS="REPLACEABLE"
+><I
+>table_name</I
+></TT
+>
+      以及<TT
+CLASS="LITERAL"
+>USING</TT
+>中的表的任何列。写成<TT
+CLASS="LITERAL"
+>*</TT
+>可以返回所有列。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>output_name</I
+></TT
+></DT
+><DD
+><P
+>      被返回列的名称。
+     </P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN84754"
+></A
+><H2
+>输出</H2
+><P
+>   在成功完成时，一个<TT
+CLASS="COMMAND"
+>DELETE</TT
+>命令会返回以下形式
+   的命令标签：
+</P><PRE
+CLASS="SCREEN"
+>DELETE <TT
+CLASS="REPLACEABLE"
+><I
+>count</I
+></TT
+></PRE
+><P>
+   <TT
+CLASS="REPLACEABLE"
+><I
+>count</I
+></TT
+>是被删除行的数目。
+   注意如果有一个<TT
+CLASS="LITERAL"
+>BEFORE DELETE</TT
+>触发器抑制删除，那么该数目
+   可能小于匹配<TT
+CLASS="REPLACEABLE"
+><I
+>condition</I
+></TT
+>
+   的行数。如果<TT
+CLASS="REPLACEABLE"
+><I
+>count</I
+></TT
+>为 0，
+   表示查询没有删除行（这并非一种错误）。
+  </P
+><P
+>   如果<TT
+CLASS="COMMAND"
+>DELETE</TT
+>命令包含<TT
+CLASS="LITERAL"
+>RETURNING</TT
+>子句，
+   则结果会与包含有<TT
+CLASS="LITERAL"
+>RETURNING</TT
+>列表中定义的列和值的
+   <TT
+CLASS="COMMAND"
+>SELECT</TT
+>语句结果相似，这些结果是在被该命令删除的
+   行上计算得来。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN84769"
+></A
+><H2
+>注解</H2
+><P
+>   通过在<TT
+CLASS="LITERAL"
+>USING</TT
+>子句中指定其他的表，
+   <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>允许在
+   <TT
+CLASS="LITERAL"
+>WHERE</TT
+>条件中引用其他表的列。例如，要
+   删除有一个给定制片人制作的所有电影，可以这样做：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>DELETE FROM films USING producers
+  WHERE producer_id = producers.id AND producers.name = 'foo';</PRE
+><P>
+   这里实际发生的事情是在<TT
+CLASS="STRUCTNAME"
+>films</TT
+>和
+   <TT
+CLASS="STRUCTNAME"
+>producers</TT
+>之间进行连接，然后删除
+   所有成功连接的<TT
+CLASS="STRUCTNAME"
+>films</TT
+>行。这种语法不
+   属于标准。更标准的方式是：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>DELETE FROM films
+  WHERE producer_id IN (SELECT id FROM producers WHERE name = 'foo');</PRE
+><P>
+   在一些情况下，连接形式比子查询形式更容易书写或者执行更快。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN84780"
+></A
+><H2
+>示例</H2
+><P
+>   删除所有电影，但音乐剧除外：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>DELETE FROM films WHERE kind &lt;&gt; 'Musical';</PRE
+><P>
+  </P
+><P
+>   清空表<TT
+CLASS="LITERAL"
+>films</TT
+>：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>DELETE FROM films;</PRE
+><P>
+  </P
+><P
+>   删除已完成的任务，返回被删除行的明细：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>DELETE FROM tasks WHERE status = 'DONE' RETURNING *;</PRE
+><P>
+  </P
+><P
+>   删除<TT
+CLASS="STRUCTNAME"
+>tasks</TT
+>中游标<TT
+CLASS="LITERAL"
+>c_tasks</TT
+>
+   当前位于其上的行：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>DELETE FROM tasks WHERE CURRENT OF c_tasks;</PRE
+><P></P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN84793"
+></A
+><H2
+>兼容性</H2
+><P
+>   这个命令符合<ACRONYM
+CLASS="ACRONYM"
+>SQL</ACRONYM
+>标准，不过
+   <TT
+CLASS="LITERAL"
+>USING</TT
+>和<TT
+CLASS="LITERAL"
+>RETURNING</TT
+>子句是
+   <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>扩展，在
+   <TT
+CLASS="COMMAND"
+>DELETE</TT
+>中使用<TT
+CLASS="LITERAL"
+>WITH</TT
+>也是扩展。
+  </P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-declare.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="sql-discard.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>DECLARE</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>DISCARD</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

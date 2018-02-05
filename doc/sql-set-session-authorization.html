@@ -1,0 +1,360 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>SET SESSION AUTHORIZATION</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="SQL 命令"
+HREF="sql-commands.html"><LINK
+REL="PREVIOUS"
+TITLE="SET ROLE"
+HREF="sql-set-role.html"><LINK
+REL="NEXT"
+TITLE="SET TRANSACTION"
+HREF="sql-set-transaction.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="REFENTRY"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/ref/set_session_auth.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="SET ROLE"
+HREF="sql-set-role.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="SET TRANSACTION"
+HREF="sql-set-transaction.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="SQL-SET-SESSION-AUTHORIZATION"
+></A
+>SET SESSION AUTHORIZATION</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN91613"
+></A
+><H2
+>&#21517;&#31216;</H2
+>SET SESSION AUTHORIZATION&nbsp;--&nbsp;设置当前会话的会话用户标识符和当前用户标识符</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN91616"
+></A
+><H2
+>&#22823;&#32434;</H2
+><PRE
+CLASS="SYNOPSIS"
+>SET [ SESSION | LOCAL ] SESSION AUTHORIZATION <TT
+CLASS="REPLACEABLE"
+><I
+>user_name</I
+></TT
+>
+SET [ SESSION | LOCAL ] SESSION AUTHORIZATION DEFAULT
+RESET SESSION AUTHORIZATION</PRE
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN91619"
+></A
+><H2
+>描述</H2
+><P
+>   这个命令把当前 SQL 会话的会话用户标识符和当前用户标识符设置为
+   <TT
+CLASS="REPLACEABLE"
+><I
+>user_name</I
+></TT
+>。
+   用户名可以被写成一个标识符或者一个字符串。例如，可以使用这个
+   命令临时成为一个无特权用户并且稍后切换回来成为一个超级用户。
+  </P
+><P
+>   会话用户标识符初始时被设置为客户端提供的（可能已认证的）用户名。
+   当前用户标识符通常等于会话用户标识符，但是可能在
+   <TT
+CLASS="LITERAL"
+>SECURITY DEFINER</TT
+>函数和类似机制的环境中临时更改。
+   也可以用<A
+HREF="sql-set-role.html"
+>SET ROLE</A
+>更改它。当前用户标识符与
+   权限检查相关。
+  </P
+><P
+>   会话用户标识符只能在初始会话用户
+   <I
+CLASS="FIRSTTERM"
+>已认证用户</I
+>具有超级用户特权时被更改。
+   否则，只有该命令指定已认证用户名时才会被接受。
+  </P
+><P
+>   <TT
+CLASS="LITERAL"
+>SESSION</TT
+>和<TT
+CLASS="LITERAL"
+>LOCAL</TT
+>修饰符发挥的作用和常规
+   <A
+HREF="sql-set.html"
+>SET</A
+>命令一样。
+  </P
+><P
+>   <TT
+CLASS="LITERAL"
+>DEFAULT</TT
+>和<TT
+CLASS="LITERAL"
+>RESET</TT
+>形式把会话用户标识符和
+   当前用户标识符重置为初始的已认证用户名。这些形式可以由任何用户执行。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN91635"
+></A
+><H2
+>注解</H2
+><P
+>   <TT
+CLASS="COMMAND"
+>SET SESSION AUTHORIZATION</TT
+>不能在一个
+   <TT
+CLASS="LITERAL"
+>SECURITY DEFINER</TT
+>函数中使用。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN91640"
+></A
+><H2
+>示例</H2
+><PRE
+CLASS="PROGRAMLISTING"
+>SELECT SESSION_USER, CURRENT_USER;
+
+ session_user | current_user 
+--------------+--------------
+ peter        | peter
+
+SET SESSION AUTHORIZATION 'paul';
+
+SELECT SESSION_USER, CURRENT_USER;
+
+ session_user | current_user 
+--------------+--------------
+ paul         | paul</PRE
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN91643"
+></A
+><H2
+>兼容性</H2
+><P
+>   SQL 标准允许一些其他表达式出现在文本
+   <TT
+CLASS="REPLACEABLE"
+><I
+>user_name</I
+></TT
+>的位置上，但是实际上这些
+   选项并不重要。<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>允许标
+   识符语法（<TT
+CLASS="LITERAL"
+>"<TT
+CLASS="REPLACEABLE"
+><I
+>username</I
+></TT
+>"</TT
+>），而 SQL 标准不允许。
+   SQL 不允许在事务中使用这个命令，而
+   <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>并不做此限
+   制，因为并没有原因需要这样做。和<TT
+CLASS="LITERAL"
+>RESET</TT
+>语法
+   一样，<TT
+CLASS="LITERAL"
+>SESSION</TT
+>和
+   <TT
+CLASS="LITERAL"
+>LOCAL</TT
+>修饰符是一种
+   <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>扩展。
+  </P
+><P
+>   标准把执行这个命令所需的特权留给实现定义。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN91656"
+></A
+><H2
+>另见</H2
+><A
+HREF="sql-set-role.html"
+>SET ROLE</A
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-set-role.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="sql-set-transaction.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>SET ROLE</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>SET TRANSACTION</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

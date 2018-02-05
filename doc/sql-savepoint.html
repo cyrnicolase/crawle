@@ -1,0 +1,347 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>SAVEPOINT</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="SQL 命令"
+HREF="sql-commands.html"><LINK
+REL="PREVIOUS"
+TITLE="ROLLBACK TO SAVEPOINT"
+HREF="sql-rollback-to.html"><LINK
+REL="NEXT"
+TITLE="SECURITY LABEL"
+HREF="sql-security-label.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="REFENTRY"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/ref/savepoint.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="ROLLBACK TO SAVEPOINT"
+HREF="sql-rollback-to.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="SECURITY LABEL"
+HREF="sql-security-label.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="SQL-SAVEPOINT"
+></A
+>SAVEPOINT</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN89796"
+></A
+><H2
+>&#21517;&#31216;</H2
+>SAVEPOINT&nbsp;--&nbsp;在当前事务中定义一个新的保存点</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN89799"
+></A
+><H2
+>&#22823;&#32434;</H2
+><PRE
+CLASS="SYNOPSIS"
+>SAVEPOINT <TT
+CLASS="REPLACEABLE"
+><I
+>savepoint_name</I
+></TT
+></PRE
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN89802"
+></A
+><H2
+>描述</H2
+><P
+>   <TT
+CLASS="COMMAND"
+>SAVEPOINT</TT
+>在当前事务中建立一个新保存点。
+  </P
+><P
+>   保存点是事务内的一种特殊标记，它允许所有在它被建立之后执行的命令被
+   回滚，把该事务的状态恢复到它处于保存点时的样子。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN89807"
+></A
+><H2
+>参数</H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>savepoint_name</I
+></TT
+></DT
+><DD
+><P
+>      给新保存点的名字。
+     </P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN89815"
+></A
+><H2
+>注解</H2
+><P
+>   使用<A
+HREF="sql-rollback-to.html"
+>ROLLBACK TO SAVEPOINT</A
+>回滚到一个保存点。
+   使用<A
+HREF="sql-release-savepoint.html"
+>RELEASE SAVEPOINT</A
+>销毁一个保存点，
+   但保持在它被建立之后执行的命令的效果。
+  </P
+><P
+>   保存点只能在一个事务块内建立。可以在一个事务内定义多个保存点。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN89821"
+></A
+><H2
+>示例</H2
+><P
+>   要建立一个保存点并且后来撤销在它建立之后执行的所有命令的效果：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>BEGIN;
+    INSERT INTO table1 VALUES (1);
+    SAVEPOINT my_savepoint;
+    INSERT INTO table1 VALUES (2);
+    ROLLBACK TO SAVEPOINT my_savepoint;
+    INSERT INTO table1 VALUES (3);
+COMMIT;</PRE
+><P>
+   上面的事务将插入值 1 和 3，但不会插入 2。
+  </P
+><P
+>   要建立并且稍后销毁一个保存点：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>BEGIN;
+    INSERT INTO table1 VALUES (3);
+    SAVEPOINT my_savepoint;
+    INSERT INTO table1 VALUES (4);
+    RELEASE SAVEPOINT my_savepoint;
+COMMIT;</PRE
+><P>
+   上面的事务将插入 3 和 4。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN89827"
+></A
+><H2
+>兼容性</H2
+><P
+>   当建立另一个同名保存点时，SQL 要求之前的那个保存点自动被销毁。在
+   <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>中，旧的保存点会被保留，不过在进行
+   回滚或释放时只能使用最近的那一个（用
+   <TT
+CLASS="COMMAND"
+>RELEASE SAVEPOINT</TT
+>释放较新的保存点将会
+   导致较旧的保存点再次变得可以被
+   <TT
+CLASS="COMMAND"
+>ROLLBACK TO SAVEPOINT</TT
+>和
+   <TT
+CLASS="COMMAND"
+>RELEASE SAVEPOINT</TT
+>访问）。在其他方面， 
+   <TT
+CLASS="COMMAND"
+>SAVEPOINT</TT
+>完全符合 SQL。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN89835"
+></A
+><H2
+>另见</H2
+><A
+HREF="sql-begin.html"
+>BEGIN</A
+>, <A
+HREF="sql-commit.html"
+>COMMIT</A
+>, <A
+HREF="sql-release-savepoint.html"
+>RELEASE SAVEPOINT</A
+>, <A
+HREF="sql-rollback.html"
+>ROLLBACK</A
+>, <A
+HREF="sql-rollback-to.html"
+>ROLLBACK TO SAVEPOINT</A
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-rollback-to.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="sql-security-label.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>ROLLBACK TO SAVEPOINT</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>SECURITY LABEL</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

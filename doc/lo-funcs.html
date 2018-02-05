@@ -1,0 +1,421 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>服务器端函数</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="大对象"
+HREF="largeobjects.html"><LINK
+REL="PREVIOUS"
+TITLE="客户端接口"
+HREF="lo-interfaces.html"><LINK
+REL="NEXT"
+TITLE="例子程序"
+HREF="lo-examplesect.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/lobj.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="客户端接口"
+HREF="lo-interfaces.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="largeobjects.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#31456; 33. 大对象</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="例子程序"
+HREF="lo-examplesect.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="LO-FUNCS"
+>33.4. 服务器端函数</A
+></H1
+><P
+>   <A
+HREF="lo-funcs.html#LO-FUNCS-TABLE"
+>&#34920; 33-1</A
+>中列出了为从 SQL 操纵大对象定制的服务器端函数。
+  </P
+><DIV
+CLASS="TABLE"
+><A
+NAME="LO-FUNCS-TABLE"
+></A
+><P
+><B
+>&#34920; 33-1. 面向 SQL 的大对象函数</B
+></P
+><TABLE
+BORDER="1"
+CLASS="CALSTABLE"
+><COL><COL><COL><COL><COL><THEAD
+><TR
+><TH
+>函数</TH
+><TH
+>返回类型</TH
+><TH
+>描述</TH
+><TH
+>实例</TH
+><TH
+>结果</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+>       
+       <TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>lo_from_bytea(<TT
+CLASS="PARAMETER"
+>loid</TT
+> <TT
+CLASS="TYPE"
+>oid</TT
+>, <TT
+CLASS="PARAMETER"
+>string</TT
+> <TT
+CLASS="TYPE"
+>bytea</TT
+>)</CODE
+></TT
+>
+      </TD
+><TD
+><TT
+CLASS="TYPE"
+>oid</TT
+></TD
+><TD
+>       创建一个大对象并且在其中存储数据，返回它的 OID。
+       传递<TT
+CLASS="LITERAL"
+>0</TT
+>会让系统选择一个 OID。
+      </TD
+><TD
+><TT
+CLASS="LITERAL"
+>lo_from_bytea(0, E'\\xffffff00')</TT
+></TD
+><TD
+><TT
+CLASS="LITERAL"
+>24528</TT
+></TD
+></TR
+><TR
+><TD
+>       
+       <TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>lo_put(<TT
+CLASS="PARAMETER"
+>loid</TT
+> <TT
+CLASS="TYPE"
+>oid</TT
+>, <TT
+CLASS="PARAMETER"
+>offset</TT
+> <TT
+CLASS="TYPE"
+>bigint</TT
+>, <TT
+CLASS="PARAMETER"
+>str</TT
+> <TT
+CLASS="TYPE"
+>bytea</TT
+>)</CODE
+></TT
+>
+      </TD
+><TD
+><TT
+CLASS="TYPE"
+>void</TT
+></TD
+><TD
+>       在给定的偏移位置写入数据。
+      </TD
+><TD
+><TT
+CLASS="LITERAL"
+>lo_put(24528, 1, E'\\xaa')</TT
+></TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+>       
+       <TT
+CLASS="LITERAL"
+><CODE
+CLASS="FUNCTION"
+>lo_get(<TT
+CLASS="PARAMETER"
+>loid</TT
+> <TT
+CLASS="TYPE"
+>oid</TT
+> [<SPAN
+CLASS="OPTIONAL"
+>, <TT
+CLASS="PARAMETER"
+>from</TT
+> <TT
+CLASS="TYPE"
+>bigint</TT
+>, <TT
+CLASS="PARAMETER"
+>for</TT
+> <TT
+CLASS="TYPE"
+>int</TT
+></SPAN
+>])</CODE
+></TT
+>
+      </TD
+><TD
+><TT
+CLASS="TYPE"
+>bytea</TT
+></TD
+><TD
+>       在其中抽取内容或一个子串。
+      </TD
+><TD
+><TT
+CLASS="LITERAL"
+>lo_get(24528, 0, 3)</TT
+></TD
+><TD
+><TT
+CLASS="LITERAL"
+>\xffaaff</TT
+></TD
+></TR
+></TBODY
+></TABLE
+></DIV
+><P
+>   之前描述过的每个客户端函数都有一个相应的服务器端函数。实际上，
+   多半客户端函数都是等效的服务器端函数的简单接口。这些可以从 SQL 
+   命令方便调用的函数是：
+   <CODE
+CLASS="FUNCTION"
+>lo_creat</CODE
+>、
+   <CODE
+CLASS="FUNCTION"
+>lo_create</CODE
+>、
+   <CODE
+CLASS="FUNCTION"
+>lo_unlink</CODE
+>、
+   <CODE
+CLASS="FUNCTION"
+>lo_import</CODE
+>以及
+   <CODE
+CLASS="FUNCTION"
+>lo_export</CODE
+>。
+   下面是使用它们的例子：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>CREATE TABLE image (
+    name            text,
+    raster          oid
+);
+
+SELECT lo_creat(-1);       -- 返回新的空大对象的OID
+
+SELECT lo_create(43213);   -- 尝试创建OID为43213的大对象
+
+SELECT lo_unlink(173454);  -- 删除OID为173454的大对象
+
+INSERT INTO image (name, raster)
+    VALUES ('beautiful image', lo_import('/etc/motd'));
+
+INSERT INTO image (name, raster)  -- 和上面相同，但是指定了使用的OID
+    VALUES ('beautiful image', lo_import('/etc/motd', 68583));
+
+SELECT lo_export(image.raster, '/tmp/motd') FROM image
+    WHERE name = 'beautiful image';</PRE
+><P>
+  </P
+><P
+>    服务器端的<CODE
+CLASS="FUNCTION"
+>lo_import</CODE
+>和<CODE
+CLASS="FUNCTION"
+>lo_export</CODE
+>函数具有和它们的客户端同类大不相同的行为。这两个函数从服务器的文件系统中读和写文件，使用的是数据库所有者的权限。因此，它们的使用被限制于超级用户。相反，客户端的导入和导出函数读写的是客户端的文件系统，使用的是客户端程序的权限。因此客户端函数不需要超级用户权限。
+  </P
+><P
+>    函数<CODE
+CLASS="FUNCTION"
+>lo_read</CODE
+>和
+    <CODE
+CLASS="FUNCTION"
+>lo_write</CODE
+>的功能也可以在服务器端调用，但是在服务器端的名称与客户端接口不同：它们的名称中不包含下划线。我们必须以<CODE
+CLASS="FUNCTION"
+>loread</CODE
+>和<CODE
+CLASS="FUNCTION"
+>lowrite</CODE
+>调用这些函数。
+  </P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="lo-interfaces.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="lo-examplesect.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>客户端接口</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="largeobjects.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>例子程序</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

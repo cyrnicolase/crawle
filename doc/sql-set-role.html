@@ -1,0 +1,411 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>SET ROLE</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="SQL 命令"
+HREF="sql-commands.html"><LINK
+REL="PREVIOUS"
+TITLE="SET CONSTRAINTS"
+HREF="sql-set-constraints.html"><LINK
+REL="NEXT"
+TITLE="SET SESSION AUTHORIZATION"
+HREF="sql-set-session-authorization.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="REFENTRY"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/ref/set_role.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="SET CONSTRAINTS"
+HREF="sql-set-constraints.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="SET SESSION AUTHORIZATION"
+HREF="sql-set-session-authorization.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="SQL-SET-ROLE"
+></A
+>SET ROLE</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN91544"
+></A
+><H2
+>&#21517;&#31216;</H2
+>SET ROLE&nbsp;--&nbsp;设置当前会话的当前用户标识符</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN91547"
+></A
+><H2
+>&#22823;&#32434;</H2
+><PRE
+CLASS="SYNOPSIS"
+>SET [ SESSION | LOCAL ] ROLE <TT
+CLASS="REPLACEABLE"
+><I
+>role_name</I
+></TT
+>
+SET [ SESSION | LOCAL ] ROLE NONE
+RESET ROLE</PRE
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN91550"
+></A
+><H2
+>描述</H2
+><P
+>   这个命令把当前 SQL 会话的当前用户标识符设置为
+   <TT
+CLASS="REPLACEABLE"
+><I
+>role_name</I
+></TT
+>。
+   角色名可以写成一个标识符或者一个字符串。在
+   <TT
+CLASS="COMMAND"
+>SET ROLE</TT
+>之后，对 SQL 命令的权限检查时就
+   好像该角色就是原先登录的角色一样。
+  </P
+><P
+>   当前会话用户必须是指定的
+   角色<TT
+CLASS="REPLACEABLE"
+><I
+>role_name</I
+></TT
+>
+   的一个成员（如果会话用户是一个超级用户，则可以选择任何角色）。
+  </P
+><P
+>   <TT
+CLASS="LITERAL"
+>SESSION</TT
+>和<TT
+CLASS="LITERAL"
+>LOCAL</TT
+>修饰符发挥的作用和
+   常规的<A
+HREF="sql-set.html"
+>SET</A
+>命令一样。
+  </P
+><P
+>   <TT
+CLASS="LITERAL"
+>NONE</TT
+>和<TT
+CLASS="LITERAL"
+>RESET</TT
+>形式把当前用户标识符
+   重置为当前会话用户标识符。这些形式可以由任何用户执行。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN91564"
+></A
+><H2
+>注解</H2
+><P
+>   使用这个命令可以增加特权或者限制特权。如果会话用户角色具有
+   <TT
+CLASS="LITERAL"
+>INHERITS</TT
+>属性，则它会自动具有它能
+   <TT
+CLASS="COMMAND"
+>SET ROLE</TT
+>到的所有角色的全部特权。在这种情况下
+   <TT
+CLASS="COMMAND"
+>SET ROLE</TT
+>实际会删除所有直接分配给会话用户的特
+   权以及分配给会话用户作为其成员的其他角色的特权，只留下所提及
+   角色可用的特权。换句话说，如果会话用户没有
+   <TT
+CLASS="LITERAL"
+>NOINHERITS</TT
+>属性，<TT
+CLASS="COMMAND"
+>SET ROLE</TT
+>会删除
+   直接分配给会话用户的特权而得到所提及角色可用的特权。
+  </P
+><P
+>   特别地，当一个超级用户选择<TT
+CLASS="COMMAND"
+>SET ROLE</TT
+>到一个非
+   超级用户角色时，它们会丢失其超级用户特权。
+  </P
+><P
+>   <TT
+CLASS="COMMAND"
+>SET ROLE</TT
+>的效果堪比
+   <A
+HREF="sql-set-session-authorization.html"
+>SET SESSION AUTHORIZATION</A
+>，但是涉及的特权检查
+   完全不同。还有，<TT
+CLASS="COMMAND"
+>SET SESSION AUTHORIZATION</TT
+>决定
+   后来的<TT
+CLASS="COMMAND"
+>SET ROLE</TT
+>命令可以使用哪些角色， 不过用
+   <TT
+CLASS="COMMAND"
+>SET ROLE</TT
+>更改角色并不会改变后续
+   <TT
+CLASS="COMMAND"
+>SET ROLE</TT
+>能够使用的角色集。
+  </P
+><P
+>   <TT
+CLASS="COMMAND"
+>SET ROLE</TT
+>不会处理角色的<A
+HREF="sql-alterrole.html"
+>ALTER ROLE</A
+>
+   设置指定的会话变量。这只在登录期间发生。
+  </P
+><P
+>   <TT
+CLASS="COMMAND"
+>SET ROLE</TT
+>不能在一个
+   <TT
+CLASS="LITERAL"
+>SECURITY DEFINER</TT
+>函数中使用。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN91587"
+></A
+><H2
+>示例</H2
+><PRE
+CLASS="PROGRAMLISTING"
+>SELECT SESSION_USER, CURRENT_USER;
+
+ session_user | current_user 
+--------------+--------------
+ peter        | peter
+
+SET ROLE 'paul';
+
+SELECT SESSION_USER, CURRENT_USER;
+
+ session_user | current_user 
+--------------+--------------
+ peter        | paul</PRE
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN91590"
+></A
+><H2
+>兼容性</H2
+><P
+>   <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>允许标识符
+   语法（<TT
+CLASS="LITERAL"
+>"<TT
+CLASS="REPLACEABLE"
+><I
+>rolename</I
+></TT
+>"</TT
+>），而 SQL 标准要求
+   角色名被写成字符串。SQL 不允许在事务中使用这个命令，而
+   <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>并不做此限
+   制，因为并没有原因需要这样做。和<TT
+CLASS="LITERAL"
+>RESET</TT
+>语法
+   一样，<TT
+CLASS="LITERAL"
+>SESSION</TT
+>和
+   <TT
+CLASS="LITERAL"
+>LOCAL</TT
+>修饰符是一种
+   <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>扩展。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN91601"
+></A
+><H2
+>另见</H2
+><A
+HREF="sql-set-session-authorization.html"
+>SET SESSION AUTHORIZATION</A
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-set-constraints.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="sql-set-session-authorization.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>SET CONSTRAINTS</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>SET SESSION AUTHORIZATION</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

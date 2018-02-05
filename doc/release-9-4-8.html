@@ -1,0 +1,519 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>版本 9.4.8</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="版本说明"
+HREF="release.html"><LINK
+REL="PREVIOUS"
+TITLE="版本 9.4.9"
+HREF="release-9-4-9.html"><LINK
+REL="NEXT"
+TITLE="版本 9.4.7"
+HREF="release-9-4-7.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/release-9.4.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="版本 9.4.9"
+HREF="release-9-4-9.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="release.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#38468;&#24405; E. 版本说明</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="版本 9.4.7"
+HREF="release-9-4-7.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="RELEASE-9-4-8"
+>E.8. 版本 9.4.8</A
+></H1
+><DIV
+CLASS="NOTE"
+><BLOCKQUOTE
+CLASS="NOTE"
+><P
+><B
+>发布日期: </B
+>2016-05-12</P
+></BLOCKQUOTE
+></DIV
+><P
+>   这个版本包含各种自9.4.7以来的修复。关于9.4主版本的新特性信息，
+   请查看<A
+HREF="release-9-4.html"
+>第 E.16 &#33410;</A
+>。
+  </P
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN133583"
+>E.8.1. 迁移到版本 9.4.8</A
+></H2
+><P
+>    运行9.4.X版本的用户不需要转储/恢复。
+   </P
+><P
+>    不过，如果您是从一个早于9.4.6的版本升级而来，那么请查看
+    <A
+HREF="release-9-4-6.html"
+>第 E.10 &#33410;</A
+>。
+   </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN133588"
+>E.8.2. 修改列表</A
+></H2
+><P
+></P
+><UL
+><LI
+><P
+>      在OpenSSL调用之前清理OpenSSL错误队列，而不是假设它早已经清理了；
+      并且确保我们以后清除它 (Peter Geoghegan, Dave Vitek, Peter Eisentraut)
+     </P
+><P
+>      这个修改阻止了多个连接在一个进程中使用OpenSSL，
+      并且并非所有包含的代码都遵循何时清理错误序列的规则时的问题。
+      当一个客户端应用在<SPAN
+CLASS="APPLICATION"
+>libpq</SPAN
+>中使用了SSL连接并同时
+      SSL连接为OpenSSL使用了PHP、Python或Ruby封装器时，
+      明确的报告错误。如果一个扩展模块建立了一个外向SSL连接，
+      那么服务器也有可能出现相似的问题。
+     </P
+></LI
+><LI
+><P
+>      使用一个封闭在left join右侧的full join，修复
+      <SPAN
+CLASS="QUOTE"
+>"failed to build any <TT
+CLASS="REPLACEABLE"
+><I
+>N</I
+></TT
+>-way joins"</SPAN
+>
+      规划器错误 (Tom Lane)
+     </P
+></LI
+><LI
+><P
+>      修复等价类测试在多级嵌套循环规划中的错误处理 (Tom Lane)
+     </P
+><P
+>      给出三个或更多个等价类变量，比如<TT
+CLASS="LITERAL"
+>X.X = Y.Y = Z.Z</TT
+>，
+      规划器有可能忽略一些强制所有变量实际上相等所需的测试，
+      导致输出的连接行不满足<TT
+CLASS="LITERAL"
+>WHERE</TT
+>子句。由于各种原因，
+      实际上很少选择错误的规划，所以这个bug很长时间都没检测出来。
+     </P
+></LI
+><LI
+><P
+>      修复GIN索引扫描中的查询寿命内存泄露 (Julien Rouhaud)
+     </P
+></LI
+><LI
+><P
+>      修复GIN索引插入中的查询寿命内存泄露和潜在的索引损坏危险 (Tom Lane)
+     </P
+><P
+>      在简单查询中，内存泄露通常不会太多，但是在具有高
+      <TT
+CLASS="VARNAME"
+>maintenance_work_mem</TT
+>的大量GIN索引构建期间会有很多。
+     </P
+></LI
+><LI
+><P
+>      修复<CODE
+CLASS="FUNCTION"
+>to_timestamp()</CODE
+>中<TT
+CLASS="LITERAL"
+>TH</TT
+>、<TT
+CLASS="LITERAL"
+>th</TT
+>
+      和<TT
+CLASS="LITERAL"
+>Y,YYY</TT
+>格式代码可能的错误行为 (Tom Lane)
+     </P
+><P
+>      这些可能超出输入字符串的末尾，导致后续格式代码读取垃圾。
+     </P
+></LI
+><LI
+><P
+>      修复<TT
+CLASS="REPLACEABLE"
+><I
+>array</I
+></TT
+>中规则和视图的转储，该<TT
+CLASS="REPLACEABLE"
+><I
+>array</I
+></TT
+>
+      参数是<TT
+CLASS="LITERAL"
+><TT
+CLASS="REPLACEABLE"
+><I
+>value</I
+></TT
+> <TT
+CLASS="REPLACEABLE"
+><I
+>operator</I
+></TT
+>
+      ANY (<TT
+CLASS="REPLACEABLE"
+><I
+>array</I
+></TT
+>)</TT
+>构造中的子SELECT (Tom Lane)
+     </P
+></LI
+><LI
+><P
+>      禁用<TT
+CLASS="COMMAND"
+>ALTER SYSTEM</TT
+>参数值中的新行
+      (Tom Lane)
+     </P
+><P
+>      配置文件解析器不支持在字符串文字中嵌入换行符，
+      因此我们不能让它们通过<TT
+CLASS="COMMAND"
+>ALTER SYSTEM</TT
+>插入值。
+     </P
+></LI
+><LI
+><P
+>      如果选择了OID上的索引，请修复<TT
+CLASS="COMMAND"
+>ALTER TABLE ... REPLICA IDENTITY USING INDEX</TT
+>
+      以正常工作 (David Rowley)
+     </P
+></LI
+><LI
+><P
+>      修复在对齐选择平台上的逻辑解码崩溃 (Tom Lane,
+      Andres Freund)
+     </P
+><P
+>      只有当事务大到足以溢出到磁盘并且该事务中发生主键更改时，才会发生故障。
+     </P
+></LI
+><LI
+><P
+>      在关闭walsender时，避免反复的请求接收器反馈 (Nick Cleaton)
+     </P
+></LI
+><LI
+><P
+>      使<SPAN
+CLASS="APPLICATION"
+>pg_regress</SPAN
+>使用来自<TT
+CLASS="ENVAR"
+>PGCTLTIMEOUT</TT
+>
+      环境变量的启动超时，如果设置了的话 (Tom Lane)
+     </P
+><P
+>      这是为了与最近添加到<SPAN
+CLASS="APPLICATION"
+>pg_ctl</SPAN
+>的行为一致；
+      它简化了慢速机器上的自动测试。
+     </P
+></LI
+><LI
+><P
+>      修复<SPAN
+CLASS="APPLICATION"
+>pg_upgrade</SPAN
+>，
+      以正确恢复仅包含一个操作符类的操作符族的扩展成员
+      (Tom Lane)
+     </P
+><P
+>      在这样的情况下，操作符族被恢复到一个新的数据库，
+      但是它不再标记为该扩展的一部分。这没有立即的不良影响，
+      但是会导致稍后的<SPAN
+CLASS="APPLICATION"
+>pg_dump</SPAN
+>运行发出会导致恢复时（无害）
+      错误的输出。
+     </P
+></LI
+><LI
+><P
+>      修复<SPAN
+CLASS="APPLICATION"
+>pg_upgrade</SPAN
+>在新集群TOAST规则与旧规则不同时不会失败
+      (Tom Lane)
+     </P
+><P
+>      <SPAN
+CLASS="APPLICATION"
+>pg_upgrade</SPAN
+>有特殊情况代码来处理<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>
+      新版本认为一个表应该有一个TOAST表而旧版本没有的特殊情况。
+      该代码是破损的，所以删除它，而不是在这种情况下什么都不做;
+      似乎没有理由相信，如果根据旧版本的规则这是可以的，
+      没有TOAST表我们就不能运行的很好。
+     </P
+></LI
+><LI
+><P
+>      减少使用<TT
+CLASS="OPTION"
+>--disable-spinlocks</TT
+>配置的构建使用的SysV信号量数
+      (Tom Lane)
+     </P
+></LI
+><LI
+><P
+>      将内部函数<CODE
+CLASS="FUNCTION"
+>strtoi()</CODE
+>重命名为<CODE
+CLASS="FUNCTION"
+>strtoint()</CODE
+>，
+      以避免与NetBSD库函数冲突 (Thomas Munro)
+     </P
+></LI
+><LI
+><P
+>      修复来自Windows上<CODE
+CLASS="FUNCTION"
+>bind()</CODE
+>和<CODE
+CLASS="FUNCTION"
+>listen()</CODE
+>
+      系统调用的报告错误 (Tom Lane)
+     </P
+></LI
+><LI
+><P
+>      减少用Microsoft Visual Studio构建时编译器的冗长输出 (Christian Ullrich)
+     </P
+></LI
+><LI
+><P
+>      修复<CODE
+CLASS="FUNCTION"
+>putenv()</CODE
+>，使其能与Visual Studio 2013正常工作
+      (Michael Paquier)
+     </P
+></LI
+><LI
+><P
+>      避免Windows的<CODE
+CLASS="FUNCTION"
+>FormatMessage()</CODE
+>函数可能的不安全使用
+      (Christian Ullrich)
+     </P
+><P
+>      适当时使用<TT
+CLASS="LITERAL"
+>FORMAT_MESSAGE_IGNORE_INSERTS</TT
+>标识。
+      已知没有bug存在于这里，但是小心总是没错的。
+     </P
+></LI
+><LI
+><P
+>      将时区数据文件更新为<SPAN
+CLASS="APPLICATION"
+>tzdata</SPAN
+>版本2016d，
+      用于俄罗斯和委内瑞拉的DST法律变更。有新的区域名称
+      <TT
+CLASS="LITERAL"
+>Europe/Kirov</TT
+>和<TT
+CLASS="LITERAL"
+>Asia/Tomsk</TT
+>，
+      反映这些区域现在具有与相邻区域有不同的时区历史的事实。
+     </P
+></LI
+></UL
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="release-9-4-9.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="release-9-4-7.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>版本 9.4.9</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="release.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>版本 9.4.7</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

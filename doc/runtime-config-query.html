@@ -1,0 +1,1143 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>查询规划</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="服务器配置"
+HREF="runtime-config.html"><LINK
+REL="PREVIOUS"
+TITLE="复制"
+HREF="runtime-config-replication.html"><LINK
+REL="NEXT"
+TITLE="错误报告和日志"
+HREF="runtime-config-logging.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/config.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="复制"
+HREF="runtime-config-replication.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="runtime-config.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#31456; 19. 服务器配置</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="错误报告和日志"
+HREF="runtime-config-logging.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="RUNTIME-CONFIG-QUERY"
+>19.7. 查询规划</A
+></H1
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="RUNTIME-CONFIG-QUERY-ENABLE"
+>19.7.1. 规划器方法配制</A
+></H2
+><P
+>       这些配置参数影响查询优化器选择查询计划的暴力方法。如果优化器为一个特定查询选择的默认计划不是最优的，一种<SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>临时</I
+></SPAN
+>解决方案是使用这些配置参数之一来强制优化器选择一个不同的计划。提高优化器选择的计划质量的更好的方式包括调整规划器的代价常数（见<A
+HREF="runtime-config-query.html#RUNTIME-CONFIG-QUERY-CONSTANTS"
+>第 19.7.2 &#33410;</A
+>）、手工运行<A
+HREF="sql-analyze.html"
+>ANALYZE</A
+>、增加<A
+HREF="runtime-config-query.html#GUC-DEFAULT-STATISTICS-TARGET"
+>default_statistics_target</A
+>配置参数的值以及使用<TT
+CLASS="COMMAND"
+>ALTER TABLE SET STATISTICS</TT
+>增加为特定列收集的统计信息量。
+      </P
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><A
+NAME="GUC-ENABLE-BITMAPSCAN"
+></A
+><TT
+CLASS="VARNAME"
+>enable_bitmapscan</TT
+> (<TT
+CLASS="TYPE"
+>boolean</TT
+>)
+      
+      </DT
+><DD
+><P
+>        允许或禁止查询规划器使用位图扫描计划类型。默认值是<TT
+CLASS="LITERAL"
+>on</TT
+>。
+       </P
+></DD
+><DT
+><A
+NAME="GUC-ENABLE-HASHAGG"
+></A
+><TT
+CLASS="VARNAME"
+>enable_hashagg</TT
+> (<TT
+CLASS="TYPE"
+>boolean</TT
+>)
+      </DT
+><DD
+><P
+>        允许或禁用查询规划器使用哈希聚集计划类型。默认值是<TT
+CLASS="LITERAL"
+>on</TT
+>。
+       </P
+></DD
+><DT
+><A
+NAME="GUC-ENABLE-HASHJOIN"
+></A
+><TT
+CLASS="VARNAME"
+>enable_hashjoin</TT
+> (<TT
+CLASS="TYPE"
+>boolean</TT
+>)
+      </DT
+><DD
+><P
+>        允许或禁止查询规划器使用哈希连接计划类型。默认值是<TT
+CLASS="LITERAL"
+>on</TT
+>。
+       </P
+></DD
+><DT
+><A
+NAME="GUC-ENABLE-INDEXSCAN"
+></A
+><TT
+CLASS="VARNAME"
+>enable_indexscan</TT
+> (<TT
+CLASS="TYPE"
+>boolean</TT
+>)
+      
+      </DT
+><DD
+><P
+>        允许或禁止查询规划器使用索引扫描计划类型。默认值是<TT
+CLASS="LITERAL"
+>on</TT
+>。
+       </P
+></DD
+><DT
+><A
+NAME="GUC-ENABLE-INDEXONLYSCAN"
+></A
+><TT
+CLASS="VARNAME"
+>enable_indexonlyscan</TT
+> (<TT
+CLASS="TYPE"
+>boolean</TT
+>)
+      </DT
+><DD
+><P
+>        允许或禁止查询规划器使用只用索引扫描计划类型。默认值是<TT
+CLASS="LITERAL"
+>on</TT
+>。
+       </P
+></DD
+><DT
+><A
+NAME="GUC-ENABLE-MATERIAL"
+></A
+><TT
+CLASS="VARNAME"
+>enable_material</TT
+> (<TT
+CLASS="TYPE"
+>boolean</TT
+>)
+      </DT
+><DD
+><P
+>        允许或者禁止查询规划器使用物化。它不可能完全禁用物化，但是关闭这个变量将阻止规划器插入物化节点，除非为了保证正确性。默认值是<TT
+CLASS="LITERAL"
+>on</TT
+>。
+       </P
+></DD
+><DT
+><A
+NAME="GUC-ENABLE-MERGEJOIN"
+></A
+><TT
+CLASS="VARNAME"
+>enable_mergejoin</TT
+> (<TT
+CLASS="TYPE"
+>boolean</TT
+>)
+      </DT
+><DD
+><P
+>        允许或禁止查询规划器使用归并连接计划类型。默认值是<TT
+CLASS="LITERAL"
+>on</TT
+>。
+       </P
+></DD
+><DT
+><A
+NAME="GUC-ENABLE-NESTLOOP"
+></A
+><TT
+CLASS="VARNAME"
+>enable_nestloop</TT
+> (<TT
+CLASS="TYPE"
+>boolean</TT
+>)
+      </DT
+><DD
+><P
+>        允许或禁止查询规划器使用嵌套循环连接计划。它不可能完全禁止嵌套循环连接，但是关闭这个变量将使得规划器尽可能优先使用其他方法。默认值是<TT
+CLASS="LITERAL"
+>on</TT
+>。
+       </P
+></DD
+><DT
+><A
+NAME="GUC-ENABLE-SEQSCAN"
+></A
+><TT
+CLASS="VARNAME"
+>enable_seqscan</TT
+> (<TT
+CLASS="TYPE"
+>boolean</TT
+>)
+      
+      </DT
+><DD
+><P
+>        允许或禁止查询规划器使用顺序扫描计划类型。它不可能完全禁止顺序扫描，但是关闭这个变量将使得规划器尽可能优先使用其他方法。默认值是<TT
+CLASS="LITERAL"
+>on</TT
+>。
+       </P
+></DD
+><DT
+><A
+NAME="GUC-ENABLE-SORT"
+></A
+><TT
+CLASS="VARNAME"
+>enable_sort</TT
+> (<TT
+CLASS="TYPE"
+>boolean</TT
+>)
+      </DT
+><DD
+><P
+>        允许或禁止查询规划器使用显式排序步骤。它不可能完全禁止显式排序，但是关闭这个变量将使得规划器尽可能优先使用其他方法。默认值是<TT
+CLASS="LITERAL"
+>on</TT
+>。
+       </P
+></DD
+><DT
+><A
+NAME="GUC-ENABLE-TIDSCAN"
+></A
+><TT
+CLASS="VARNAME"
+>enable_tidscan</TT
+> (<TT
+CLASS="TYPE"
+>boolean</TT
+>)
+      </DT
+><DD
+><P
+>        允许或禁止查询规划器使用<ACRONYM
+CLASS="ACRONYM"
+>TID</ACRONYM
+>扫描计划类型。默认值是<TT
+CLASS="LITERAL"
+>on</TT
+>。
+       </P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="RUNTIME-CONFIG-QUERY-CONSTANTS"
+>19.7.2. 规划器代价常量</A
+></H2
+><P
+>     这一节中描述的<I
+CLASS="FIRSTTERM"
+>代价</I
+>变量可以按照任意尺度衡量。我们只关心它们的相对值，将它们以相同的因子缩放不会影响规划器的选择。默认情况下，这些代价变量是基于顺序页面获取的代价的，即<TT
+CLASS="VARNAME"
+>seq_page_cost</TT
+>被设置为<TT
+CLASS="LITERAL"
+>1.0</TT
+>并且其他代价变量都参考它来设置。不过你可以使用你喜欢的不同尺度，例如在一个特定机器上的真实执行时间。
+    </P
+><DIV
+CLASS="NOTE"
+><BLOCKQUOTE
+CLASS="NOTE"
+><P
+><B
+>&#27880;&#24847;: </B
+>     不幸的是，没有一种良定义的方法来决定代价变量的理想值。它们最好被作为一个特定安装将接收到的查询的平均值来对待。这意味着基于少量的实验来改变它们是有风险的。
+    </P
+></BLOCKQUOTE
+></DIV
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><A
+NAME="GUC-SEQ-PAGE-COST"
+></A
+><TT
+CLASS="VARNAME"
+>seq_page_cost</TT
+> (<TT
+CLASS="TYPE"
+>floating point</TT
+>)
+      </DT
+><DD
+><P
+>        设置规划器对一系列顺序磁盘页面获取中的一次的代价估计。默认值是 1.0。通过把表和索引放在一个特殊的表空间（要设置该表空间的同名参数）中可以覆盖这个值（见<A
+HREF="sql-altertablespace.html"
+>ALTER TABLESPACE</A
+>）。
+       </P
+></DD
+><DT
+><A
+NAME="GUC-RANDOM-PAGE-COST"
+></A
+><TT
+CLASS="VARNAME"
+>random_page_cost</TT
+> (<TT
+CLASS="TYPE"
+>floating point</TT
+>)
+      </DT
+><DD
+><P
+>        设置规划器对一次非顺序获取磁盘页面的代价估计。默认值是 4.0。通过把表和索引放在一个特殊的表空间（要设置该表空间的同名参数）中可以覆盖这个值（见<A
+HREF="sql-altertablespace.html"
+>ALTER TABLESPACE</A
+>）。
+       </P
+><P
+>        减少这个值（相对于<TT
+CLASS="VARNAME"
+>seq_page_cost</TT
+>）将导致系统更倾向于索引扫描；提高它将让索引扫描看起来相对更昂贵。你可以一起提高或降低两个值来改变磁盘 I/O 代价相对于 CPU 代价的重要性，后者由下列参数描述。
+       </P
+><P
+>        对磁盘存储的随机访问通常比顺序访问要贵不止四倍。但是，由于对磁盘的大部分随机访问（例如被索引的读取）都被假定在高速缓冲中进行，所以使用了一个较低的默认值（4.0）。默认值可以被想成把随机访问建模为比顺序访问慢 40 倍，而期望 90% 的随机读取会被缓存。
+       </P
+><P
+>        如果你相信 90% 的缓冲率对你的负载是一个不正确的假设，你可以增加 random_page_cost 来更好的反映随机存储读取的真正代价。相应地，如果你的数据可以完全放在高速缓存中（例如当数据库小于服务器总内存时），降低 random_page_cost 可能是合适的。为具有很低的随机读取代价的存储（例如固态驱动器）采用较低的 random_page_cost 值可能更好。
+       </P
+><DIV
+CLASS="TIP"
+><BLOCKQUOTE
+CLASS="TIP"
+><P
+><B
+>&#25552;&#31034;: </B
+>         尽管系统可以是你把<TT
+CLASS="VARNAME"
+>random_page_cost</TT
+>设置得小于<TT
+CLASS="VARNAME"
+>seq_page_cost</TT
+>，但是实际上没有意义。不过，如果数据库被整个缓存在 RAM 中，将它们设置为相等是有意义的，因为在那种情况中不按顺序访问页面是没有惩罚值的。同样，在一个高度缓存化的数据库中，你应该相对于 CPU 参数降低这两个值，因为获取一个已经在 RAM 中的页面的代价要远小于通常情况下的代价。
+        </P
+></BLOCKQUOTE
+></DIV
+></DD
+><DT
+><A
+NAME="GUC-CPU-TUPLE-COST"
+></A
+><TT
+CLASS="VARNAME"
+>cpu_tuple_cost</TT
+> (<TT
+CLASS="TYPE"
+>floating point</TT
+>)
+      </DT
+><DD
+><P
+>        设置规划器对一次查询中处理每一行的代价估计。默认值是 0.01。
+       </P
+></DD
+><DT
+><A
+NAME="GUC-CPU-INDEX-TUPLE-COST"
+></A
+><TT
+CLASS="VARNAME"
+>cpu_index_tuple_cost</TT
+> (<TT
+CLASS="TYPE"
+>floating point</TT
+>)
+      </DT
+><DD
+><P
+>        设置规划器对一次索引扫描中处理每一个索引项的代价估计。默认值是 0.005。
+       </P
+></DD
+><DT
+><A
+NAME="GUC-CPU-OPERATOR-COST"
+></A
+><TT
+CLASS="VARNAME"
+>cpu_operator_cost</TT
+> (<TT
+CLASS="TYPE"
+>floating point</TT
+>)
+      </DT
+><DD
+><P
+>        设置规划器对于一次查询中处理每个操作符或函数的代价估计。默认值是 0.0025。
+       </P
+></DD
+><DT
+><A
+NAME="GUC-PARALLEL-SETUP-COST"
+></A
+><TT
+CLASS="VARNAME"
+>parallel_setup_cost</TT
+> (<TT
+CLASS="TYPE"
+>floating point</TT
+>)
+      </DT
+><DD
+><P
+>        设置规划器对启动并行工作者进程的代价估计。默认是 1000。
+       </P
+></DD
+><DT
+><A
+NAME="GUC-PARALLEL-TUPLE-COST"
+></A
+><TT
+CLASS="VARNAME"
+>parallel_tuple_cost</TT
+> (<TT
+CLASS="TYPE"
+>floating point</TT
+>)
+      </DT
+><DD
+><P
+>        设置规划器对于从一个并行工作者进程传递一个元组给另一个进程的代价估计。
+        默认是 0.1。
+       </P
+></DD
+><DT
+><A
+NAME="GUC-MIN-PARALLEL-RELATION-SIZE"
+></A
+><TT
+CLASS="VARNAME"
+>min_parallel_relation_size</TT
+> (<TT
+CLASS="TYPE"
+>integer</TT
+>)
+      </DT
+><DD
+><P
+>        设置要考虑用于并行扫描的关系的最小尺寸。
+        默认是 8 兆字节（<TT
+CLASS="LITERAL"
+>8MB</TT
+>）。
+       </P
+></DD
+><DT
+><A
+NAME="GUC-EFFECTIVE-CACHE-SIZE"
+></A
+><TT
+CLASS="VARNAME"
+>effective_cache_size</TT
+> (<TT
+CLASS="TYPE"
+>integer</TT
+>)
+      </DT
+><DD
+><P
+>        设置规划器对一个单一查询可用的有效磁盘缓冲区尺寸的假设。这个参数会被考虑在使用一个索引的代价估计中，更高的数值会使得索引扫描更可能被使用，更低的数值会使得顺序扫描更可能被使用。在设置这个参数时，你还应该考虑<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>的共享缓冲区以及将被用于<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>数据文件的内核磁盘缓冲区。另外，还要考虑预计在不同表上的并发查询数目，因为它们必须共享可用的空间。这个参数对<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>分配的共享内存尺寸没有影响，它也不会保留内核磁盘缓冲，它只用于估计的目的。系统也不会假设在查询之间数据会保留在磁盘缓冲中。默认值是 4吉字节（<TT
+CLASS="LITERAL"
+>4GB</TT
+>）。
+       </P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="RUNTIME-CONFIG-QUERY-GEQO"
+>19.7.3. 遗传查询优化</A
+></H2
+><P
+>      遗传查询规划器（GEQO）是一种使用启发式搜索来进行查询规划的算法。它可以降低对于复杂查询（连接很多表的查询）的规划时间，但是代价是它产生的计划有时候要差于使用穷举搜索算法找到的计划。详见<A
+HREF="geqo.html"
+>第 58 &#31456;</A
+>。
+     </P
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><A
+NAME="GUC-GEQO"
+></A
+><TT
+CLASS="VARNAME"
+>geqo</TT
+> (<TT
+CLASS="TYPE"
+>boolean</TT
+>)
+      
+      
+      </DT
+><DD
+><P
+>        允许或禁止遗传查询优化。默认是启用。在生产环境中通常最好不要关闭它。<TT
+CLASS="VARNAME"
+>geqo_threshold</TT
+>变量提供了对 GEQO 更细粒度的空值。
+       </P
+></DD
+><DT
+><A
+NAME="GUC-GEQO-THRESHOLD"
+></A
+><TT
+CLASS="VARNAME"
+>geqo_threshold</TT
+> (<TT
+CLASS="TYPE"
+>integer</TT
+>)
+      </DT
+><DD
+><P
+>        只有当涉及的<TT
+CLASS="LITERAL"
+>FROM</TT
+>项数量至少有这么多个的时候，才使用遗传查询优化（注意一个<TT
+CLASS="LITERAL"
+>FULL OUTER JOIN</TT
+>只被计为一个<TT
+CLASS="LITERAL"
+>FROM</TT
+>项）。默认值是 12。对于更简单的查询，通常会使用普通的穷举搜索规划器，但是对于有很多表的查询穷举搜索会花很长时间，通常比执行一个次优的计划带来的惩罚值还要长。因此，在查询尺寸上的一个阈值是管理 GEQO 使用的一种方便的方法。
+       </P
+></DD
+><DT
+><A
+NAME="GUC-GEQO-EFFORT"
+></A
+><TT
+CLASS="VARNAME"
+>geqo_effort</TT
+>
+      (<TT
+CLASS="TYPE"
+>integer</TT
+>)
+      </DT
+><DD
+><P
+>        控制 GEQO 中规划时间和查询计划质量之间的折中。这个变量必须是位于 1 到 10 之间的一个整数。默认值是 5。更大的值会增加花在查询规划上的时间，但是同时也增加了选择一个高效查询计划的可能性。
+       </P
+><P
+>        <TT
+CLASS="VARNAME"
+>geqo_effort</TT
+>实际并不直接做任何事情；它只是被用来计算其他影响 GEQO 行为的变量（如下所述）的默认值。如果你愿意，你可以手工设置其他参数。
+       </P
+></DD
+><DT
+><A
+NAME="GUC-GEQO-POOL-SIZE"
+></A
+><TT
+CLASS="VARNAME"
+>geqo_pool_size</TT
+> (<TT
+CLASS="TYPE"
+>integer</TT
+>)
+      </DT
+><DD
+><P
+>        控制 GEQO 使用的池尺寸，它就是遗传种群中的个体数目。它必须至少为 2，且有用的值通常在 100 到 1000 之间。如果它被设置为零（默认设置）则会基于<TT
+CLASS="VARNAME"
+>geqo_effort</TT
+>和查询中表的数量选择一个合适的值。
+       </P
+></DD
+><DT
+><A
+NAME="GUC-GEQO-GENERATIONS"
+></A
+><TT
+CLASS="VARNAME"
+>geqo_generations</TT
+> (<TT
+CLASS="TYPE"
+>integer</TT
+>)
+      </DT
+><DD
+><P
+>        控制 GEQO 使用的代数，也是算法的迭代次数。它必须至少为 1，并且有用值的范围和池尺寸相同。如果它被设置为零（默认设置）则会基于<TT
+CLASS="VARNAME"
+>geqo_pool_size</TT
+>选择一个合适的值。
+       </P
+></DD
+><DT
+><A
+NAME="GUC-GEQO-SELECTION-BIAS"
+></A
+><TT
+CLASS="VARNAME"
+>geqo_selection_bias</TT
+> (<TT
+CLASS="TYPE"
+>floating point</TT
+>)
+      </DT
+><DD
+><P
+>        控制 GEQO 使用的选择偏好。选择偏好是种群中的选择压力。值可以是 1.5 到 2.0 之间，后者是默认值。
+       </P
+></DD
+><DT
+><A
+NAME="GUC-GEQO-SEED"
+></A
+><TT
+CLASS="VARNAME"
+>geqo_seed</TT
+> (<TT
+CLASS="TYPE"
+>floating point</TT
+>)
+      </DT
+><DD
+><P
+>        控制 GEQO 使用的随机数生成器的初始值，随机数生成器用于在连接顺序搜索空间中选择随机路径。该值可以从 0 （默认值）到 1。变化该值会改变被探索的连接路径集合，并且可能导致找到一个更好或更差的路径。
+       </P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="RUNTIME-CONFIG-QUERY-OTHER"
+>19.7.4. 其他规划器选项</A
+></H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><A
+NAME="GUC-DEFAULT-STATISTICS-TARGET"
+></A
+><TT
+CLASS="VARNAME"
+>default_statistics_target</TT
+> (<TT
+CLASS="TYPE"
+>integer</TT
+>)
+      </DT
+><DD
+><P
+>        为没有通过<TT
+CLASS="COMMAND"
+>ALTER TABLE SET STATISTICS</TT
+>设置列相关目标的表列设置默认统计目标。更大的值增加了需要做<TT
+CLASS="COMMAND"
+>ANALYZE</TT
+>的时间，但是可能会改善规划器的估计质量。默认值是 100。有关<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>查询规划器使用的统计信息的更多内容， 请参考<A
+HREF="planner-stats.html"
+>第 14.2 &#33410;</A
+>。
+       </P
+></DD
+><DT
+><A
+NAME="GUC-CONSTRAINT-EXCLUSION"
+></A
+><TT
+CLASS="VARNAME"
+>constraint_exclusion</TT
+> (<TT
+CLASS="TYPE"
+>enum</TT
+>)
+      
+      </DT
+><DD
+><P
+>        <TT
+CLASS="VARNAME"
+>constraint_exclusion</TT
+>的允许值是<TT
+CLASS="LITERAL"
+>on</TT
+>（对所有表检查约束）、<TT
+CLASS="LITERAL"
+>off</TT
+>（从不检查约束）和<TT
+CLASS="LITERAL"
+>partition</TT
+>（只对继承的子表和<TT
+CLASS="LITERAL"
+>UNION ALL</TT
+>子查询检查约束）。<TT
+CLASS="LITERAL"
+>partition</TT
+>是默认设置。它通常被用于继承和分区表来提高性能。
+      </P
+><P
+>        当对一个特定表允许这个参数，规划器比较查询条件和表的<TT
+CLASS="LITERAL"
+>CHECK</TT
+>约束，并且忽略那些条件违反约束的表扫描。例如：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>CREATE TABLE parent(key integer, ...);
+CREATE TABLE child1000(check (key between 1000 and 1999)) INHERITS(parent);
+CREATE TABLE child2000(check (key between 2000 and 2999)) INHERITS(parent);
+...
+SELECT * FROM parent WHERE key = 2400;</PRE
+><P>
+
+        在启用约束排除时，这个<TT
+CLASS="COMMAND"
+>SELECT</TT
+>将完全不会扫描<TT
+CLASS="STRUCTNAME"
+>child1000</TT
+>，从而提高性能。
+       </P
+><P
+>        目前，约束排除只在用来实现表分区的情况中被默认启用。为所有表启用它会增加额外的规划开销，特别是在简单查询上并且不会产生任何好处。如果没有分区表时，最好是完全关闭它。
+       </P
+><P
+>        更多关于使用约束排除和分区的信息请参阅<A
+HREF="ddl-partitioning.html#DDL-PARTITIONING-CONSTRAINT-EXCLUSION"
+>第 5.10.4 &#33410;</A
+>。
+       </P
+></DD
+><DT
+><A
+NAME="GUC-CURSOR-TUPLE-FRACTION"
+></A
+><TT
+CLASS="VARNAME"
+>cursor_tuple_fraction</TT
+> (<TT
+CLASS="TYPE"
+>floating point</TT
+>)
+      </DT
+><DD
+><P
+>        设置规划器对将被检索的一个游标的行的比例的估计。默认值是 0.1。更小的值使得规划器偏向为游标使用<SPAN
+CLASS="QUOTE"
+>"快速开始"</SPAN
+>计划，它将很快地检索前几行但是可能需要很长时间来获取所有行。更大的值强调总的估计时间。最大设置为 1.0，游标将和普通查询完全一样地被规划，只考虑总估计时间并且不考虑前几行会被多快地返回。
+       </P
+></DD
+><DT
+><A
+NAME="GUC-FROM-COLLAPSE-LIMIT"
+></A
+><TT
+CLASS="VARNAME"
+>from_collapse_limit</TT
+> (<TT
+CLASS="TYPE"
+>integer</TT
+>)
+      </DT
+><DD
+><P
+>        如果生成的<TT
+CLASS="LITERAL"
+>FROM</TT
+>列表不超过这么多项，规划器将把子查询融合到上层查询。较小的值可以减少规划时间，但是可能 会生成较差的查询计划。默认值是 8。详见<A
+HREF="explicit-joins.html"
+>第 14.3 &#33410;</A
+>。
+       </P
+><P
+>        将这个值设置为<A
+HREF="runtime-config-query.html#GUC-GEQO-THRESHOLD"
+>geqo_threshold</A
+>或更大，可能触发使用 GEQO 规划器，从而产生非最优计划。见<A
+HREF="runtime-config-query.html#RUNTIME-CONFIG-QUERY-GEQO"
+>第 19.7.3 &#33410;</A
+>。
+       </P
+></DD
+><DT
+><A
+NAME="GUC-JOIN-COLLAPSE-LIMIT"
+></A
+><TT
+CLASS="VARNAME"
+>join_collapse_limit</TT
+> (<TT
+CLASS="TYPE"
+>integer</TT
+>)
+      </DT
+><DD
+><P
+>        如果得出的列表中不超过这么多项，那么规划器将把显式<TT
+CLASS="LITERAL"
+>JOIN</TT
+>（除了<TT
+CLASS="LITERAL"
+>FULL JOIN</TT
+>）结构重写到 <TT
+CLASS="LITERAL"
+>FROM</TT
+>项列表中。较小的值可减少规划时间，但是可能会生成差些的查询计划。
+       </P
+><P
+>        默认情况下，这个变量被设置成和<TT
+CLASS="VARNAME"
+>from_collapse_limit</TT
+>相同， 这样适合大多数使用。把它设置为 1 可避免任何显式<TT
+CLASS="LITERAL"
+>JOIN</TT
+>的重排序。因此查询中指定的显式连接顺序就是关系被连接的实际顺序。因为查询规划器并不是总能 选取最优的连接顺序，高级用户可以选择暂时把这个变量设置为 1，然后显式地指定他们想要的连接顺序。更多信息请见<A
+HREF="explicit-joins.html"
+>第 14.3 &#33410;</A
+>。
+       </P
+><P
+>        将这个值设置为<A
+HREF="runtime-config-query.html#GUC-GEQO-THRESHOLD"
+>geqo_threshold</A
+>或更大，可能触发使用 GEQO 规划器，从而产生非最优计划。见<A
+HREF="runtime-config-query.html#RUNTIME-CONFIG-QUERY-GEQO"
+>第 19.7.3 &#33410;</A
+>。
+       </P
+></DD
+><DT
+><A
+NAME="GUC-FORCE-PARALLEL-MODE"
+></A
+><TT
+CLASS="VARNAME"
+>force_parallel_mode</TT
+> (<TT
+CLASS="TYPE"
+>enum</TT
+>)
+      </DT
+><DD
+><P
+>        允许为测试目的使用并行查询，即便是并不期望在性能上得到效益。
+        <TT
+CLASS="VARNAME"
+>force_parallel_mode</TT
+>的允许值是<TT
+CLASS="LITERAL"
+>off</TT
+>
+        （只在期望改进性能时才使用并行模式）、<TT
+CLASS="LITERAL"
+>on</TT
+>
+        （只要查询被认为是安全的，就强制使用并行查询）以及
+        <TT
+CLASS="LITERAL"
+>regress</TT
+>（和<TT
+CLASS="LITERAL"
+>on</TT
+>相似，
+        但是有如下文所解释的额外行为改变）。 
+       </P
+><P
+>        更具体地说，把这个值设置为<TT
+CLASS="LITERAL"
+>on</TT
+>
+        会在任何一个对于并行查询安全的查询计划顶端增加一个
+        <TT
+CLASS="LITERAL"
+>Gather</TT
+>节点，这样查询会在一个并行工作者中运行。
+        即便当一个并行工作者不可用或者不能被使用时，
+        诸如开始一个子事务等在并行查询环境中会被禁止的操作将会被禁止，
+        除非规划器相信这样做会导致查询失败。
+        当这个选项被设置时如果出现失败或者意料之外的结果，
+        查询使用的某些函数可能需要被标记为<TT
+CLASS="LITERAL"
+>PARALLEL UNSAFE</TT
+>
+        （或者可能是<TT
+CLASS="LITERAL"
+>PARALLEL RESTRICTED</TT
+>）。
+       </P
+><P
+>        把这个值设置为<TT
+CLASS="LITERAL"
+>regress</TT
+>具有设置成<TT
+CLASS="LITERAL"
+>on</TT
+>
+        所有相同的效果，外加一些有助于自动回归测试的额外的效果。一般来说，
+        来自于一个并行工作者的消息会包括一个上下文行指出这一点，
+        但是设置为<TT
+CLASS="LITERAL"
+>regress</TT
+>会消除这一行，
+        这样输出就和非并行执行完全一样。同样，被这个设置加到计划上的
+        <TT
+CLASS="LITERAL"
+>Gather</TT
+>节点在<TT
+CLASS="LITERAL"
+>EXPLAIN</TT
+>输出终会被隐藏起来，
+        这样产生的输出匹配设置为<TT
+CLASS="LITERAL"
+>off</TT
+>时产生的输出。
+       </P
+></DD
+></DL
+></DIV
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="runtime-config-replication.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="runtime-config-logging.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>复制</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="runtime-config.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>错误报告和日志</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

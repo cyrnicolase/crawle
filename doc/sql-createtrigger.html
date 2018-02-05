@@ -1,0 +1,1189 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>CREATE TRIGGER</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="SQL 命令"
+HREF="sql-commands.html"><LINK
+REL="PREVIOUS"
+TITLE="CREATE TRANSFORM"
+HREF="sql-createtransform.html"><LINK
+REL="NEXT"
+TITLE="CREATE TYPE"
+HREF="sql-createtype.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="REFENTRY"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/ref/create_trigger.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="CREATE TRANSFORM"
+HREF="sql-createtransform.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="CREATE TYPE"
+HREF="sql-createtype.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="SQL-CREATETRIGGER"
+></A
+>CREATE TRIGGER</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN83278"
+></A
+><H2
+>&#21517;&#31216;</H2
+>CREATE TRIGGER&nbsp;--&nbsp;定义一个新触发器</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN83281"
+></A
+><H2
+>&#22823;&#32434;</H2
+><PRE
+CLASS="SYNOPSIS"
+>CREATE [ CONSTRAINT ] TRIGGER <TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+> { BEFORE | AFTER | INSTEAD OF } { <TT
+CLASS="REPLACEABLE"
+><I
+>event</I
+></TT
+> [ OR ... ] }
+    ON <TT
+CLASS="REPLACEABLE"
+><I
+>table_name</I
+></TT
+>
+    [ FROM <TT
+CLASS="REPLACEABLE"
+><I
+>referenced_table_name</I
+></TT
+> ]
+    [ NOT DEFERRABLE | [ DEFERRABLE ] [ INITIALLY IMMEDIATE | INITIALLY DEFERRED ] ]
+    [ FOR [ EACH ] { ROW | STATEMENT } ]
+    [ WHEN ( <TT
+CLASS="REPLACEABLE"
+><I
+>condition</I
+></TT
+> ) ]
+    EXECUTE PROCEDURE <TT
+CLASS="REPLACEABLE"
+><I
+>function_name</I
+></TT
+> ( <TT
+CLASS="REPLACEABLE"
+><I
+>arguments</I
+></TT
+> )
+
+<SPAN
+CLASS="phrase"
+><SPAN
+CLASS="PHRASE"
+>这里的<TT
+CLASS="REPLACEABLE"
+><I
+>event</I
+></TT
+>可以是下列之一：</SPAN
+></SPAN
+>
+
+    INSERT
+    UPDATE [ OF <TT
+CLASS="REPLACEABLE"
+><I
+>column_name</I
+></TT
+> [, ... ] ]
+    DELETE
+    TRUNCATE</PRE
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN83293"
+></A
+><H2
+>描述</H2
+><P
+>   <TT
+CLASS="COMMAND"
+>CREATE TRIGGER</TT
+>创建一个新触发器。该触发器将被关联到指定的表、视图或者外部表并且在特定事件发生时将执行指定的函数<TT
+CLASS="REPLACEABLE"
+><I
+>function_name</I
+></TT
+>。
+  </P
+><P
+>   该触发器可以被指定为在一行上尝试该操作之前触发（在约束被检查并且<TT
+CLASS="COMMAND"
+>INSERT</TT
+>、<TT
+CLASS="COMMAND"
+>UPDATE</TT
+>或者<TT
+CLASS="COMMAND"
+>DELETE</TT
+>被尝试之前）；也可以在该操作完成之后触发（在约束被检查并且<TT
+CLASS="COMMAND"
+>INSERT</TT
+>、<TT
+CLASS="COMMAND"
+>UPDATE</TT
+>或者<TT
+CLASS="COMMAND"
+>DELETE</TT
+>完成之后）；或者取代该操作（在对一个视图插入、更新或删除的情况中）。如果该触发器在事件之前触发或者取代事件，该触发器可以跳过对当前行的操作或者改变正在被插入的行（只对<TT
+CLASS="COMMAND"
+>INSERT</TT
+>以及<TT
+CLASS="COMMAND"
+>UPDATE</TT
+>操作）。如果该触发器在事件之后触发，所有更改（包括其他触发器的效果）对该触发器<SPAN
+CLASS="QUOTE"
+>"可见"</SPAN
+>。
+  </P
+><P
+>   一个被标记为<TT
+CLASS="LITERAL"
+>FOR EACH ROW</TT
+>的触发器会对该操作修改的每一行都调用一次。例如，一个影响 10 行的<TT
+CLASS="COMMAND"
+>DELETE</TT
+>将导致在目标关系上的任何<TT
+CLASS="LITERAL"
+>ON DELETE</TT
+>触发器被独立调用 10 次，也就是为每一个被删除的行调用一次。与此相反，一个被标记为<TT
+CLASS="LITERAL"
+>FOR EACH STATEMENT</TT
+>的触发器只会为任何给定的操作执行一次，不管该操作修改多少行（特别地，一个修改零行的操作将仍会导致任何可用的<TT
+CLASS="LITERAL"
+>FOR EACH STATEMENT</TT
+>触发器被执行）。 注意对于一个带有
+   <TT
+CLASS="LITERAL"
+>ON CONFLICT DO UPDATE</TT
+>子句的<TT
+CLASS="COMMAND"
+>INSERT</TT
+>，
+   <TT
+CLASS="COMMAND"
+>INSERT</TT
+>和<TT
+CLASS="COMMAND"
+>UPDATE</TT
+>
+   语句级触发器都将会被触发。
+  </P
+><P
+>   被指定为要触发<TT
+CLASS="LITERAL"
+>INSTEAD OF</TT
+>触发器事件的触发器必须被标记为<TT
+CLASS="LITERAL"
+>FOR EACH ROW</TT
+>，并且只能被定义在视图上。一个视图上的<TT
+CLASS="LITERAL"
+>BEFORE</TT
+>和<TT
+CLASS="LITERAL"
+>AFTER</TT
+>触发器必须被标记为<TT
+CLASS="LITERAL"
+>FOR EACH STATEMENT</TT
+>。
+  </P
+><P
+>   此外，触发器可以被定义成为<TT
+CLASS="COMMAND"
+>TRUNCATE</TT
+>触发，但只能是<TT
+CLASS="LITERAL"
+>FOR EACH STATEMENT</TT
+>。
+  </P
+><P
+>   下面的表格总结了哪些触发器类型可以被用在表、视图和外部表上：
+  </P
+><DIV
+CLASS="INFORMALTABLE"
+><P
+></P
+><A
+NAME="SUPPORTED-TRIGGER-TYPES"
+></A
+><TABLE
+BORDER="1"
+CLASS="CALSTABLE"
+><COL><COL><COL><COL><THEAD
+><TR
+><TH
+>何时</TH
+><TH
+>事件</TH
+><TH
+>行级</TH
+><TH
+>语句级</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+ROWSPAN="2"
+ALIGN="CENTER"
+><TT
+CLASS="LITERAL"
+>BEFORE</TT
+></TD
+><TD
+ALIGN="CENTER"
+><TT
+CLASS="COMMAND"
+>INSERT</TT
+>/<TT
+CLASS="COMMAND"
+>UPDATE</TT
+>/<TT
+CLASS="COMMAND"
+>DELETE</TT
+></TD
+><TD
+ALIGN="CENTER"
+>表和外部表</TD
+><TD
+ALIGN="CENTER"
+>表、视图和外部表</TD
+></TR
+><TR
+><TD
+ALIGN="CENTER"
+><TT
+CLASS="COMMAND"
+>TRUNCATE</TT
+></TD
+><TD
+ALIGN="CENTER"
+>&mdash;</TD
+><TD
+ALIGN="CENTER"
+>表</TD
+></TR
+><TR
+><TD
+ROWSPAN="2"
+ALIGN="CENTER"
+><TT
+CLASS="LITERAL"
+>AFTER</TT
+></TD
+><TD
+ALIGN="CENTER"
+><TT
+CLASS="COMMAND"
+>INSERT</TT
+>/<TT
+CLASS="COMMAND"
+>UPDATE</TT
+>/<TT
+CLASS="COMMAND"
+>DELETE</TT
+></TD
+><TD
+ALIGN="CENTER"
+>表和外部表</TD
+><TD
+ALIGN="CENTER"
+>表、视图和外部表</TD
+></TR
+><TR
+><TD
+ALIGN="CENTER"
+><TT
+CLASS="COMMAND"
+>TRUNCATE</TT
+></TD
+><TD
+ALIGN="CENTER"
+>&mdash;</TD
+><TD
+ALIGN="CENTER"
+>表</TD
+></TR
+><TR
+><TD
+ROWSPAN="2"
+ALIGN="CENTER"
+><TT
+CLASS="LITERAL"
+>INSTEAD OF</TT
+></TD
+><TD
+ALIGN="CENTER"
+><TT
+CLASS="COMMAND"
+>INSERT</TT
+>/<TT
+CLASS="COMMAND"
+>UPDATE</TT
+>/<TT
+CLASS="COMMAND"
+>DELETE</TT
+></TD
+><TD
+ALIGN="CENTER"
+>视图</TD
+><TD
+ALIGN="CENTER"
+>&mdash;</TD
+></TR
+><TR
+><TD
+ALIGN="CENTER"
+><TT
+CLASS="COMMAND"
+>TRUNCATE</TT
+></TD
+><TD
+ALIGN="CENTER"
+>&mdash;</TD
+><TD
+ALIGN="CENTER"
+>&mdash;</TD
+></TR
+></TBODY
+></TABLE
+><P
+></P
+></DIV
+><P
+>   还有，一个触发器定义可以指定一个布尔的<TT
+CLASS="LITERAL"
+>WHEN</TT
+>条件，它将被测试来看看该触发器是否应该被触发。在行级触发器中，<TT
+CLASS="LITERAL"
+>WHEN</TT
+>条件可以检查该行的列的新旧值。语句级触发器也可以有<TT
+CLASS="LITERAL"
+>WHEN</TT
+>条件，尽管该特性对于它们不是很有用（因为条件不能引用表中的任何值）。
+  </P
+><P
+>   如果有多个同种触发器被定义为相同事件触发，它们将按照名称的字母表顺序被触发。
+  </P
+><P
+>   当<TT
+CLASS="LITERAL"
+>CONSTRAINT</TT
+>选项被指定，这个命令会创建一个<I
+CLASS="FIRSTTERM"
+>约束触发器</I
+>。这和一个常规触发器相同，不过触发该触发器的时机可以使用<A
+HREF="sql-set-constraints.html"
+>SET CONSTRAINTS</A
+>调整。约束触发器必须是表上的<TT
+CLASS="LITERAL"
+>AFTER ROW</TT
+>触发器。它们可以在导致触发器事件的语句末尾被引发或者在包含该语句的事务末尾被引发。在后一种情况中，它们被称作是被<I
+CLASS="FIRSTTERM"
+>延迟</I
+>。一个待处理的延迟触发器的引发也可以使用<TT
+CLASS="COMMAND"
+>SET CONSTRAINTS</TT
+>立即强制发生。当约束触发器实现的约束被违背时，约束触发器应该抛出一个异常。
+  </P
+><P
+>   <TT
+CLASS="COMMAND"
+>SELECT</TT
+>不修改任何行，因此你无法创建<TT
+CLASS="COMMAND"
+>SELECT</TT
+>触发器。规则和视图更适合于那种情况。
+  </P
+><P
+>   关于触发器的更多信息请见<A
+HREF="triggers.html"
+>第 37 &#31456;</A
+>。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN83396"
+></A
+><H2
+>参数</H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+></DT
+><DD
+><P
+>      给新触发器的名称。这必须与同一个表上的任何其他触发器相区别。名称不能是模式限定的 &mdash; 该触发器会继承它所在表的模式。对于一个约束触发器，这也是使用<TT
+CLASS="COMMAND"
+>SET CONSTRAINTS</TT
+>修改触发器行为时要用到的名字。
+     </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>BEFORE</TT
+><BR><TT
+CLASS="LITERAL"
+>AFTER</TT
+><BR><TT
+CLASS="LITERAL"
+>INSTEAD OF</TT
+></DT
+><DD
+><P
+>      决定该函数是要在事件之前、之后被调用还是会取代该事件。一个约束触发器也能被指定为<TT
+CLASS="LITERAL"
+>AFTER</TT
+>。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>event</I
+></TT
+></DT
+><DD
+><P
+>      <TT
+CLASS="LITERAL"
+>INSERT</TT
+>、<TT
+CLASS="LITERAL"
+>UPDATE</TT
+>、<TT
+CLASS="LITERAL"
+>DELETE</TT
+>或者<TT
+CLASS="LITERAL"
+>TRUNCATE</TT
+>之一，这指定了将要引发该触发器的事件。多个事件可以用<TT
+CLASS="LITERAL"
+>OR</TT
+>指定。
+     </P
+><P
+>      对于<TT
+CLASS="LITERAL"
+>UPDATE</TT
+>事件，可以使用下面的语法指定一个列的列表：
+</P><PRE
+CLASS="SYNOPSIS"
+>UPDATE OF <TT
+CLASS="REPLACEABLE"
+><I
+>column_name1</I
+></TT
+> [, <TT
+CLASS="REPLACEABLE"
+><I
+>column_name2</I
+></TT
+> ... ]</PRE
+><P>
+      只有当至少一个被列出的列出现在<TT
+CLASS="COMMAND"
+>UPDATE</TT
+>命令的更新目标中时，该触发器才会触发。
+     </P
+><P
+><TT
+CLASS="LITERAL"
+>INSTEAD OF UPDATE</TT
+>事件不支持列的列表。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>table_name</I
+></TT
+></DT
+><DD
+><P
+>      要使用该触发器的表、视图或外部表的名称（可能是模式限定的）。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>referenced_table_name</I
+></TT
+></DT
+><DD
+><P
+>      约束引用的另一个表的名称（可能是模式限定的）。这个选项被用于外键约束并且不推荐用于一般的目的。这只能为约束触发器指定。
+     </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>DEFERRABLE</TT
+><BR><TT
+CLASS="LITERAL"
+>NOT DEFERRABLE</TT
+><BR><TT
+CLASS="LITERAL"
+>INITIALLY IMMEDIATE</TT
+><BR><TT
+CLASS="LITERAL"
+>INITIALLY DEFERRED</TT
+></DT
+><DD
+><P
+>      该触发器的默认时机。这些约束选项的细节可参考<A
+HREF="sql-createtable.html"
+>CREATE TABLE</A
+>文档。这只能为约束触发器指定。
+     </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>FOR EACH ROW</TT
+><BR><TT
+CLASS="LITERAL"
+>FOR EACH STATEMENT</TT
+></DT
+><DD
+><P
+>      这指定该触发器过程是应该为该触发器事件影响的每一行被引发一次，还是只为每个 SQL 语句被引发一次。如果都没有被指定，<TT
+CLASS="LITERAL"
+>FOR EACH STATEMENT</TT
+>会是默认值。约束触发器只能被指定为<TT
+CLASS="LITERAL"
+>FOR EACH ROW</TT
+>。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>condition</I
+></TT
+></DT
+><DD
+><P
+>      一个决定该触发器函数是否将被实际执行的布尔表达式。如果指定了<TT
+CLASS="LITERAL"
+>WHEN</TT
+>，只有<TT
+CLASS="REPLACEABLE"
+><I
+>condition</I
+></TT
+>返回<TT
+CLASS="LITERAL"
+>true</TT
+>时才会调用该函数。在<TT
+CLASS="LITERAL"
+>FOR EACH ROW</TT
+>触发器中，<TT
+CLASS="LITERAL"
+>WHEN</TT
+>条件可以分别写<TT
+CLASS="LITERAL"
+>OLD.<TT
+CLASS="REPLACEABLE"
+><I
+>column_name</I
+></TT
+></TT
+>或者<TT
+CLASS="LITERAL"
+>NEW.<TT
+CLASS="REPLACEABLE"
+><I
+>column_name</I
+></TT
+></TT
+>来引用列的新旧行值。当然，<TT
+CLASS="LITERAL"
+>INSERT</TT
+>触发器不能引用<TT
+CLASS="LITERAL"
+>OLD</TT
+>并且<TT
+CLASS="LITERAL"
+>DELETE</TT
+>触发器不能引用<TT
+CLASS="LITERAL"
+>NEW</TT
+>。
+     </P
+><P
+><TT
+CLASS="LITERAL"
+>INSTEAD OF</TT
+>触发器不支持<TT
+CLASS="LITERAL"
+>WHEN</TT
+>条件。
+     </P
+><P
+>      当前，<TT
+CLASS="LITERAL"
+>WHEN</TT
+>表达式不能包含子查询。
+     </P
+><P
+>      注意对于约束触发器，对于<TT
+CLASS="LITERAL"
+>WHEN</TT
+>条件的计算不会被延迟，而是直接在行更新操作被执行之后立刻发生。如果该条件计算得不到真，那么该触发器就不会被放在延迟执行的队列中。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>function_name</I
+></TT
+></DT
+><DD
+><P
+>      一个用户提供的函数，它被声明为不用参数并且返回类型<TT
+CLASS="LITERAL"
+>trigger</TT
+>，当触发器引发时会执行该函数。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>arguments</I
+></TT
+></DT
+><DD
+><P
+>      一个可选的逗号分隔的参数列表，它在该触发器被执行时会被提供给该函数。参数是字符串常量。简单的名称和数字常量也可以被写在这里，但是它们将全部被转换成字符串。请检查该触发器函数的实现语言的描述来找出在函数内部如何访问这些参数，这可能与普通函数参数不同。
+     </P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="SQL-CREATETRIGGER-NOTES"
+></A
+><H2
+>注解</H2
+><P
+>   要在一个表上创建一个触发器，用户必须具有该表上的<TT
+CLASS="LITERAL"
+>TRIGGER</TT
+>特权。用户还必须具有在触发器函数上的<TT
+CLASS="LITERAL"
+>EXECUTE</TT
+>特权。
+  </P
+><P
+>   使用<A
+HREF="sql-droptrigger.html"
+>DROP TRIGGER</A
+>移除一个触发器。
+  </P
+><P
+>   当一个列相关的触发器（使用<TT
+CLASS="LITERAL"
+>UPDATE OF <TT
+CLASS="REPLACEABLE"
+><I
+>column_name</I
+></TT
+></TT
+>语法定义的触发器）的列被列为<TT
+CLASS="COMMAND"
+>UPDATE</TT
+>命令的<TT
+CLASS="LITERAL"
+>SET</TT
+>列表目标时，它会被触发。即便该触发器没有被引发，一个列的值也可能改变，因为<TT
+CLASS="LITERAL"
+>BEFORE UPDATE</TT
+>触发器对行内容所作的改变不会被考虑。相反，一个诸如<TT
+CLASS="LITERAL"
+>UPDATE ... SET x = x ...</TT
+>的命令将引发一个位于列<TT
+CLASS="LITERAL"
+>x</TT
+>上的触发器，即便该列的值没有改变。
+  </P
+><P
+>   在一个<TT
+CLASS="LITERAL"
+>BEFORE</TT
+>触发器中，<TT
+CLASS="LITERAL"
+>WHEN</TT
+>条件正好在函数被或者将被执行之前被计算，因此使用<TT
+CLASS="LITERAL"
+>WHEN</TT
+>与在触发器函数的开始测试同一个条件没有实质上的区别。特别注意该条件看到的<TT
+CLASS="LITERAL"
+>NEW</TT
+>行是当前值，虽然可能已被早前的触发器所修改。还有，一个<TT
+CLASS="LITERAL"
+>BEFORE</TT
+>触发器的<TT
+CLASS="LITERAL"
+>WHEN</TT
+>条件不允许检查<TT
+CLASS="LITERAL"
+>NEW</TT
+>行的系统列（例如<TT
+CLASS="LITERAL"
+>oid</TT
+>），因为那些列还没有被设置。
+  </P
+><P
+>   在一个<TT
+CLASS="LITERAL"
+>AFTER</TT
+>触发器中，<TT
+CLASS="LITERAL"
+>WHEN</TT
+>条件正好在行更新发生之后被计算，并且它决定一个事件是否要被放入队列以便在语句的末尾引发该触发器。因此当一个<TT
+CLASS="LITERAL"
+>AFTER</TT
+>触发器的<TT
+CLASS="LITERAL"
+>WHEN</TT
+>条件不返回真时，没有必要把一个事件放入队列或者在语句末尾重新取得该行。如果触发器只需要为一些行被引发，就能够显著地加快修改很多行的语句的速度。
+  </P
+><P
+>   在<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+> 7.3 以前的版本中，必须要声明触发器函数为返回占位符类型<TT
+CLASS="TYPE"
+>opaque</TT
+>而不是<TT
+CLASS="TYPE"
+>trigger</TT
+>。要支持载入旧的转储文件，<TT
+CLASS="COMMAND"
+>CREATE TRIGGER</TT
+>将接受一个被声明为返回<TT
+CLASS="TYPE"
+>opaque</TT
+>的函数，但是它会发出一个通知并且会把该函数的声明返回类型改为<TT
+CLASS="TYPE"
+>trigger</TT
+>。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="SQL-CREATETRIGGER-EXAMPLES"
+></A
+><H2
+>例子</H2
+><P
+>   只要表<TT
+CLASS="LITERAL"
+>accounts</TT
+>的一行即将要被更新时会执行函数<CODE
+CLASS="FUNCTION"
+>check_account_update</CODE
+>：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>CREATE TRIGGER check_update
+    BEFORE UPDATE ON accounts
+    FOR EACH ROW
+    EXECUTE PROCEDURE check_account_update();</PRE
+><P>
+
+   下面的例子与上面一个例子相同，但是只在<TT
+CLASS="COMMAND"
+>UPDATE</TT
+>命令指定要更新<TT
+CLASS="LITERAL"
+>balance</TT
+>列时才执行该函数：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>CREATE TRIGGER check_update
+    BEFORE UPDATE OF balance ON accounts
+    FOR EACH ROW
+    EXECUTE PROCEDURE check_account_update();</PRE
+><P>
+
+   这种形式只有列<TT
+CLASS="LITERAL"
+>balance</TT
+>具有真正被改变的值时才执行该函数：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>CREATE TRIGGER check_update
+    BEFORE UPDATE ON accounts
+    FOR EACH ROW
+    WHEN (OLD.balance IS DISTINCT FROM NEW.balance)
+    EXECUTE PROCEDURE check_account_update();</PRE
+><P>
+
+   调用一个函数来记录<TT
+CLASS="LITERAL"
+>accounts</TT
+>的更新，但是只在有东西被改变时才调用：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>CREATE TRIGGER log_update
+    AFTER UPDATE ON accounts
+    FOR EACH ROW
+    WHEN (OLD.* IS DISTINCT FROM NEW.*)
+    EXECUTE PROCEDURE log_account_update();</PRE
+><P>
+
+   为每一个要插入到视图底层表中的行执行函数<CODE
+CLASS="FUNCTION"
+>view_insert_row</CODE
+>：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>CREATE TRIGGER view_insert
+    INSTEAD OF INSERT ON my_view
+    FOR EACH ROW
+    EXECUTE PROCEDURE view_insert_row();</PRE
+><P>
+  </P
+><P
+>   <A
+HREF="trigger-example.html"
+>第 37.4 &#33410;</A
+>包含一个用 C 编写的触发器函数的完整例子。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="SQL-CREATETRIGGER-COMPATIBILITY"
+></A
+><H2
+>兼容性</H2
+><P
+>   <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>中的<TT
+CLASS="COMMAND"
+>CREATE TRIGGER</TT
+>语句实现了<ACRONYM
+CLASS="ACRONYM"
+>SQL</ACRONYM
+>标准的一个子集。目前缺少下列功能：
+
+   <P
+></P
+></P><UL
+><LI
+><P
+>      SQL 允许我们为<SPAN
+CLASS="QUOTE"
+>"old"</SPAN
+>和<SPAN
+CLASS="QUOTE"
+>"new"</SPAN
+>行或表定义别名，别名可以用在被触发动作（例如<TT
+CLASS="LITERAL"
+>CREATE TRIGGER ... ON tablename REFERENCING OLD ROW AS somename NEW ROW AS othername ...</TT
+>）的定义中。因为<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>允许触发器过程用任意数量的用户定义语言编写，对数据的访问会以语言相关的方式来处理。
+     </P
+></LI
+><LI
+><P
+>      <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>不允许在语句级触发器中引用旧表和新表，即包含所有新旧行的表，在<ACRONYM
+CLASS="ACRONYM"
+>SQL</ACRONYM
+>标准中用<TT
+CLASS="LITERAL"
+>OLD TABLE</TT
+>和<TT
+CLASS="LITERAL"
+>NEW TABLE</TT
+>子句引用。
+     </P
+></LI
+><LI
+><P
+><SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>只允许为被触发动作执行一个用户定义的函数。标准允许执行许多其他的 SQL 命令作为被触发的动作，例如<TT
+CLASS="COMMAND"
+>CREATE TABLE</TT
+>。这种限制可以很容易地通过创建一个执行想要的命令的用户定义函数来绕过。
+     </P
+></LI
+></UL
+><P>
+  </P
+><P
+>   SQL 指定多个触发器应该以被创建时间的顺序触发。<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>则使用名称顺序，这被认为更加方便。
+  </P
+><P
+>   SQL 指定级联删除上的<TT
+CLASS="LITERAL"
+>BEFORE DELETE</TT
+>触发器在级联的<TT
+CLASS="LITERAL"
+>DELETE</TT
+>完成<SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>之后</I
+></SPAN
+>引发。<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>的行为则是<TT
+CLASS="LITERAL"
+>BEFORE DELETE</TT
+>总是在删除动作之前引发，即使是一个级联删除。这被认为更加一致。 如果<TT
+CLASS="LITERAL"
+>BEFORE</TT
+>触发器修改行或者在引用动作引起的更新期间阻止更新，这也是非标准行为。这能导致约束违背或者被存储的数据不遵从引用约束。
+  </P
+><P
+>   使用<TT
+CLASS="LITERAL"
+>OR</TT
+>为一个单一触发器指定多个动作的能力是 SQL 标准的一个<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>扩展。
+  </P
+><P
+>   为<TT
+CLASS="COMMAND"
+>TRUNCATE</TT
+>引发触发器的能力是 SQL 标准的一个<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>扩展，在视图上定义语句级触发器的能力也是一样。
+  </P
+><P
+>   <TT
+CLASS="COMMAND"
+>CREATE CONSTRAINT TRIGGER</TT
+>是<ACRONYM
+CLASS="ACRONYM"
+>SQL</ACRONYM
+>标准的一个<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>扩展。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN83595"
+></A
+><H2
+>参见</H2
+><A
+HREF="sql-altertrigger.html"
+>ALTER TRIGGER</A
+>, <A
+HREF="sql-droptrigger.html"
+>DROP TRIGGER</A
+>, <A
+HREF="sql-createfunction.html"
+>CREATE FUNCTION</A
+>, <A
+HREF="sql-set-constraints.html"
+>SET CONSTRAINTS</A
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-createtransform.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="sql-createtype.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>CREATE TRANSFORM</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>CREATE TYPE</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

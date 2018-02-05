@@ -1,0 +1,430 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>版本 9.2.16</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="版本说明"
+HREF="release.html"><LINK
+REL="PREVIOUS"
+TITLE="版本 9.2.17"
+HREF="release-9-2-17.html"><LINK
+REL="NEXT"
+TITLE="版本 9.2.15"
+HREF="release-9-2-15.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/release-9.2.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="版本 9.2.17"
+HREF="release-9-2-17.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="release.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#38468;&#24405; E. 版本说明</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="版本 9.2.15"
+HREF="release-9-2-15.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="RELEASE-9-2-16"
+>E.34. 版本 9.2.16</A
+></H1
+><DIV
+CLASS="NOTE"
+><BLOCKQUOTE
+CLASS="NOTE"
+><P
+><B
+>发布日期: </B
+>2016-03-31</P
+></BLOCKQUOTE
+></DIV
+><P
+>   这个版本包含各种自9.2.15以来的修复。关于9.2主版本的新特性信息，
+   请查看<A
+HREF="release-9-2.html"
+>第 E.50 &#33410;</A
+>。
+  </P
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN139828"
+>E.34.1. 迁移到版本9.2.16</A
+></H2
+><P
+>    对于运行9.2.X的用户，不需要转储/恢复。
+   </P
+><P
+>    不过，如果你是从一个早于9.2.11的版本升级而来，请查看<A
+HREF="release-9-2-11.html"
+>第 E.39 &#33410;</A
+>。
+   </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN139833"
+>E.34.2. 修改列表</A
+></H2
+><P
+></P
+><UL
+><LI
+><P
+>      修复索引的<TT
+CLASS="LITERAL"
+>ROW()</TT
+>比较中NULL索引项的不正确处理
+      (Tom Lane)
+     </P
+><P
+>      使用行比较的索引搜索比如<TT
+CLASS="LITERAL"
+>ROW(a, b) &gt;
+      ROW('x', 'y')</TT
+>将在到达<TT
+CLASS="STRUCTFIELD"
+>b</TT
+>列中的NULL条目时停止，
+      忽略可能存在与<TT
+CLASS="STRUCTFIELD"
+>a</TT
+>的稍后值相关联的非NULL <TT
+CLASS="STRUCTFIELD"
+>b</TT
+>值的事实。
+     </P
+></LI
+><LI
+><P
+>      避免由于重命名文件之前或之后没有适当的
+      <CODE
+CLASS="FUNCTION"
+>fsync()</CODE
+>调用，导致不太可能的数据丢失情况 (Michael Paquier,
+      Tomas Vondra, Andres Freund)
+     </P
+></LI
+><LI
+><P
+>      正确处理在服务器启动期间<TT
+CLASS="LITERAL"
+>pg_subtrans</TT
+>接近XID wraparound的情况
+      (Jeff Janes)
+     </P
+></LI
+><LI
+><P
+>      修复由于多次尝试释放<CODE
+CLASS="FUNCTION"
+>localeconv()</CODE
+>
+      输出字符串而导致的极端崩溃 (Tom Lane)
+     </P
+></LI
+><LI
+><P
+>      修复<TT
+CLASS="LITERAL"
+>ispell</TT
+>字典的附加文件的解析
+      (Tom Lane)
+     </P
+><P
+>      如果附加文件包含字节长度在大小写折叠期间变化的字符，
+      例如土耳其语在UTF8区域设置中的<TT
+CLASS="LITERAL"
+>I</TT
+>，则代码可能会出错。
+     </P
+></LI
+><LI
+><P
+>      避免使用<CODE
+CLASS="FUNCTION"
+>sscanf()</CODE
+>解析<TT
+CLASS="LITERAL"
+>ispell</TT
+>
+      字典文件 (Artur Zakirov)
+     </P
+><P
+>      这避免了FreeBSD派生平台上的可移植性问题(包括 OS X)。
+     </P
+></LI
+><LI
+><P
+>      避免在具有支持AVX2 CPU的旧版Windows版本（在7SP1/2008R2SP1之前）上崩溃，
+      并使用Visual Studio 2013完成Postgres构建
+      (Christian Ullrich)
+     </P
+><P
+>      这是Visual Studio 2013运行库中的一个错误的解决方法，
+      Microsoft已经声明他们不会在该版本中修复。
+     </P
+></LI
+><LI
+><P
+>      修复<SPAN
+CLASS="APPLICATION"
+>psql</SPAN
+>的tab完成逻辑，以正确处理多字节字符
+      (Kyotaro Horiguchi, Robert Haas)
+     </P
+></LI
+><LI
+><P
+>      为<TT
+CLASS="LITERAL"
+>SECURITY LABEL</TT
+>修复<SPAN
+CLASS="APPLICATION"
+>psql</SPAN
+>的tab完成
+      (Tom Lane)
+     </P
+><P
+>      在<TT
+CLASS="LITERAL"
+>SECURITY LABEL</TT
+>之后键入TAB可能会导致崩溃或提供不适当的关键字。
+     </P
+></LI
+><LI
+><P
+>      如果在命令行中没有指定，则让<SPAN
+CLASS="APPLICATION"
+>pg_ctl</SPAN
+>从<TT
+CLASS="ENVAR"
+>PGCTLTIMEOUT</TT
+>
+      环境变量中接受一个等待超时 (Noah Misch)
+     </P
+><P
+>      通过允许他们对postmaster启动和关闭全局指定一个长于正常的超时，
+      可以方便测试较慢的buildfarm成员。
+     </P
+></LI
+><LI
+><P
+>      修复<SPAN
+CLASS="APPLICATION"
+>pg_ctl</SPAN
+>中Windows服务状态的不正确测试
+      (Manuel Mathar)
+     </P
+><P
+>      上一组小版本尝试修复<SPAN
+CLASS="APPLICATION"
+>pg_ctl</SPAN
+>
+      以正确确定是否将日志消息发送到Windows事件日志，但是测试弄反了。
+     </P
+></LI
+><LI
+><P
+>      修复<SPAN
+CLASS="APPLICATION"
+>pgbench</SPAN
+>以正确的处理<TT
+CLASS="LITERAL"
+>-C</TT
+>
+      和<TT
+CLASS="LITERAL"
+>-M prepared</TT
+>选项的组合 (Tom Lane)
+     </P
+></LI
+><LI
+><P
+>      在PL/Perl中，将空的Postgres数组正确的翻译为空的Perl数组
+      (Alex Hunsaker)
+     </P
+></LI
+><LI
+><P
+>      使PL/Python处理不是有效Python标识符的函数名称 (Jim Nasby)
+     </P
+></LI
+><LI
+><P
+>      修复<TT
+CLASS="FILENAME"
+>contrib/pgstattuple</TT
+>的<CODE
+CLASS="FUNCTION"
+>pgstatindex()</CODE
+>
+      函数返回的多个统计错误 (Tom Lane)
+     </P
+></LI
+><LI
+><P
+>      删除MSVC构建中对<TT
+CLASS="LITERAL"
+>psed</TT
+>的依赖，因为核心Perl不再提供它了
+      (Michael Paquier, Andrew Dunstan)
+     </P
+></LI
+><LI
+><P
+>      更新时区数据文件为<SPAN
+CLASS="APPLICATION"
+>tzdata</SPAN
+> release 2016c，
+      因为阿塞拜疆、智利、海地、巴勒斯坦和俄罗斯(Altai, Astrakhan,
+      Kirov, Sakhalin, Ulyanovsk 区域)的DST法律变更，加上立陶宛、
+      摩尔多瓦和俄罗斯(Kaliningrad, Samara, Volgograd)的历史更正。
+     </P
+></LI
+></UL
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="release-9-2-17.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="release-9-2-15.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>版本 9.2.17</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="release.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>版本 9.2.15</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

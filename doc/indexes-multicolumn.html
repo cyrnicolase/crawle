@@ -1,0 +1,275 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>多列索引</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="索引"
+HREF="indexes.html"><LINK
+REL="PREVIOUS"
+TITLE="索引类型"
+HREF="indexes-types.html"><LINK
+REL="NEXT"
+TITLE="索引和ORDER BY"
+HREF="indexes-ordering.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/indices.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="索引类型"
+HREF="indexes-types.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="indexes.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#31456; 11. 索引</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="索引和ORDER BY"
+HREF="indexes-ordering.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="INDEXES-MULTICOLUMN"
+>11.3. 多列索引</A
+></H1
+><P
+>   一个索引可以定义在表的多个列上。例如，我们有这样一个表：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>CREATE TABLE test2 (
+  major int,
+  minor int,
+  name varchar
+);</PRE
+><P>
+   （即将我们的<TT
+CLASS="FILENAME"
+>/dev</TT
+>目录保存在数据库中）而且我们经常会做如下形式的查询：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>SELECT name FROM test2 WHERE major = <TT
+CLASS="REPLACEABLE"
+><I
+>constant</I
+></TT
+> AND minor = <TT
+CLASS="REPLACEABLE"
+><I
+>constant</I
+></TT
+>;</PRE
+><P>
+   那么我们可以在<TT
+CLASS="STRUCTFIELD"
+>major</TT
+>和<TT
+CLASS="STRUCTFIELD"
+>minor</TT
+>上定义一个索引：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>CREATE INDEX test2_mm_idx ON test2 (major, minor);</PRE
+><P>
+  </P
+><P
+>   目前，只有 B-tree、GiST、GIN 和 BRIN  索引类型支持多列索引，最多可以指定32个列（该限制可以在源代码文件<TT
+CLASS="FILENAME"
+>pg_config_manual.h</TT
+>中修改，但是修改后需要重新编译<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>）。
+  </P
+><P
+>   一个B-tree索引可以用于条件中涉及到任意索引列子集的查询，但是当先导列（即最左边的那些列）上有约束条件时索引最为有效。确切的规则是：在先导列上的等值约束，加上第一个无等值约束的列上的不等值约束，将被用于限制索引被扫描的部分。在这些列右边的列上的约束将在索引中被检查，这样它们适当节约了对表的访问，但它们并未减小索引被扫描的部分。例如，在<TT
+CLASS="LITERAL"
+>(a, b, c)</TT
+>上有一个索引并且给定一个查询条件<TT
+CLASS="LITERAL"
+>WHERE a = 5 AND b &gt;= 42 AND c &lt; 77</TT
+>，对索引的扫描将从第一个具有<TT
+CLASS="LITERAL"
+>a</TT
+> = 5和<TT
+CLASS="LITERAL"
+>b</TT
+> = 42的项开始向上进行，直到最后一个具有<TT
+CLASS="LITERAL"
+>a</TT
+> = 5的项。在扫描过程中，具有<TT
+CLASS="LITERAL"
+>c</TT
+> &gt;= 77的索引项将被跳过，但是它们还是会被扫描到。这个索引在原则上可以被用于在<TT
+CLASS="LITERAL"
+>b</TT
+>和/或<TT
+CLASS="LITERAL"
+>c</TT
+>上有约束而在<TT
+CLASS="LITERAL"
+>a</TT
+>上没有约束的查询，但是整个索引都不得不被扫描，因此在大部分情况下规划器宁可使用一个顺序的表扫描来替代索引。
+  </P
+><P
+>   一个多列GiST索引可以用于条件中涉及到任意索引列子集的查询。在其余列上的条件将限制由索引返回的项，但是第一列上的条件是决定索引上扫描量的最重要因素。当第一列中具有很少的可区分值时，一个GiST索引将会相对比较低效，即便在其他列上有很多可区分值。
+  </P
+><P
+>   一个GIN索引可以用于条件中涉及到任意索引列子集的查询。与B-tree和GiST不同，GIN的搜索效率与查询条件中使用哪些索引列无关。
+  </P
+><P
+>   多列 BRIN 索引可以被用于涉及该索引被索引列的任意子集的查询条件。和 GIN 相似且不同于 B-树 或者 GiST，索引搜索效率与查询条件使用哪个索引列无关。在单个表上使用多个 BRIN 索引来取代一个多列 BRIN 索引的唯一原因是为了使用不同的<TT
+CLASS="LITERAL"
+>pages_per_range</TT
+>存储参数。
+  </P
+><P
+>   当然，要使索引其作用，查询条件中的列必须要使用适合于索引类型的操作符，使用其他操作符的子句将不会被考虑使用索引。
+  </P
+><P
+>   多列索引应该较少地使用。在绝大多数情况下，单列索引就足够了且能解决时间和空间。具有超过三个列的索引不太有用，除非该表的使用是极端程式化的。<A
+HREF="indexes-bitmap-scans.html"
+>第 11.5 &#33410;</A
+>以及<A
+HREF="indexes-index-only-scans.html"
+>第 11.11 &#33410;</A
+>中有对不同索引配置优点的讨论。
+  </P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="indexes-types.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="indexes-ordering.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>索引类型</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="indexes.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>索引和<TT
+CLASS="LITERAL"
+>ORDER BY</TT
+></TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

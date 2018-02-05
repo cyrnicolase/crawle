@@ -1,0 +1,546 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>版本9.1.10</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="版本说明"
+HREF="release.html"><LINK
+REL="PREVIOUS"
+TITLE="版本 9.1.11"
+HREF="release-9-1-11.html"><LINK
+REL="NEXT"
+TITLE="版本9.1.9"
+HREF="release-9-1-9.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/release-9.1.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="版本 9.1.11"
+HREF="release-9-1-11.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="release.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#38468;&#24405; E. 版本说明</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="版本9.1.9"
+HREF="release-9-1-9.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="RELEASE-9-1-10"
+>E.64. 版本9.1.10</A
+></H1
+><DIV
+CLASS="NOTE"
+><BLOCKQUOTE
+CLASS="NOTE"
+><P
+><B
+>发布日期: </B
+>2013-10-10</P
+></BLOCKQUOTE
+></DIV
+><P
+>   该发布包含了9.1.9的各种修复。
+   关于9.1主要版本新功能的信息，
+   请参阅<A
+HREF="release-9-1.html"
+>第 E.74 &#33410;</A
+>。</P
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN145572"
+>E.64.1. 迁移到版本9.1.10</A
+></H2
+><P
+>    为了运行9.1.X不需要转储/恢复。</P
+><P
+>不过，如果你是从9.1.9更早版本更新，参阅<A
+HREF="release-9-1-9.html"
+>第 E.65 &#33410;</A
+>。</P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN145577"
+>E.64.2. 变化</A
+></H2
+><P
+></P
+><UL
+><LI
+><P
+>阻止尝试合并大小写标识符时多字节字符的损坏 (Andrew Dunstan)</P
+><P
+><SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>仅在使用单字节服务器编码时合并大小写非ASCII字符。</P
+></LI
+><LI
+><P
+>    当<TT
+CLASS="LITERAL"
+>wal_level = hot_standby</TT
+>的时候，
+修复后端写进程中检查点内存泄露。(Naoya Anzai)</P
+></LI
+><LI
+><P
+>   修复通过<CODE
+CLASS="FUNCTION"
+>lo_open()</CODE
+>故障产生的内存泄露。(Heikki Linnakangas)</P
+></LI
+><LI
+><P
+>    当<TT
+CLASS="VARNAME"
+>work_mem</TT
+>正使用大于24GB的内存时，
+那么修复内存过量使用错误。(Stephen Frost)</P
+></LI
+><LI
+><P
+>   可串行化快照修复(Kevin Grittner, Heikki Linnakangas)</P
+></LI
+><LI
+><P
+>修复使用SSL时libpq中的死锁错误 (Stephen Frost)</P
+></LI
+><LI
+><P
+>修复线程libpq应用程序中可能的SSL状态损坏 (Nick Phillips, Stephen Frost)</P
+></LI
+><LI
+><P
+>   正确计算估计布尔列包含许多NULL值的行(Andrew Gierth)</P
+><P
+>    当估计计划成本时，先前的测试像<TT
+CLASS="LITERAL"
+>col IS NOT TRUE</TT
+>和<TT
+CLASS="LITERAL"
+>col IS
+      NOT FALSE</TT
+>没有合理的NULL值因素。</P
+></LI
+><LI
+><P
+>    阻止叠加<TT
+CLASS="LITERAL"
+>WHERE</TT
+>子句到不安
+全的<TT
+CLASS="LITERAL"
+>UNION/INTERSECT</TT
+>子查询中(Tom Lane)</P
+><P
+><TT
+CLASS="LITERAL"
+>SELECT</TT
+>列表中包含设置返回函数或不稳定函数的<TT
+CLASS="LITERAL"
+>UNION</TT
+>
+或<TT
+CLASS="LITERAL"
+>INTERSECT</TT
+>的子查询会被不适当的最优化，导致运行时错误或不正确的查询结果。&#13;</P
+></LI
+><LI
+><P
+>修复<SPAN
+CLASS="QUOTE"
+>"failed to locate grouping columns"</SPAN
+>规划器失败的罕见情况 (Tom Lane)&#13;</P
+></LI
+><LI
+><P
+>   修复有删除列的外表的<SPAN
+CLASS="APPLICATION"
+>pg_dump</SPAN
+> (Andrew Dunstan)</P
+><P
+>    先前这种情况可能导致<SPAN
+CLASS="APPLICATION"
+>pg_upgrade</SPAN
+>错误。</P
+></LI
+><LI
+><P
+>     重新安排相关扩展规则
+ 的<SPAN
+CLASS="APPLICATION"
+>pg_dump</SPAN
+>处理和事件触发(Joe Conway)</P
+></LI
+><LI
+><P
+>     如果通过<TT
+CLASS="COMMAND"
+>pg_dump -t</TT
+>或者<TT
+CLASS="LITERAL"
+>-n</TT
+>指定，
+ 那么强制扩展表转储(Joe Conway)</P
+></LI
+><LI
+><P
+>提高视图转储代码对引用表中被删除的字段的处理 (Tom Lane)</P
+></LI
+><LI
+><P
+>     使用显示正确格式名的目录
+ 归档修复<TT
+CLASS="COMMAND"
+>pg_restore -l</TT
+>(Fujii Masao)</P
+></LI
+><LI
+><P
+>   正确记录使用<TT
+CLASS="LITERAL"
+>UNIQUE</TT
+>和<TT
+CLASS="LITERAL"
+>PRIMARY KEY</TT
+>语法创建的
+索引注释(Andres Freund)</P
+><P
+>   这将修复并行<SPAN
+CLASS="APPLICATION"
+>pg_restore</SPAN
+>故障。</P
+></LI
+><LI
+><P
+>    清理切换之前合理保证WAL文件传输(Fujii Masao)</P
+><P
+>    以前，
+在备库上所有WAL文件被取代之前可能关闭流复制连接。</P
+></LI
+><LI
+><P
+>修复恢复期间WAL段时间线处理(Mitsumasa Kondo, Heikki Linnakangas)</P
+><P
+>备用恢复期间回收WAL文件会导致恢复过早的完成，导致数据丢失。</P
+></LI
+><LI
+><P
+>     修复<TT
+CLASS="COMMAND"
+>REINDEX TABLE</TT
+>和<TT
+CLASS="COMMAND"
+>REINDEX DATABASE</TT
+>以
+ 恰当的重新生效约束并且标记无效索引为有效(Noah Misch)</P
+><P
+>      <TT
+CLASS="COMMAND"
+>REINDEX INDEX</TT
+>一直正常工作。</P
+></LI
+><LI
+><P
+>     在并发<TT
+CLASS="COMMAND"
+>CREATE INDEX CONCURRENTLY</TT
+>
+ 操作期间修复可能死锁(Tom Lane)</P
+></LI
+><LI
+><P
+>   修复<CODE
+CLASS="FUNCTION"
+>regexp_matches()</CODE
+>处理零长度匹配(Jeevan Chalke)
+ </P
+><P
+>     先前，零长度匹配像'^'可以返回很多匹配。</P
+></LI
+><LI
+><P
+>     修复过于复杂的正则表达式的错误(Heikki Linnakangas)</P
+></LI
+><LI
+><P
+>    为反向引用结合非贪婪量词
+修复正则表达式匹配错误(Jeevan Chalke)</P
+></LI
+><LI
+><P
+>      避免<TT
+CLASS="COMMAND"
+>CREATE FUNCTION</TT
+>检查<TT
+CLASS="COMMAND"
+>SET</TT
+>
+  变量除非启动函数体检查(Tom Lane)</P
+></LI
+><LI
+><P
+>    允许<TT
+CLASS="COMMAND"
+>ALTER DEFAULT PRIVILEGES</TT
+>
+在模式上操作不需要CREATE权限(Tom Lane)</P
+></LI
+><LI
+><P
+>       放宽用于查询中关键字的限制(Tom Lane)</P
+><P
+>     特别地，放宽角色名称，语言名字，<TT
+CLASS="COMMAND"
+>EXPLAIN</TT
+>和<TT
+CLASS="COMMAND"
+>COPY</TT
+>
+ 选项，以及
+<TT
+CLASS="COMMAND"
+>SET</TT
+>值的关键字限制。
+这允许<TT
+CLASS="LITERAL"
+>COPY ...  (FORMAT BINARY)</TT
+>像预期的那样运行；以前
+<TT
+CLASS="LITERAL"
+>BINARY</TT
+>需要加引号。</P
+></LI
+><LI
+><P
+>   修复<CODE
+CLASS="FUNCTION"
+>pgp_pub_decrypt()</CODE
+>因此为带有密码的秘钥工作(Marko Kreen)</P
+></LI
+><LI
+><P
+>  让<SPAN
+CLASS="APPLICATION"
+>pg_upgrade</SPAN
+>使
+  用<TT
+CLASS="LITERAL"
+>pg_dump --quote-all-identifiers</TT
+>
+  避免在发布之间关键字改变的问题(Tom Lane)</P
+></LI
+><LI
+><P
+>    在清理无索引表中删除少有的不正确的警告(Heikki Linnakangas)</P
+></LI
+><LI
+><P
+>如果<TT
+CLASS="COMMAND"
+>VACUUM ANALYZE</TT
+>截断文件的尝试由于锁冲突而取消，
+确保它仍然运行ANALYZE (Kevin Grittner)</P
+></LI
+><LI
+><P
+>      当在预备查询中执行事务控制命令
+  (比如<TT
+CLASS="COMMAND"
+>ROLLBACK</TT
+>)时，
+  避免可能的失败(Tom Lane)</P
+></LI
+><LI
+><P
+>确保所有平台上浮点数据输入接受标准的<SPAN
+CLASS="QUOTE"
+>"infinity"</SPAN
+>拼写 (Tom Lane)</P
+><P
+>C99标准指出允许的拼写是<TT
+CLASS="LITERAL"
+>inf</TT
+>、<TT
+CLASS="LITERAL"
+>+inf</TT
+>、<TT
+CLASS="LITERAL"
+>-inf</TT
+>、
+<TT
+CLASS="LITERAL"
+>infinity</TT
+>、<TT
+CLASS="LITERAL"
+>+infinity</TT
+>和<TT
+CLASS="LITERAL"
+>-infinity</TT
+>。
+确保我们能够认出它们，即使该平台的<CODE
+CLASS="FUNCTION"
+>strtod</CODE
+>函数不能认出。</P
+></LI
+><LI
+><P
+>     扩展记录和数组比较行的能力(Rafal Rzepecki,Tom Lane)</P
+></LI
+><LI
+><P
+>    为了Israel, Morocco, Palestine和Paraguay中的DST变化规律
+更新时间区域数据文件到<SPAN
+CLASS="APPLICATION"
+>tzdata</SPAN
+>发布2013d。
+    同时为Macquarie Island修正历史区域数据(Tom Lane)</P
+></LI
+></UL
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="release-9-1-11.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="release-9-1-9.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>版本 9.1.11</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="release.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>版本9.1.9</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

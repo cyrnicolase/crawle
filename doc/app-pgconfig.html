@@ -1,0 +1,654 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>pg_config</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="PostgreSQL 客户端应用"
+HREF="reference-client.html"><LINK
+REL="PREVIOUS"
+TITLE="pgbench"
+HREF="pgbench.html"><LINK
+REL="NEXT"
+TITLE="pg_dump"
+HREF="app-pgdump.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="REFENTRY"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/ref/pg_config-ref.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="pgbench"
+HREF="pgbench.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="reference-client.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="pg_dump"
+HREF="app-pgdump.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="APP-PGCONFIG"
+></A
+>pg_config</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN95614"
+></A
+><H2
+>&#21517;&#31216;</H2
+>pg_config&nbsp;--&nbsp;获取已安装的<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>的信息</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN95618"
+></A
+><H2
+>&#22823;&#32434;</H2
+><P
+><TT
+CLASS="COMMAND"
+>pg_config</TT
+> [<TT
+CLASS="REPLACEABLE"
+><I
+>option</I
+></TT
+>...]</P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN95623"
+></A
+><H2
+>描述</H2
+><P
+>   <SPAN
+CLASS="APPLICATION"
+>pg_config</SPAN
+>工具打印当前安装版本的<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>的配置参数。它的设计目的之一是便于想与<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>交互的软件包能够找到所需的头文件和库。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN95629"
+></A
+><H2
+>选项</H2
+><P
+>   要使用<SPAN
+CLASS="APPLICATION"
+>pg_config</SPAN
+>，提供一个或多个下列选项：
+   <P
+></P
+></P><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="OPTION"
+>--bindir</TT
+></DT
+><DD
+><P
+>       打印用户可执行文件的位置。例如使用这个选项来寻找<TT
+CLASS="COMMAND"
+>psql</TT
+>程序。这通常也是<TT
+CLASS="FILENAME"
+>pg_config</TT
+>程序所在的位置。
+      </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>--docdir</TT
+></DT
+><DD
+><P
+>       打印文档文件的位置。
+      </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>--htmldir</TT
+></DT
+><DD
+><P
+>       打印 HTML 文档文件的位置。
+      </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>--includedir</TT
+></DT
+><DD
+><P
+>       打印客户端接口的 C 头文件的位置。
+      </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>--pkgincludedir</TT
+></DT
+><DD
+><P
+>       打印其它 C 头文件的位置。
+      </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>--includedir-server</TT
+></DT
+><DD
+><P
+>       打印用于服务器编程的 C 头文件的位置。
+      </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>--libdir</TT
+></DT
+><DD
+><P
+>       打印对象代码库的位置。
+      </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>--pkglibdir</TT
+></DT
+><DD
+><P
+>       打印动态可载入模块的位置，或者服务器可能搜索它们的位置（其它架构独立数据文件可能也被安装在这个目录）。
+      </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>--localedir</TT
+></DT
+><DD
+><P
+>       打印区域支持文件的位置（如果在<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>被编译时没有配置区域支持，这将是一个空字符串）。
+      </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>--mandir</TT
+></DT
+><DD
+><P
+>       打印手册页的位置。
+      </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>--sharedir</TT
+></DT
+><DD
+><P
+>       打印架构独立支持文件的位置。
+      </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>--sysconfdir</TT
+></DT
+><DD
+><P
+>       打印系统范围配置文件的位置。
+      </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>--pgxs</TT
+></DT
+><DD
+><P
+>       打印扩展 makefile 的位置。
+     </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>--configure</TT
+></DT
+><DD
+><P
+>       打印当<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>被配置编译时给予<TT
+CLASS="FILENAME"
+>configure</TT
+>脚本的选项。这可以被用来重新得到相同的配置，或者找出是哪个选项编译了一个二进制包（不过注意二进制包通常包含厂商相关的自定补丁）。参见下面的例子。
+      </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>--cc</TT
+></DT
+><DD
+><P
+>       打印用来编译<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>的<TT
+CLASS="VARNAME"
+>CC</TT
+>变量值。这显示被使用的 C 编译器。
+      </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>--cppflags</TT
+></DT
+><DD
+><P
+>       打印用来编译<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>的<TT
+CLASS="VARNAME"
+>CPPFLAGS</TT
+>变量值。这显示在预处理时需要的 C 编译器开关（典型的是<TT
+CLASS="LITERAL"
+>-I</TT
+>开关）。
+      </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>--cflags</TT
+></DT
+><DD
+><P
+>       打印用来编译<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>的<TT
+CLASS="VARNAME"
+>CFLAGS</TT
+>变量值。这显示被使用的 C 编译器开关。
+      </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>--cflags_sl</TT
+></DT
+><DD
+><P
+>        打印用来编译<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>的<TT
+CLASS="VARNAME"
+>CFLAGS_SL</TT
+>变量值。这显示被用来编译共享库的额外 C 编译器开关。
+      </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>--ldflags</TT
+></DT
+><DD
+><P
+>       打印用来编译<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>的<TT
+CLASS="VARNAME"
+>LDFLAGS</TT
+>变量值。这显示链接器开关。
+      </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>--ldflags_ex</TT
+></DT
+><DD
+><P
+>       打印用来编译<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>的<TT
+CLASS="VARNAME"
+>LDFLAGS_EX</TT
+>变量值。这只显示被用来编译可执行程序的链接器开关。
+      </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>--ldflags_sl</TT
+></DT
+><DD
+><P
+>      打印用来编译<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>的<TT
+CLASS="VARNAME"
+>LDFLAGS_SL</TT
+>变量值。这只显示被用来编译共享库的链接器开关。
+      </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>--libs</TT
+></DT
+><DD
+><P
+>      打印用来编译<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>的<TT
+CLASS="VARNAME"
+>LIBS</TT
+>变量值。这通常包含用于链接到<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>中的外部库的<TT
+CLASS="LITERAL"
+>-l</TT
+>开关。
+      </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>--version</TT
+></DT
+><DD
+><P
+>       打印<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>的版本。
+      </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-?</TT
+><BR><TT
+CLASS="OPTION"
+>--help</TT
+></DT
+><DD
+><P
+>        显示有关<SPAN
+CLASS="APPLICATION"
+>pg_config</SPAN
+>命令行参数的帮助并退出。
+       </P
+></DD
+></DL
+></DIV
+><P>
+
+   如果给定多于一个选项，将按照相同的顺序打印信息，每行一项。如果没有给定选项，将打印所有可用信息，并带有标签。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN95782"
+></A
+><H2
+>注解</H2
+><P
+>   选项<TT
+CLASS="OPTION"
+>--docdir</TT
+>、<TT
+CLASS="OPTION"
+>--pkgincludedir</TT
+>、
+   <TT
+CLASS="OPTION"
+>--localedir</TT
+>、<TT
+CLASS="OPTION"
+>--mandir</TT
+>、
+   <TT
+CLASS="OPTION"
+>--sharedir</TT
+>、<TT
+CLASS="OPTION"
+>--sysconfdir</TT
+>、
+   <TT
+CLASS="OPTION"
+>--cc</TT
+>、<TT
+CLASS="OPTION"
+>--cppflags</TT
+>、
+   <TT
+CLASS="OPTION"
+>--cflags</TT
+>、<TT
+CLASS="OPTION"
+>--cflags_sl</TT
+>、
+   <TT
+CLASS="OPTION"
+>--ldflags</TT
+>、<TT
+CLASS="OPTION"
+>--ldflags_sl</TT
+>和<TT
+CLASS="OPTION"
+>--libs</TT
+>在<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+> 8.1 被加入。选项<TT
+CLASS="OPTION"
+>--htmldir</TT
+>在<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+> 8.4 被加入。选项<TT
+CLASS="OPTION"
+>--ldflags_ex</TT
+>在<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+> 9.0 被加入。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN95803"
+></A
+><H2
+>例子</H2
+><P
+>   要重建当前 PostgreSQL 安装的编译配置，可运行下列命令：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>eval ./configure `pg_config --configure`</PRE
+><P>
+   <TT
+CLASS="LITERAL"
+>pg_config --configure</TT
+>的输出包含 shell 引号，这样带空格的参数可以被正确地表示。因此，为了得到正确的结果需要使用<TT
+CLASS="LITERAL"
+>eval</TT
+>。
+  </P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="pgbench.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="app-pgdump.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><SPAN
+CLASS="APPLICATION"
+>pgbench</SPAN
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="reference-client.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>pg_dump</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

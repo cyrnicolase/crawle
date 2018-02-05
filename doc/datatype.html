@@ -1,0 +1,1367 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>数据类型</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="SQL 语言"
+HREF="sql.html"><LINK
+REL="PREVIOUS"
+TITLE="WITH查询（公共表表达式）"
+HREF="queries-with.html"><LINK
+REL="NEXT"
+TITLE="数字类型"
+HREF="datatype-numeric.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="CHAPTER"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/datatype.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="WITH查询（公共表表达式）"
+HREF="queries-with.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="数字类型"
+HREF="datatype-numeric.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="CHAPTER"
+><H1
+><A
+NAME="DATATYPE"
+></A
+>&#31456; 8. 数据类型</H1
+><DIV
+CLASS="TOC"
+><DL
+><DT
+><B
+>&#30446;&#24405;</B
+></DT
+><DT
+>8.1. <A
+HREF="datatype-numeric.html"
+>数字类型</A
+></DT
+><DD
+><DL
+><DT
+>8.1.1. <A
+HREF="datatype-numeric.html#DATATYPE-INT"
+>整数类型</A
+></DT
+><DT
+>8.1.2. <A
+HREF="datatype-numeric.html#DATATYPE-NUMERIC-DECIMAL"
+>任意精度数字</A
+></DT
+><DT
+>8.1.3. <A
+HREF="datatype-numeric.html#DATATYPE-FLOAT"
+>浮点类型</A
+></DT
+><DT
+>8.1.4. <A
+HREF="datatype-numeric.html#DATATYPE-SERIAL"
+>序数类型</A
+></DT
+></DL
+></DD
+><DT
+>8.2. <A
+HREF="datatype-money.html"
+>货币类型</A
+></DT
+><DT
+>8.3. <A
+HREF="datatype-character.html"
+>字符类型</A
+></DT
+><DT
+>8.4. <A
+HREF="datatype-binary.html"
+>二进制数据类型</A
+></DT
+><DD
+><DL
+><DT
+>8.4.1. <A
+HREF="datatype-binary.html#AEN5699"
+><TT
+CLASS="TYPE"
+>bytea</TT
+>的十六进制格式</A
+></DT
+><DT
+>8.4.2. <A
+HREF="datatype-binary.html#AEN5708"
+><TT
+CLASS="TYPE"
+>bytea</TT
+>的逃逸格式</A
+></DT
+></DL
+></DD
+><DT
+>8.5. <A
+HREF="datatype-datetime.html"
+>日期/时间类型</A
+></DT
+><DD
+><DL
+><DT
+>8.5.1. <A
+HREF="datatype-datetime.html#DATATYPE-DATETIME-INPUT"
+>日期/时间输入</A
+></DT
+><DT
+>8.5.2. <A
+HREF="datatype-datetime.html#DATATYPE-DATETIME-OUTPUT"
+>日期/时间输出</A
+></DT
+><DT
+>8.5.3. <A
+HREF="datatype-datetime.html#DATATYPE-TIMEZONES"
+>时区</A
+></DT
+><DT
+>8.5.4. <A
+HREF="datatype-datetime.html#DATATYPE-INTERVAL-INPUT"
+>间隔输入</A
+></DT
+><DT
+>8.5.5. <A
+HREF="datatype-datetime.html#DATATYPE-INTERVAL-OUTPUT"
+>间隔输出</A
+></DT
+></DL
+></DD
+><DT
+>8.6. <A
+HREF="datatype-boolean.html"
+>布尔类型</A
+></DT
+><DT
+>8.7. <A
+HREF="datatype-enum.html"
+>枚举类型</A
+></DT
+><DD
+><DL
+><DT
+>8.7.1. <A
+HREF="datatype-enum.html#AEN6840"
+>枚举类型的声明</A
+></DT
+><DT
+>8.7.2. <A
+HREF="datatype-enum.html#AEN6846"
+>排序</A
+></DT
+><DT
+>8.7.3. <A
+HREF="datatype-enum.html#AEN6850"
+>类型安全性</A
+></DT
+><DT
+>8.7.4. <A
+HREF="datatype-enum.html#AEN6856"
+>实现细节</A
+></DT
+></DL
+></DD
+><DT
+>8.8. <A
+HREF="datatype-geometric.html"
+>几何类型</A
+></DT
+><DD
+><DL
+><DT
+>8.8.1. <A
+HREF="datatype-geometric.html#AEN6932"
+>点</A
+></DT
+><DT
+>8.8.2. <A
+HREF="datatype-geometric.html#DATATYPE-LINE"
+>线</A
+></DT
+><DT
+>8.8.3. <A
+HREF="datatype-geometric.html#DATATYPE-LSEG"
+>线段</A
+></DT
+><DT
+>8.8.4. <A
+HREF="datatype-geometric.html#AEN7016"
+>方框</A
+></DT
+><DT
+>8.8.5. <A
+HREF="datatype-geometric.html#AEN7045"
+>路径</A
+></DT
+><DT
+>8.8.6. <A
+HREF="datatype-geometric.html#DATATYPE-POLYGON"
+>多边形</A
+></DT
+><DT
+>8.8.7. <A
+HREF="datatype-geometric.html#DATATYPE-CIRCLE"
+>圆</A
+></DT
+></DL
+></DD
+><DT
+>8.9. <A
+HREF="datatype-net-types.html"
+>网络地址类型</A
+></DT
+><DD
+><DL
+><DT
+>8.9.1. <A
+HREF="datatype-net-types.html#DATATYPE-INET"
+><TT
+CLASS="TYPE"
+>inet</TT
+></A
+></DT
+><DT
+>8.9.2. <A
+HREF="datatype-net-types.html#DATATYPE-CIDR"
+><TT
+CLASS="TYPE"
+>cidr</TT
+></A
+></DT
+><DT
+>8.9.3. <A
+HREF="datatype-net-types.html#DATATYPE-INET-VS-CIDR"
+><TT
+CLASS="TYPE"
+>inet</TT
+> vs. <TT
+CLASS="TYPE"
+>cidr</TT
+></A
+></DT
+><DT
+>8.9.4. <A
+HREF="datatype-net-types.html#DATATYPE-MACADDR"
+><TT
+CLASS="TYPE"
+>macaddr</TT
+></A
+></DT
+></DL
+></DD
+><DT
+>8.10. <A
+HREF="datatype-bit.html"
+>位串类型</A
+></DT
+><DT
+>8.11. <A
+HREF="datatype-textsearch.html"
+>文本搜索类型</A
+></DT
+><DD
+><DL
+><DT
+>8.11.1. <A
+HREF="datatype-textsearch.html#DATATYPE-TSVECTOR"
+><TT
+CLASS="TYPE"
+>tsvector</TT
+></A
+></DT
+><DT
+>8.11.2. <A
+HREF="datatype-textsearch.html#DATATYPE-TSQUERY"
+><TT
+CLASS="TYPE"
+>tsquery</TT
+></A
+></DT
+></DL
+></DD
+><DT
+>8.12. <A
+HREF="datatype-uuid.html"
+><ACRONYM
+CLASS="ACRONYM"
+>UUID</ACRONYM
+>类型</A
+></DT
+><DT
+>8.13. <A
+HREF="datatype-xml.html"
+><ACRONYM
+CLASS="ACRONYM"
+>XML</ACRONYM
+>类型</A
+></DT
+><DD
+><DL
+><DT
+>8.13.1. <A
+HREF="datatype-xml.html#AEN7482"
+>创建XML值</A
+></DT
+><DT
+>8.13.2. <A
+HREF="datatype-xml.html#AEN7527"
+>编码处理</A
+></DT
+><DT
+>8.13.3. <A
+HREF="datatype-xml.html#AEN7539"
+>访问XML值</A
+></DT
+></DL
+></DD
+><DT
+>8.14. <A
+HREF="datatype-json.html"
+><ACRONYM
+CLASS="ACRONYM"
+>JSON</ACRONYM
+> 类型</A
+></DT
+><DD
+><DL
+><DT
+>8.14.1. <A
+HREF="datatype-json.html#JSON-KEYS-ELEMENTS"
+>JSON 输入和输出语法</A
+></DT
+><DT
+>8.14.2. <A
+HREF="datatype-json.html#JSON-DOC-DESIGN"
+>有效地设计 JSON 文档</A
+></DT
+><DT
+>8.14.3. <A
+HREF="datatype-json.html#JSON-CONTAINMENT"
+><TT
+CLASS="TYPE"
+>jsonb</TT
+> 包含和存在</A
+></DT
+><DT
+>8.14.4. <A
+HREF="datatype-json.html#JSON-INDEXING"
+><TT
+CLASS="TYPE"
+>jsonb</TT
+> 索引</A
+></DT
+></DL
+></DD
+><DT
+>8.15. <A
+HREF="arrays.html"
+>数组</A
+></DT
+><DD
+><DL
+><DT
+>8.15.1. <A
+HREF="arrays.html#ARRAYS-DECLARATION"
+>数组类型的定义</A
+></DT
+><DT
+>8.15.2. <A
+HREF="arrays.html#ARRAYS-INPUT"
+>数组值输入</A
+></DT
+><DT
+>8.15.3. <A
+HREF="arrays.html#ARRAYS-ACCESSING"
+>访问数组</A
+></DT
+><DT
+>8.15.4. <A
+HREF="arrays.html#ARRAYS-MODIFYING"
+>修改数组</A
+></DT
+><DT
+>8.15.5. <A
+HREF="arrays.html#ARRAYS-SEARCHING"
+>在数组中搜索</A
+></DT
+><DT
+>8.15.6. <A
+HREF="arrays.html#ARRAYS-IO"
+>数组输入和输出语法</A
+></DT
+></DL
+></DD
+><DT
+>8.16. <A
+HREF="rowtypes.html"
+>组合类型</A
+></DT
+><DD
+><DL
+><DT
+>8.16.1. <A
+HREF="rowtypes.html#AEN8042"
+>组合类型的声明</A
+></DT
+><DT
+>8.16.2. <A
+HREF="rowtypes.html#AEN8057"
+>组合值输入</A
+></DT
+><DT
+>8.16.3. <A
+HREF="rowtypes.html#AEN8078"
+>访问组合类型</A
+></DT
+><DT
+>8.16.4. <A
+HREF="rowtypes.html#AEN8090"
+>修改组合类型</A
+></DT
+><DT
+>8.16.5. <A
+HREF="rowtypes.html#ROWTYPES-IO-SYNTAX"
+>组合类型输入和输出语法</A
+></DT
+></DL
+></DD
+><DT
+>8.17. <A
+HREF="rangetypes.html"
+>范围类型</A
+></DT
+><DD
+><DL
+><DT
+>8.17.1. <A
+HREF="rangetypes.html#RANGETYPES-BUILTIN"
+>内建范围类型</A
+></DT
+><DT
+>8.17.2. <A
+HREF="rangetypes.html#RANGETYPES-EXAMPLES"
+>例子</A
+></DT
+><DT
+>8.17.3. <A
+HREF="rangetypes.html#RANGETYPES-INCLUSIVITY"
+>包含和排除边界</A
+></DT
+><DT
+>8.17.4. <A
+HREF="rangetypes.html#RANGETYPES-INFINITE"
+>无限（无界）范围</A
+></DT
+><DT
+>8.17.5. <A
+HREF="rangetypes.html#RANGETYPES-IO"
+>范围输入/输出</A
+></DT
+><DT
+>8.17.6. <A
+HREF="rangetypes.html#RANGETYPES-CONSTRUCT"
+>构造范围</A
+></DT
+><DT
+>8.17.7. <A
+HREF="rangetypes.html#RANGETYPES-DISCRETE"
+>离散范围类型</A
+></DT
+><DT
+>8.17.8. <A
+HREF="rangetypes.html#RANGETYPES-DEFINING"
+>定义新的范围类型</A
+></DT
+><DT
+>8.17.9. <A
+HREF="rangetypes.html#RANGETYPES-INDEXING"
+>索引</A
+></DT
+><DT
+>8.17.10. <A
+HREF="rangetypes.html#RANGETYPES-CONSTRAINT"
+>范围上的约束</A
+></DT
+></DL
+></DD
+><DT
+>8.18. <A
+HREF="datatype-oid.html"
+>对象标识符类型</A
+></DT
+><DT
+>8.19. <A
+HREF="datatype-pg-lsn.html"
+><ACRONYM
+CLASS="ACRONYM"
+>pg_lsn Type</ACRONYM
+></A
+></DT
+><DT
+>8.20. <A
+HREF="datatype-pseudo.html"
+>伪类型</A
+></DT
+></DL
+></DIV
+><P
+>   <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>有着丰富的本地数据类型可用。用户可以使用<A
+HREF="sql-createtype.html"
+>CREATE TYPE</A
+>命令为 <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>增加新的数据类型。
+  </P
+><P
+>   <A
+HREF="datatype.html#DATATYPE-TABLE"
+>&#34920; 8-1</A
+>显示了所有内建的普通数据类型。大部分在<SPAN
+CLASS="QUOTE"
+>"别名"</SPAN
+>列里列出的可选名字都是因历史原因 被<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>在内部使用的名字。另外，还有一些内部使用的或者废弃的类型也可以用，但没有在这里列出。
+  </P
+><DIV
+CLASS="TABLE"
+><A
+NAME="DATATYPE-TABLE"
+></A
+><P
+><B
+>&#34920; 8-1. 数据类型</B
+></P
+><TABLE
+BORDER="1"
+CLASS="CALSTABLE"
+><COL><COL><COL><THEAD
+><TR
+><TH
+>名字</TH
+><TH
+>别名</TH
+><TH
+>描述</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+><TT
+CLASS="TYPE"
+>bigint</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>int8</TT
+></TD
+><TD
+>有符号的8字节整数</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="TYPE"
+>bigserial</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>serial8</TT
+></TD
+><TD
+>自动增长的8字节整数</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="TYPE"
+>bit [ (<TT
+CLASS="REPLACEABLE"
+><I
+>n</I
+></TT
+>) ]</TT
+></TD
+><TD
+>&nbsp;</TD
+><TD
+>定长位串</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="TYPE"
+>bit varying [ (<TT
+CLASS="REPLACEABLE"
+><I
+>n</I
+></TT
+>) ]</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>varbit</TT
+></TD
+><TD
+>变长位串</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="TYPE"
+>boolean</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>bool</TT
+></TD
+><TD
+>逻辑布尔值（真/假）</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="TYPE"
+>box</TT
+></TD
+><TD
+>&nbsp;</TD
+><TD
+>平面上的普通方框</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="TYPE"
+>bytea</TT
+></TD
+><TD
+>&nbsp;</TD
+><TD
+>二进制数据（<SPAN
+CLASS="QUOTE"
+>"字节数组"</SPAN
+>）</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="TYPE"
+>character [ (<TT
+CLASS="REPLACEABLE"
+><I
+>n</I
+></TT
+>) ]</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>char [ (<TT
+CLASS="REPLACEABLE"
+><I
+>n</I
+></TT
+>) ]</TT
+></TD
+><TD
+>定长字符串</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="TYPE"
+>character varying [ (<TT
+CLASS="REPLACEABLE"
+><I
+>n</I
+></TT
+>) ]</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>varchar [ (<TT
+CLASS="REPLACEABLE"
+><I
+>n</I
+></TT
+>) ]</TT
+></TD
+><TD
+>变长字符串</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="TYPE"
+>cidr</TT
+></TD
+><TD
+>&nbsp;</TD
+><TD
+>IPv4或IPv6网络地址</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="TYPE"
+>circle</TT
+></TD
+><TD
+>&nbsp;</TD
+><TD
+>平面上的圆</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="TYPE"
+>date</TT
+></TD
+><TD
+>&nbsp;</TD
+><TD
+>日历日期（年、月、日）</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="TYPE"
+>double precision</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>float8</TT
+></TD
+><TD
+>双精度浮点数（8字节）</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="TYPE"
+>inet</TT
+></TD
+><TD
+>&nbsp;</TD
+><TD
+>IPv4或IPv6主机地址</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="TYPE"
+>integer</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>int</TT
+>, <TT
+CLASS="TYPE"
+>int4</TT
+></TD
+><TD
+>有符号4字节整数</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="TYPE"
+>interval [ <TT
+CLASS="REPLACEABLE"
+><I
+>fields</I
+></TT
+> ] [ (<TT
+CLASS="REPLACEABLE"
+><I
+>p</I
+></TT
+>) ]</TT
+></TD
+><TD
+>&nbsp;</TD
+><TD
+>时间段</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="TYPE"
+>json</TT
+></TD
+><TD
+>&nbsp;</TD
+><TD
+>文本 JSON 数据</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="TYPE"
+>jsonb</TT
+></TD
+><TD
+>&nbsp;</TD
+><TD
+>二进制 JSON 数据，已分解</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="TYPE"
+>line</TT
+></TD
+><TD
+>&nbsp;</TD
+><TD
+>平面上的无限长的线</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="TYPE"
+>lseg</TT
+></TD
+><TD
+>&nbsp;</TD
+><TD
+>平面上的线段</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="TYPE"
+>macaddr</TT
+></TD
+><TD
+>&nbsp;</TD
+><TD
+>MAC（Media Access Control）地址</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="TYPE"
+>money</TT
+></TD
+><TD
+>&nbsp;</TD
+><TD
+>货币数量</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="TYPE"
+>numeric [ (<TT
+CLASS="REPLACEABLE"
+><I
+>p</I
+></TT
+>,
+         <TT
+CLASS="REPLACEABLE"
+><I
+>s</I
+></TT
+>) ]</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>decimal [ (<TT
+CLASS="REPLACEABLE"
+><I
+>p</I
+></TT
+>,
+         <TT
+CLASS="REPLACEABLE"
+><I
+>s</I
+></TT
+>) ]</TT
+></TD
+><TD
+>可选择精度的精确数字</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="TYPE"
+>path</TT
+></TD
+><TD
+>&nbsp;</TD
+><TD
+>平面上的几何路径</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="TYPE"
+>pg_lsn</TT
+></TD
+><TD
+>&nbsp;</TD
+><TD
+><SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>日志序列号</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="TYPE"
+>point</TT
+></TD
+><TD
+>&nbsp;</TD
+><TD
+>平面上的几何点</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="TYPE"
+>polygon</TT
+></TD
+><TD
+>&nbsp;</TD
+><TD
+>平面上的封闭几何路径</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="TYPE"
+>real</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>float4</TT
+></TD
+><TD
+>单精度浮点数（4字节）</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="TYPE"
+>smallint</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>int2</TT
+></TD
+><TD
+>有符号2字节整数</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="TYPE"
+>smallserial</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>serial2</TT
+></TD
+><TD
+>自动增长的2字节整数</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="TYPE"
+>serial</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>serial4</TT
+></TD
+><TD
+>自动增长的4字节整数</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="TYPE"
+>text</TT
+></TD
+><TD
+>&nbsp;</TD
+><TD
+>变长字符串</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="TYPE"
+>time [ (<TT
+CLASS="REPLACEABLE"
+><I
+>p</I
+></TT
+>) ] [ without time zone ]</TT
+></TD
+><TD
+>&nbsp;</TD
+><TD
+>一天中的时间（无时区）</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="TYPE"
+>time [ (<TT
+CLASS="REPLACEABLE"
+><I
+>p</I
+></TT
+>) ] with time zone</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>timetz</TT
+></TD
+><TD
+>一天中的时间，包括时区</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="TYPE"
+>timestamp [ (<TT
+CLASS="REPLACEABLE"
+><I
+>p</I
+></TT
+>) ] [ without time zone ]</TT
+></TD
+><TD
+>&nbsp;</TD
+><TD
+>日期和时间（无时区）</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="TYPE"
+>timestamp [ (<TT
+CLASS="REPLACEABLE"
+><I
+>p</I
+></TT
+>) ] with time zone</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>timestamptz</TT
+></TD
+><TD
+>日期和时间，包括时区</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="TYPE"
+>tsquery</TT
+></TD
+><TD
+>&nbsp;</TD
+><TD
+>文本搜索查询</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="TYPE"
+>tsvector</TT
+></TD
+><TD
+>&nbsp;</TD
+><TD
+>文本搜索文档</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="TYPE"
+>txid_snapshot</TT
+></TD
+><TD
+>&nbsp;</TD
+><TD
+>用户级别事务ID快照</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="TYPE"
+>uuid</TT
+></TD
+><TD
+>&nbsp;</TD
+><TD
+>通用唯一标识码</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="TYPE"
+>xml</TT
+></TD
+><TD
+>&nbsp;</TD
+><TD
+>XML数据</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+><DIV
+CLASS="NOTE"
+><BLOCKQUOTE
+CLASS="NOTE"
+><P
+><B
+>兼容性: </B
+>    下列类型（或者及其拼写）是<ACRONYM
+CLASS="ACRONYM"
+>SQL</ACRONYM
+>指定的：<TT
+CLASS="TYPE"
+>bigint</TT
+>、<TT
+CLASS="TYPE"
+>bit</TT
+>、<TT
+CLASS="TYPE"
+>bit varying</TT
+>、<TT
+CLASS="TYPE"
+>boolean</TT
+>、<TT
+CLASS="TYPE"
+>char</TT
+>、<TT
+CLASS="TYPE"
+>character varying</TT
+>、<TT
+CLASS="TYPE"
+>character</TT
+>、<TT
+CLASS="TYPE"
+>varchar</TT
+>、<TT
+CLASS="TYPE"
+>date</TT
+>、<TT
+CLASS="TYPE"
+>double precision</TT
+>、<TT
+CLASS="TYPE"
+>integer</TT
+>、<TT
+CLASS="TYPE"
+>interval</TT
+>、<TT
+CLASS="TYPE"
+>numeric</TT
+>、<TT
+CLASS="TYPE"
+>decimal</TT
+>、<TT
+CLASS="TYPE"
+>real</TT
+>、<TT
+CLASS="TYPE"
+>smallint</TT
+>、<TT
+CLASS="TYPE"
+>time</TT
+>（有时区或无时区）、<TT
+CLASS="TYPE"
+>timestamp</TT
+>（有时区或无时区）、<TT
+CLASS="TYPE"
+>xml</TT
+>。
+   </P
+></BLOCKQUOTE
+></DIV
+><P
+>   每种数据类型都有一个由其输入和输出函数决定的外部表现形式。许多内建的类型有明显的格式。不过，许多类型要么是<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>所特有的（例如几何路径），要么可能是有几种不同的格式（例如日期和时间类型）。 有些输入和输出函数是不可逆的，即输出函数的结果和原始输入比较时可能丢失精度。
+  </P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="queries-with.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="datatype-numeric.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><TT
+CLASS="LITERAL"
+>WITH</TT
+>查询（公共表表达式）</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="sql.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>数字类型</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

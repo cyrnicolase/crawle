@@ -1,0 +1,396 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>ROLLBACK TO SAVEPOINT</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="SQL 命令"
+HREF="sql-commands.html"><LINK
+REL="PREVIOUS"
+TITLE="ROLLBACK PREPARED"
+HREF="sql-rollback-prepared.html"><LINK
+REL="NEXT"
+TITLE="SAVEPOINT"
+HREF="sql-savepoint.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="REFENTRY"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/ref/rollback_to.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="ROLLBACK PREPARED"
+HREF="sql-rollback-prepared.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="SAVEPOINT"
+HREF="sql-savepoint.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="SQL-ROLLBACK-TO"
+></A
+>ROLLBACK TO SAVEPOINT</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN89723"
+></A
+><H2
+>&#21517;&#31216;</H2
+>ROLLBACK TO SAVEPOINT&nbsp;--&nbsp;回滚到一个保存点</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN89726"
+></A
+><H2
+>&#22823;&#32434;</H2
+><PRE
+CLASS="SYNOPSIS"
+>ROLLBACK [ WORK | TRANSACTION ] TO [ SAVEPOINT ] <TT
+CLASS="REPLACEABLE"
+><I
+>savepoint_name</I
+></TT
+></PRE
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN89729"
+></A
+><H2
+>描述</H2
+><P
+>   回滚在该保存点被建立之后执行的所有命令。该保存点保持有效并且可以在
+   以后再次回滚到它（如果需要）。
+  </P
+><P
+>   <TT
+CLASS="COMMAND"
+>ROLLBACK TO SAVEPOINT</TT
+>隐式地销毁在所提及的保存点
+   之后建立的所有保存点。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN89734"
+></A
+><H2
+>参数</H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>savepoint_name</I
+></TT
+></DT
+><DD
+><P
+>      要回滚到的保存点。
+     </P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN89742"
+></A
+><H2
+>注解</H2
+><P
+>   使用<A
+HREF="sql-release-savepoint.html"
+>RELEASE SAVEPOINT</A
+>销毁一个保存点而
+   不抛弃在它建立之后被执行的命令的效果。
+  </P
+><P
+>   指定一个没有被建立的保存点是一种错误。
+  </P
+><P
+>   相对于保存点，游标有一点非事务的行为。在保存点被回滚时，任何在该保存点
+   内被打开的游标将会被关闭。如果一个先前打开的游标在一个保存点内被
+   <TT
+CLASS="COMMAND"
+>FETCH</TT
+>或<TT
+CLASS="COMMAND"
+>MOVE</TT
+>命令所影响，而该该保存点
+   后来又被回滚，那么该游标将保持<TT
+CLASS="COMMAND"
+>FETCH</TT
+>使它指向的位置（也
+   就是说由<TT
+CLASS="COMMAND"
+>FETCH</TT
+>导致的游标动作不会被回滚）。回滚也不能
+   撤销关闭一个游标。不过，其他由游标查询导致的副作用（例如
+   被该查询所调用的易变函数的副作用）
+   <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>可以</I
+></SPAN
+>被回滚，只要它们发生在一个后来被回滚的保存点期间。
+   如果一个游标的执行导致事务中止，它会被置于一种不能被执行的状态，这样当
+   事务被用<TT
+CLASS="COMMAND"
+>ROLLBACK TO SAVEPOINT</TT
+>恢复后，该游标也不再能
+   被使用。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN89754"
+></A
+><H2
+>示例</H2
+><P
+>   要撤销在<TT
+CLASS="LITERAL"
+>my_savepoint</TT
+>建立后执行的命令的效果：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>ROLLBACK TO SAVEPOINT my_savepoint;</PRE
+><P>
+  </P
+><P
+>   游标位置不会受保存点回滚的影响：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>BEGIN;
+
+DECLARE foo CURSOR FOR SELECT 1 UNION SELECT 2;
+
+SAVEPOINT foo;
+
+FETCH 1 FROM foo;
+ ?column? 
+----------
+        1
+
+ROLLBACK TO SAVEPOINT foo;
+
+FETCH 1 FROM foo;
+ ?column? 
+----------
+        2
+
+COMMIT;</PRE
+><P></P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN89761"
+></A
+><H2
+>兼容性</H2
+><P
+>   <ACRONYM
+CLASS="ACRONYM"
+>SQL</ACRONYM
+>标准指定关键词
+   <TT
+CLASS="LITERAL"
+>SAVEPOINT</TT
+>是强制的，但是<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>
+   和<SPAN
+CLASS="PRODUCTNAME"
+>Oracle</SPAN
+>允许省略它。SQL 只允许<TT
+CLASS="LITERAL"
+>WORK</TT
+>而
+   不是<TT
+CLASS="LITERAL"
+>TRANSACTION</TT
+>作为<TT
+CLASS="LITERAL"
+>ROLLBACK</TT
+>之后的噪声词。
+   还有，SQL 有一个可选的子句
+   <TT
+CLASS="LITERAL"
+>AND [ NO ] CHAIN</TT
+>，当前
+   <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>并不支持。在其他方面，这个命令符合 SQL 标准。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN89773"
+></A
+><H2
+>另见</H2
+><A
+HREF="sql-begin.html"
+>BEGIN</A
+>, <A
+HREF="sql-commit.html"
+>COMMIT</A
+>, <A
+HREF="sql-release-savepoint.html"
+>RELEASE SAVEPOINT</A
+>, <A
+HREF="sql-rollback.html"
+>ROLLBACK</A
+>, <A
+HREF="sql-savepoint.html"
+>SAVEPOINT</A
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-rollback-prepared.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="sql-savepoint.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>ROLLBACK PREPARED</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>SAVEPOINT</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

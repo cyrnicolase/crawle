@@ -1,0 +1,458 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>内建操作符类</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="SP-GiST索引"
+HREF="spgist.html"><LINK
+REL="PREVIOUS"
+TITLE="简介"
+HREF="spgist-intro.html"><LINK
+REL="NEXT"
+TITLE="可扩展性"
+HREF="spgist-extensibility.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/spgist.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="简介"
+HREF="spgist-intro.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="spgist.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#31456; 62. SP-GiST索引</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="可扩展性"
+HREF="spgist-extensibility.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="SPGIST-BUILTIN-OPCLASSES"
+>62.2. 内建操作符类</A
+></H1
+><P
+>  <A
+HREF="spgist-builtin-opclasses.html#SPGIST-BUILTIN-OPCLASSES-TABLE"
+>&#34920; 62-1</A
+>中展示了<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>
+  核心发布所包括的<ACRONYM
+CLASS="ACRONYM"
+>SP-GiST</ACRONYM
+>操作符类。
+ </P
+><DIV
+CLASS="TABLE"
+><A
+NAME="SPGIST-BUILTIN-OPCLASSES-TABLE"
+></A
+><P
+><B
+>&#34920; 62-1. 内建 <ACRONYM
+CLASS="ACRONYM"
+>SP-GiST</ACRONYM
+> 操作符类</B
+></P
+><TABLE
+BORDER="1"
+CLASS="CALSTABLE"
+><COL><COL><COL><THEAD
+><TR
+><TH
+>名称</TH
+><TH
+>索引数据类型</TH
+><TH
+>可索引操作符</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>kd_point_ops</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>point</TT
+></TD
+><TD
+>       <TT
+CLASS="LITERAL"
+>&lt;&lt;</TT
+>
+       <TT
+CLASS="LITERAL"
+>&lt;@</TT
+>
+       <TT
+CLASS="LITERAL"
+>&lt;^</TT
+>
+       <TT
+CLASS="LITERAL"
+>&gt;&gt;</TT
+>
+       <TT
+CLASS="LITERAL"
+>&gt;^</TT
+>
+       <TT
+CLASS="LITERAL"
+>~=</TT
+>
+      </TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>quad_point_ops</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>point</TT
+></TD
+><TD
+>       <TT
+CLASS="LITERAL"
+>&lt;&lt;</TT
+>
+       <TT
+CLASS="LITERAL"
+>&lt;@</TT
+>
+       <TT
+CLASS="LITERAL"
+>&lt;^</TT
+>
+       <TT
+CLASS="LITERAL"
+>&gt;&gt;</TT
+>
+       <TT
+CLASS="LITERAL"
+>&gt;^</TT
+>
+       <TT
+CLASS="LITERAL"
+>~=</TT
+>
+      </TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>range_ops</TT
+></TD
+><TD
+>任何范围类型</TD
+><TD
+>       <TT
+CLASS="LITERAL"
+>&amp;&amp;</TT
+>
+       <TT
+CLASS="LITERAL"
+>&amp;&lt;</TT
+>
+       <TT
+CLASS="LITERAL"
+>&amp;&gt;</TT
+>
+       <TT
+CLASS="LITERAL"
+>-|-</TT
+>
+       <TT
+CLASS="LITERAL"
+>&lt;&lt;</TT
+>
+       <TT
+CLASS="LITERAL"
+>&lt;@</TT
+>
+       <TT
+CLASS="LITERAL"
+>=</TT
+>
+       <TT
+CLASS="LITERAL"
+>&gt;&gt;</TT
+>
+       <TT
+CLASS="LITERAL"
+>@&gt;</TT
+>
+      </TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>box_ops</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>box</TT
+></TD
+><TD
+>       <TT
+CLASS="LITERAL"
+>&lt;&lt;</TT
+>
+       <TT
+CLASS="LITERAL"
+>&amp;&lt;</TT
+>
+       <TT
+CLASS="LITERAL"
+>&amp;&amp;</TT
+>
+       <TT
+CLASS="LITERAL"
+>&amp;&gt;</TT
+>
+       <TT
+CLASS="LITERAL"
+>&gt;&gt;</TT
+>
+       <TT
+CLASS="LITERAL"
+>~=</TT
+>
+       <TT
+CLASS="LITERAL"
+>@&gt;</TT
+>
+       <TT
+CLASS="LITERAL"
+>&lt;@</TT
+>
+       <TT
+CLASS="LITERAL"
+>&amp;&lt;|</TT
+>
+       <TT
+CLASS="LITERAL"
+>&lt;&lt;|</TT
+>
+       <TT
+CLASS="LITERAL"
+>|&gt;&gt;</TT
+>
+       <TT
+CLASS="LITERAL"
+>|&amp;&gt;</TT
+>
+      </TD
+></TR
+><TR
+><TD
+><TT
+CLASS="LITERAL"
+>text_ops</TT
+></TD
+><TD
+><TT
+CLASS="TYPE"
+>text</TT
+></TD
+><TD
+>       <TT
+CLASS="LITERAL"
+>&lt;</TT
+>
+       <TT
+CLASS="LITERAL"
+>&lt;=</TT
+>
+       <TT
+CLASS="LITERAL"
+>=</TT
+>
+       <TT
+CLASS="LITERAL"
+>&gt;</TT
+>
+       <TT
+CLASS="LITERAL"
+>&gt;=</TT
+>
+       <TT
+CLASS="LITERAL"
+>~&lt;=~</TT
+>
+       <TT
+CLASS="LITERAL"
+>~&lt;~</TT
+>
+       <TT
+CLASS="LITERAL"
+>~&gt;=~</TT
+>
+       <TT
+CLASS="LITERAL"
+>~&gt;~</TT
+>
+      </TD
+></TR
+></TBODY
+></TABLE
+></DIV
+><P
+>  在用于类型<TT
+CLASS="TYPE"
+>point</TT
+>的两种操作符类中，<TT
+CLASS="LITERAL"
+>quad_point_ops</TT
+>是默认值。<TT
+CLASS="LITERAL"
+>kd_point_ops</TT
+>支持相同的操作符，但是使用一种不同的索引数据结构，在某些应用中它可以提供更好的性能。
+ </P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="spgist-intro.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="spgist-extensibility.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>简介</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="spgist.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>可扩展性</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

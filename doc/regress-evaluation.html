@@ -1,0 +1,469 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>测试评估</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="回归测试"
+HREF="regress.html"><LINK
+REL="PREVIOUS"
+TITLE="运行测试"
+HREF="regress-run.html"><LINK
+REL="NEXT"
+TITLE="变体比较文件"
+HREF="regress-variant.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/regress.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="运行测试"
+HREF="regress-run.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="regress.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#31456; 31. 回归测试</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="变体比较文件"
+HREF="regress-variant.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="REGRESS-EVALUATION"
+>31.2. 测试评估</A
+></H1
+><P
+>    一些正确安装的并且全功能的<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>安装可能会在这些回归测试中的某些上<SPAN
+CLASS="QUOTE"
+>"失败"</SPAN
+>，其原因是平台相关的因素，例如可变浮点表示和 message wording。这些测试目前采用<TT
+CLASS="COMMAND"
+>diff</TT
+>命令来比较测试输出和在参考系统上产生的输出，这样测试的结果对小的系统差异也很敏感。当一个测试被报告为<SPAN
+CLASS="QUOTE"
+>"失败"</SPAN
+>时，请总是检查实际结果和期望结果之间的差异，你可能会发现该差异其实并不明显。不管怎样，我们将努力维护在所有被支持平台上的准确的参考文件，以期待所有的测试都能通过。
+   </P
+><P
+>    回归测试的实际输出在<TT
+CLASS="FILENAME"
+>src/test/regress/results</TT
+>目录中的文件内。测试脚本会使用<TT
+CLASS="COMMAND"
+>diff</TT
+>来把每一个输出文件与存储在<TT
+CLASS="FILENAME"
+>src/test/regress/expected</TT
+>目录中的参考输出进行比较。任何差异都被保存在<TT
+CLASS="FILENAME"
+>src/test/regress/regression.diffs</TT
+>中便于你的观察（当运行一个除核心测试之外的测试套件时，这些文件当然会出现在相关子目录中，而不是<TT
+CLASS="FILENAME"
+>src/test/regress</TT
+>）。
+   </P
+><P
+>    如果你不喜欢被默认使用的<TT
+CLASS="COMMAND"
+>diff</TT
+>选项，请设置环境变量<TT
+CLASS="ENVAR"
+>PG_REGRESS_DIFF_OPTS</TT
+>，例如<TT
+CLASS="LITERAL"
+>PG_REGRESS_DIFF_OPTS='-u'</TT
+>（或者如果你愿意，你可以自己运行<TT
+CLASS="COMMAND"
+>diff</TT
+>）。
+   </P
+><P
+>    如果由于某种原因一个特定的平台对一个给定测试产生了<SPAN
+CLASS="QUOTE"
+>"失败"</SPAN
+>，而对输出的检查却说明该结果是合法的，你可以增加一个新的比较文件来让失败报告在未来的测试运行中保持沉默。详见<A
+HREF="regress-variant.html"
+>第 31.3 &#33410;</A
+>。
+   </P
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN44725"
+>31.2.1. 错误消息差异</A
+></H2
+><P
+>     某些回归测试涉及到故意的非法输入值。错误消息可能来自<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>代码或主机平台系统例程。在后一种情况中，消息会随着平台而变化，但是会反映相似的信息。这些消息中的差异将导致一次<SPAN
+CLASS="QUOTE"
+>"失败的"</SPAN
+>回归测试，这可以通过检查来确认。
+    </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN44730"
+>31.2.2. 区域差异</A
+></H2
+><P
+>     如果你在一台使用除 C 之外的排序规则顺序区域初始化的服务器上运行测试，那么可能会出现由于排序顺序和后续失败产生的差异。回归测试套件被设置为可以处理这种问题，方法是提供替代的结果文件来处理大量的区域。
+    </P
+><P
+>     要在使用临时安装方法时在一种不同的区域中运行测试，可在<TT
+CLASS="COMMAND"
+>make</TT
+>命令行上传递适当的区域相关的环境变量，例如：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>make check LANG=de_DE.utf8</PRE
+><P>
+     （回归测试驱动器会取消<TT
+CLASS="ENVAR"
+>LC_ALL</TT
+>设置，因此使用这个变量选择区域是不起作用的）。要不使用区域，要么取消所有区域相关的环境变量设置（或把它们设置为<TT
+CLASS="LITERAL"
+>C</TT
+>），要么使用下列特殊调用：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>make check NO_LOCALE=1</PRE
+><P>
+     当对一个现有安装运行测试时，区域设置由现有安装决定。要改变它，通过向<TT
+CLASS="COMMAND"
+>initdb</TT
+>传递合适的选项来使用不同的区域初始化数据库集簇。
+    </P
+><P
+>     通常，我们建议对将要在生产环境中使用的区域设置运行回归测试，因为这样可以测试即将真正被用在生产环境中的与区域和编码相关的代码。根据 操作系统环境，你可能会得到失败，但是那样你将至少知道在真实应用运行时会得到什么样的与区域相关的行为。
+    </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN44741"
+>31.2.3. 日期和时间差异</A
+></H2
+><P
+>     大部分的日期和时间结果依赖于时区环境。参考文件是用时区<TT
+CLASS="LITERAL"
+>PST8PDT</TT
+>（伯克利，加利福利亚）生成的，并且如果测试不是运行在该时区设置中显然会出现失败。回归测试驱动器会设置环境变量<TT
+CLASS="ENVAR"
+>PGTZ</TT
+>为 <TT
+CLASS="LITERAL"
+>PST8PDT</TT
+>，这通常能保证正确的结果。
+    </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN44747"
+>31.2.4. 浮点差异</A
+></H2
+><P
+>     某些测试涉及到从表列中计算 64 位浮点数（<TT
+CLASS="TYPE"
+>双精度</TT
+>）。我们已经发现了涉及到<TT
+CLASS="TYPE"
+>双精度</TT
+>列的数学函数的结果中的差异。<TT
+CLASS="LITERAL"
+>float8</TT
+>和<TT
+CLASS="LITERAL"
+>geometry</TT
+>测试容易在不同平台之间产生小的差异，甚至对不同的编译器优化设置也可能产生差异。这些差异通常位于小数点右边的 10 个位置，决定这些差异的实际意义需要人类眼球比较。
+    </P
+><P
+>     某些系统显示负零为<TT
+CLASS="LITERAL"
+>-0</TT
+>，而其他的只显示<TT
+CLASS="LITERAL"
+>0</TT
+>。
+    </P
+><P
+>     某些系统标志来自<CODE
+CLASS="FUNCTION"
+>pow()</CODE
+>和<CODE
+CLASS="FUNCTION"
+>exp()</CODE
+>的错误的机制不同于当前<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>代码所期望的机制。
+    </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN44761"
+>31.2.5. 行序差异</A
+></H2
+><P
+>你可能看到这样一些差异：一组相同的行在输出中的顺序与参考文件中的顺序不同。严格来说，在大部分情况下这不是缺陷。大部分回归测试脚本没有为每一个单独的<TT
+CLASS="LITERAL"
+>SELECT</TT
+>使用一个<TT
+CLASS="LITERAL"
+>ORDER BY</TT
+>，并且因此它们的结果行顺序根据 SQL 规范是非良定义的。实际上，因为我们考虑的是由相同的软件在相同的数据上执行相同的查询，我们通常会在所有平台上得到相同的结果顺序，所以缺少<TT
+CLASS="LITERAL"
+>ORDER BY</TT
+>不是一个问题。但是，某些查询确实会在不同平台上产生不同的顺序。当对一个已经安装的服务器运行测试时，顺序差异可能由非 C 区域设置或非默认参数设置导致，例如<TT
+CLASS="VARNAME"
+>work_mem</TT
+>的自定义值或规划器代价参数。
+    </P
+><P
+>因此，如果你看到一个顺序差异，没有什么可担心的，除非结果被未被的查询确实有一个<TT
+CLASS="LITERAL"
+>ORDER BY</TT
+>。但是，不管怎样请报告它，这样我们可以为特定的查询加上一个<TT
+CLASS="LITERAL"
+>ORDER BY</TT
+>来在未来的发布中消除虚假的<SPAN
+CLASS="QUOTE"
+>"失败"</SPAN
+>。
+    </P
+><P
+>你可能好奇为什么我们不对所有回归测试查询进行显式排序来一次性解决这个问题。其原因是那可能会降低回归测试的有用性，因为它们已经倾向于测试产生有序结果的查询计划类型而排除了那些无法产生有序结果的计划类型。
+    </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN44773"
+>31.2.6. 栈深度不足</A
+></H2
+><P
+>     如果<TT
+CLASS="LITERAL"
+>错误</TT
+>测试导致了在<TT
+CLASS="LITERAL"
+>select infinite_recurse()</TT
+>命令上的一次服务器崩溃，它意味着平台对进程栈尺寸的限制低于<A
+HREF="runtime-config-resource.html#GUC-MAX-STACK-DEPTH"
+>max_stack_depth</A
+>参数所指定的值。这可以通过在一个更高的栈尺寸限制（对<TT
+CLASS="VARNAME"
+>max_stack_depth</TT
+>的默认值，我们推荐 4 MB）下运行该服务器来修复。如果你不能这样做，一种可替代的方案是减小<TT
+CLASS="VARNAME"
+>max_stack_depth</TT
+>的值。
+    </P
+><P
+>     在支持<CODE
+CLASS="FUNCTION"
+>getrlimit()</CODE
+>的平台上，服务器应该自动选择一个<TT
+CLASS="VARNAME"
+>max_stack_depth</TT
+>的安全值。所以除非你已经手工覆盖了该设置，这类失败就是一个可报告的缺陷。
+    </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN44784"
+>31.2.7. <SPAN
+CLASS="QUOTE"
+>"失败"</SPAN
+>测试</A
+></H2
+><P
+>     <TT
+CLASS="LITERAL"
+>失败</TT
+>测试脚本用来产生随机结果。在非常少见的情况下，这会导致回归测试失败。输入：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>diff results/random.out expected/random.out</PRE
+><P>
+     应当产生一行或少数几行差异。你不需要担心，除非随机测试重复地失败。
+    </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN44790"
+>31.2.8. 配置参数</A
+></H2
+><P
+>     当对一个现有安装运行测试时，某些非默认参数设置可能导致测试失败。例如，改变<TT
+CLASS="VARNAME"
+>enable_seqscan</TT
+>或<TT
+CLASS="VARNAME"
+>enable_indexscan</TT
+>等参数可能导致计划改变，然后影响使用<TT
+CLASS="COMMAND"
+>EXPLAIN</TT
+>的测试的结果。
+    </P
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="regress-run.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="regress-variant.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>运行测试</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="regress.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>变体比较文件</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

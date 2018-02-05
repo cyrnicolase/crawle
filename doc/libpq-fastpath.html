@@ -1,0 +1,315 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>快速路径接口</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="libpq - C 库"
+HREF="libpq.html"><LINK
+REL="PREVIOUS"
+TITLE="取消进行中的查询"
+HREF="libpq-cancel.html"><LINK
+REL="NEXT"
+TITLE="异步提示"
+HREF="libpq-notify.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/libpq.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="取消进行中的查询"
+HREF="libpq-cancel.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="libpq.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#31456; 32. <SPAN
+CLASS="APPLICATION"
+>libpq</SPAN
+> - C 库</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="异步提示"
+HREF="libpq-notify.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="LIBPQ-FASTPATH"
+>32.7. 快速路径接口</A
+></H1
+><P
+>   <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>提供一种快速路径接口来向服务器发送简单的函数调用。
+  </P
+><DIV
+CLASS="TIP"
+><BLOCKQUOTE
+CLASS="TIP"
+><P
+><B
+>&#25552;&#31034;: </B
+>    这个接口在某种程度上已被废弃，因为我们可以通过创建一个定义该函数调用的预备语句来达到类似或者更强大的功能。然后，用参数和结果的二进制传输执行该语句，从而取代快速函数调用。 
+   </P
+></BLOCKQUOTE
+></DIV
+><P
+>   函数<CODE
+CLASS="FUNCTION"
+>PQfn</CODE
+>请求通过快速路径接口执行服务器函数。
+</P><PRE
+CLASS="SYNOPSIS"
+>PGresult *PQfn(PGconn *conn,
+               int fnid,
+               int *result_buf,
+               int *result_len,
+               int result_is_int,
+               const PQArgBlock *args,
+               int nargs);
+
+typedef struct
+{
+    int len;
+    int isint;
+    union
+    {
+        int *ptr;
+        int integer;
+    } u;
+} PQArgBlock;</PRE
+><P>
+  </P
+><P
+>   <TT
+CLASS="PARAMETER"
+>fnid</TT
+>参数是要被执行的函数的 OID。<TT
+CLASS="PARAMETER"
+>args</TT
+>和
+   <TT
+CLASS="PARAMETER"
+>nargs</TT
+>定义了要传递给函数的参数；它们必须匹配已声明的函数
+   参数列表。当一个参数结构的<TT
+CLASS="PARAMETER"
+>isint</TT
+>域为真时，
+   <TT
+CLASS="PARAMETER"
+>u.integer</TT
+>值被以指定长度（必须是 2 或者 4 字节）整数的
+   形式发送给服务器；这时候会发生恰当的字节交换。当<TT
+CLASS="PARAMETER"
+>isint</TT
+>为
+   假时，<TT
+CLASS="PARAMETER"
+>*u.ptr</TT
+>中指定数量的字节将不做任何处理被发送出去；
+   这些数据必须是服务器 预期的用于该函数参数数据类型的二进制传输的格式（由于
+   历史原因<TT
+CLASS="PARAMETER"
+>u.ptr</TT
+>被声明为类型<TT
+CLASS="TYPE"
+>int *</TT
+>，其实把它考虑成
+   <TT
+CLASS="TYPE"
+>void *</TT
+>会更好）。<TT
+CLASS="PARAMETER"
+>result_buf</TT
+>是放置该函
+   数返回值的缓冲区。调用者必须已经分配了足够的空间来存储返回值（这里没有检
+   查！）。实际的结果长度将被放在<TT
+CLASS="PARAMETER"
+>result_len</TT
+>指向的
+   整数中返回。如果预期结果是 2 或 4 字节整数，把
+   <TT
+CLASS="PARAMETER"
+>result_is_int</TT
+>设为 1；否则设为 0。把
+   <TT
+CLASS="PARAMETER"
+>result_is_int</TT
+>设为 1 导致<SPAN
+CLASS="APPLICATION"
+>libpq</SPAN
+>
+   在必要时对值进行交换字节，这样它就作为对客户端机器正确的<TT
+CLASS="TYPE"
+>int</TT
+>
+   值被传输，注意对任一种允许的结果大小都会传递一个 4 字节到
+   <TT
+CLASS="PARAMETER"
+>*result_buf</TT
+>。当<TT
+CLASS="PARAMETER"
+>result_is_int</TT
+>是 0 时，服务
+   器发送的二进制格式字节将不做修改直接返回（在这种情况下，把
+   <TT
+CLASS="PARAMETER"
+>result_buf</TT
+>考虑为类型<TT
+CLASS="TYPE"
+>void *</TT
+>更好）。
+  </P
+><P
+>   <CODE
+CLASS="FUNCTION"
+>PQfn</CODE
+>总是返回一个有效的<TT
+CLASS="STRUCTNAME"
+>PGresult</TT
+>指针。在使用结果之前应该检查结果状态。当结果不再使用后，调用者有义务使用<CODE
+CLASS="FUNCTION"
+>PQclear</CODE
+>释放<TT
+CLASS="STRUCTNAME"
+>PGresult</TT
+>。
+  </P
+><P
+>   注意我们没办法处理空参数、空结果，也没办法在使用这个接口时处理集值结果。
+  </P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="libpq-cancel.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="libpq-notify.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>取消进行中的查询</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="libpq.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>异步提示</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

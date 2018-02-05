@@ -1,0 +1,313 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>intagg</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="额外提供的模块"
+HREF="contrib.html"><LINK
+REL="PREVIOUS"
+TITLE="hstore"
+HREF="hstore.html"><LINK
+REL="NEXT"
+TITLE="intarray"
+HREF="intarray.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/intagg.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="hstore"
+HREF="hstore.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="contrib.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#38468;&#24405; F. 额外提供的模块</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="intarray"
+HREF="intarray.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="INTAGG"
+>F.17. intagg</A
+></H1
+><P
+>  <TT
+CLASS="FILENAME"
+>intagg</TT
+>模块提供了一个整数聚集器以及一个枚举器。<TT
+CLASS="FILENAME"
+>intagg</TT
+>现在已被弃用，因为有内建的函数能提供其功能的超集。不过，该模块仍然作为内建函数的一个兼容性包装器被提供。
+ </P
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN177229"
+>F.17.1. 函数</A
+></H2
+><P
+>  聚集器是一个聚集函数<CODE
+CLASS="FUNCTION"
+>int_array_aggregate(integer)</CODE
+>，它产生一个完全包含输入整数的整数数组。这是一个<CODE
+CLASS="FUNCTION"
+>array_agg</CODE
+>的包装器，它对任何数组类型做同样的事情。
+ </P
+><P
+>  枚举器是一个函数<CODE
+CLASS="FUNCTION"
+>int_array_enum(integer[])</CODE
+>，它返回<TT
+CLASS="TYPE"
+>setof integer</TT
+>。它本质上是聚集器的一个逆操作：给定一个整数数组，将它展开成行的集合。这是<CODE
+CLASS="FUNCTION"
+>unnest</CODE
+>的一个包装器，它对任何数组类型做相同的事情。
+ </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN177244"
+>F.17.2. 使用示例</A
+></H2
+><P
+>   很多数据库系统都有一对多表的概念这样一个表通常位于两个被索引表之间，例如：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>CREATE TABLE left (id INT PRIMARY KEY, ...);
+CREATE TABLE right (id INT PRIMARY KEY, ...);
+CREATE TABLE one_to_many(left INT REFERENCES left, right INT REFERENCES right);</PRE
+><P>
+
+  通常这样用它：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>SELECT right.* from right JOIN one_to_many ON (right.id = one_to_many.right)
+  WHERE one_to_many.left = <TT
+CLASS="REPLACEABLE"
+><I
+>item</I
+></TT
+>;</PRE
+><P>
+
+  这将为左手表中的一个项返回右手表中的所有项。这在 SQL 中是很常见的结构。
+ </P
+><P
+>  现在，这种方法对于具有非常多项的<TT
+CLASS="STRUCTNAME"
+>one_to_many</TT
+>表会有麻烦。通常，这样的一次连接将为一个特定的左手项导致一次索引扫描以及为每一个右手项导致一次取出。如果你有一个非常动态的系统，你没什么可做的。但是，如果你的数据相对比较静态，你可以使用聚集器创建一个汇总表。
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>CREATE TABLE summary AS
+  SELECT left, int_array_aggregate(right) AS right
+  FROM one_to_many
+  GROUP BY left;</PRE
+><P>
+
+  这将创建一个表，其中对每一个左项都有一行，并且有一个右项的数组。现在如果没有某种方法来使用该数组，这样做是没有任何用处的。这时数组枚举器就派上用场了，你可以
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>SELECT left, int_array_enum(right) FROM summary WHERE left = <TT
+CLASS="REPLACEABLE"
+><I
+>item</I
+></TT
+>;</PRE
+><P>
+
+  上述使用<CODE
+CLASS="FUNCTION"
+>int_array_enum</CODE
+>的查询产生与以下语句相同的结果
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>SELECT left, right FROM one_to_many WHERE left = <TT
+CLASS="REPLACEABLE"
+><I
+>item</I
+></TT
+>;</PRE
+><P>
+
+  区别是针对汇总表的查询必须只从表中得到一行，而针对<TT
+CLASS="STRUCTNAME"
+>one_to_many</TT
+>的直接查询必须索引扫描并且为每项都获取一行。
+ </P
+><P
+>  在一个系统上，一个<TT
+CLASS="COMMAND"
+>EXPLAIN</TT
+>显示一个查询的代价从 8488 降低到了 329。原始查询是一个涉及到<TT
+CLASS="STRUCTNAME"
+>one_to_many</TT
+>表的连接，它被替换为：
+
+</P><PRE
+CLASS="PROGRAMLISTING"
+>SELECT right, count(right) FROM
+  ( SELECT left, int_array_enum(right) AS right
+    FROM summary JOIN (SELECT left FROM left_table WHERE left = <TT
+CLASS="REPLACEABLE"
+><I
+>item</I
+></TT
+>) AS lefts
+         ON (summary.left = lefts.left)
+  ) AS list
+  GROUP BY right
+  ORDER BY count DESC;</PRE
+><P>
+ </P
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="hstore.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="intarray.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>hstore</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="contrib.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>intarray</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

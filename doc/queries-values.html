@@ -1,0 +1,300 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>VALUES列表</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="查询"
+HREF="queries.html"><LINK
+REL="PREVIOUS"
+TITLE="LIMIT和OFFSET"
+HREF="queries-limit.html"><LINK
+REL="NEXT"
+TITLE="WITH查询（公共表表达式）"
+HREF="queries-with.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/queries.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="LIMIT和OFFSET"
+HREF="queries-limit.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="queries.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#31456; 7. 查询</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="WITH查询（公共表表达式）"
+HREF="queries-with.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="QUERIES-VALUES"
+>7.7. <TT
+CLASS="LITERAL"
+>VALUES</TT
+>列表</A
+></H1
+><P
+>   <TT
+CLASS="LITERAL"
+>VALUES</TT
+>提供了一种生成<SPAN
+CLASS="QUOTE"
+>"常量表"</SPAN
+>的方法，它可以被使用在一个查询中而不需要实际在磁盘上创建一个表。语法是：
+</P><PRE
+CLASS="SYNOPSIS"
+>VALUES ( <TT
+CLASS="REPLACEABLE"
+><I
+>expression</I
+></TT
+> [, ...] ) [, ...]</PRE
+><P>
+   每一个被圆括号包围的表达式列表生成表中的一行。列表都必须具有相同数据的元素（即表中列的数目），并且在每个列表中对应的项必须具有可兼容的数据类型。分配给结果的每一列的实际数据类型使用和<TT
+CLASS="LITERAL"
+>UNION</TT
+>相同的规则确定（参见<A
+HREF="typeconv-union-case.html"
+>第 10.5 &#33410;</A
+>）。
+  </P
+><P
+>   一个例子：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>VALUES (1, 'one'), (2, 'two'), (3, 'three');</PRE
+><P>
+
+   将会返回一个有两列三行的表。它实际上等效于：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>SELECT 1 AS column1, 'one' AS column2
+UNION ALL
+SELECT 2, 'two'
+UNION ALL
+SELECT 3, 'three';</PRE
+><P>
+
+   在默认情况下，<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>将<TT
+CLASS="LITERAL"
+>column1</TT
+>、<TT
+CLASS="LITERAL"
+>column2</TT
+>等名字分配给一个<TT
+CLASS="LITERAL"
+>VALUES</TT
+>表的列。这些列名不是由SQL标准指定的，并且不同的数据库系统的做法也不同，因此通常最好使用表别名列表来重写这些默认的名字，像这样：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>=&gt; SELECT * FROM (VALUES (1, 'one'), (2, 'two'), (3, 'three')) AS t (num,letter);
+ num | letter
+-----+--------
+   1 | one
+   2 | two
+   3 | three
+(3 rows)</PRE
+><P>
+  </P
+><P
+>   在句法上，后面跟随着表达式列表的<TT
+CLASS="LITERAL"
+>VALUES</TT
+>列表被视为和
+</P><PRE
+CLASS="SYNOPSIS"
+>SELECT <TT
+CLASS="REPLACEABLE"
+><I
+>select_list</I
+></TT
+> FROM <TT
+CLASS="REPLACEABLE"
+><I
+>table_expression</I
+></TT
+></PRE
+><P>
+   一样，并且可以出现在<TT
+CLASS="LITERAL"
+>SELECT</TT
+>能出现的任何地方。例如，你可以把它用作<TT
+CLASS="LITERAL"
+>UNION</TT
+>的一部分，或者附加一个<TT
+CLASS="REPLACEABLE"
+><I
+>sort_specification</I
+></TT
+>（<TT
+CLASS="LITERAL"
+>ORDER BY</TT
+>、<TT
+CLASS="LITERAL"
+>LIMIT</TT
+>和/或<TT
+CLASS="LITERAL"
+>OFFSET</TT
+>）给它。<TT
+CLASS="LITERAL"
+>VALUES</TT
+>最常见的用途是作为一个<TT
+CLASS="COMMAND"
+>INSERT</TT
+>命令的数据源，以及作为一个子查询。
+  </P
+><P
+>   更多信息请见<A
+HREF="sql-values.html"
+>VALUES</A
+>。
+  </P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="queries-limit.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="queries-with.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><TT
+CLASS="LITERAL"
+>LIMIT</TT
+>和<TT
+CLASS="LITERAL"
+>OFFSET</TT
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="queries.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><TT
+CLASS="LITERAL"
+>WITH</TT
+>查询（公共表表达式）</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

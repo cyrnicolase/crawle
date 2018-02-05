@@ -1,0 +1,308 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>连接参数的 LDAP 查找</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="libpq - C 库"
+HREF="libpq.html"><LINK
+REL="PREVIOUS"
+TITLE="连接服务文件"
+HREF="libpq-pgservice.html"><LINK
+REL="NEXT"
+TITLE="SSL 支持"
+HREF="libpq-ssl.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/libpq.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="连接服务文件"
+HREF="libpq-pgservice.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="libpq.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#31456; 32. <SPAN
+CLASS="APPLICATION"
+>libpq</SPAN
+> - C 库</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="SSL 支持"
+HREF="libpq-ssl.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="LIBPQ-LDAP"
+>32.17. 连接参数的 LDAP 查找</A
+></H1
+><P
+>   如果<SPAN
+CLASS="APPLICATION"
+>libpq</SPAN
+>已经在编译时打开了 LDAP 支持（<TT
+CLASS="COMMAND"
+>configure</TT
+>的选项<TT
+CLASS="LITERAL"
+><TT
+CLASS="OPTION"
+>--with-ldap</TT
+></TT
+>），就可以通过 LDAP 从一个中央服务器检索<TT
+CLASS="LITERAL"
+>host</TT
+>或<TT
+CLASS="LITERAL"
+>dbname</TT
+>之类的连接参数。这样做的好处是如果一个数据库的连接参数改变，不需要在所有的客户端机器上更新连接信息。
+  </P
+><P
+>   LDAP 连接参数查找使用连接服务文件<TT
+CLASS="FILENAME"
+>pg_service.conf</TT
+>（见<A
+HREF="libpq-pgservice.html"
+>第 32.16 &#33410;</A
+>）。<TT
+CLASS="FILENAME"
+>pg_service.conf</TT
+>中一个以<TT
+CLASS="LITERAL"
+>ldap://</TT
+>开始的行将被识别为一个 LDAP URL 并且将执行一个 LDAP 查询。结果必须是一个<TT
+CLASS="LITERAL"
+>keyword = value</TT
+>对列表，它将被用来设置连接选项。URL 必须遵循 RFC 1959 并且是形式
+</P><PRE
+CLASS="SYNOPSIS"
+>ldap://[<TT
+CLASS="REPLACEABLE"
+><I
+>hostname</I
+></TT
+>[:<TT
+CLASS="REPLACEABLE"
+><I
+>port</I
+></TT
+>]]/<TT
+CLASS="REPLACEABLE"
+><I
+>search_base</I
+></TT
+>?<TT
+CLASS="REPLACEABLE"
+><I
+>attribute</I
+></TT
+>?<TT
+CLASS="REPLACEABLE"
+><I
+>search_scope</I
+></TT
+>?<TT
+CLASS="REPLACEABLE"
+><I
+>filter</I
+></TT
+></PRE
+><P>
+   其中<TT
+CLASS="REPLACEABLE"
+><I
+>hostname</I
+></TT
+>默认为<TT
+CLASS="LITERAL"
+>localhost</TT
+>并且<TT
+CLASS="REPLACEABLE"
+><I
+>port</I
+></TT
+>默认为 389。
+  </P
+><P
+>   一次成功的 LDAP 查找后，<TT
+CLASS="FILENAME"
+>pg_service.conf</TT
+>的处理被终止。但是如果联系不上 LDAP 则会继续处理<TT
+CLASS="FILENAME"
+>pg_service.conf</TT
+>。这就提供了后手，可以加入更多指向不同 LDAP 服务器的 LDAP URL 行、经典的<TT
+CLASS="LITERAL"
+>keyword = value</TT
+>对或者默认连接选项。如果你宁愿在这种情况下得到一个错误消息，在该 LDAP URL 之后增加一个语法错误的行。
+  </P
+><P
+>   一个和 LDIF 文件一起创建的 LDAP 条目实例
+</P><PRE
+CLASS="PROGRAMLISTING"
+>version:1
+dn:cn=mydatabase,dc=mycompany,dc=com
+changetype:add
+objectclass:top
+objectclass:device
+cn:mydatabase
+description:host=dbserver.mycompany.com
+description:port=5439
+description:dbname=mydb
+description:user=mydb_user
+description:sslmode=require</PRE
+><P>
+   可以用下面的 LDAP URL 查询到：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>ldap://ldap.mycompany.com/dc=mycompany,dc=com?description?one?(cn=mydatabase)</PRE
+><P>
+  </P
+><P
+>   您还可以将常规服务文件条目与LDAP查找相混合。<TT
+CLASS="FILENAME"
+>pg_service.conf</TT
+>
+   中的节的完整示例将是：
+</P><PRE
+CLASS="PROGRAMLISTING"
+># 只有主机和端口存储在LDAP中，明确指定dbname和user
+[customerdb]
+dbname=customer
+user=appuser
+ldap://ldap.acme.com/cn=dbserver,cn=hosts?pgconnectinfo?base?(objectclass=*)</PRE
+><P>
+  </P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="libpq-pgservice.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="libpq-ssl.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>连接服务文件</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="libpq.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>SSL 支持</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

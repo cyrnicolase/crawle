@@ -1,0 +1,427 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>CREATE COLLATION</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="SQL 命令"
+HREF="sql-commands.html"><LINK
+REL="PREVIOUS"
+TITLE="CREATE CAST"
+HREF="sql-createcast.html"><LINK
+REL="NEXT"
+TITLE="CREATE CONVERSION"
+HREF="sql-createconversion.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="REFENTRY"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/ref/create_collation.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="CREATE CAST"
+HREF="sql-createcast.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="CREATE CONVERSION"
+HREF="sql-createconversion.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="SQL-CREATECOLLATION"
+></A
+>CREATE COLLATION</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN78420"
+></A
+><H2
+>&#21517;&#31216;</H2
+>CREATE COLLATION&nbsp;--&nbsp;定义一种新排序规则</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN78423"
+></A
+><H2
+>&#22823;&#32434;</H2
+><PRE
+CLASS="SYNOPSIS"
+>CREATE COLLATION <TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+> (
+    [ LOCALE = <TT
+CLASS="REPLACEABLE"
+><I
+>locale</I
+></TT
+>, ]
+    [ LC_COLLATE = <TT
+CLASS="REPLACEABLE"
+><I
+>lc_collate</I
+></TT
+>, ]
+    [ LC_CTYPE = <TT
+CLASS="REPLACEABLE"
+><I
+>lc_ctype</I
+></TT
+> ]
+)
+CREATE COLLATION <TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+> FROM <TT
+CLASS="REPLACEABLE"
+><I
+>existing_collation</I
+></TT
+></PRE
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="SQL-CREATECOLLATION-DESCRIPTION"
+></A
+><H2
+>描述</H2
+><P
+>   <TT
+CLASS="COMMAND"
+>CREATE COLLATION</TT
+>使用指定的操作系统区域
+   设置或者复制一个现有的排序规则来定义新的排序规则。
+ </P
+><P
+>   要创建一种排序规则，你必须拥有目标模式上的
+   <TT
+CLASS="LITERAL"
+>CREATE</TT
+>特权。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN78437"
+></A
+><H2
+>参数</H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+></DT
+><DD
+><P
+>       排序规则的名字，可以被模式限定。如果没有用模式限定，该排序规则
+       会被定义在当前模式中。排序规则名称在其所处的模式中必须唯一（系统
+       目录可以为其他编码包含具有相同名称的排序规则，但数据库编码不匹配
+       时它们会被忽略）。
+      </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>locale</I
+></TT
+></DT
+><DD
+><P
+>       这是一种一次设置<TT
+CLASS="SYMBOL"
+>LC_COLLATE</TT
+>
+       和<TT
+CLASS="SYMBOL"
+>LC_CTYPE</TT
+>的快捷方式。如果你指定它，你就
+       不能指定那两个参数。
+      </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>lc_collate</I
+></TT
+></DT
+><DD
+><P
+>       为<TT
+CLASS="SYMBOL"
+>LC_COLLATE</TT
+>区域分类使用指定的操作系统
+       区域。该区域必须可适用于当前的数据库编码（精确的规则请见
+       <A
+HREF="sql-createdatabase.html"
+>CREATE DATABASE</A
+>）。
+      </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>lc_ctype</I
+></TT
+></DT
+><DD
+><P
+>       为<TT
+CLASS="SYMBOL"
+>LC_CTYPE</TT
+>区域分类使用指定的操作系统
+       区域。该区域必须可适用于当前的数据库编码（精确的规则请见
+       <A
+HREF="sql-createdatabase.html"
+>CREATE DATABASE</A
+>）。
+      </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>existing_collation</I
+></TT
+></DT
+><DD
+><P
+>       要复制的一种现有的排序规则的名称。新的排序规则将和现有的具有
+       同样的属性，但是它是一个独立的对象。
+      </P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="SQL-CREATECOLLATION-NOTES"
+></A
+><H2
+>注解</H2
+><P
+>   使用<TT
+CLASS="COMMAND"
+>DROP COLLATION</TT
+>可移除用户定义的排序规则。
+  </P
+><P
+>   关于 PostgreSQL 中支持的排序规则可见<A
+HREF="collation.html"
+>第 23.2 &#33410;</A
+>。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="SQL-CREATECOLLATION-EXAMPLES"
+></A
+><H2
+>示例</H2
+><P
+>   从操作系统区域<TT
+CLASS="LITERAL"
+>fr_FR.utf8</TT
+>创建一种排序规则（假定
+   当前数据库编码是<TT
+CLASS="LITERAL"
+>UTF8</TT
+>）：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>CREATE COLLATION french (LOCALE = 'fr_FR.utf8');</PRE
+><P>
+  </P
+><P
+>   从一个现有的排序规则创建一个新的排序规则：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>CREATE COLLATION german FROM "de_DE";</PRE
+><P>
+   能在应用中使用与操作系统无关的排序规则名称就很方便了。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="SQL-CREATECOLLATION-COMPAT"
+></A
+><H2
+>兼容性</H2
+><P
+>   在 SQL 标准中有一个<TT
+CLASS="COMMAND"
+>CREATE COLLATION</TT
+>
+   语句，但是它被限制为只能复制一个现有的排序规则。创建新排序规则的
+   语法是一种<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>扩展。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="SQL-CREATECOLLATION-SEEALSO"
+></A
+><H2
+>另见</H2
+><A
+HREF="sql-altercollation.html"
+>ALTER COLLATION</A
+>, <A
+HREF="sql-dropcollation.html"
+>DROP COLLATION</A
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-createcast.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="sql-createconversion.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>CREATE CAST</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>CREATE CONVERSION</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

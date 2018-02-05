@@ -1,0 +1,650 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>函数和操作符</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="SQL 语言"
+HREF="sql.html"><LINK
+REL="PREVIOUS"
+TITLE="伪类型"
+HREF="datatype-pseudo.html"><LINK
+REL="NEXT"
+TITLE="逻辑操作符"
+HREF="functions-logical.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="CHAPTER"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/func.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="伪类型"
+HREF="datatype-pseudo.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="逻辑操作符"
+HREF="functions-logical.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="CHAPTER"
+><H1
+><A
+NAME="FUNCTIONS"
+></A
+>&#31456; 9. 函数和操作符</H1
+><DIV
+CLASS="TOC"
+><DL
+><DT
+><B
+>&#30446;&#24405;</B
+></DT
+><DT
+>9.1. <A
+HREF="functions-logical.html"
+>逻辑操作符</A
+></DT
+><DT
+>9.2. <A
+HREF="functions-comparison.html"
+>比较操作符</A
+></DT
+><DT
+>9.3. <A
+HREF="functions-math.html"
+>数学函数和操作符</A
+></DT
+><DT
+>9.4. <A
+HREF="functions-string.html"
+>字符串函数和操作符</A
+></DT
+><DT
+>9.5. <A
+HREF="functions-binarystring.html"
+>二进制串函数和操作符</A
+></DT
+><DT
+>9.6. <A
+HREF="functions-bitstring.html"
+>位串函数和操作符</A
+></DT
+><DT
+>9.7. <A
+HREF="functions-matching.html"
+>模式匹配</A
+></DT
+><DD
+><DL
+><DT
+>9.7.1. <A
+HREF="functions-matching.html#FUNCTIONS-LIKE"
+><CODE
+CLASS="FUNCTION"
+>LIKE</CODE
+></A
+></DT
+><DT
+>9.7.2. <A
+HREF="functions-matching.html#FUNCTIONS-SIMILARTO-REGEXP"
+><CODE
+CLASS="FUNCTION"
+>SIMILAR TO</CODE
+>正则表达式</A
+></DT
+><DT
+>9.7.3. <A
+HREF="functions-matching.html#FUNCTIONS-POSIX-REGEXP"
+><ACRONYM
+CLASS="ACRONYM"
+>POSIX</ACRONYM
+>正则表达式</A
+></DT
+></DL
+></DD
+><DT
+>9.8. <A
+HREF="functions-formatting.html"
+>数据类型格式化函数</A
+></DT
+><DT
+>9.9. <A
+HREF="functions-datetime.html"
+>时间/日期函数和操作符</A
+></DT
+><DD
+><DL
+><DT
+>9.9.1. <A
+HREF="functions-datetime.html#FUNCTIONS-DATETIME-EXTRACT"
+><CODE
+CLASS="FUNCTION"
+>EXTRACT</CODE
+>, <CODE
+CLASS="FUNCTION"
+>date_part</CODE
+></A
+></DT
+><DT
+>9.9.2. <A
+HREF="functions-datetime.html#FUNCTIONS-DATETIME-TRUNC"
+><CODE
+CLASS="FUNCTION"
+>date_trunc</CODE
+></A
+></DT
+><DT
+>9.9.3. <A
+HREF="functions-datetime.html#FUNCTIONS-DATETIME-ZONECONVERT"
+><TT
+CLASS="LITERAL"
+>AT TIME ZONE</TT
+></A
+></DT
+><DT
+>9.9.4. <A
+HREF="functions-datetime.html#FUNCTIONS-DATETIME-CURRENT"
+>当前日期/时间</A
+></DT
+><DT
+>9.9.5. <A
+HREF="functions-datetime.html#FUNCTIONS-DATETIME-DELAY"
+>延时执行</A
+></DT
+></DL
+></DD
+><DT
+>9.10. <A
+HREF="functions-enum.html"
+>枚举支持函数</A
+></DT
+><DT
+>9.11. <A
+HREF="functions-geometry.html"
+>几何函数和操作符</A
+></DT
+><DT
+>9.12. <A
+HREF="functions-net.html"
+>网络地址函数和操作符</A
+></DT
+><DT
+>9.13. <A
+HREF="functions-textsearch.html"
+>文本搜索函数和操作符</A
+></DT
+><DT
+>9.14. <A
+HREF="functions-xml.html"
+>XML 函数</A
+></DT
+><DD
+><DL
+><DT
+>9.14.1. <A
+HREF="functions-xml.html#FUNCTIONS-PRODUCING-XML"
+>产生 XML 内容</A
+></DT
+><DT
+>9.14.2. <A
+HREF="functions-xml.html#FUNCTIONS-XML-PREDICATES"
+>XML 谓词</A
+></DT
+><DT
+>9.14.3. <A
+HREF="functions-xml.html#FUNCTIONS-XML-PROCESSING"
+>处理 XML</A
+></DT
+><DT
+>9.14.4. <A
+HREF="functions-xml.html#FUNCTIONS-XML-MAPPING"
+>将表映射到 XML</A
+></DT
+></DL
+></DD
+><DT
+>9.15. <A
+HREF="functions-json.html"
+>JSON 函数和操作符</A
+></DT
+><DT
+>9.16. <A
+HREF="functions-sequence.html"
+>序列操作函数</A
+></DT
+><DT
+>9.17. <A
+HREF="functions-conditional.html"
+>条件表达式</A
+></DT
+><DD
+><DL
+><DT
+>9.17.1. <A
+HREF="functions-conditional.html#FUNCTIONS-CASE"
+><TT
+CLASS="LITERAL"
+>CASE</TT
+></A
+></DT
+><DT
+>9.17.2. <A
+HREF="functions-conditional.html#FUNCTIONS-COALESCE-NVL-IFNULL"
+><TT
+CLASS="LITERAL"
+>COALESCE</TT
+></A
+></DT
+><DT
+>9.17.3. <A
+HREF="functions-conditional.html#FUNCTIONS-NULLIF"
+><TT
+CLASS="LITERAL"
+>NULLIF</TT
+></A
+></DT
+><DT
+>9.17.4. <A
+HREF="functions-conditional.html#FUNCTIONS-GREATEST-LEAST"
+><TT
+CLASS="LITERAL"
+>GREATEST</TT
+>和<TT
+CLASS="LITERAL"
+>LEAST</TT
+></A
+></DT
+></DL
+></DD
+><DT
+>9.18. <A
+HREF="functions-array.html"
+>数组函数和操作符</A
+></DT
+><DT
+>9.19. <A
+HREF="functions-range.html"
+>范围函数和操作符</A
+></DT
+><DT
+>9.20. <A
+HREF="functions-aggregate.html"
+>聚集函数</A
+></DT
+><DT
+>9.21. <A
+HREF="functions-window.html"
+>窗口函数</A
+></DT
+><DT
+>9.22. <A
+HREF="functions-subquery.html"
+>子查询表达式</A
+></DT
+><DD
+><DL
+><DT
+>9.22.1. <A
+HREF="functions-subquery.html#FUNCTIONS-SUBQUERY-EXISTS"
+><TT
+CLASS="LITERAL"
+>EXISTS</TT
+></A
+></DT
+><DT
+>9.22.2. <A
+HREF="functions-subquery.html#FUNCTIONS-SUBQUERY-IN"
+><TT
+CLASS="LITERAL"
+>IN</TT
+></A
+></DT
+><DT
+>9.22.3. <A
+HREF="functions-subquery.html#FUNCTIONS-SUBQUERY-NOTIN"
+><TT
+CLASS="LITERAL"
+>NOT IN</TT
+></A
+></DT
+><DT
+>9.22.4. <A
+HREF="functions-subquery.html#FUNCTIONS-SUBQUERY-ANY-SOME"
+><TT
+CLASS="LITERAL"
+>ANY</TT
+>/<TT
+CLASS="LITERAL"
+>SOME</TT
+></A
+></DT
+><DT
+>9.22.5. <A
+HREF="functions-subquery.html#FUNCTIONS-SUBQUERY-ALL"
+><TT
+CLASS="LITERAL"
+>ALL</TT
+></A
+></DT
+><DT
+>9.22.6. <A
+HREF="functions-subquery.html#AEN20861"
+>单一行比较</A
+></DT
+></DL
+></DD
+><DT
+>9.23. <A
+HREF="functions-comparisons.html"
+>行和数组比较</A
+></DT
+><DD
+><DL
+><DT
+>9.23.1. <A
+HREF="functions-comparisons.html#FUNCTIONS-COMPARISONS-IN-SCALAR"
+><TT
+CLASS="LITERAL"
+>IN</TT
+></A
+></DT
+><DT
+>9.23.2. <A
+HREF="functions-comparisons.html#AEN20920"
+><TT
+CLASS="LITERAL"
+>NOT IN</TT
+></A
+></DT
+><DT
+>9.23.3. <A
+HREF="functions-comparisons.html#AEN20942"
+><TT
+CLASS="LITERAL"
+>ANY</TT
+>/<TT
+CLASS="LITERAL"
+>SOME</TT
+> (array)</A
+></DT
+><DT
+>9.23.4. <A
+HREF="functions-comparisons.html#AEN20965"
+><TT
+CLASS="LITERAL"
+>ALL</TT
+> (array)</A
+></DT
+><DT
+>9.23.5. <A
+HREF="functions-comparisons.html#ROW-WISE-COMPARISON"
+>行构造器比较</A
+></DT
+><DT
+>9.23.6. <A
+HREF="functions-comparisons.html#COMPOSITE-TYPE-COMPARISON"
+>组合类型比较</A
+></DT
+></DL
+></DD
+><DT
+>9.24. <A
+HREF="functions-srf.html"
+>集合返回函数</A
+></DT
+><DT
+>9.25. <A
+HREF="functions-info.html"
+>系统信息函数</A
+></DT
+><DT
+>9.26. <A
+HREF="functions-admin.html"
+>系统管理函数</A
+></DT
+><DD
+><DL
+><DT
+>9.26.1. <A
+HREF="functions-admin.html#FUNCTIONS-ADMIN-SET"
+>配置设定函数</A
+></DT
+><DT
+>9.26.2. <A
+HREF="functions-admin.html#FUNCTIONS-ADMIN-SIGNAL"
+>服务器信号函数</A
+></DT
+><DT
+>9.26.3. <A
+HREF="functions-admin.html#FUNCTIONS-ADMIN-BACKUP"
+>备份控制函数</A
+></DT
+><DT
+>9.26.4. <A
+HREF="functions-admin.html#FUNCTIONS-RECOVERY-CONTROL"
+>恢复控制函数</A
+></DT
+><DT
+>9.26.5. <A
+HREF="functions-admin.html#FUNCTIONS-SNAPSHOT-SYNCHRONIZATION"
+>快照同步函数</A
+></DT
+><DT
+>9.26.6. <A
+HREF="functions-admin.html#FUNCTIONS-REPLICATION"
+>Replication Functions</A
+></DT
+><DT
+>9.26.7. <A
+HREF="functions-admin.html#FUNCTIONS-ADMIN-DBOBJECT"
+>数据库对象管理函数</A
+></DT
+><DT
+>9.26.8. <A
+HREF="functions-admin.html#FUNCTIONS-ADMIN-INDEX"
+>索引维护函数</A
+></DT
+><DT
+>9.26.9. <A
+HREF="functions-admin.html#FUNCTIONS-ADMIN-GENFILE"
+>通用文件访问函数</A
+></DT
+><DT
+>9.26.10. <A
+HREF="functions-admin.html#FUNCTIONS-ADVISORY-LOCKS"
+>咨询锁函数</A
+></DT
+></DL
+></DD
+><DT
+>9.27. <A
+HREF="functions-trigger.html"
+>触发器函数</A
+></DT
+><DT
+>9.28. <A
+HREF="functions-event-triggers.html"
+>事件触发器函数</A
+></DT
+><DD
+><DL
+><DT
+>9.28.1. <A
+HREF="functions-event-triggers.html#PG-EVENT-TRIGGER-DDL-COMMAND-END-FUNCTIONS"
+>捕获命令结尾的改变</A
+></DT
+><DT
+>9.28.2. <A
+HREF="functions-event-triggers.html#PG-EVENT-TRIGGER-SQL-DROP-FUNCTIONS"
+>通过DDL命令删除处理的对象</A
+></DT
+><DT
+>9.28.3. <A
+HREF="functions-event-triggers.html#PG-EVENT-TRIGGER-TABLE-REWRITE-FUNCTIONS"
+>处理表重写事件</A
+></DT
+></DL
+></DD
+></DL
+></DIV
+><P
+>   <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>为内建的数据类型提供了大量的函数和操作符。 用户也可以定义它们自己的函数和操作符， 如<A
+HREF="server-programming.html"
+>第 V &#37096;&#20998;</A
+>所述。<SPAN
+CLASS="APPLICATION"
+>psql</SPAN
+>命令<TT
+CLASS="COMMAND"
+>\df</TT
+>和<TT
+CLASS="COMMAND"
+>\do</TT
+>可以分别被用于显示所有可用的函数和操作符的列表。
+  </P
+><P
+>   如果你关心移植性，那么请注意，我们在本章描述的大多数函数和操作符， 除了最琐碎的算术和比较操作符以及一些做了明确标记的函数以外，都没有在<ACRONYM
+CLASS="ACRONYM"
+>SQL</ACRONYM
+>标准里声明。某些这种扩展的功能也出现在许多其它<ACRONYM
+CLASS="ACRONYM"
+>SQL</ACRONYM
+>数据库管理系统中，并且在很多情况下多个实现的这种功能是相互兼容的和一致的。本章也并没有穷尽一切信息；一些附加的函数在本手册的相关小节里出现。
+  </P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="datatype-pseudo.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="functions-logical.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>伪类型</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="sql.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>逻辑操作符</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

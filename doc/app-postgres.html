@@ -1,0 +1,1480 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>postgres</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="PostgreSQL 服务器应用"
+HREF="reference-server.html"><LINK
+REL="PREVIOUS"
+TITLE="pg_xlogdump"
+HREF="pgxlogdump.html"><LINK
+REL="NEXT"
+TITLE="postmaster"
+HREF="app-postmaster.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="REFENTRY"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/ref/postgres-ref.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="pg_xlogdump"
+HREF="pgxlogdump.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="reference-server.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="postmaster"
+HREF="app-postmaster.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="APP-POSTGRES"
+></A
+><SPAN
+CLASS="APPLICATION"
+>postgres</SPAN
+></H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN103276"
+></A
+><H2
+>&#21517;&#31216;</H2
+>postgres&nbsp;--&nbsp;<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>数据库服务器</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN103280"
+></A
+><H2
+>&#22823;&#32434;</H2
+><P
+><TT
+CLASS="COMMAND"
+>postgres</TT
+> [<TT
+CLASS="REPLACEABLE"
+><I
+>选项</I
+></TT
+>...]</P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN103285"
+></A
+><H2
+>描述</H2
+><P
+>   <TT
+CLASS="COMMAND"
+>postgres</TT
+>是<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>数据库服务器。一个客户端应用为了能访问一个数据库，它会（通过一个网络或者本地）连接到一个运行着的<TT
+CLASS="COMMAND"
+>postgres</TT
+>实例。该<TT
+CLASS="COMMAND"
+>postgres</TT
+>实例接着会开始一个独立的服务器进程来处理该连接。
+  </P
+><P
+>   一个<TT
+CLASS="COMMAND"
+>postgres</TT
+>实例总是管理正好一个数据库集簇的数据。一个数据库集簇是一个数据库的集合，它们被存储在一个共同的文件系统位置（<SPAN
+CLASS="QUOTE"
+>"数据区"</SPAN
+>）上。 一个系统上可以同时运行多个<TT
+CLASS="COMMAND"
+>postgres</TT
+>实例，只要它们使用不同的数据区和不同的通信端口（见下文）。<TT
+CLASS="COMMAND"
+>postgres</TT
+>启动时需要知道数据区的位置，该位置必须通过<TT
+CLASS="OPTION"
+>-D</TT
+>选项或<TT
+CLASS="ENVAR"
+>PGDATA</TT
+>环境变量指定，对此是没有默认值的。通常，<TT
+CLASS="OPTION"
+>-D</TT
+>或<TT
+CLASS="ENVAR"
+>PGDATA</TT
+>会直接指向由<A
+HREF="app-initdb.html"
+>initdb</A
+>创建的数据区目录。其他可能的文件布局在<A
+HREF="runtime-config-file-locations.html"
+>第 19.2 &#33410;</A
+>中讨论。
+  </P
+><P
+>   默认情况下，<TT
+CLASS="COMMAND"
+>postgres</TT
+>会在前台启动并将日志消息打印到标准错误流。但在实际应用中，<TT
+CLASS="COMMAND"
+>postgres</TT
+>应当作为一个后台进程启动，而且多数是在系统启动时自动启动。
+  </P
+><P
+>   <TT
+CLASS="COMMAND"
+>postgres</TT
+>还能在单用户模式中被调用。这种模式的主要用途是在启动过程中由<A
+HREF="app-initdb.html"
+>initdb</A
+>使用。有时候它也被用于调试或者灾难性恢复。注意，运行一个单用户模式服务器并不真地适合调试服务器，因为不会发生实际的进程间通信和锁定。当从 shell 中调用单用户模式时，用户可以输入查询并且结果会被以一种更适合开发者阅读（不适合普通用户）的形式打印在屏幕上。在单用户模式中，会话用户将被设置为 ID 为 1 的用户，并且这个用户会被隐式地赋予超级用户权限。该用户不必实际存在，因此单用户模式运行可以被用来对某些意外损坏的系统目录进行手工恢复。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="APP-POSTGRES-OPTIONS"
+></A
+><H2
+>选项</H2
+><P
+>    <TT
+CLASS="COMMAND"
+>postgres</TT
+>接受下列命令行参数。关于这些选项的详细讨论请参考<A
+HREF="runtime-config.html"
+>第 19 &#31456;</A
+>。你也可以通过设置一个配置文件来减少键入大部分这些选项。有些（安全）选项还可以从连接的客户端以一种与应用相关只应用于会话的方法设置。例如，如果设置了<TT
+CLASS="ENVAR"
+>PGOPTIONS</TT
+>环境变量，那么基于<SPAN
+CLASS="APPLICATION"
+>libpq</SPAN
+>的客户端将都把那个字符串传递给服务器，它将被服务器解释成<TT
+CLASS="COMMAND"
+>postgres</TT
+>命令行选项。
+   </P
+><DIV
+CLASS="REFSECT2"
+><A
+NAME="AEN103317"
+></A
+><H3
+>通用选项</H3
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="OPTION"
+>-B <TT
+CLASS="REPLACEABLE"
+><I
+>nbuffers</I
+></TT
+></TT
+></DT
+><DD
+><P
+>        设置被服务器进程使用的共享内存缓冲区数量。这个参数的默认值是<SPAN
+CLASS="APPLICATION"
+>initdb</SPAN
+>自动选择的。指定这个选项等效于设置<A
+HREF="runtime-config-resource.html#GUC-SHARED-BUFFERS"
+>shared_buffers</A
+>配置参数。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-c <TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+>=<TT
+CLASS="REPLACEABLE"
+><I
+>value</I
+></TT
+></TT
+></DT
+><DD
+><P
+>        设置一个命名的运行时参数。<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>支持的配置参数在<A
+HREF="runtime-config.html"
+>第 19 &#31456;</A
+>中描述。大多数其它命令行选项实际上都是这种参数赋值的短形式。<TT
+CLASS="OPTION"
+>-c</TT
+>可以出现多次用于设置多个参数。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-C <TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+></TT
+></DT
+><DD
+><P
+>        打印命名运行时参数的值，并且退出（详见上面的<TT
+CLASS="OPTION"
+>-c</TT
+>选项）。这可以被用在一个运行服务器上，并且从<TT
+CLASS="FILENAME"
+>postgresql.conf</TT
+>中返回值，这些值可能被在这次调用中的任何参数修改过。它并不反映集簇启动时提供的参数。
+       </P
+><P
+>        这个选项用于与一个服务器实例交互的其他程序来查询配置参数值，例如<A
+HREF="app-pg-ctl.html"
+><SPAN
+CLASS="APPLICATION"
+>pg_ctl</SPAN
+></A
+>。面向用户的应用应该使用<A
+HREF="sql-show.html"
+>SHOW</A
+>或者<TT
+CLASS="STRUCTNAME"
+>pg_settings</TT
+>视图。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-d <TT
+CLASS="REPLACEABLE"
+><I
+>debug-level</I
+></TT
+></TT
+></DT
+><DD
+><P
+>        设置调试级别。数值设置得越高，写到服务器日志的调试输出就越多。取值范围是从 1 到 5。还可以针对某个特定会话使用<TT
+CLASS="LITERAL"
+>-d 0</TT
+>来阻止父<TT
+CLASS="COMMAND"
+>postgres</TT
+>进程的服务器日志级别被传播到这个会话。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-D <TT
+CLASS="REPLACEABLE"
+><I
+>datadir</I
+></TT
+></TT
+></DT
+><DD
+><P
+>        指定数据库配置文件的文件系统位置。详见<A
+HREF="runtime-config-file-locations.html"
+>第 19.2 &#33410;</A
+>。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-e</TT
+></DT
+><DD
+><P
+>        把默认日期风格设置为<SPAN
+CLASS="QUOTE"
+>"European"</SPAN
+>，也就是输入日期域的顺序是<TT
+CLASS="LITERAL"
+>DMY</TT
+>。这也导致在一些日期输出格式中把日打印在月之前。详见<A
+HREF="datatype-datetime.html"
+>第 8.5 &#33410;</A
+>。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-F</TT
+></DT
+><DD
+><P
+>        禁用<CODE
+CLASS="FUNCTION"
+>fsync</CODE
+>调用以提高性能，但是要冒系统崩溃时数据损坏的风险。指定这个选项等效于禁用<A
+HREF="runtime-config-wal.html#GUC-FSYNC"
+>fsync</A
+>配置参数。在使用之前阅读详细文档！
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-h <TT
+CLASS="REPLACEABLE"
+><I
+>hostname</I
+></TT
+></TT
+></DT
+><DD
+><P
+>        指定<TT
+CLASS="COMMAND"
+>postgres</TT
+>监听来自客户端应用 TCP/IP 连接的 IP 主机名或地址。该值也可以是一个用逗号分隔的地址列表，或者<TT
+CLASS="LITERAL"
+>*</TT
+>表示监听所有可用的地址。一个空值表示不监听任何 IP 地址，在这种情况下可以使用 Unix 域套接字连接到服务器。缺省只监听localhost。声明这个选项等效于设置listen_addresses配置参数。默认只监听<SPAN
+CLASS="SYSTEMITEM"
+>localhost</SPAN
+>。指定这个选项等效于设置<A
+HREF="runtime-config-connection.html#GUC-LISTEN-ADDRESSES"
+>listen_addresses</A
+>配置参数。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-i</TT
+></DT
+><DD
+><P
+>        允许远程客户端使用 TCP/IP （互联网域）连接。没有这个选项，将只接受本地连接。这个选项等效于在<TT
+CLASS="FILENAME"
+>postgresql.conf</TT
+>中或者通过<TT
+CLASS="OPTION"
+>-h</TT
+>选项将<TT
+CLASS="VARNAME"
+>listen_addresses</TT
+>设为<TT
+CLASS="LITERAL"
+>*</TT
+>。
+       </P
+><P
+>        这个选项已经被废弃，因为它不允许访问<A
+HREF="runtime-config-connection.html#GUC-LISTEN-ADDRESSES"
+>listen_addresses</A
+>的完整功能。所以最好直接设置<TT
+CLASS="VARNAME"
+>listen_addresses</TT
+>。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-k <TT
+CLASS="REPLACEABLE"
+><I
+>directory</I
+></TT
+></TT
+></DT
+><DD
+><P
+>        指定<TT
+CLASS="COMMAND"
+>postgres</TT
+>用来监听来自客户端应用连接的 Unix 域套接字的目录。这个值也可以是一个逗号分隔的目录列表。一个空值指定不监听任何 Unix 域套接字，在这种情况下只能用 TCP/IP 套接字来连接到服务器。默认值通常是<TT
+CLASS="FILENAME"
+>/tmp</TT
+>，但是可以在编译的时候修改。指定这个选项等效于设置<A
+HREF="runtime-config-connection.html#GUC-UNIX-SOCKET-DIRECTORIES"
+>unix_socket_directories</A
+>配置参数。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-l</TT
+></DT
+><DD
+><P
+>        启用使用<ACRONYM
+CLASS="ACRONYM"
+>SSL</ACRONYM
+>的安全连接。要使这个选项可用，编译<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>时必须打开<ACRONYM
+CLASS="ACRONYM"
+>SSL</ACRONYM
+>支持。有关使用<ACRONYM
+CLASS="ACRONYM"
+>SSL</ACRONYM
+>的更多信息，请参考<A
+HREF="ssl-tcp.html"
+>第 18.9 &#33410;</A
+>。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-N <TT
+CLASS="REPLACEABLE"
+><I
+>max-connections</I
+></TT
+></TT
+></DT
+><DD
+><P
+>        设置该服务器将接受的最大客户端连接数。该参数的默认值由<SPAN
+CLASS="APPLICATION"
+>initdb</SPAN
+>自动选择。指定这个选项等效于设置<A
+HREF="runtime-config-connection.html#GUC-MAX-CONNECTIONS"
+>max_connections</A
+>配置参数。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-o <TT
+CLASS="REPLACEABLE"
+><I
+>extra-options</I
+></TT
+></TT
+></DT
+><DD
+><P
+>        在<TT
+CLASS="REPLACEABLE"
+><I
+>extra-options</I
+></TT
+>中指定的命令行风格的参数会被传递给所有由这个<TT
+CLASS="COMMAND"
+>postgres</TT
+>进程派生的服务进程。
+       </P
+><P
+>        <TT
+CLASS="REPLACEABLE"
+><I
+>extra-options</I
+></TT
+>中的空格被视作
+        参数分隔符，除非用反斜线（<TT
+CLASS="LITERAL"
+>\</TT
+>）转义。要表示一个字面意
+        义上的反斜线，可以写成<TT
+CLASS="LITERAL"
+>\\</TT
+>。通过多次使用<TT
+CLASS="OPTION"
+>-o</TT
+>
+        也可以指定多个参数。
+       </P
+><P
+>        这个选项的使用已经被废弃。用于服务器进程的所有命令行选项可以在<TT
+CLASS="COMMAND"
+>postgres</TT
+>命令行上直接指定。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-p <TT
+CLASS="REPLACEABLE"
+><I
+>port</I
+></TT
+></TT
+></DT
+><DD
+><P
+>        指定<TT
+CLASS="COMMAND"
+>postgres</TT
+>用于监听客户端应用连接的 TCP/IP 端口或本地 Unix 域套接字文件扩展。默认为<TT
+CLASS="ENVAR"
+>PGPORT</TT
+>环境变量的值。如果<TT
+CLASS="ENVAR"
+>PGPORT</TT
+>没有设置，那么默认值是编译期间设立的值（通常是 5432）。如果你指定了一个非默认端口，那么所有客户端应用都必须用命令行选项或者<TT
+CLASS="ENVAR"
+>PGPORT</TT
+>指定同一个端口。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-s</TT
+></DT
+><DD
+><P
+>        在每条命令结束时打印时间信息和其它统计信息。这个选项对测试基准和调节缓冲区数量有用处。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-S</TT
+> <TT
+CLASS="REPLACEABLE"
+><I
+>work-mem</I
+></TT
+></DT
+><DD
+><P
+>        指定内部排序和散列在使用临时磁盘文件之前能使用的内存数量。见<A
+HREF="runtime-config-resource.html#RUNTIME-CONFIG-RESOURCE-MEMORY"
+>第 19.4.1 &#33410;</A
+>中对<TT
+CLASS="VARNAME"
+>work_mem</TT
+>配置参数的描述。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-V</TT
+><BR><TT
+CLASS="OPTION"
+>--version</TT
+></DT
+><DD
+><P
+>        打印<SPAN
+CLASS="APPLICATION"
+>postgres</SPAN
+>版本并退出。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>--<TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+>=<TT
+CLASS="REPLACEABLE"
+><I
+>value</I
+></TT
+></TT
+></DT
+><DD
+><P
+>        设置一个命名的运行时参数；其缩写形式是<TT
+CLASS="OPTION"
+>-c</TT
+>。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>--describe-config</TT
+></DT
+><DD
+><P
+>        这个选项会用制表符分隔的<TT
+CLASS="COMMAND"
+>COPY</TT
+>格式导出服务器的内部配置变量、描述以及默认值。设计它的目的是用于管理工具。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-?</TT
+><BR><TT
+CLASS="OPTION"
+>--help</TT
+></DT
+><DD
+><P
+>        显示有关<SPAN
+CLASS="APPLICATION"
+>postgres</SPAN
+>的命令行参数，并且退出。
+       </P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT2"
+><A
+NAME="AEN103497"
+></A
+><H3
+>半内部选项</H3
+><P
+>     这里描述的选项主要被用于调试目的，并且在某些情况下可以协助恢复严重受损的数据库。在生产数据库环境中应该不会去使用它们。在这里列举它们只是为了让<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>系统开发者使用。此外，这些选项可能在将来的版本中更改或删除而不另行通知。
+    </P
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="OPTION"
+>-f</TT
+> <TT
+CLASS="LITERAL"
+>{ s | i | o | b | t | n | m | h }</TT
+></DT
+><DD
+><P
+>        禁止某种扫描和连接方法的使用：<TT
+CLASS="LITERAL"
+>s</TT
+>和<TT
+CLASS="LITERAL"
+>i</TT
+>分别禁用顺序和索引扫描， <TT
+CLASS="LITERAL"
+>o</TT
+>、<TT
+CLASS="LITERAL"
+>b</TT
+>和<TT
+CLASS="LITERAL"
+>t</TT
+>分别禁用只用索引扫描、位图索引扫描以及 TID 扫描，而<TT
+CLASS="LITERAL"
+>n</TT
+>、<TT
+CLASS="LITERAL"
+>m</TT
+>和<TT
+CLASS="LITERAL"
+>h</TT
+>则分别禁用嵌套循环、归并和哈希连接。
+       </P
+><P
+>        顺序扫描和嵌套循环连接都不可能完全被禁用。<TT
+CLASS="LITERAL"
+>-fs</TT
+>和<TT
+CLASS="LITERAL"
+>-fn</TT
+>选项仅仅是在有其他选择时不鼓励优化器使用这些计划类型。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-n</TT
+></DT
+><DD
+><P
+>        该选项主要用于调试导致服务器进程异常崩溃的问题。对付这种情况的一般策略是通知所有其它服务器进程，让它们终止并且接着重新初始化共享内存和信号量。这是因为一个错误的服务器进程可能在终止之前就已经对共享状态造成了破坏。该选项指定<TT
+CLASS="COMMAND"
+>postgres</TT
+>将不会重新初始化共享数据结构。一个有经验的系统程序员这时就可以使用调试器检查共享内存和信号量状态。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-O</TT
+></DT
+><DD
+><P
+>        允许修改系统表的结构。这个选项用于<TT
+CLASS="COMMAND"
+>initdb</TT
+>。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-P</TT
+></DT
+><DD
+><P
+>        读取系统表时忽略系统索引（但在更改系统表时仍然更新索引）。这在从损坏的系统索引中恢复时有用。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-t</TT
+> <TT
+CLASS="LITERAL"
+>pa[rser] | pl[anner] | e[xecutor]</TT
+></DT
+><DD
+><P
+>        打印与每个主要系统模块相关的查询的时间统计。这个选项不能和<TT
+CLASS="OPTION"
+>-s</TT
+>选项一起使用。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-T</TT
+></DT
+><DD
+><P
+>        该选项主要用于调试导致服务器进程异常崩溃的问题。对付这种情况的一般策略是通知所有其它服务器进程，让它们终止并且接着重新初始化共享内存和信号量。这是因为一个错误的服务器进程可能在终止之前就已经对共享状态造成了破坏。该选项指定<TT
+CLASS="COMMAND"
+>postgres</TT
+>将通过发送<TT
+CLASS="LITERAL"
+>SIGSTOP</TT
+>信号停止其他所有服务器进程，但是并不让它们终止。这样就允许系统程序员手动从所有服务器进程收集内核转储。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-v</TT
+> <TT
+CLASS="REPLACEABLE"
+><I
+>protocol</I
+></TT
+></DT
+><DD
+><P
+>        声明这次会话使用的前/后服务器协议的版本数。该选项仅在内部使用。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-W</TT
+> <TT
+CLASS="REPLACEABLE"
+><I
+>seconds</I
+></TT
+></DT
+><DD
+><P
+>        在一个新服务器进程被启动时，它实施认证过程之后会延迟这个选项所设置的秒数。这就留出了机会来用一个调试器附着在服务器进程上。
+       </P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT2"
+><A
+NAME="AEN103562"
+></A
+><H3
+>用于单用户模式的选项</H3
+><P
+>     下面的选项仅适用于单用户模式（见<A
+HREF="app-postgres.html#APP-POSTGRES-SINGLE-USER"
+><I
+>单用户模式</I
+></A
+>）。
+    </P
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="OPTION"
+>--single</TT
+></DT
+><DD
+><P
+>        选择单用户模式。这必须是命令行中的第一个选项。
+       </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>database</I
+></TT
+></DT
+><DD
+><P
+>        指定要访问的数据库的名称。这必须是命令行中的最后一个参数。如果省略它，则默认为用户名。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-E</TT
+></DT
+><DD
+><P
+>        在执行命令之前回显所有命令到标准输出。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-j</TT
+></DT
+><DD
+><P
+>        使用跟着两个新行的分号而不是仅用新行作为命令终止符。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-r</TT
+> <TT
+CLASS="REPLACEABLE"
+><I
+>filename</I
+></TT
+></DT
+><DD
+><P
+>        将所有服务器日志输出发送到<TT
+CLASS="REPLACEABLE"
+><I
+>filename</I
+></TT
+>中。
+        只有在作为一个命令行选项提供时，这个选项才会兑现。
+       </P
+></DD
+></DL
+></DIV
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN103596"
+></A
+><H2
+>环境</H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="ENVAR"
+>PGCLIENTENCODING</TT
+></DT
+><DD
+><P
+>      客户端使用的默认字符编码（客户端可以独立地覆盖它）。这个值也可以在配置文件中设置。
+     </P
+></DD
+><DT
+><TT
+CLASS="ENVAR"
+>PGDATA</TT
+></DT
+><DD
+><P
+>      默认的数据目录位置。
+     </P
+></DD
+><DT
+><TT
+CLASS="ENVAR"
+>PGDATESTYLE</TT
+></DT
+><DD
+><P
+>      <A
+HREF="runtime-config-client.html#GUC-DATESTYLE"
+>DateStyle</A
+>运行时参数的默认值（这个环境变量的使用已被废弃）。
+     </P
+></DD
+><DT
+><TT
+CLASS="ENVAR"
+>PGPORT</TT
+></DT
+><DD
+><P
+>      默认端口号（在配置文件中设置更好）
+     </P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN103620"
+></A
+><H2
+>诊断</H2
+><P
+>    一个提到了<TT
+CLASS="LITERAL"
+>semget</TT
+>或<TT
+CLASS="LITERAL"
+>shmget</TT
+>的错误消息可能意味着你需要配置内核来提供足够的共享内存和信号量。更多讨论请见<A
+HREF="kernel-resources.html"
+>第 18.4 &#33410;</A
+>。你也可以通过降低<A
+HREF="runtime-config-resource.html#GUC-SHARED-BUFFERS"
+>shared_buffers</A
+>值减少<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>的共享内存消耗， 或者降低<A
+HREF="runtime-config-connection.html#GUC-MAX-CONNECTIONS"
+>max_connections</A
+>值减少信号量消耗，这样可以推迟对内核的重新配置。
+   </P
+><P
+>    如果一个消息说另外一个服务器已经在运行，应该仔细地检查，例如根据你的系统可以用命令
+</P><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>$</SAMP
+> <KBD
+CLASS="USERINPUT"
+>ps ax | grep postgres</KBD
+></PRE
+><P>
+        或
+</P><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>$</SAMP
+> <KBD
+CLASS="USERINPUT"
+>ps -ef | grep postgres</KBD
+></PRE
+><P>
+    如果你确信没有冲突的服务器正在运行，那么你可以删除消息中提到的锁文件然后再次尝试。
+   </P
+><P
+>    如果一个失败消息指示它无法绑定到一个端口，可能意味着该端口已经被某些非<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>进程所使用。如果你终止<TT
+CLASS="COMMAND"
+>postgres</TT
+>并且立即使用相同的端口重启它，你也可能会得到这种错误。在这种情况系，你必须等待几秒直到操作系统关闭该端口，然后再重试。最后，如果你指定了一个操作系统认为需要保留的端口号，你可能也会得到这个错误。例如，很多版本的 Unix 认为低于 1024 的端口号是<SPAN
+CLASS="QUOTE"
+>"可信的"</SPAN
+>并且只允许 Unix 超级用户访问它们。
+   </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN103640"
+></A
+><H2
+>注解</H2
+><P
+>   实用命令<A
+HREF="app-pg-ctl.html"
+><SPAN
+CLASS="APPLICATION"
+>pg_ctl</SPAN
+></A
+>可以用来安全方便地启动和关闭<TT
+CLASS="COMMAND"
+>postgres</TT
+>服务器。
+  </P
+><P
+>   只要有可能，就<SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>不要</I
+></SPAN
+>使用<TT
+CLASS="LITERAL"
+>SIGKILL</TT
+>杀死主<TT
+CLASS="COMMAND"
+>postgres</TT
+>服务器。这样会阻止<TT
+CLASS="COMMAND"
+>postgres</TT
+>在终止前释放它持有的系统资源（例如共享内存和信号量）。这样可能会导致启动新的<TT
+CLASS="COMMAND"
+>postgres</TT
+>进程时出现问题。
+  </P
+><P
+>   要正常地终止<TT
+CLASS="COMMAND"
+>postgres</TT
+>服务器，可以使用<TT
+CLASS="LITERAL"
+>SIGTERM</TT
+>、<TT
+CLASS="LITERAL"
+>SIGINT</TT
+>或者<TT
+CLASS="LITERAL"
+>SIGQUIT</TT
+>信号。第一个在退出前将等待所有客户端终止，第二个将强行断开所有客户端的连接，第三个会不做正确的关闭立即退出并且会导致重启时的恢复。
+  </P
+><P
+>   <TT
+CLASS="LITERAL"
+>SIGHUP</TT
+>信号会重新加载服务器配置文件。也可以向一个单独的服务器进程发送<TT
+CLASS="LITERAL"
+>SIGHUP</TT
+>信号，但是这样做通常没什么意义。
+  </P
+><P
+>   要取消一个正在运行的查询，可以向运行该查询的进程发送<TT
+CLASS="LITERAL"
+>SIGINT</TT
+>信号。要干净地终止一个后端进程，可向它发送<TT
+CLASS="LITERAL"
+>SIGTERM</TT
+>。在 SQL 中可调用的与这两种动作等效的命令可参考<A
+HREF="functions-admin.html#FUNCTIONS-ADMIN-SIGNAL"
+>第 9.26.2 &#33410;</A
+>中的<CODE
+CLASS="FUNCTION"
+>pg_cancel_backend</CODE
+>和<CODE
+CLASS="FUNCTION"
+>pg_terminate_backend</CODE
+>。
+  </P
+><P
+>   <TT
+CLASS="COMMAND"
+>postgres</TT
+>服务器使用<TT
+CLASS="LITERAL"
+>SIGQUIT</TT
+>来告诉子服务器进程终止但不做正常的清理。该信号<SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>不应该</I
+></SPAN
+>被用户使用。向一个服务器进程发送<TT
+CLASS="LITERAL"
+>SIGKILL</TT
+>也是不明智的 &mdash; 主<TT
+CLASS="COMMAND"
+>postgres</TT
+>进程将把这解释为一次崩溃，并且作为其标准崩溃恢复过程的一部分，它将强制所有的后代进程退出。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="APP-POSTGRES-BUGS"
+></A
+><H2
+>缺陷</H2
+><P
+>   <TT
+CLASS="OPTION"
+>--</TT
+>选项在<SPAN
+CLASS="SYSTEMITEM"
+>FreeBSD</SPAN
+>或<SPAN
+CLASS="SYSTEMITEM"
+>OpenBSD</SPAN
+>上无法运行，应该使用<TT
+CLASS="OPTION"
+>-c</TT
+>。这在受影响的系统里是个缺陷； 如果这个缺陷没有被修复，将来的<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>版本将提供一种解决方案。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="APP-POSTGRES-SINGLE-USER"
+></A
+><H2
+>单用户模式</H2
+><P
+>    要启动一个单用户模式的服务器，使用这样的命令
+</P><PRE
+CLASS="SCREEN"
+><KBD
+CLASS="USERINPUT"
+>postgres --single -D /usr/local/pgsql/data <TT
+CLASS="REPLACEABLE"
+><I
+>other-options</I
+></TT
+> my_database</KBD
+></PRE
+><P>
+    用<TT
+CLASS="OPTION"
+>-D</TT
+>给服务器提供正确的数据库目录的路径，或者确保环境变量<TT
+CLASS="ENVAR"
+>PGDATA</TT
+>被设置。同时还要指定你想在其中工作的特定数据库的名字。
+   </P
+><P
+>    通常，单用户模式的服务器会把换行符当做命令输入的终止符。它不明白分号的作用，因为那属于<SPAN
+CLASS="APPLICATION"
+>psql</SPAN
+>。要想把一个命令分成多行，必须在最后一个换行符以外的每个换行符前面敲一个反斜线。这个反斜线和旁边的新行都会被从输入命令中去掉。注意即使在字符串或者注释中也会这样做。
+   </P
+><P
+>    但是如果使用了<TT
+CLASS="OPTION"
+>-j</TT
+>命令行选项，那么单个新行将不会终止命令输入。相反，分号-新行-新行的序列才会终止命令输入。也就是说，输入一个紧跟着空行的分号。在这种模式下，反斜线-新行不会被特殊对待。此外，在字符串或者注释内的这类序列也不会被特殊对待。
+   </P
+><P
+>    不管在哪一种输入模式中，如果输入的一个分号不是正好在命令终止符之前或者不是命令终止符的一部分，它会被认为是一个命令分隔符。当真正输入一个命令终止符时，已经输入的多个语句将被作为一个单个事务执行。
+   </P
+><P
+>    要退出会话，输入<ACRONYM
+CLASS="ACRONYM"
+>EOF</ACRONYM
+>（通常是<B
+CLASS="KEYCAP"
+>Control</B
+>+<B
+CLASS="KEYCAP"
+>D</B
+>）。如果从上一个命令终止符以来已经输入了任何文本，那么<ACRONYM
+CLASS="ACRONYM"
+>EOF</ACRONYM
+>将被当作命令终止符，并且如果要退出则需要另一个<ACRONYM
+CLASS="ACRONYM"
+>EOF</ACRONYM
+>。
+   </P
+><P
+>    请注意单用户模式的服务器不会提供复杂的行编辑特性（例如没有命令历史）。但用户模式也不会做任何后台处理，例如自动检查点或者复制。
+
+   </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="APP-POSTGRES-EXAMPLES"
+></A
+><H2
+>例子</H2
+><P
+>   要用默认值在后台启动<TT
+CLASS="COMMAND"
+>postgres</TT
+>：
+
+</P><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>$</SAMP
+> <KBD
+CLASS="USERINPUT"
+>nohup postgres &gt;logfile 2&gt;&amp;1 &lt;/dev/null &amp;</KBD
+></PRE
+><P>
+  </P
+><P
+>   要用指定端口启动<TT
+CLASS="COMMAND"
+>postgres</TT
+>，例如 1234：
+</P><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>$</SAMP
+> <KBD
+CLASS="USERINPUT"
+>postgres -p 1234</KBD
+></PRE
+><P>
+   要使用<SPAN
+CLASS="APPLICATION"
+>psql</SPAN
+>连接到这个服务器，用 -p 选项指定这个端口：
+</P><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>$</SAMP
+> <KBD
+CLASS="USERINPUT"
+>psql -p 1234</KBD
+></PRE
+><P>
+   或者设置环境变量<TT
+CLASS="ENVAR"
+>PGPORT</TT
+>：
+</P><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>$</SAMP
+> <KBD
+CLASS="USERINPUT"
+>export PGPORT=1234</KBD
+>
+<SAMP
+CLASS="PROMPT"
+>$</SAMP
+> <KBD
+CLASS="USERINPUT"
+>psql</KBD
+></PRE
+><P>
+  </P
+><P
+>   命名运行时参数可以用这些形式之一设置：
+</P><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>$</SAMP
+> <KBD
+CLASS="USERINPUT"
+>postgres -c work_mem=1234</KBD
+>
+<SAMP
+CLASS="PROMPT"
+>$</SAMP
+> <KBD
+CLASS="USERINPUT"
+>postgres --work-mem=1234</KBD
+></PRE
+><P>
+   两种形式都覆盖<TT
+CLASS="FILENAME"
+>postgresql.conf</TT
+>中可能存在的<TT
+CLASS="VARNAME"
+>work_mem</TT
+>设置。请注意在参数名中的下划线在命令行可以写成下划线或连字符。除了用于短期的实验外，更好的习惯是编辑<TT
+CLASS="FILENAME"
+>postgresql.conf</TT
+>中的设置， 而不是倚赖命令行开关来设置参数。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN103731"
+></A
+><H2
+>参见</H2
+><P
+>   <A
+HREF="app-initdb.html"
+>initdb</A
+>,
+   <A
+HREF="app-pg-ctl.html"
+><SPAN
+CLASS="APPLICATION"
+>pg_ctl</SPAN
+></A
+>
+  </P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="pgxlogdump.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="app-postmaster.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><SPAN
+CLASS="APPLICATION"
+>pg_xlogdump</SPAN
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="reference-server.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><SPAN
+CLASS="APPLICATION"
+>postmaster</SPAN
+></TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

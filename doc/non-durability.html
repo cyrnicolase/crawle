@@ -1,0 +1,251 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>非持久设置</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="性能提示"
+HREF="performance-tips.html"><LINK
+REL="PREVIOUS"
+TITLE="填充一个数据库"
+HREF="populate.html"><LINK
+REL="NEXT"
+TITLE="并行查询"
+HREF="parallel-query.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/perform.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="填充一个数据库"
+HREF="populate.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="performance-tips.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#31456; 14. 性能提示</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="并行查询"
+HREF="parallel-query.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="NON-DURABILITY"
+>14.5. 非持久设置</A
+></H1
+><P
+>    持久性是数据库的一个保证已提交事务的记录的特性（即使是发生服务器崩溃或断电）。 然而，持久性会明显增加数据库的负荷，因此如果你的站点不需要这个保证，<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>可以被配置成运行更快。在这种情况下，你可以调整下列配置来提高性能。除了下面列出的，在数据库软件崩溃的情况下也能保证持久性。当这些设置被使用时，只有突然的操作系统停止会产生数据丢失或损坏的风险。
+
+    <P
+></P
+></P><UL
+><LI
+><P
+>       将数据库集簇的数据目录放在一个内存支持的文件系统上（即<ACRONYM
+CLASS="ACRONYM"
+>RAM</ACRONYM
+>磁盘）。这消除了所有的数据库磁盘 I/O，但将数据存储限制到可用的内存量（可能有交换区）。
+      </P
+></LI
+><LI
+><P
+>       关闭<A
+HREF="runtime-config-wal.html#GUC-FSYNC"
+>fsync</A
+>；不需要将数据刷入磁盘。
+      </P
+></LI
+><LI
+><P
+>       关闭<A
+HREF="runtime-config-wal.html#GUC-SYNCHRONOUS-COMMIT"
+>synchronous_commit</A
+>；可能不需要在每次提交时
+       强制把<ACRONYM
+CLASS="ACRONYM"
+>WAL</ACRONYM
+>写入磁盘。这种设置可能会在
+       <SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>数据库</I
+></SPAN
+>崩溃时带来事务丢失的风险（但是没有数据破坏）。
+      </P
+></LI
+><LI
+><P
+>       关闭<A
+HREF="runtime-config-wal.html#GUC-FULL-PAGE-WRITES"
+>full_page_writes</A
+>；不许要警惕部分页面写入。
+      </P
+></LI
+><LI
+><P
+>       增加<A
+HREF="runtime-config-wal.html#GUC-MAX-WAL-SIZE"
+>max_wal_size</A
+>和<A
+HREF="runtime-config-wal.html#GUC-CHECKPOINT-TIMEOUT"
+>checkpoint_timeout</A
+>；
+       这会降低检查点的频率，但会 增加<TT
+CLASS="FILENAME"
+>/pg_xlog</TT
+>的存储要求。
+      </P
+></LI
+><LI
+><P
+>       创建<A
+HREF="sql-createtable.html#SQL-CREATETABLE-UNLOGGED"
+>不做日志的表</A
+>
+       来避免<ACRONYM
+CLASS="ACRONYM"
+>WAL</ACRONYM
+>写入，不过这会让表在崩溃时不安全。
+      </P
+></LI
+></UL
+><P>
+   </P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="populate.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="parallel-query.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>填充一个数据库</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="performance-tips.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>并行查询</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

@@ -1,0 +1,381 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>角色属性</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="数据库角色"
+HREF="user-manag.html"><LINK
+REL="PREVIOUS"
+TITLE="数据库角色"
+HREF="database-roles.html"><LINK
+REL="NEXT"
+TITLE="角色成员关系"
+HREF="role-membership.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/user-manag.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="数据库角色"
+HREF="database-roles.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="user-manag.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#31456; 21. 数据库角色</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="角色成员关系"
+HREF="role-membership.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="ROLE-ATTRIBUTES"
+>21.2. 角色属性</A
+></H1
+><P
+>    一个数据库角色可以有一些属性，它们定义角色的权限并且与客户端认证系统交互。
+
+    <P
+></P
+></P><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+>login privilege</DT
+><DD
+><P
+>        只有具有<TT
+CLASS="LITERAL"
+>LOGIN</TT
+>属性的角色才能被用于一个数据库连接的初始角色名称。一个带有<TT
+CLASS="LITERAL"
+>LOGIN</TT
+>属性的角色可以被认为和一个<SPAN
+CLASS="QUOTE"
+>"数据库用户"</SPAN
+>相同。要创建一个带有登录权限的角色，使用两者之一：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>CREATE ROLE <TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+> LOGIN;
+CREATE USER <TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+>;</PRE
+><P>
+        （<TT
+CLASS="COMMAND"
+>CREATE USER</TT
+>和<TT
+CLASS="COMMAND"
+>CREATE ROLE</TT
+>等效，除了<TT
+CLASS="COMMAND"
+>CREATE USER</TT
+>默认假定有<TT
+CLASS="LITERAL"
+>LOGIN</TT
+>，而<TT
+CLASS="COMMAND"
+>CREATE ROLE</TT
+>不这样认为）。
+       </P
+></DD
+><DT
+>superuser status</DT
+><DD
+><P
+>        一个数据库超级用户会绕开所有权限检查，除了登入的权利。这是一个危险的权限并且应该小心使用，最好用一个不是超级用户的角色来完成你的大部分工作。要创建一个新数据库超级用户，使用<TT
+CLASS="LITERAL"
+>CREATE ROLE <TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+> SUPERUSER</TT
+>。你必须作为一个超级用户来完成这些。
+       </P
+></DD
+><DT
+>database creation</DT
+><DD
+><P
+>        一个角色必须被显式给予权限才能创建数据库（除了超级用户，因为它们会绕开所有权限检查）。要创建这样一个角色，使用<TT
+CLASS="LITERAL"
+>CREATE ROLE <TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+> CREATEDB</TT
+>。
+       </P
+></DD
+><DT
+>role creation</DT
+><DD
+><P
+>        一个角色必须被显式给予权限才能创建更多角色（除了超级用户，因为它们会绕开所有权限检查）。要创建这样一个角色，使用<TT
+CLASS="LITERAL"
+>CREATE ROLE <TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+> CREATEROLE</TT
+>。一个带有<TT
+CLASS="LITERAL"
+>CREATEROLE</TT
+>权限的角色也可以修改和删除其他角色，还可以授予或回收角色中的成员关系。然而，要创建、修改、删除或修改一个超级用户角色的成员关系，需要以超级用户的身份操作。<TT
+CLASS="LITERAL"
+>CREATEROLE</TT
+>不足以完成这一切。
+       </P
+></DD
+><DT
+>initiating replication</DT
+><DD
+><P
+>        一个角色必须被显式给予权限才能发起流复制（除了超级用户，因为它们会绕开所有权限检查）。一个被用于流复制的角色必须也具有<TT
+CLASS="LITERAL"
+>LOGIN</TT
+>权限。要创建这样一个角色，使用<TT
+CLASS="LITERAL"
+>CREATE ROLE <TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+> REPLICATION LOGIN</TT
+>。
+       </P
+></DD
+><DT
+>password</DT
+><DD
+><P
+>        只有当客户端认证方法要求用户在连接数据库时提供一个口令时，一个口令才有意义。<TT
+CLASS="OPTION"
+>password</TT
+>和<TT
+CLASS="OPTION"
+>md5</TT
+>认证方法使用口令。数据库口令与操作系统命令独立。在角色创建时指定一个口令：<TT
+CLASS="LITERAL"
+>CREATE ROLE <TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+> PASSWORD '<TT
+CLASS="REPLACEABLE"
+><I
+>string</I
+></TT
+>'</TT
+>。
+       </P
+></DD
+></DL
+></DIV
+><P>
+
+    在创建后可以用<TT
+CLASS="COMMAND"
+>ALTER ROLE</TT
+>修改一个角色属性。<A
+HREF="sql-createrole.html"
+>CREATE ROLE</A
+>和<A
+HREF="sql-alterrole.html"
+>ALTER ROLE</A
+>命令的细节可见参考页。
+   </P
+><DIV
+CLASS="TIP"
+><BLOCKQUOTE
+CLASS="TIP"
+><P
+><B
+>&#25552;&#31034;: </B
+>    一个好习惯是创建一个具有<TT
+CLASS="LITERAL"
+>CREATEDB</TT
+>和<TT
+CLASS="LITERAL"
+>CREATEROLE</TT
+>权限的角色，而不是创建一个超级用户，并且然后用这个角色来完成对数据库和角色的例行管理。这种方法避免了在非必要时作为超级用户操作任务的风险。
+   </P
+></BLOCKQUOTE
+></DIV
+><P
+>   对于<A
+HREF="runtime-config.html"
+>第 19 &#31456;</A
+>中描述的运行时配置设置，一个角色也可以有角色相关的默认值。例如，如果出于某些原因你希望在每次连接时禁用索引扫描（提示：不是好主意），你可以使用：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>ALTER ROLE myname SET enable_indexscan TO off;</PRE
+><P>
+   这将保存设置（但是不会立刻设置它）。在这个角色的后续连接中，它就表现得像在会话开始之前执行过<TT
+CLASS="LITERAL"
+>SET enable_indexscan TO off</TT
+>。你也可以在会话期间改变该设置，它将只是作为默认值。要移除一个角色相关的默认设置，使用<TT
+CLASS="LITERAL"
+>ALTER ROLE <TT
+CLASS="REPLACEABLE"
+><I
+>rolename</I
+></TT
+> RESET <TT
+CLASS="REPLACEABLE"
+><I
+>varname</I
+></TT
+></TT
+>。注意附加到没有<TT
+CLASS="LITERAL"
+>LOGIN</TT
+>权限的角色的角色相关默认值相当无用，因为它们从不会被调用。
+  </P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="database-roles.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="role-membership.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>数据库角色</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="user-manag.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>角色成员关系</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

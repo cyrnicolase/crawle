@@ -1,0 +1,770 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>操作符优化信息</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="扩展 SQL"
+HREF="extend.html"><LINK
+REL="PREVIOUS"
+TITLE="用户定义的操作符"
+HREF="xoper.html"><LINK
+REL="NEXT"
+TITLE="索引的接口扩展"
+HREF="xindex.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/xoper.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="用户定义的操作符"
+HREF="xoper.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="extend.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#31456; 36. 扩展 <ACRONYM
+CLASS="ACRONYM"
+>SQL</ACRONYM
+></TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="索引的接口扩展"
+HREF="xindex.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="XOPER-OPTIMIZATION"
+>36.13. 操作符优化信息</A
+></H1
+><P
+>    一个<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>的操作符定义能够包括几种可选的子句，它们可以把有关操作符行为的有用的事情告诉系统。只要合适就应该提供这些子句，因为它们能够为使用该操作符的查询带来可观的速度提升。但是如果你提供了它们，你必须确保它们是正确的！不正确地使用一个优化子句可能导致很慢的查询、错误的输出或者其他不好的事情。如果你没有把握你可以总是省去优化子句，这样做的唯一后果是查询会比正常的速度慢。
+   </P
+><P
+>    在<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>的未来版本中可能会增加更多的优化子句。这里描述的优化子句都是版本 9.6.0 能理解的。
+   </P
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN61044"
+>36.13.1. <TT
+CLASS="LITERAL"
+>COMMUTATOR</TT
+></A
+></H2
+><P
+>     如果提供了<TT
+CLASS="LITERAL"
+>COMMUTATOR</TT
+>子句，它指定一个操作符作为被定义的操作符的交换子。如果对于所有可能输入的 x、y 值， (x A y) 等于 (y B x)，我们可以说操作符 A 是操作符 B 的交换子。注意，B 也是 A 的交换子。例如，用于一种特定数据类型的操作符 <TT
+CLASS="LITERAL"
+>&lt;</TT
+> 和 <TT
+CLASS="LITERAL"
+>&gt;</TT
+> 通常互为交换子，并且操作符 <TT
+CLASS="LITERAL"
+>+</TT
+> 通常和它本身是交换的。但是操作符 <TT
+CLASS="LITERAL"
+>-</TT
+> 通常不能与任何东西交换。
+    </P
+><P
+>     一个可交换操作符的左操作数类型与其交换子的右操作数类型相同，反之亦然。因此要查找交换子，只需要给<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>该交换子操作符的名称即可，并且在<TT
+CLASS="LITERAL"
+>COMMUTATOR</TT
+>子句中也只需要提供它的名称。
+    </P
+><P
+>     为将要在索引和连接子句中使用的操作符提供交换子信息是很关键的，因为这允许查询优化器把这样一个子句<SPAN
+CLASS="QUOTE"
+>"翻转"</SPAN
+>成不同计划类型所需的形式。例如，考虑一个这样的 WHERE 子句<TT
+CLASS="LITERAL"
+>tab1.x = tab2.y</TT
+>，其中<TT
+CLASS="LITERAL"
+>tab1.x</TT
+>和<TT
+CLASS="LITERAL"
+>tab2.y</TT
+>是一种用户定义的类型，并且假设<TT
+CLASS="LITERAL"
+>tab2.y</TT
+>被索引。除非优化器能决定如何把该子句翻转成<TT
+CLASS="LITERAL"
+>tab2.y = tab1.x</TT
+>，否则它无法产生一个索引扫描，因为索引扫描机制期望看到被索引列出现在被给出的操作符的左边。<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>将<SPAN
+CLASS="emphasis"
+><I
+CLASS="EMPHASIS"
+>无法</I
+></SPAN
+>简单地假定有一个可用的变换 &mdash; <TT
+CLASS="LITERAL"
+>=</TT
+>操作符的创建者必须指定它是合法的（通过为该操作符标记交换子信息）。
+    </P
+><P
+>     在你定义一个子交换的操作符时，你这样做就行了。自拟定义一堆交换的操作符时，事情有一点棘手：如何在没有定义第二个操作符时完成第一个操作符的定义？因为第一个操作符需要第二个操作符作为其交换子。对这个问题有两种解决方案：
+
+     <P
+></P
+></P><UL
+><LI
+><P
+>        一种方法是忽略你定义的第一个操作符的<TT
+CLASS="LITERAL"
+>COMMUTATOR</TT
+>子句，并且然后在第二个操作符的定义中提供第一个操作符作为交换子。由于<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>知道交换的操作符是成对出现的，当它看到第二个定义时它将自动回去并且填上第一个定义中缺失的<TT
+CLASS="LITERAL"
+>COMMUTATOR</TT
+>子句。
+       </P
+></LI
+><LI
+><P
+>        另一种更直接的方法是就在两个定义中包括<TT
+CLASS="LITERAL"
+>COMMUTATOR</TT
+>子句。当<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>处理第一个定义并且意识到<TT
+CLASS="LITERAL"
+>COMMUTATOR</TT
+>引用了一个不存在的操作符时，系统将为那个操作符在系统目录中创造一个虚拟项。这个虚拟项只有操作符名称、左右操作数类型和结果类型的数据，因为这些是<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>在此时能够推断出来的所有东西。第一个操作符的目录项将会链接到这个虚拟项。稍后，当你定义第二个操作符时，系统用来自第二个定义的额外信息更新那个虚拟项。如果你尝试在虚拟操作符还未被填充之前使用它，你将只会得到一个错误消息。
+       </P
+></LI
+></UL
+><P>
+    </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN61079"
+>36.13.2. <TT
+CLASS="LITERAL"
+>NEGATOR</TT
+></A
+></H2
+><P
+>     如果提供了<TT
+CLASS="LITERAL"
+>NEGATOR</TT
+>子句，它指定一个操作符是正在被定义的操作符的求反器。如果操作符 A 和 B 都返回布尔结果并且对于所有可能的 x、y 输入都有 (x A y) 等于 NOT (x B y)，那么我们可以说 A 是 B 的求反器。注意 B 也是 A 的求反器。例如，<TT
+CLASS="LITERAL"
+>&lt;</TT
+> 和 <TT
+CLASS="LITERAL"
+>&gt;=</TT
+> 就是大部分数据类型的一对求反器。一个操作符不可能是它自身的求反器。
+    </P
+><P
+>    与交换子不同，一对一元操作符可以合法地被标记为对方的求反器。这意味着对于所有 x 有 (A x) 等于 NOT (B x)，或者对右一元操作符也相似。
+   </P
+><P
+>    一个操作符的求反器必须具有和被定义的操作符相同的左或右操作数类型，因此正如<TT
+CLASS="LITERAL"
+>COMMUTATOR</TT
+>一样，<TT
+CLASS="LITERAL"
+>NEGATOR</TT
+>子句中只需要给出操作符的名称即可。
+   </P
+><P
+>    提供一个求反器对查询优化器非常有帮助，因为它允许<TT
+CLASS="LITERAL"
+>NOT (x = y)</TT
+>这样的表达式被简化为<TT
+CLASS="LITERAL"
+>x &lt;&gt; y</TT
+>。这可能比你想象的更多地发生，因为<TT
+CLASS="LITERAL"
+>NOT</TT
+>操作可能会被作为其他调整的结果被插入。
+   </P
+><P
+>    求反器对的定义可以使用与定义交换子对相同的方法来完成。
+   </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN61095"
+>36.13.3. <TT
+CLASS="LITERAL"
+>RESTRICT</TT
+></A
+></H2
+><P
+>    如果提供了<TT
+CLASS="LITERAL"
+>RESTRICT</TT
+>子句，它为该操作符指定一个限制选择度估计函数（注意这是一个函数名而不是一个操作符名）。<TT
+CLASS="LITERAL"
+>RESTRICT</TT
+>子句只对返回<TT
+CLASS="TYPE"
+>boolean</TT
+>的二元操作符有意义。一个限制选择度估计器背后的思想是猜测一个表中有多大比例的行对于当前的操作符和一个特定的常数值将会满足一个
+</P><PRE
+CLASS="PROGRAMLISTING"
+>column OP constant</PRE
+><P>
+    形式的<TT
+CLASS="LITERAL"
+>WHERE</TT
+>子句条件。这能通过告知优化器具有这种形式的<TT
+CLASS="LITERAL"
+>WHERE</TT
+>子句将会消除掉多少行来协助它的工作（你可能会好奇，如果常数位于左部会发生什么？好吧，<TT
+CLASS="LITERAL"
+>COMMUTATOR</TT
+>就是干这个的）。
+   </P
+><P
+>    编写一个新的限制选择度估算函数已经超出了本章的范围，但是幸运地是你通常可以将系统的一个标准估算器用于很多你自己的操作符。标准的限制估算器有：
+    <P
+></P
+><TABLE
+BORDER="0"
+><TBODY
+><TR
+><TD
+>用于<TT
+CLASS="LITERAL"
+>=</TT
+>的<CODE
+CLASS="FUNCTION"
+>eqsel</CODE
+></TD
+></TR
+><TR
+><TD
+>用于<TT
+CLASS="LITERAL"
+>&lt;&gt;</TT
+>的<CODE
+CLASS="FUNCTION"
+>neqsel</CODE
+></TD
+></TR
+><TR
+><TD
+>用于<TT
+CLASS="LITERAL"
+>&lt;</TT
+>或<TT
+CLASS="LITERAL"
+>&lt;=</TT
+>的<CODE
+CLASS="FUNCTION"
+>scalarltsel</CODE
+></TD
+></TR
+><TR
+><TD
+>用于<TT
+CLASS="LITERAL"
+>&gt;</TT
+>或<TT
+CLASS="LITERAL"
+>&gt;=</TT
+>的<CODE
+CLASS="FUNCTION"
+>scalargtsel</CODE
+></TD
+></TR
+></TBODY
+></TABLE
+><P
+></P
+>
+    这些类别看起来有点奇怪，但是如果你好好想想就会发现是有道理的。<TT
+CLASS="LITERAL"
+>=</TT
+>通常将值接受表中的一小部分行，<TT
+CLASS="LITERAL"
+>&lt;&gt;</TT
+>通常将只拒绝一小部分。<TT
+CLASS="LITERAL"
+>&lt;</TT
+>接受的部分取决于给定常量值落在该表列值的范围（是由<TT
+CLASS="COMMAND"
+>ANALYZE</TT
+>收集并提供给选择度估算器的）中的哪个位置。对于相同的比较常量，<TT
+CLASS="LITERAL"
+>&lt;=</TT
+>将接受的部分比<TT
+CLASS="LITERAL"
+>&lt;</TT
+>大一点点，但是它们过于接近，所以不值得费劲去加以区分，特别是因为不管怎样我们不可能做得比粗略猜测更好。同样的附注也适用于<TT
+CLASS="LITERAL"
+>&gt;</TT
+> 和<TT
+CLASS="LITERAL"
+>&gt;=</TT
+>。
+   </P
+><P
+>    你能经常成功地为具有非常高或者非常低选择度的操作符使用<CODE
+CLASS="FUNCTION"
+>eqsel</CODE
+>或<CODE
+CLASS="FUNCTION"
+>neqsel</CODE
+>，即使它们实际上并非相等或不相等。例如，近似相等几何操作符使用<CODE
+CLASS="FUNCTION"
+>eqsel</CODE
+>的前提是假定它们通常只匹配表中的一小部分项。
+   </P
+><P
+>    你可以使用<CODE
+CLASS="FUNCTION"
+>scalarltsel</CODE
+>和<CODE
+CLASS="FUNCTION"
+>scalargtsel</CODE
+>来比较被转换为数字标量进行范围比较具有意义的数据类型。如果可能，增加一种能被<TT
+CLASS="FILENAME"
+>src/backend/utils/adt/selfuncs.c</TT
+>中的函数<CODE
+CLASS="FUNCTION"
+>convert_to_scalar()</CODE
+>所理解的数据类型（最后，这个函数应该被通过<CODE
+CLASS="CLASSNAME"
+>pg_type</CODE
+>系统目录的一列所标识的针对每个数据类型的函数所替换，但是那还没有发生）。如果你没有这样做，还是能工作，但是优化器的估计将不会达到最好的效果。
+   </P
+><P
+>    有一些额外的选择度估算函数是为<TT
+CLASS="FILENAME"
+>src/backend/utils/adt/geo_selfuncs.c</TT
+>中的几何操作符设计的：<CODE
+CLASS="FUNCTION"
+>areasel</CODE
+>、<CODE
+CLASS="FUNCTION"
+>positionsel</CODE
+>和<CODE
+CLASS="FUNCTION"
+>contsel</CODE
+>。在写这份材料时，这些还只是存根，但是你可能想要使用它们（或者甚至改进它们）。
+   </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN61145"
+>36.13.4. <TT
+CLASS="LITERAL"
+>JOIN</TT
+></A
+></H2
+><P
+>     如果提供了<TT
+CLASS="LITERAL"
+>JOIN</TT
+>子句，表示用于该操作符的一个连接选择度估计函数（注意这是一个函数名而不是一个操作符名）。<TT
+CLASS="LITERAL"
+>JOIN</TT
+>子句只对返回<TT
+CLASS="TYPE"
+>boolean</TT
+>的二元操作符有意义。一个连接选择度估算器背后的思想是猜测一对表中有多大比例的行对于当前的操作符将会满足一个
+</P><PRE
+CLASS="PROGRAMLISTING"
+>table1.column1 OP table2.column2</PRE
+><P>
+     形式的<TT
+CLASS="LITERAL"
+>WHERE</TT
+>子句条件。和<TT
+CLASS="LITERAL"
+>RESTRICT</TT
+>子句一样，这通过让优化器知道哪种连接序列需要做的工作最少来极大地帮助优化器。
+    </P
+><P
+>     一如既往，这一章将不会尝试解释如何编写一个连接选择度估算函数，而只是建议你在适当的时候使用一种标准估算器：
+     <P
+></P
+><TABLE
+BORDER="0"
+><TBODY
+><TR
+><TD
+>用于<TT
+CLASS="LITERAL"
+>=</TT
+>的<CODE
+CLASS="FUNCTION"
+>eqjoinsel</CODE
+></TD
+></TR
+><TR
+><TD
+>用于<TT
+CLASS="LITERAL"
+>&lt;&gt;</TT
+>的<CODE
+CLASS="FUNCTION"
+>neqjoinsel</CODE
+></TD
+></TR
+><TR
+><TD
+>用于<TT
+CLASS="LITERAL"
+>&lt;</TT
+>或<TT
+CLASS="LITERAL"
+>&lt;=</TT
+>的<CODE
+CLASS="FUNCTION"
+>scalarltjoinsel</CODE
+></TD
+></TR
+><TR
+><TD
+>用于<TT
+CLASS="LITERAL"
+>&gt;</TT
+>或<TT
+CLASS="LITERAL"
+>&gt;=</TT
+>的<CODE
+CLASS="FUNCTION"
+>scalargtjoinsel</CODE
+></TD
+></TR
+><TR
+><TD
+>用于基于 2D 区域比较的<CODE
+CLASS="FUNCTION"
+>areajoinsel</CODE
+></TD
+></TR
+><TR
+><TD
+>用于基于 2D 位置比较的<CODE
+CLASS="FUNCTION"
+>positionjoinsel</CODE
+></TD
+></TR
+><TR
+><TD
+>用于基于 2D 包含比较的<CODE
+CLASS="FUNCTION"
+>contjoinsel</CODE
+></TD
+></TR
+></TBODY
+></TABLE
+><P
+></P
+>
+    </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN61177"
+>36.13.5. <TT
+CLASS="LITERAL"
+>HASHES</TT
+></A
+></H2
+><P
+>     如果存在<TT
+CLASS="LITERAL"
+>HASHES</TT
+>子句，它告诉系统它被许可为基于这个操作符的一个连接使用哈希连接方法。<TT
+CLASS="LITERAL"
+>HASHES</TT
+>只对返回<TT
+CLASS="LITERAL"
+>boolean</TT
+>的二元操作符有意义，并且实际上该操作符必须必须表达某种数据类型或数据类型对的相等。
+    </P
+><P
+>     哈希连接之下的假设是连接操作符只能对哈希到相同哈希码的左右值返回真。如果两个值被放到不同的哈希桶中，连接将根本不会比较它们，这隐式地假定该连接操作符的结果必须是假。因此，为不表示某种形式相等的操作符指定<TT
+CLASS="LITERAL"
+>HASHES</TT
+>是没有意义的。在大部分情况下，只有为在两端都是相同数据类型的操作符支持哈希才有意义。不过，有时可以为两种或更多数据类型设计兼容的哈希函数，也就是说，对于<SPAN
+CLASS="QUOTE"
+>"相等"</SPAN
+>的值（即使具有不同的表达）会产生相同哈希码的函数。例如，在哈希不同宽度的证书时，安排这个属性相当简单。
+    </P
+><P
+>     要被标记为<TT
+CLASS="LITERAL"
+>HASHES</TT
+>，连接操作符必须出现在一个哈希索引操作符族中。当你创建该操作符时这不会被强制，因为要引用的操作符族当然不可能已经存在。但是如果这样的操作符族不存在，尝试在哈希连接中使用该操作符将在运行时失败。系统需要用该操作符族来为操作符的输入数据类型寻找数据类型相关的哈希函数。当然，在创建操作符族之前，你还必须创建合适的哈希函数。
+    </P
+><P
+>     在准备一个哈希函数时应当慎重，因为有一些方法是依赖于机器的，这样它可能无法做正确的事情。例如，如果你的数据类型是一个结构，其中可能有无用的填充位，你不能简单地把整个结构传递给<CODE
+CLASS="FUNCTION"
+>hash_any</CODE
+>（除非你编写你自己的操作符和函数按照推荐的策略来保证未被使用的位总是为零）。另一个例子是在符合<ACRONYM
+CLASS="ACRONYM"
+>IEEE</ACRONYM
+>浮点标准的机器上，负数零和正数零是不同的值（不同的位模式），但是它们被定义为相等。如果一个浮点值可能包含负数零，那么需要额外的步骤来保证它产生的哈希值与正数零产生的相同。
+    </P
+><P
+>     一个可哈希连接的操作符必须拥有一个出现在同一操作符族中的交换子（如果两个操作数数据类型相同，那么就是它自身，否则是一个相关的相等操作符）。如果情况不是这样，在使用该操作符时，可能会发生规划器错误。此外，一个支持多种数据类型的哈希操作符族为数据类型的每一种组合都提供相等操作符是一个好主意（但是并不被严格要求），这会带来更好的优化。
+    </P
+><DIV
+CLASS="NOTE"
+><BLOCKQUOTE
+CLASS="NOTE"
+><P
+><B
+>&#27880;&#24847;: </B
+>     一个可哈希连接的操作符底层的函数必须被标记为可交换或者稳定。如果它是不稳定的，系统将永远不会为一个哈希连接尝试使用该操作符。
+    </P
+></BLOCKQUOTE
+></DIV
+><DIV
+CLASS="NOTE"
+><BLOCKQUOTE
+CLASS="NOTE"
+><P
+><B
+>&#27880;&#24847;: </B
+>     如果一个可哈希连接的操作符有一个被标记为 strict 的底层函数，该函数必须也是 complete：也就是对于任意两个非空输入它应当返回真或假，从不会返回空。如果没有遵守这个规则，<TT
+CLASS="LITERAL"
+>IN</TT
+>操作的哈希优化可能产生错误的结果（特别是，当依据标准的正确答案可能是空时，<TT
+CLASS="LITERAL"
+>IN</TT
+>可能会返回假，或者它会产生一个错误来抱怨它没有准备会收到一个空结果）。
+    </P
+></BLOCKQUOTE
+></DIV
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN61199"
+>36.13.6. <TT
+CLASS="LITERAL"
+>MERGES</TT
+></A
+></H2
+><P
+>     如果存在<TT
+CLASS="LITERAL"
+>MERGES</TT
+>子句，它告诉系统它被许可为基于这个操作符的一个连接使用归并连接方法。<TT
+CLASS="LITERAL"
+>MERGES</TT
+>只对返回<TT
+CLASS="LITERAL"
+>boolean</TT
+>的二元操作符有意义，并且实际上该操作符必须必须表达某种数据类型或数据类型对的相等。
+    </P
+><P
+>     归并连接的思想是排序左右手表并且接着并行扫描它们。这样，两种数据类型必须能够被完全排序，并且该连接操作符必须只为落在排序顺序上<SPAN
+CLASS="QUOTE"
+>"同一位置"</SPAN
+>的值对返回成功。实际上这意味着该连接操作符必须和相等的行为一样。但是只要两种不同的数据类型在逻辑上是兼容的，就能对它们使用归并连接。例如，<TT
+CLASS="TYPE"
+>smallint</TT
+>-versus-<TT
+CLASS="TYPE"
+>integer</TT
+>相等操作符就是可归并连接的。我们只需要将两种数据类型变成逻辑上兼容的序列的排序操作符。
+    </P
+><P
+>     要被标记为<TT
+CLASS="LITERAL"
+>MERGES</TT
+>，该连接操作符必须作为一个<TT
+CLASS="LITERAL"
+>btree</TT
+>索引操作符的相等成员出现。当你创建该操作符时，这不是强制的，因为要引用的操作符族当然可能还不存在。但是除非能找到一个匹配的操作符族，否则该操作符将不会被实际用于归并连接。<TT
+CLASS="LITERAL"
+>MERGES</TT
+>标志因此扮演着一种对于规划器的提示，表示值得去寻找一个匹配的操作符族。
+    </P
+><P
+>     一个可归并连接的操作符必须拥有一个出现在同一操作符族中的交换子（如果两个操作数数据类型相同，那么就是它自身，否则是一个相关的相等操作符）。如果情况不是这样，在使用该操作符时，可能会发生规划器错误。此外，一个支持多种数据类型的哈希操作符族为数据类型的每一种组合都提供相等操作符是一个好主意（但是并不被严格要求），这会带来更好的优化。
+    </P
+><DIV
+CLASS="NOTE"
+><BLOCKQUOTE
+CLASS="NOTE"
+><P
+><B
+>&#27880;&#24847;: </B
+>     一个可归并连接的操作符底层的函数必须被标记为可交换或者稳定。如果它是不稳定的，系统将永远不会为一个归并连接尝试使用该操作符。
+    </P
+></BLOCKQUOTE
+></DIV
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="xoper.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="xindex.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>用户定义的操作符</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="extend.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>索引的接口扩展</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

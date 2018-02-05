@@ -1,0 +1,296 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>何时会用到并行查询？</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="并行查询"
+HREF="parallel-query.html"><LINK
+REL="PREVIOUS"
+TITLE="并行查询如何工作"
+HREF="how-parallel-query-works.html"><LINK
+REL="NEXT"
+TITLE="并行计划"
+HREF="parallel-plans.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/parallel.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="并行查询如何工作"
+HREF="how-parallel-query-works.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="parallel-query.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#31456; 15. 并行查询</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="并行计划"
+HREF="parallel-plans.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="WHEN-CAN-PARALLEL-QUERY-BE-USED"
+>15.2. 何时会用到并行查询？</A
+></H1
+><P
+>    有几种设置会导致查询规划器在任何情况下都不生成并行查询计划。为了让并行查询计划能够被生成，必须配置好下列设置。
+  </P
+><P
+></P
+><UL
+><LI
+><P
+>        <A
+HREF="runtime-config-resource.html#GUC-MAX-PARALLEL-WORKERS-PER-GATHER"
+>max_parallel_workers_per_gather</A
+>必须被设置为大于零的值。这是一种特殊情况，更加普遍的原则是所用的工作者数量不能超过<TT
+CLASS="VARNAME"
+>max_parallel_workers_per_gather</TT
+>所配置的数量。
+      </P
+></LI
+><LI
+><P
+>        <A
+HREF="runtime-config-resource.html#GUC-DYNAMIC-SHARED-MEMORY-TYPE"
+>dynamic_shared_memory_type</A
+>必须被设置为除<TT
+CLASS="LITERAL"
+>none</TT
+>之外的值。并行查询要求动态共享内存以便在合作的进程之间传递数据。
+      </P
+></LI
+></UL
+><P
+>    此外，系统一定不能运行在单用户模式下。因为在单用户模式下，整个数据库系统运行在单个进程中，没有后台工作者进程可用。
+  </P
+><P
+>    如果下面的任一条件为真，即便对一个给定查询通常可以产生并行查询计划，规划器都不会为它产生并行查询计划：
+  </P
+><P
+></P
+><UL
+><LI
+><P
+> 
+        查询要写任何数据或者锁定任何数据库行。如果一个查询在顶层或者 CTE 中包含了数据修改操作，那么不会为该查询产生并行计划。这是当前实现的一个限制，未来的版本中可能会有所改进。
+      </P
+></LI
+><LI
+><P
+>        查询可能在执行过程中被暂停。只要在系统认为可能发生部分或者增量式执行，就不会产生并行计划。例如：用<A
+HREF="sql-declare.html"
+>DECLARE CURSOR</A
+>创建的游标将永远不会使用并行计划。类似地，一个<TT
+CLASS="LITERAL"
+>FOR x IN query LOOP .. END LOOP</TT
+>形式的 PL/pgsql 循环也永远
+不会使用并行计划，因为当并行查询进行时，并行查询系统无法验证循环中的代码执行起来是安全的。
+      </P
+></LI
+><LI
+><P
+>        使用了任何被标记为<TT
+CLASS="LITERAL"
+>PARALLEL UNSAFE</TT
+>的函数的查询。大多数系统定义的函数都被标记为<TT
+CLASS="LITERAL"
+>PARALLEL SAFE</TT
+>，但是用户定义的函数默认被标记为<TT
+CLASS="LITERAL"
+>PARALLEL UNSAFE</TT
+>。参见<A
+HREF="parallel-safety.html"
+>第 15.4 &#33410;</A
+>中的讨论。
+      </P
+></LI
+><LI
+><P
+>        该查询运行在另一个已经存在的并行查询内部。例如，如果一个被并行查询调用的函数自己发出一个 SQL 查询，那么该查询将不会使用并行计划。这是当前实现的一个限制，但是或许不值得移除这个限制，因为它会导致单个查询使用大量的进程。
+      </P
+></LI
+><LI
+><P
+>        事务隔离级别是可串行化。这是当前实现的一个限制。
+      </P
+></LI
+></UL
+><P
+>    即使对于一个特定的查询已经产生了并行查询计划，在一些情况下执行时也不会并行执行该计划。如果发生这种情况，那么领导者将会自己执行该计划在<TT
+CLASS="LITERAL"
+>Gather</TT
+>节点之下的部分，就好像<TT
+CLASS="LITERAL"
+>Gather</TT
+>节点不存在一样。上述情况将在满足下面的任一条件时发生：
+  </P
+><P
+></P
+><UL
+><LI
+><P
+> 
+        因为后台工作者进程的总数不能超过<A
+HREF="runtime-config-resource.html#GUC-MAX-WORKER-PROCESSES"
+>max_worker_processes</A
+>，导致不能得到后台工作者进程。
+      </P
+></LI
+><LI
+><P
+> 
+        客户端发送了一个执行消息，并且消息中要求取元组的数量不为零。执行消息可见<A
+HREF="protocol-flow.html#PROTOCOL-FLOW-EXT-QUERY"
+>扩展查询协议</A
+>中的讨论。因为<A
+HREF="libpq.html"
+>libpq</A
+>当前没有提供方法来发送这种消息，所以这种情况只可能发生在不依赖 libpq 的客户端中。如果这种情况经常发生，那在它可能发生的会话中设置 <A
+HREF="runtime-config-resource.html#GUC-MAX-PARALLEL-WORKERS-PER-GATHER"
+>max_parallel_workers_per_gather</A
+>是一个很好的主意，这样可以避免产生连续运行时次优的查询计划。
+      </P
+></LI
+><LI
+><P
+> 
+        事务隔离级别是可串行化。这种情况通常不会出现，因为当事务隔离级别是可串行化时不会产生并行查询计划。不过，如果在产生计划之后并且在执行计划之前把事务隔离级别改成可串行化，这种情况就有可能发生。
+      </P
+></LI
+></UL
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="how-parallel-query-works.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="parallel-plans.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>并行查询如何工作</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="parallel-query.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>并行计划</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

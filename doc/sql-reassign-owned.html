@@ -1,0 +1,361 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>REASSIGN OWNED</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="SQL 命令"
+HREF="sql-commands.html"><LINK
+REL="PREVIOUS"
+TITLE="PREPARE TRANSACTION"
+HREF="sql-prepare-transaction.html"><LINK
+REL="NEXT"
+TITLE="REFRESH MATERIALIZED VIEW"
+HREF="sql-refreshmaterializedview.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="REFENTRY"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/ref/reassign_owned.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="PREPARE TRANSACTION"
+HREF="sql-prepare-transaction.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="REFRESH MATERIALIZED VIEW"
+HREF="sql-refreshmaterializedview.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="SQL-REASSIGN-OWNED"
+></A
+>REASSIGN OWNED</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN89111"
+></A
+><H2
+>&#21517;&#31216;</H2
+>REASSIGN OWNED&nbsp;--&nbsp;更改一个数据库角色拥有的数据库对象的拥有关系</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN89114"
+></A
+><H2
+>&#22823;&#32434;</H2
+><PRE
+CLASS="SYNOPSIS"
+>REASSIGN OWNED BY { <TT
+CLASS="REPLACEABLE"
+><I
+>old_role</I
+></TT
+> | CURRENT_USER | SESSION_USER } [, ...]
+               TO { <TT
+CLASS="REPLACEABLE"
+><I
+>new_role</I
+></TT
+> | CURRENT_USER | SESSION_USER }</PRE
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN89118"
+></A
+><H2
+>描述</H2
+><P
+>   <TT
+CLASS="COMMAND"
+>REASSIGN OWNED</TT
+>指示系统把
+   <TT
+CLASS="REPLACEABLE"
+><I
+>old_role们</I
+></TT
+>拥有
+   的任何数据库对象的拥有关系更改为
+   <TT
+CLASS="REPLACEABLE"
+><I
+>new_role</I
+></TT
+>。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN89124"
+></A
+><H2
+>参数</H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>old_role</I
+></TT
+></DT
+><DD
+><P
+>      一个角色的名称。这个角色在当前数据库中所拥有的
+      所有对象以及所有共享对象（数据库、表空间）的
+      所有权都将被重新赋予给
+      <TT
+CLASS="REPLACEABLE"
+><I
+>new_role</I
+></TT
+>。
+     </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>new_role</I
+></TT
+></DT
+><DD
+><P
+>      将作为受影响对象的新拥有者的角色名称。
+     </P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN89138"
+></A
+><H2
+>注解</H2
+><P
+>   <TT
+CLASS="COMMAND"
+>REASSIGN OWNED</TT
+>经常被用来为移除一个
+   或者多个角色做准备。因为<TT
+CLASS="COMMAND"
+>REASSIGN
+   OWNED</TT
+>不影响其他数据库中的对象，通常需要在包含有
+   被删除的角色所拥有的对象的每一个数据库中都执行这个命令。
+  </P
+><P
+>   <TT
+CLASS="COMMAND"
+>REASSIGN OWNED</TT
+>同时要求源角色和目标
+   角色上的特权。
+  </P
+><P
+>   <A
+HREF="sql-drop-owned.html"
+>DROP OWNED</A
+>命令可以简单地删掉一个或者多个角色所拥有
+   的所有数据库对象。
+  </P
+><P
+>   <TT
+CLASS="COMMAND"
+>REASSIGN OWNED</TT
+>命令不会影响授予给
+   <TT
+CLASS="REPLACEABLE"
+><I
+>old_role们</I
+></TT
+>
+   的在它们不拥有的对象上的任何特权。<TT
+CLASS="COMMAND"
+>DROP OWNED</TT
+>
+   可以回收那些特权。
+  </P
+><P
+>   更多讨论请见<A
+HREF="role-removal.html"
+>第 21.4 &#33410;</A
+>。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN89153"
+></A
+><H2
+>兼容性</H2
+><P
+>   <TT
+CLASS="COMMAND"
+>REASSIGN OWNED</TT
+>命令是一种
+   <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>扩展。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN89158"
+></A
+><H2
+>另见</H2
+><A
+HREF="sql-drop-owned.html"
+>DROP OWNED</A
+>, <A
+HREF="sql-droprole.html"
+>DROP ROLE</A
+>, <A
+HREF="sql-alterdatabase.html"
+>ALTER DATABASE</A
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-prepare-transaction.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="sql-refreshmaterializedview.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>PREPARE TRANSACTION</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>REFRESH MATERIALIZED VIEW</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

@@ -1,0 +1,830 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>createdb</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="PostgreSQL 客户端应用"
+HREF="reference-client.html"><LINK
+REL="PREVIOUS"
+TITLE="clusterdb"
+HREF="app-clusterdb.html"><LINK
+REL="NEXT"
+TITLE="createlang"
+HREF="app-createlang.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="REFENTRY"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/ref/createdb.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="clusterdb"
+HREF="app-clusterdb.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="reference-client.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="createlang"
+HREF="app-createlang.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="APP-CREATEDB"
+></A
+><SPAN
+CLASS="APPLICATION"
+>createdb</SPAN
+></H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN92852"
+></A
+><H2
+>&#21517;&#31216;</H2
+>createdb&nbsp;--&nbsp;创建一个新的<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>数据库</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN92856"
+></A
+><H2
+>&#22823;&#32434;</H2
+><P
+><TT
+CLASS="COMMAND"
+>createdb</TT
+> [<TT
+CLASS="REPLACEABLE"
+><I
+>connection-option</I
+></TT
+>...] [<TT
+CLASS="REPLACEABLE"
+><I
+>option</I
+></TT
+>...] [<TT
+CLASS="REPLACEABLE"
+><I
+>dbname</I
+></TT
+>
+    [<TT
+CLASS="REPLACEABLE"
+><I
+>description</I
+></TT
+>]]</P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="R1-APP-CREATEDB-1"
+></A
+><H2
+>   描述
+  </H2
+><P
+>   <SPAN
+CLASS="APPLICATION"
+>createdb</SPAN
+>创建一个新的<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>数据库。
+  </P
+><P
+>   通常，执行这个命令的数据库用户将成为新数据库的所有者。但是，如果执行用户具有合适的权限，可以通过<TT
+CLASS="OPTION"
+>-O</TT
+>选项指定一个不同的所有者。
+  </P
+><P
+>   <SPAN
+CLASS="APPLICATION"
+>createdb</SPAN
+>是<ACRONYM
+CLASS="ACRONYM"
+>SQL</ACRONYM
+>命令<A
+HREF="sql-createdatabase.html"
+>CREATE DATABASE</A
+>的一个包装器。在通过这个工具和其他方法访问服务器来创建数据库之间没有实质性的区别。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN92878"
+></A
+><H2
+>选项</H2
+><P
+>   <SPAN
+CLASS="APPLICATION"
+>createdb</SPAN
+>接受下列命令行参数：
+
+    <P
+></P
+></P><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>dbname</I
+></TT
+></DT
+><DD
+><P
+>        指定要被创建的数据库名。该名称必须在这个集簇中所有<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>数据库中唯一。默认是创建一个与当前系统用户同名的数据库。
+       </P
+></DD
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>description</I
+></TT
+></DT
+><DD
+><P
+>        指定与新创建的数据库相关联的一段注释。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-D <TT
+CLASS="REPLACEABLE"
+><I
+>tablespace</I
+></TT
+></TT
+><BR><TT
+CLASS="OPTION"
+>--tablespace=<TT
+CLASS="REPLACEABLE"
+><I
+>tablespace</I
+></TT
+></TT
+></DT
+><DD
+><P
+>        指定该数据库的默认表空间（这个名称被当做一个双引号引用的标识符处理）。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-e</TT
+><BR><TT
+CLASS="OPTION"
+>--echo</TT
+></DT
+><DD
+><P
+>        回显<SPAN
+CLASS="APPLICATION"
+>createdb</SPAN
+>生成并发送到服务器的命令。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-E <TT
+CLASS="REPLACEABLE"
+><I
+>encoding</I
+></TT
+></TT
+><BR><TT
+CLASS="OPTION"
+>--encoding=<TT
+CLASS="REPLACEABLE"
+><I
+>encoding</I
+></TT
+></TT
+></DT
+><DD
+><P
+>        指定要在这个数据库中使用的字符编码模式。<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>服务器支持的字符集在<A
+HREF="multibyte.html#MULTIBYTE-CHARSET-SUPPORTED"
+>第 23.3.1 &#33410;</A
+>中描述。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-l <TT
+CLASS="REPLACEABLE"
+><I
+>locale</I
+></TT
+></TT
+><BR><TT
+CLASS="OPTION"
+>--locale=<TT
+CLASS="REPLACEABLE"
+><I
+>locale</I
+></TT
+></TT
+></DT
+><DD
+><P
+>        指定要在这个数据库中使用的区域。这等效于同时指定<TT
+CLASS="OPTION"
+>--lc-collate</TT
+>和<TT
+CLASS="OPTION"
+>--lc-ctype</TT
+>。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>--lc-collate=<TT
+CLASS="REPLACEABLE"
+><I
+>locale</I
+></TT
+></TT
+></DT
+><DD
+><P
+>        指定要在这个数据库中使用的 LC_COLLATE 设置。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>--lc-ctype=<TT
+CLASS="REPLACEABLE"
+><I
+>locale</I
+></TT
+></TT
+></DT
+><DD
+><P
+>        指定要在这个数据库中使用的 LC_CTYPE 设置。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-O <TT
+CLASS="REPLACEABLE"
+><I
+>owner</I
+></TT
+></TT
+><BR><TT
+CLASS="OPTION"
+>--owner=<TT
+CLASS="REPLACEABLE"
+><I
+>owner</I
+></TT
+></TT
+></DT
+><DD
+><P
+>        指定拥有这个新数据库的数据库用户（这个名称被当做一个双引号引用的标识符处理）。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-T <TT
+CLASS="REPLACEABLE"
+><I
+>template</I
+></TT
+></TT
+><BR><TT
+CLASS="OPTION"
+>--template=<TT
+CLASS="REPLACEABLE"
+><I
+>template</I
+></TT
+></TT
+></DT
+><DD
+><P
+>        指定用于创建这个数据库的模板数据库（这个名称被当做一个双引号引用的标识符处理）。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-V</TT
+><BR><TT
+CLASS="OPTION"
+>--version</TT
+></DT
+><DD
+><P
+>       打印<SPAN
+CLASS="APPLICATION"
+>createdb</SPAN
+>版本并退出。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-?</TT
+><BR><TT
+CLASS="OPTION"
+>--help</TT
+></DT
+><DD
+><P
+>      显示关于<SPAN
+CLASS="APPLICATION"
+>createdb</SPAN
+>命令行参数的帮助并退出。
+      </P
+></DD
+></DL
+></DIV
+><P>
+   </P
+><P
+>    选项<TT
+CLASS="OPTION"
+>-D</TT
+>、<TT
+CLASS="OPTION"
+>-l</TT
+>、<TT
+CLASS="OPTION"
+>-E</TT
+>、
+    <TT
+CLASS="OPTION"
+>-O</TT
+>和
+    <TT
+CLASS="OPTION"
+>-T</TT
+>对应于底层 SQL 命令<A
+HREF="sql-createdatabase.html"
+>CREATE DATABASE</A
+>的选项，关于这些选项的信息可见该命令的内容。
+   </P
+><P
+>    <SPAN
+CLASS="APPLICATION"
+>createdb</SPAN
+>也接受下列命令行参数用于连接参数：
+
+    <P
+></P
+></P><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="OPTION"
+>-h <TT
+CLASS="REPLACEABLE"
+><I
+>host</I
+></TT
+></TT
+><BR><TT
+CLASS="OPTION"
+>--host=<TT
+CLASS="REPLACEABLE"
+><I
+>host</I
+></TT
+></TT
+></DT
+><DD
+><P
+>        指定运行服务器的机器的主机名。如果该值以一个斜线开始，它被用作 Unix 域套接字的目录。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-p <TT
+CLASS="REPLACEABLE"
+><I
+>port</I
+></TT
+></TT
+><BR><TT
+CLASS="OPTION"
+>--port=<TT
+CLASS="REPLACEABLE"
+><I
+>port</I
+></TT
+></TT
+></DT
+><DD
+><P
+>        指定服务器正在监听连接的 TCP 端口或本地 Unix 域套接字文件扩展。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-U <TT
+CLASS="REPLACEABLE"
+><I
+>username</I
+></TT
+></TT
+><BR><TT
+CLASS="OPTION"
+>--username=<TT
+CLASS="REPLACEABLE"
+><I
+>username</I
+></TT
+></TT
+></DT
+><DD
+><P
+>        要作为哪个用户连接。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-w</TT
+><BR><TT
+CLASS="OPTION"
+>--no-password</TT
+></DT
+><DD
+><P
+>        从不发出一个口令提示。如果服务器要求口令认证并且没有其他方式提供口令（例如一个<TT
+CLASS="FILENAME"
+>.pgpass</TT
+>文件），那儿连接尝试将失败。这个选项对于批处理任务和脚本有用，因为在其中没有一个用户来输入口令。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>-W</TT
+><BR><TT
+CLASS="OPTION"
+>--password</TT
+></DT
+><DD
+><P
+>        强制<SPAN
+CLASS="APPLICATION"
+>createdb</SPAN
+>在连接到一个数据库之前提示要求一个口令。
+       </P
+><P
+>        这个选项不是必不可少的，因为如果服务器要求口令认证，<SPAN
+CLASS="APPLICATION"
+>createdb</SPAN
+>将自动提示要求一个口令。但是，<SPAN
+CLASS="APPLICATION"
+>createdb</SPAN
+>将浪费一次连接尝试来发现服务器想要一个口令。在某些情况下值得用<TT
+CLASS="OPTION"
+>-W</TT
+>来避免额外的连接尝试。
+       </P
+></DD
+><DT
+><TT
+CLASS="OPTION"
+>--maintenance-db=<TT
+CLASS="REPLACEABLE"
+><I
+>dbname</I
+></TT
+></TT
+></DT
+><DD
+><P
+>         指定要连接到来发现哪些其他数据库应该被聚簇的数据库名。如果没有指定，将使用<TT
+CLASS="LITERAL"
+>postgres</TT
+>数据库。而如果它也不存在（或者如果它就是要创建新数据库的名称），将使用<TT
+CLASS="LITERAL"
+>template1</TT
+>。
+       </P
+></DD
+></DL
+></DIV
+><P>
+   </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN93044"
+></A
+><H2
+>环境</H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="ENVAR"
+>PGDATABASE</TT
+></DT
+><DD
+><P
+>      如果被设置，就是要创建的数据库名，除非在命令行中覆盖。
+     </P
+></DD
+><DT
+><TT
+CLASS="ENVAR"
+>PGHOST</TT
+><BR><TT
+CLASS="ENVAR"
+>PGPORT</TT
+><BR><TT
+CLASS="ENVAR"
+>PGUSER</TT
+></DT
+><DD
+><P
+>      默认连接参数。如果没有在命令行或<TT
+CLASS="ENVAR"
+>PGDATABASE</TT
+>指定要创建的数据库名，<TT
+CLASS="ENVAR"
+>PGUSER</TT
+>也决定要创建的数据库名。
+     </P
+></DD
+></DL
+></DIV
+><P
+>   和大部分其他<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>工具相似，这个工具也使用<SPAN
+CLASS="APPLICATION"
+>libpq</SPAN
+>（见<A
+HREF="libpq-envars.html"
+>第 32.14 &#33410;</A
+>）支持的环境变量。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN93067"
+></A
+><H2
+>诊断</H2
+><P
+>   在有困难时，可以在<A
+HREF="sql-createdatabase.html"
+>CREATE DATABASE</A
+>和<A
+HREF="app-psql.html"
+><SPAN
+CLASS="APPLICATION"
+>psql</SPAN
+></A
+>中找潜在问题和错误消息的讨论。数据库服务器必须运行在目标主机上。同样，任何<SPAN
+CLASS="APPLICATION"
+>libpq</SPAN
+>前端库使用的默认连接设置和环境变量都将适用于此。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN93073"
+></A
+><H2
+>例子</H2
+><P
+>    要使用默认数据库服务器创建数据库<TT
+CLASS="LITERAL"
+>demo</TT
+>：
+</P><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>$ </SAMP
+><KBD
+CLASS="USERINPUT"
+>createdb demo</KBD
+></PRE
+><P>
+   </P
+><P
+>    要在主机<TT
+CLASS="LITERAL"
+>eden</TT
+>、端口 5000 上使用<TT
+CLASS="LITERAL"
+>LATIN1</TT
+>编码模式创建数据库<TT
+CLASS="LITERAL"
+>demo</TT
+>，看看下面的命令：
+</P><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>$ </SAMP
+><KBD
+CLASS="USERINPUT"
+>createdb -p 5000 -h eden -E LATIN1 -e demo</KBD
+>
+<SAMP
+CLASS="COMPUTEROUTPUT"
+>CREATE DATABASE demo ENCODING 'LATIN1';</SAMP
+></PRE
+><P></P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN93088"
+></A
+><H2
+>参见</H2
+><A
+HREF="app-dropdb.html"
+><SPAN
+CLASS="APPLICATION"
+>dropdb</SPAN
+></A
+>, <A
+HREF="sql-createdatabase.html"
+>CREATE DATABASE</A
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="app-clusterdb.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="app-createlang.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><SPAN
+CLASS="APPLICATION"
+>clusterdb</SPAN
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="reference-client.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><SPAN
+CLASS="APPLICATION"
+>createlang</SPAN
+></TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

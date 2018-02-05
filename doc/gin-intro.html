@@ -1,0 +1,236 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>简介</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="GIN 索引"
+HREF="gin.html"><LINK
+REL="PREVIOUS"
+TITLE="GIN 索引"
+HREF="gin.html"><LINK
+REL="NEXT"
+TITLE="内建操作符类"
+HREF="gin-builtin-opclasses.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/gin.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="GIN 索引"
+HREF="gin.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="gin.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#31456; 63. GIN 索引</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="内建操作符类"
+HREF="gin-builtin-opclasses.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="GIN-INTRO"
+>63.1. 简介</A
+></H1
+><P
+>  <ACRONYM
+CLASS="ACRONYM"
+>GIN</ACRONYM
+>意思是通用倒排索引。<ACRONYM
+CLASS="ACRONYM"
+>GIN</ACRONYM
+>被设计为处理被索引项为组合值的情况，并且这种索引所处理的查询需要搜索出现在组合项中的元素值。例如，项可以是文档，并且查询可以是搜索包含指定词的文档。
+ </P
+><P
+>  我们使用词<I
+CLASS="FIRSTTERM"
+>项</I
+>来表示要被索引的一个组合值，并且用词<I
+CLASS="FIRSTTERM"
+>键</I
+>来表示一个元素值。<ACRONYM
+CLASS="ACRONYM"
+>GIN</ACRONYM
+>总是存储和搜索键，而不是项值本身。
+ </P
+><P
+>  一个<ACRONYM
+CLASS="ACRONYM"
+>GIN</ACRONYM
+>存储一个（键，位置列表）对的集合，这里一个<I
+CLASS="FIRSTTERM"
+>posting list</I
+>是键在其中出现的一个行 ID 的集合。相同的行 ID 可以出现在多个位置列表中，因为一个项可以包含多于一个键。每个键值只被存储一次，因此对于同一个键出现多次的情况，一个<ACRONYM
+CLASS="ACRONYM"
+>GIN</ACRONYM
+>索引是非常紧凑的。
+ </P
+><P
+>  <ACRONYM
+CLASS="ACRONYM"
+>GIN</ACRONYM
+>访问方法代码不需要知道它所加速的是什么操作，从这个意义上来说，<ACRONYM
+CLASS="ACRONYM"
+>GIN</ACRONYM
+>是通用的。相反，它使用为特定数据类型定义的自定义策略。策略定义如何从被索引项和查询条件中抽取键，并且如何决定一个包含查询中某些键值的行是否真正满足查询。
+ </P
+><P
+>  <ACRONYM
+CLASS="ACRONYM"
+>GIN</ACRONYM
+>的一个优点是它允许由数据类型的领域专家开发有合适访问方法的自定义数据类型，而不是让一个数据库专家来做这件事。在这一点上很像<ACRONYM
+CLASS="ACRONYM"
+>GiST</ACRONYM
+>。
+ </P
+><P
+>  <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>中的<ACRONYM
+CLASS="ACRONYM"
+>GIN</ACRONYM
+>实现主要由 Teodor Sigaev 和 Oleg Bartunov 维护。在他们的<A
+HREF="http://www.sai.msu.su/~megera/wiki/Gin"
+TARGET="_top"
+>网站</A
+>上有更多关于<ACRONYM
+CLASS="ACRONYM"
+>GIN</ACRONYM
+>的信息。
+ </P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="gin.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="gin-builtin-opclasses.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>GIN 索引</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="gin.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>内建操作符类</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

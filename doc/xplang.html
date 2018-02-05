@@ -1,0 +1,227 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>过程语言</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="服务器编程"
+HREF="server-programming.html"><LINK
+REL="PREVIOUS"
+TITLE="规则 vs 触发器"
+HREF="rules-triggers.html"><LINK
+REL="NEXT"
+TITLE="安装过程语言"
+HREF="xplang-install.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="CHAPTER"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/xplang.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="规则 vs 触发器"
+HREF="rules-triggers.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="server-programming.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="安装过程语言"
+HREF="xplang-install.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="CHAPTER"
+><H1
+><A
+NAME="XPLANG"
+></A
+>&#31456; 40. 过程语言</H1
+><P
+>   <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>允许使用除了 SQL 和 C 之外的其他语言编写用户定义的函数。这些其他的语言通常被称作<I
+CLASS="FIRSTTERM"
+>过程语言</I
+>（<ACRONYM
+CLASS="ACRONYM"
+>PL</ACRONYM
+>）。对于一个用过程语言编写的函数，数据库服务器没有关于如何解释该函数的源文本的内建知识。因此，这个任务被交给一个了解语言细节的特殊处理器。该处理器能够自己处理所有的解析、语法分析、执行工作，或者它可以作为一种<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>和编程语言既有实现之间的<SPAN
+CLASS="QUOTE"
+>"粘合剂"</SPAN
+>。就像任何其他 C 函数一样，处理器本身是一个编译到共享对象并且按需载入的 C 语言函数。
+  </P
+><P
+>   在<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>的标准发布中当前有四种过程语言可用：
+   <SPAN
+CLASS="APPLICATION"
+>PL/pgSQL</SPAN
+>（<A
+HREF="plpgsql.html"
+>第 41 &#31456;</A
+>）、
+   <SPAN
+CLASS="APPLICATION"
+>PL/Tcl</SPAN
+>（<A
+HREF="pltcl.html"
+>第 42 &#31456;</A
+>）、
+   <SPAN
+CLASS="APPLICATION"
+>PL/Perl</SPAN
+>（<A
+HREF="plperl.html"
+>第 43 &#31456;</A
+>）以及
+   <SPAN
+CLASS="APPLICATION"
+>PL/Python</SPAN
+>（<A
+HREF="plpython.html"
+>第 44 &#31456;</A
+>）。
+   还有其他过程语言可用，但是它们没有被包括在核心发布中。在<A
+HREF="external-projects.html"
+>&#38468;&#24405; H</A
+>中可以了解如何找到它们。另外，用户可以定义其他语言，<A
+HREF="plhandler.html"
+>第 54 &#31456;</A
+>中介绍了开发一种新过程语言的基础知识。
+  </P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="rules-triggers.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="xplang-install.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>规则 vs 触发器</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="server-programming.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>安装过程语言</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

@@ -1,0 +1,359 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>CLOSE</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="SQL 命令"
+HREF="sql-commands.html"><LINK
+REL="PREVIOUS"
+TITLE="CHECKPOINT"
+HREF="sql-checkpoint.html"><LINK
+REL="NEXT"
+TITLE="CLUSTER"
+HREF="sql-cluster.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="REFENTRY"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/ref/close.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="CHECKPOINT"
+HREF="sql-checkpoint.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="CLUSTER"
+HREF="sql-cluster.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="SQL-CLOSE"
+></A
+>CLOSE</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN76778"
+></A
+><H2
+>&#21517;&#31216;</H2
+>CLOSE&nbsp;--&nbsp;关闭一个游标</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN76781"
+></A
+><H2
+>&#22823;&#32434;</H2
+><PRE
+CLASS="SYNOPSIS"
+>CLOSE { <TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+> | ALL }</PRE
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN76784"
+></A
+><H2
+>描述</H2
+><P
+>   <TT
+CLASS="COMMAND"
+>CLOSE</TT
+>释放与一个已打开游标相关
+   的资源。在游标被关闭后，不允许在其上做后续的操作。当不再
+   需要使用一个游标时应该关闭它。
+  </P
+><P
+>   当一个事务被<TT
+CLASS="COMMAND"
+>COMMIT</TT
+>或者
+   <TT
+CLASS="COMMAND"
+>ROLLBACK</TT
+>终止时，每一个非可保持
+   的已打开游标会被隐式地关闭。当创建一个可保持游标的事务通过
+   <TT
+CLASS="COMMAND"
+>ROLLBACK</TT
+>中止时，该可保持游标会
+   被隐式地关闭。如果该创建事务成功地提交，可保持游标会保持打
+   开，直至执行一个显式的<TT
+CLASS="COMMAND"
+>CLOSE</TT
+>或者
+   客户端连接断开。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN76793"
+></A
+><H2
+>参数</H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+></DT
+><DD
+><P
+>      要关闭的已打开游标的名称。
+     </P
+></DD
+><DT
+><TT
+CLASS="LITERAL"
+>ALL</TT
+></DT
+><DD
+><P
+>      关闭所有 已打开的游标。
+     </P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN76806"
+></A
+><H2
+>注解</H2
+><P
+>   <SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>没有一个显式的
+   <TT
+CLASS="COMMAND"
+>OPEN</TT
+>游标语句，一个游标在被声明时
+   就被认为是打开的。使用<A
+HREF="sql-declare.html"
+>DECLARE</A
+>语句可以声明游标。
+  </P
+><P
+>   通过查询<A
+HREF="view-pg-cursors.html"
+><TT
+CLASS="STRUCTNAME"
+>pg_cursors</TT
+></A
+>
+   系统视图可以看到所有可用的游标。
+  </P
+><P
+>   如果一个游标在一个保存点之后关闭，并且后来回滚到了这个保存点，
+   那么<TT
+CLASS="COMMAND"
+>CLOSE</TT
+>不会被回滚，也就是说回滚
+   后游标仍然保持关闭。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN76817"
+></A
+><H2
+>示例</H2
+><P
+>   关闭游标<TT
+CLASS="LITERAL"
+>liahona</TT
+>：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>CLOSE liahona;</PRE
+><P></P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN76822"
+></A
+><H2
+>兼容性</H2
+><P
+>   <TT
+CLASS="COMMAND"
+>CLOSE</TT
+>完全服从 SQL 标准。
+   <TT
+CLASS="COMMAND"
+>CLOSE ALL</TT
+>是一种<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>
+   扩展。
+  </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN76828"
+></A
+><H2
+>另见</H2
+><A
+HREF="sql-declare.html"
+>DECLARE</A
+>, <A
+HREF="sql-fetch.html"
+>FETCH</A
+>, <A
+HREF="sql-move.html"
+>MOVE</A
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="sql-checkpoint.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="sql-cluster.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>CHECKPOINT</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="sql-commands.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>CLUSTER</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

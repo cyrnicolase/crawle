@@ -1,0 +1,414 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>角色成员关系</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REV="MADE"
+HREF="mailto:pgsql-docs@postgresql.org"><LINK
+REL="HOME"
+TITLE="PostgreSQL 9.6.0 手册"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="数据库角色"
+HREF="user-manag.html"><LINK
+REL="PREVIOUS"
+TITLE="角色属性"
+HREF="role-attributes.html"><LINK
+REL="NEXT"
+TITLE="删除角色"
+HREF="role-removal.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="stylesheet.css"><META
+HTTP-EQUIV="Content-Type"
+CONTENT="text/html; charset=utf-8"><META
+NAME="creation"
+CONTENT="2017-12-17T04:56:33"></HEAD
+><BODY
+CLASS="SECT1"
+>
+<div style="text-align:right">
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/issues/new" target="_blank" title="在Github上报告问题（请注明问题内容及所在章节）">问题报告</a>
+<a style="margin : 0px 0px 0px 10px;" href="https://github.com/postgres-cn/pgdoc-cn/edit/9.6/postgresql/doc/src/sgml/user-manag.sgml" target="_blank" 
+title="直接在Github上纠错本页面">纠错本页面</a>
+</div>
+<DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="4"
+ALIGN="center"
+VALIGN="bottom"
+><A
+HREF="index.html"
+>PostgreSQL 9.6.0 手册</A
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+TITLE="角色属性"
+HREF="role-attributes.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="user-manag.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="60%"
+ALIGN="center"
+VALIGN="bottom"
+>&#31456; 21. 数据库角色</TD
+><TD
+WIDTH="20%"
+ALIGN="right"
+VALIGN="top"
+><A
+TITLE="删除角色"
+HREF="role-removal.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="ROLE-MEMBERSHIP"
+>21.3. 角色成员关系</A
+></H1
+><P
+>   把用户分组在一起来便于管理权限常常很方便：那样，权限可以被授予一整个组或从一整个组回收。在<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>中通过创建一个表示组的角色来实现，并且然后将在该组角色中的<I
+CLASS="FIRSTTERM"
+>成员关系</I
+>授予给单独的用户角色。
+  </P
+><P
+>   要建立一个组角色，首先创建该角色：
+</P><PRE
+CLASS="SYNOPSIS"
+>CREATE ROLE <TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+>;</PRE
+><P>
+   通常被用作一个组的角色不需要有<TT
+CLASS="LITERAL"
+>LOGIN</TT
+>属性，不过如果你希望你也可以设置它。
+  </P
+><P
+>   一旦组角色存在，你可以使用<A
+HREF="sql-grant.html"
+>GRANT</A
+>和<A
+HREF="sql-revoke.html"
+>REVOKE</A
+>命令增加和移除成员：
+</P><PRE
+CLASS="SYNOPSIS"
+>GRANT <TT
+CLASS="REPLACEABLE"
+><I
+>group_role</I
+></TT
+> TO <TT
+CLASS="REPLACEABLE"
+><I
+>role1</I
+></TT
+>, ... ;
+REVOKE <TT
+CLASS="REPLACEABLE"
+><I
+>group_role</I
+></TT
+> FROM <TT
+CLASS="REPLACEABLE"
+><I
+>role1</I
+></TT
+>, ... ;</PRE
+><P>
+   你也可以为其他组角色授予成员关系（因为组角色和非组角色之间其实没有任何区别）。数据库将不会让你设置环状的成员关系。另外，不允许把一个角色中的成员关系授予给<TT
+CLASS="LITERAL"
+>PUBLIC</TT
+>。
+  </P
+><P
+>   组角色的成员可以以两种方式使用角色的权限。第一，一个组的每一个成员可以显式地做<A
+HREF="sql-set-role.html"
+>SET ROLE</A
+>来临时<SPAN
+CLASS="QUOTE"
+>"称为"</SPAN
+>组角色。在这种状态中，数据库会话可以访问组角色而不是原始登录角色的权限，并且任何被创建的数据库对象被认为属于组角色而不是登录角色。第二，有<TT
+CLASS="LITERAL"
+>INHERIT</TT
+>属性的成员角色自动地具有它们所属角色的权限，包括任何组角色继承得到的权限。作为一个例子，假设我们已经有：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>CREATE ROLE joe LOGIN INHERIT;
+CREATE ROLE admin NOINHERIT;
+CREATE ROLE wheel NOINHERIT;
+GRANT admin TO joe;
+GRANT wheel TO admin;</PRE
+><P>
+   在作为角色<TT
+CLASS="LITERAL"
+>joe</TT
+>连接后，一个数据库会话将立即拥有直接授予给<TT
+CLASS="LITERAL"
+>joe</TT
+>的权限，外加任何授予给<TT
+CLASS="LITERAL"
+>admin</TT
+>的权限，因为<TT
+CLASS="LITERAL"
+>joe</TT
+><SPAN
+CLASS="QUOTE"
+>"继承了"</SPAN
+> <TT
+CLASS="LITERAL"
+>admin</TT
+>的权限。然而，授予给<TT
+CLASS="LITERAL"
+>wheel</TT
+>的权限不可用，因为即使<TT
+CLASS="LITERAL"
+>joe</TT
+>是<TT
+CLASS="LITERAL"
+>wheel</TT
+>的一个间接成员，但是该成员关系是通过带<TT
+CLASS="LITERAL"
+>NOINHERIT</TT
+>属性的<TT
+CLASS="LITERAL"
+>admin</TT
+>得到的。在：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>SET ROLE admin;</PRE
+><P>
+   之后，该会话将只拥有授予给<TT
+CLASS="LITERAL"
+>admin</TT
+>的权限，但是没有授予给<TT
+CLASS="LITERAL"
+>joe</TT
+>的权限。在执行：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>SET ROLE wheel;</PRE
+><P>
+   之后，该会话将只拥有授予给<TT
+CLASS="LITERAL"
+>wheel</TT
+>的权限，但是没有授予给<TT
+CLASS="LITERAL"
+>joe</TT
+>或<TT
+CLASS="LITERAL"
+>admin</TT
+>的权限。初始的权限状态可以使用下面命令之一恢复：
+</P><PRE
+CLASS="PROGRAMLISTING"
+>SET ROLE joe;
+SET ROLE NONE;
+RESET ROLE;</PRE
+><P>
+  </P
+><DIV
+CLASS="NOTE"
+><BLOCKQUOTE
+CLASS="NOTE"
+><P
+><B
+>&#27880;&#24847;: </B
+>    <TT
+CLASS="COMMAND"
+>SET ROLE</TT
+>命令总是允许选择原始登录角色的直接或间接组角色。因此，在上面的例子中，在成为<TT
+CLASS="LITERAL"
+>wheel</TT
+>之前不必先成为<TT
+CLASS="LITERAL"
+>admin</TT
+>。
+   </P
+></BLOCKQUOTE
+></DIV
+><DIV
+CLASS="NOTE"
+><BLOCKQUOTE
+CLASS="NOTE"
+><P
+><B
+>&#27880;&#24847;: </B
+>    在 SQL 标准中，用户和角色之间的区别很清楚，并且用户不会自动继承权限而角色会继承。这种行为在<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>中也可以实现：为要用作 SQL 角色的角色给予<TT
+CLASS="LITERAL"
+>INHERIT</TT
+>属性，而为要用作 SQL 用户的角色给予<TT
+CLASS="LITERAL"
+>NOINHERIT</TT
+>属性。不过，为了向后兼容 8.1 以前的发布（在其中用户总是拥有它们所在组的权限），<SPAN
+CLASS="PRODUCTNAME"
+>PostgreSQL</SPAN
+>默认给所有的角色<TT
+CLASS="LITERAL"
+>INHERIT</TT
+>属性。
+   </P
+></BLOCKQUOTE
+></DIV
+><P
+>   角色属性<TT
+CLASS="LITERAL"
+>LOGIN</TT
+>、<TT
+CLASS="LITERAL"
+>SUPERUSER</TT
+>、<TT
+CLASS="LITERAL"
+>CREATEDB</TT
+>和<TT
+CLASS="LITERAL"
+>CREATEROLE</TT
+>可以被认为是一种特殊权限，但是它们从来不会像数据库对象上的普通权限那样被继承。要使用这些属性，你必须实际<TT
+CLASS="COMMAND"
+>SET ROLE</TT
+>到一个有这些属性之一的特定角色。继续上述例子，我们可以选择授予<TT
+CLASS="LITERAL"
+>CREATEDB</TT
+>和<TT
+CLASS="LITERAL"
+>CREATEROLE</TT
+>给<TT
+CLASS="LITERAL"
+>admin</TT
+>角色。然后一个以<TT
+CLASS="LITERAL"
+>joe</TT
+>角色连接的会话将不会立即有这些权限，只有在执行了<TT
+CLASS="COMMAND"
+>SET ROLE admin</TT
+>之后才会拥有。
+  </P
+><P
+>  </P
+><P
+>   要销毁一个组角色，使用<A
+HREF="sql-droprole.html"
+>DROP ROLE</A
+>：
+</P><PRE
+CLASS="SYNOPSIS"
+>DROP ROLE <TT
+CLASS="REPLACEABLE"
+><I
+>name</I
+></TT
+>;</PRE
+><P>
+   任何在该组角色中的成员关系会被自动撤销（但是成员角色不会受到影响）。
+  </P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="role-attributes.html"
+ACCESSKEY="P"
+>&#19978;&#19968;&#39029;</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>&#36215;&#22987;&#39029;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="role-removal.html"
+ACCESSKEY="N"
+>&#19979;&#19968;&#39029;</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>角色属性</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="user-manag.html"
+ACCESSKEY="U"
+>&#19978;&#19968;&#32423;</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>删除角色</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>
